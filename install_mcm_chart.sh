@@ -1,5 +1,5 @@
 #git clone git@github.ibm.com:IBMPrivateCloud/ibm-mcm-chart
-git clone --single-branch --branch temp-e2e-test git@github.com:IBMPrivateCloud/ibm-mcm-chart
+git clone --single-branch --branch temp-e2e-test git@github.ibm.com:IBMPrivateCloud/ibm-mcm-chart
 cd ibm-mcm-chart
 
 pwd
