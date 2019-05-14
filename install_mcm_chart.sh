@@ -4,8 +4,9 @@ cd ibm-mcm-chart
 
 pwd
 ls -la
-echo 'files inside stable:'
+echo 'files inside stable/ibm-mcm-prod:'
 ls -la ./stable/ibm-mcm-prod
+cat ./stable/ibm-mcm-prod/values.yaml
 cloudctl login -a https://9.30.183.233:8443 -u admin -p AHippopotamusPlaysHopscotchWithAnElephant -n kube-system
 
 kubectl delete secret my-docker-secret
