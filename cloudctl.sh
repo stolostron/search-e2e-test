@@ -24,7 +24,12 @@ sudo mv ./helm-unpacked/*/helm /usr/local/bin/helm
 rm -rf ./helm-unpacked ./helm-linux-amd64.tar.gz
 helm init
 echo 'check2'
-cp ~/.kube/noted-skunk-icp-cluster/*.pem ~/.helm/
+ls -laR ~/.kube
+echo 'kube check'
+ls -laR /usr/local/bin/kubectl
+echo 'kubectl check'
+
+#cp ~/.kube/noted-skunk-icp-cluster/*.pem ~/.helm/
 helm version --tls
 
 echo 'bye'
