@@ -29,6 +29,7 @@ echo 'kube check'
 ls -laR /usr/local/bin/kubectl
 echo 'kubectl check'
 
+for file in `find . -name *.pem`; do echo $file; done
 #cp ~/.kube/noted-skunk-icp-cluster/*.pem ~/.helm/
 helm version --tls
 
