@@ -29,7 +29,9 @@ echo 'kube check'
 ls -laR /usr/local/bin/kubectl
 echo 'kubectl check'
 
-for file in `find . -name *.pem`; do echo $file; done
+for file in `find . -name cert.pem`; do echo $file; done
+for file in `find . -name key.pem`; do echo $file; done
+echo 'no file found?'
 #cp ~/.kube/noted-skunk-icp-cluster/*.pem ~/.helm/
 helm version --tls
 
