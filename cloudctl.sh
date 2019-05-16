@@ -7,6 +7,15 @@ curl -kLo kubectl https://9.30.183.233:8443/api/cli/kubectl-linux-amd64
 chmod 755 kubectl
 sudo mv ./kubectl /usr/local/bin/kubectl
 
+my_cluster=`kubectl config view -o jsonpath='{.contexts[].context.cluster}'`
+echo $my_cluster
+my_token=`kubectl config view -o jsonpath="{.users[?(@.name==\"$my_user\")].user.token}"`
+echo $my_token
+my_context=`kubectl config view -o jsonpath='{.contexts[].name}'`
+echo $my_context
+my_user=`kubectl config view -o jsonpath='{.users[].name}'`
+echo $my_user
+
 kubectl config set-cluster noted-skunk-icp-cluster --server=https://9.30.183.233:8001 --insecure-skip-tls-verify=true
 kubectl config set-context noted-skunk-icp-cluster-context --cluster=noted-skunk-icp-cluster
 kubectl config set-credentials admin --token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdF9oYXNoIjoiMWNmMTFlNjcwYjZjODBmYWU4ZDZhNjkxMGFiN2RkYzBjYjk4ODM1NyIsInJlYWxtTmFtZSI6ImN1c3RvbVJlYWxtIiwidW5pcXVlU2VjdXJpdHlOYW1lIjoiYWRtaW4iLCJpc3MiOiJodHRwczovLzEyNy4wLjAuMTo5NDQzL29pZGMvZW5kcG9pbnQvT1AiLCJhdWQiOiJkNzhhNWUzNWI5Njk2ZmY4YjY5YjAxMWQ1MGQ2YTkwNiIsImV4cCI6MTU1Nzk3MTExNCwiaWF0IjoxNTU3OTQyMzE0LCJzdWIiOiJhZG1pbiIsInRlYW1Sb2xlTWFwcGluZ3MiOltdfQ.vxp721ns5kEkir9p4ik9Tz_bKcbVTZLddGVzT1wgvPSbQz98pIpCYBIDcwMj2mdyaN5VqinwQpAQaR0MLJNXdd7_cWUmJPlfYTMDsfccJaEI6kjmkV2aoz7qahigkUuADXJOpFvN3OZ64GFB-X77hpcm_KqtJ3rygRfY5XbhI70Gh7E1wr6hx9wXH5_R6WJC5X2RT5AqrbZ0xN4MhgUxy4qLhoSk7VZyV7e2VqZXsiWlikr89ZakP-ZDgEq7J_FGAnGIYWJ7gzq4uuUWSq4RkZz26lROhIAx72fD5QxaKxAKQPm17OouHTeOSU_3rjPLmRwIqWxCsN8bV1WBkxcpWg
