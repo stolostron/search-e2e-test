@@ -1,7 +1,9 @@
 {
 curl -kLo cloudctl https://${CLUSTER_IP}:8443/api/cli/cloudctl-linux-amd64
+echo 'option1 from cluster ip param'
 } || {
 curl -kLo cloudctl https://9.30.183.233:8443/api/cli/cloudctl-linux-amd64
+echo 'option2 from cluster ip'
 }
 chmod 755 cloudctl
 sudo mv ./cloudctl /usr/local/bin/cloudctl
