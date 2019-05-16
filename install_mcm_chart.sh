@@ -10,7 +10,7 @@ kubectl create secret docker-registry -n kube-system  my-docker-secret --docker-
 for file in `find . -name values.yaml`; do echo $file; sed -i -e "s|ibmcom|hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com/ibmcom|g" $file; done
 make charts
 
-helm upgrade --install multicluster-hub --namespace kube-system --set compliance.mcmNamespace=mcm --set global.pullSecret=my-docker-secret --set tillerIntegration.user=admin repo/stable/ibm-mcm-prod-99.99.99.tgz --tls
+helm upgrade --install multicluster-hub --namespace kube-system --set compliance.mcmNamespace=mcm --set global.pullSecret=my-docker-secret --set global.tillerIntegration.user=admin repo/stable/ibm-mcm-prod-99.99.99.tgz --tls
 
 cd ..
 
