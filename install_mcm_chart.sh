@@ -4,7 +4,7 @@ cd ibm-mcm-chart
 #cloudctl login -a https://9.30.183.233:8443 -u admin -p ${CLOUD_PW} -n kube-system
 kubectl delete secret my-docker-secret
 
-kubectl create secret docker-registry -n kube-system  my-docker-secret --docker-server=hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com  --docker-username=${DOCKER_USERNAME} --docker-password=${DOCKER_PASSWORD}
+kubectl create secret docker-registry -n kube-system  my-docker-secret --docker-server=${DOCKER_SERVER}  --docker-username=${DOCKER_USERNAME} --docker-password=${DOCKER_PASSWORD}
 
 # make local for mcm-chart
 for file in `find . -name values.yaml`; do echo $file; sed -i -e "s|ibmcom|hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com/ibmcom|g" $file; done

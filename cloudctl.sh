@@ -1,4 +1,9 @@
+{curl -kLo cloudctl https://${CLUSTER_IP}:8443/api/cli/cloudctl-linux-amd64
+
+} || {
 curl -kLo cloudctl https://9.30.183.233:8443/api/cli/cloudctl-linux-amd64
+
+}
 chmod 755 cloudctl
 sudo mv ./cloudctl /usr/local/bin/cloudctl
 
