@@ -9,12 +9,12 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 
 my_cluster=`kubectl config view -o jsonpath='{.contexts[].context.cluster}'`
 echo $my_cluster
+my_user=`kubectl config view -o jsonpath='{.users[].name}'`
+echo $my_user
 my_token=`kubectl config view -o jsonpath="{.users[?(@.name==\"$my_user\")].user.token}"`
 echo $my_token
 my_context=`kubectl config view -o jsonpath='{.contexts[].name}'`
 echo $my_context
-my_user=`kubectl config view -o jsonpath='{.users[].name}'`
-echo $my_user
 
 kubectl config set-cluster noted-skunk-icp-cluster --server=https://9.30.183.233:8001 --insecure-skip-tls-verify=true
 kubectl config set-context noted-skunk-icp-cluster-context --cluster=noted-skunk-icp-cluster
