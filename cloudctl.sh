@@ -1,7 +1,6 @@
 curl -kLo cloudctl https://9.30.183.233:8443/api/cli/cloudctl-linux-amd64
 chmod 755 cloudctl
 sudo mv ./cloudctl /usr/local/bin/cloudctl
-cloudctl login -a https://9.30.183.233:8443 -u admin -p ${CLOUD_PW} -n kube-system
 
 curl -kLo kubectl https://9.30.183.233:8443/api/cli/kubectl-linux-amd64
 chmod 755 kubectl
@@ -13,8 +12,7 @@ kubectl config set-credentials admin --token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ
 kubectl config set-context noted-skunk-icp-cluster-context --user=admin --namespace=default
 kubectl config use-context noted-skunk-icp-cluster-context
 
-echo 'check1'
-kubectl version
+
 
 curl -kLo helm-linux-amd64.tar.gz https://9.30.183.233:8443/api/cli/helm-linux-amd64.tar.gz
 mkdir helm-unpacked
@@ -31,8 +29,12 @@ echo 'kubectl check'
 
 for file in `find . -name cert.pem`; do echo $file; done
 for file in `find . -name key.pem`; do echo $file; done
-echo 'no file found?'
-#cp ~/.kube/noted-skunk-icp-cluster/*.pem ~/.helm/
-helm version --tls
 
+#cp ~/.kube/noted-skunk-icp-cluster/*.pem ~/.helm/
+
+
+cloudctl login -a https://9.30.183.233:8443 -u admin -p ${CLOUD_PW} -n kube-system
+echo 'check1'
+kubectl version
+helm version --tls
 echo 'bye'

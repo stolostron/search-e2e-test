@@ -1,7 +1,7 @@
 git clone git@github.ibm.com:IBMPrivateCloud/ibm-mcm-chart
 cd ibm-mcm-chart
 
-#cloudctl login -a https://9.30.183.233:8443 -u admin -p ${CLOUD_PW} -n kube-system
+cloudctl login -a https://9.30.183.233:8443 -u admin -p ${CLOUD_PW} -n kube-system
 kubectl delete secret my-docker-secret
 
 kubectl create secret docker-registry -n kube-system  my-docker-secret --docker-server=hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com  --docker-username=${DOCKER_USERNAME} --docker-password=${DOCKER_PASSWORD}
