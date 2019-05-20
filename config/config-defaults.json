@@ -1,0 +1,8 @@
+{
+    "clusterURL": "https://9.42.20.119:8443",
+    "contextPath": "/multicloud",
+    "tests": {
+        "user": "admin",
+        "password": "AHippopotamusPlaysHopscotchWithAnElephant"
+     }
+}

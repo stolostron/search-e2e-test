@@ -1,0 +1,15 @@
+{
+	"appenders": {
+		"console": {
+			"type": "console",
+			"layout": {
+				"type": "pattern",
+				"pattern": "[%d] [%p] [mcm-ui] [%c] %m"
+			}
+		}
+	},
+	"categories": {
+		"default": { "appenders": ["console"], "level": "info" },
+		"request": { "appenders": ["console"], "level": "error" }
+	}
+}

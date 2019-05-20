@@ -1,0 +1,29 @@
+{
+  "name": "search-e2e-test",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test:e2e": "nightwatch",
+    "test:install-selenium": "selenium-standalone install --version=3.9.0 --drivers.chrome.version=2.36"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.ibm.com:IBMPrivateCloud/search-e2e-test.git"
+  },
+  "author": "",
+  "license": "SEE LICENSE IN LICENSE",
+  "engines": {
+    "node": "10.15.3",
+    "npm": "6.9.0"
+  },
+  "dependencies": {
+    "del": "^4.1.1",
+    "log4js": "^4.2.0",
+    "nconf": "^0.10.0",
+    "xml2json": "^0.11.2"
+  },
+  "devDependencies": {
+    "nightwatch": "^0.9.20",
+    "selenium-standalone": "^6.14.0"
+  }
+}
