@@ -11,16 +11,17 @@
 module.exports = {
   // NOTE: .class, #id
   elements: {
-    headerTitle: '.bx--detail-page-header-title',
-    searchbar: '.react-tags',
-    searchbarInput: '.react-tags__search-input',
-    input: 'input',
-    tableHeader: '.search--resource-table-header-button',
-    tableHeaderLast: '.search--resource-table-header-button:last-child',
     clearAllButton: '.tagInput-cleanButton',
     dateTableCell: 'td:last-child',
+    headerTitle: '.bx--detail-page-header-title',
+    input: '.react-tags__search-input input',
     querySpan: '.react-tags__selected-tag-name',
-    suggestions: '.react-tags__suggestions'
+    searchSuggestionCards: '.saved-search-query-header',
+    searchbar: '.react-tags',
+    searchbarInput: '.react-tags__search-input',
+    suggestions: '.react-tags__suggestions',
+    tableHeader: '.search--resource-table-header-button',
+    tableHeaderLast: '.search--resource-table-header-button:last-child'
   },
   commands: [{
     focusInput,
@@ -33,7 +34,9 @@ module.exports = {
 
 function focusInput() {
   this.waitForElementPresent('@searchbar')
-    .click('@input')
+  this.waitForElementPresent('@searchSuggestionCards')
+  this.waitForElementPresent('@input')
+  this.click('@input')
   this.waitForElementPresent('@suggestions')
 }
 

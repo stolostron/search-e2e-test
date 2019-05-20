@@ -27,12 +27,12 @@ module.exports = {
     searchPage.verifyPageContent()
   },
 
-  // 'Search: Search for pods': (browser) => {
-  //   searchPage.focusInput()
-  //   searchPage.enterTextInSearchbar(browser, 'kind', '', 'pod')
-  //   searchPage.checkTagArray('kind:pod')
-  //   searchPage.resetInput()
-  // },
+  'Search: Search for configmaps': (browser) => {
+    searchPage.focusInput()
+    searchPage.enterTextInSearchbar(browser, 'kind', '', 'configmap')
+    searchPage.checkTagArray('kind:configmap')
+    searchPage.resetInput()
+  },
 
 
   after: function (browser, done) {
