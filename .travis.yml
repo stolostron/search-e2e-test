@@ -1,6 +1,11 @@
 sudo: required
 language: node_js
 
+addons:
+  packages:
+    - openjdk-8-jdk
+  chrome: stable
+
 services:
   - docker
 
