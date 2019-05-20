@@ -1,7 +1,7 @@
 language: generic
 services:
   - docker
-  
+
 # Only build on master, stable branches and tag
 # The stable branch and tag should be leading with numbers
 branches:
@@ -16,3 +16,7 @@ before_install:
   - git config --global url."git@github.ibm.com:".insteadOf "https://github.ibm.com/"
   - source cloudctl.sh
   - source install_mcm_chart.sh
+
+script:
+ - npm install
+ - npm run test:e2e
