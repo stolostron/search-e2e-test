@@ -22,8 +22,15 @@ module.exports = (settings => {
   if (argv.env === 'phantom' || argv.env === 'local')
     settings.selenium.start_process = true
 
-  var defaultUrl = `https://${config.get('CLUSTER_IP')}:${config.get('CLUSTER_PORT')}`
-  console.log('default URL: ', defaultUrl)
+  const clusterIP = config.get('CLUSTER_IP')
+  if (clusterIP == ''){
+    console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+    console.error('CLUSTER_IP is a required env variable, but got empty or undefined.')
+    console.error('Exiting tests...')
+    console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
+    process.exit(1)
+  }
+  var defaultUrl = `https://${clusterIP}:${config.get('CLUSTER_PORT')}`
   settings.test_settings.default.launch_url = defaultUrl
   settings.selenium.server_path += fs.readdirSync('node_modules/selenium-standalone/.selenium/selenium-server/')
   return settings

@@ -1,5 +1,5 @@
 {
-    "CLUSTER_IP": "9.42.20.119",
+    "CLUSTER_IP": "",
     "CLUSTER_PORT": "8443",
     "contextPath": "/multicloud",
     "tests": {
