@@ -22,8 +22,8 @@ module.exports = (settings => {
   if (argv.env === 'phantom' || argv.env === 'local')
     settings.selenium.start_process = true
 
-  console.log('config:', config)
-  var defaultUrl = config.get('clusterURL')
+  var defaultUrl = `https://${config.get('CLUSTER_IP')}:${config.get('CLUSTER_PORT')}`
+  console.log('default URL: ', defaultUrl)
   settings.test_settings.default.launch_url = defaultUrl
   settings.selenium.server_path += fs.readdirSync('node_modules/selenium-standalone/.selenium/selenium-server/')
   return settings
