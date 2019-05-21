@@ -1,0 +1,9 @@
+{
+    "CLUSTER_IP": "",
+    "CLUSTER_PORT": "8443",
+    "contextPath": "/multicloud",
+    "tests": {
+        "user": "admin",
+        "password": "AHippopotamusPlaysHopscotchWithAnElephant"
+     }
+}
