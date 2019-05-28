@@ -1,8 +1,10 @@
-curl -kLo cloudctl https://${CLUSTER_IP}:8443/api/cli/cloudctl-linux-amd64
+curl -kLo cloudctl-linux-amd64 https://${CLUSTER_IP}:8443/api/cli/cloudctl-linux-amd64
+mv cloudctl-linux-amd64 cloudctl
 chmod 755 cloudctl
 sudo mv ./cloudctl /usr/local/bin/cloudctl
 
-curl -kLo kubectl https://${CLUSTER_IP}:8443/api/cli/kubectl-linux-amd64
+curl -kLo kubectl-linux-amd64 https://${CLUSTER_IP}:8443/api/cli/kubectl-linux-amd64
+mv kubectl-linux-amd64 kubectl
 chmod 755 kubectl
 sudo mv ./kubectl /usr/local/bin/kubectl
 
