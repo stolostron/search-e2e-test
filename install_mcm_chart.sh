@@ -46,4 +46,3 @@ kubectl create deployment my-test-deployment --image=busybox
 else
 echo 'Cannot proceed with installation. Please check multicluster-hub deployments'
 fi
-
