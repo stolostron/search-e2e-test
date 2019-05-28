@@ -15,3 +15,36 @@ helm upgrade --install multicluster-hub --namespace kube-system --set compliance
 cd ..
 
 kubectl get pods | grep multicluster
+
+
+## declare an array variable
+declare -a arr=("multicluster-hub-search-search-collector"
+"multicluster-hub-search-redisgraph"
+"multicluster-hub-search-search-aggregator"
+"multicluster-hub-console-mcmui"
+"multicluster-hub-console-mcmuiapi"
+)
+success=true
+
+## now loop through the above array
+IFS=""
+for i in "${arr[@]}"
+do
+results=$(kubectl rollout status --timeout=300s deployment "$i")
+echo "$results"
+if [[ "$results" != *"successfully rolled out"* ]]; then
+success=false
+fi
+done
+
+# ...do something interesting...
+if [ "$success" = true ] ; then
+echo 'Proceeding with installation'
+kubectl delete configmap my-test-config
+kubectl delete deployment my-test-deployment
+kubectl create configmap my-test-config --from-literal=key1=config1 --from-literal=key2=config2
+kubectl create deployment my-test-deployment --image=busybox
+
+else
+echo 'Cannot proceed with installation. Please check multicluster-hub deployments'
+fi
