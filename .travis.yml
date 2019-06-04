@@ -8,6 +8,7 @@ addons:
 
 services:
   - docker
+  - xvfb
 
 # Only build on master, stable branches and tag
 # The stable branch and tag should be leading with numbers
@@ -23,10 +24,6 @@ before_install:
   - git config --global url."git@github.ibm.com:".insteadOf "https://github.ibm.com/"
   - source cloudctl.sh
   - source install_mcm_chart.sh
-
-before_script:
-  - "export DISPLAY=:99.0"
-  - if [ $(uname -m) == 'x86_64' ]; then sh -e /etc/init.d/xvfb start; else echo 's390x or ppc64le - skipping'; fi
 
 script:
  - npm install
