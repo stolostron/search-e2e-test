@@ -51,8 +51,12 @@ function focusInput() {
 
 function enterTextInSearchbar(browser, property, op, value) {
   this.setValue('@input', property)
-  this.setValue('@input', ' ')
+  this.waitForElementPresent('@searchbar')
+  this.waitForElementPresent('@input')
+  this.click('@input')
   this.waitForElementPresent('@suggestions')
+  this.waitForElementPresent('@searchbarInput')
+  this.setValue('@input', ' ')
   if (op !== null && value !== null) {
     const valueText = op + value
     this.setValue('@input', valueText)

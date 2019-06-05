@@ -22,14 +22,12 @@ module.exports = {
   },
 
   'Yaml: Edit page': (browser) => {
-    browser.pause(1000)
+    yamlPage.verifyEditBtnTxt(browser, 'EditEdit')
     yamlPage.edit()
     yamlPage.enterTextInYamlEditor(browser, '  key4: config4')
-    browser.pause(1000)
     yamlPage.edit()
-    browser.pause(1000)
+    yamlPage.verifyEditBtnTxt(browser,'Save')
     yamlPage.save()
-    browser.pause(3000)
   },
   after: function (browser, done) {
     setTimeout(() => {

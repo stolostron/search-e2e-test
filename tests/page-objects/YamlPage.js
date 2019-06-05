@@ -25,7 +25,8 @@ module.exports = {
     verifyPageContent,
     edit,
     enterTextInYamlEditor,
-    save
+    save,
+    verifyEditBtnTxt
   }]
 }
 /**
@@ -41,9 +42,19 @@ function verifyPageContent() {
       .click('@edit')
   }
 
+  function verifyEditBtnTxt(browser, text) {
+    this.waitForElementVisible('@edit').getText('@edit', function readNotification(result) {
+        console.log('active line Response(s)', result);
+        browser.assert.equal(result.value,text)
+    })
+  }
+
   function save() {
+    this.waitForElementPresent('@registerAppModal')
+    this.waitForElementVisible('@dialog')
     this.waitForElementVisible('@save')
       .click('@save')
+    this.waitForElementNotPresent('@registerAppModal')
   }
 
   function enterTextInYamlEditor(browser, yaml){
