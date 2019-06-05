@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "test:e2e": "nightwatch",
-    "test:install-selenium": "selenium-standalone install --version=3.9.0 --drivers.chrome.version=2.36"
+    "test:install-selenium": "selenium-standalone install --version=3.12.0 --drivers.chrome.version=2.40"
   },
   "repository": {
     "type": "git",
