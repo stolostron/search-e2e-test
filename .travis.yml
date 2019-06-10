@@ -28,3 +28,4 @@ before_install:
 script:
  - npm install
  - npm run test:e2e
+ - source chk_updates.sh
