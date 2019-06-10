@@ -30,10 +30,23 @@ module.exports = {
   'Search: Search for configmaps': (browser) => {
     searchPage.focusInput()
     searchPage.enterTextInSearchbar(browser, 'kind', '', 'configmap')
+    searchPage.enterTextInSearchbar(browser, 'name', '', 'my-test-config')
     searchPage.checkTagArray('kind:configmap')
+    searchPage.checkSpecificSearchFilter(2, 'name:my-test-config')
+    searchPage.verifySearchResult(1, 'my-test-config')
     searchPage.resetInput()
   },
 
+  'Search: Search for deployments': (browser) => {
+    searchPage.focusInput()
+    searchPage.enterTextInSearchbar(browser, 'kind', '', 'deployment')
+    searchPage.enterTextInSearchbar(browser, 'name', '', 'my-test-deployment')
+    searchPage.checkTagArray('kind:deployment')
+    searchPage.checkSpecificSearchFilter(2, 'name:my-test-deployment')
+    searchPage.verifySearchResult(1, 'my-test-deployment')
+    searchPage.deleteResult()
+    searchPage.resetInput()
+  },
 
   after: function (browser, done) {
     setTimeout(() => {
