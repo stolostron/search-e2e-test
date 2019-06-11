@@ -23,6 +23,7 @@ before_install:
   - git config --global url."git@github.ibm.com:".insteadOf "https://github.ibm.com/"
   - source cloudctl.sh
   - source install_mcm_chart.sh
+  - sleep 60 # Wait until search components initialize.
 
 script:
  - npm install

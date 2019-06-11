@@ -4,6 +4,6 @@ if [ $EDIT_CONFIG == "edited" ] && [ $DEL_DPLMT == "deleted" ]
 then
 echo "Delete deployment and edit configmap yaml works as expected"
 else
-echo -e "Error: Edit and delete not working as expected";
-exit 1;
+echo -e "Error: Edit and delete not working as expected"
+exit 1
 fi
