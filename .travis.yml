@@ -22,7 +22,8 @@ before_install:
   # https://github.com/golang/dep/blob/master/docs/FAQ.md#how-do-i-get-dep-to-authenticate-via-ssh-to-a-git-repo
   - git config --global url."git@github.ibm.com:".insteadOf "https://github.ibm.com/"
   - source cloudctl.sh
-  - source install_mcm_chart.sh
+  #- source install_mcm_chart.sh
+  - source install_search_chart.sh
   - sleep 60 # Wait until search components initialize.
 
 script:
