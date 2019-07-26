@@ -29,6 +29,7 @@ before_install:
 script:
  - npm install
  - npm run test:e2e
+ - sleep 5 # Wait for the next update cycle before verifying updates.
  - source chk_updates.sh
 
 notifications:
