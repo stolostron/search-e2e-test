@@ -24,7 +24,7 @@ before_install:
   - source cloudctl.sh
   #- source install_mcm_chart.sh
   - source install_search_chart.sh
-  - sleep 60 # Wait until search components initialize.
+  - sleep 120 # Wait until search components initialize.
 
 script:
  - npm install

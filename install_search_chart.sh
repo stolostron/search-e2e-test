@@ -5,10 +5,13 @@ kubectl delete secret my-docker-secret
 kubectl create secret docker-registry -n kube-system  my-docker-secret --docker-server=${DOCKER_SERVER}  --docker-username=${DOCKER_USERNAME} --docker-password=${DOCKER_PASSWORD}
 
 # make local for search-chart
+echo "Building the search chart"
 for file in `find . -name values.yaml`; do echo $file; sed -i -e "s|ibmcom|hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com/ibmcom|g" $file; done
-make charts
+make build
 
-helm upgrade --install search --namespace kube-system --set global.pullSecret=my-docker-secret --set global.tillerIntegration.user=admin repo/stable/ibm-mcm-prod-99.99.99.tgz --tls --recreate-pods
+echo "Installing search chart"
+
+helm upgrade --install search --namespace kube-system --set global.pullSecret=my-docker-secret --set global.tillerIntegration.user=admin repo/stable/search-99.99.99.tgz --tls --recreate-pods
 
 cd ..
 
