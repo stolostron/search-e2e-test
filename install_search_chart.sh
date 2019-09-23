@@ -11,7 +11,7 @@ make build
 
 echo "Installing search chart"
 
-helm upgrade --install search --namespace kube-system --set global.pullSecret=my-docker-secret --set global.tillerIntegration.user=admin repo/stable/search-99.99.99.tgz --tls --recreate-pods
+helm upgrade --install search --namespace kube-system --set global.pullSecret=my-docker-secret --set global.tillerIntegration.user=admin repo/stable/ibm-search-prod-99.99.99.tgz --tls --recreate-pods
 
 cd ..
 
