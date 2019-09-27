@@ -37,13 +37,16 @@ module.exports = {
     searchPage.resetInput()
   },
 
-  'Search: Search for deployments': (browser) => {
+  'Search: Search for deployment': (browser) => {
     searchPage.focusInput()
     searchPage.enterTextInSearchbar(browser, 'kind', '', 'deployment')
     searchPage.enterTextInSearchbar(browser, 'name', '', 'my-test-deployment')
     searchPage.checkTagArray('kind:deployment')
     searchPage.checkSpecificSearchFilter(2, 'name:my-test-deployment')
     searchPage.verifySearchResult(1, 'my-test-deployment')
+  },
+
+  'Search: Delete the deployment': (browser) => {
     searchPage.deleteResult()
     searchPage.resetInput()
   },

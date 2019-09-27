@@ -104,5 +104,7 @@ function deleteResult(){
   this.waitForElementPresent('@delete')
   .click('@delete')
   this.waitForElementPresent('@confirmDel')
-  .click('@confirmDel')
+  this.expect.element('@confirmDel').to.be.enabled // This will wait until the button gets enabled.
+  this.click('@confirmDel')
+  this.waitForElementNotPresent('@confirmDel')
 }
