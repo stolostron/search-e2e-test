@@ -1,7 +1,7 @@
 git clone git@github.ibm.com:IBMPrivateCloud/search-chart
 cd search-chart
 
-kubectl delete secret my-docker-secret
+kubectl delete secret my-docker-secret -n kube-system
 kubectl create secret docker-registry -n kube-system  my-docker-secret --docker-server=${DOCKER_SERVER}  --docker-username=${DOCKER_USERNAME} --docker-password=${DOCKER_PASSWORD}
 
 # make local for search-chart
@@ -15,11 +15,12 @@ helm upgrade --install search --namespace kube-system --set global.pullSecret=my
 
 cd ..
 
-kubectl get pods | grep search
+kubectl get pods -n kube-system | grep search
 
 
 ## declare an array variable
-declare -a arr=("search-search-api"
+declare -a arr=(
+"search-search-api"
 "search-search-aggregator"
 "search-search-collector"
 "search-redisgraph"
@@ -30,7 +31,7 @@ success=true
 IFS=""
 for i in "${arr[@]}"
 do
-results=$(kubectl rollout status --timeout=300s deployment "$i")
+results=$(kubectl rollout status --timeout=300s -n kube-system deployment "$i")
 echo "$results"
 if [[ "$results" != *"successfully rolled out"* ]]; then
 success=false
@@ -40,10 +41,10 @@ done
 # ...do something interesting...
 if [ "$success" = true ] ; then
 echo 'Proceeding with installation'
-kubectl delete configmap my-test-config
-kubectl delete deployment my-test-deployment
-kubectl create configmap my-test-config --from-literal=key1=config1 --from-literal=key2=config2
-kubectl create deployment my-test-deployment --image=busybox
+kubectl delete configmap my-test-config -n kube-system
+kubectl delete deployment my-test-deployment -n kube-system
+kubectl create configmap my-test-config --from-literal=key1=config1 --from-literal=key2=config2 -n kube-system
+kubectl create deployment my-test-deployment --image=busybox -n kube-system
 
 else
 echo 'Cannot proceed with installation. Please check search deployments'

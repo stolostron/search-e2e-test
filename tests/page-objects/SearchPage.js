@@ -93,7 +93,7 @@ function verifySearchResult(idx, query) {
   this.expect.element('@searchTable').to.be.present
   this.api.useXpath()
   //check if the result row contains the query text
-  this.expect.element(`//*[@id="page"]/div/div/div/div[2]/div[2]/div/div/div[2]/table/tbody/tr/td[${idx}]/a`).text.to.contain(query)
+  this.expect.element(`//*[@id="page"]/div/div/div/div[2]/div[2]/div/div[2]/div/div[2]/table/tbody/tr/td[${idx}]/a`).text.to.contain(query)
   this.api.useCss()
 }
 

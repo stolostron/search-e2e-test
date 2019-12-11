@@ -1,9 +1,7 @@
 {
-    "CLUSTER_IP": "",
-    "CLUSTER_PORT": "8443",
-    "contextPath": "/multicloud",
-    "tests": {
-        "user": "admin",
-        "password": "AHippopotamusPlaysHopscotchWithAnElephant"
-     }
+    "CLUSTER_IP": "icp-console.apps.search-dev.os.fyre.ibm.com",
+    "CLUSTER_PORT": "443",
+    "CLUSTER_ADMIN_USR": "admin",
+    "CLUSTER_ADMIN_PWD": "all-ansible-aardvarks-advance-appropriately",
+    "contextPath": "/multicloud"
 }
