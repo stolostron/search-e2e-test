@@ -16,7 +16,7 @@ module.exports = {
   before: function (browser) {
     const loginPage = browser.page.LoginPage()
     loginPage.navigate()
-    loginPage.authenticate()
+    loginPage.authenticate(config.get('CLUSTER_ADMIN_USR'), config.get('CLUSTER_ADMIN_PWD'))
 
     const url = `${browser.launch_url}${config.get('contextPath')}/search`
     searchPage = browser.page.SearchPage()
@@ -27,28 +27,23 @@ module.exports = {
     searchPage.verifyPageContent()
   },
 
-  'Search: Search for configmaps': (browser) => {
+  'Search: Search for secret': (browser) => {
     searchPage.focusInput()
-    searchPage.enterTextInSearchbar(browser, 'kind', '', 'configmap')
-    searchPage.enterTextInSearchbar(browser, 'name', '', 'my-test-config')
-    searchPage.checkTagArray('kind:configmap')
-    searchPage.checkSpecificSearchFilter(2, 'name:my-test-config')
-    searchPage.verifySearchResult(1, 'my-test-config')
-    searchPage.resetInput()
+    searchPage.enterTextInSearchbar(browser, 'kind', '', 'secret')
+    searchPage.enterTextInSearchbar(browser, 'name', '', 'my-test-secret')
+    searchPage.checkTagArray('kind:secret')
+    searchPage.checkSpecificSearchFilter(2, 'name:my-test-secret')
+    searchPage.verifySearchResult(1, 'my-test-secret')
   },
 
-  'Search: Search for deployment': (browser) => {
-    searchPage.focusInput()
-    searchPage.enterTextInSearchbar(browser, 'kind', '', 'deployment')
-    searchPage.enterTextInSearchbar(browser, 'name', '', 'my-test-deployment')
-    searchPage.checkTagArray('kind:deployment')
-    searchPage.checkSpecificSearchFilter(2, 'name:my-test-deployment')
-    searchPage.verifySearchResult(1, 'my-test-deployment')
-  },
-
-  'Search: Delete the deployment': (browser) => {
-    searchPage.deleteResult()
-    searchPage.resetInput()
+  'Edit secret as Admin user': (browser) => {
+    searchPage.navigateToResource()
+    searchPage.verifyEditBtnTxt(browser, 'EditEdit')
+    searchPage.edit()
+    searchPage.enterTextInYamlEditor(browser, 'test: test')
+    searchPage.edit()
+    searchPage.verifyEditBtnTxt(browser, 'Save')
+    searchPage.save(browser)
   },
 
   after: function (browser, done) {

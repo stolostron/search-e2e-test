@@ -41,11 +41,6 @@ done
 # ...do something interesting...
 if [ "$success" = true ] ; then
 echo 'Proceeding with installation'
-kubectl delete configmap my-test-config -n kube-system
-kubectl delete deployment my-test-deployment -n kube-system
-kubectl create configmap my-test-config --from-literal=key1=config1 --from-literal=key2=config2 -n kube-system
-kubectl create deployment my-test-deployment --image=busybox -n kube-system
-
 else
 echo 'Cannot proceed with installation. Please check search deployments'
 fi

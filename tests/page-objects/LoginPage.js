@@ -32,22 +32,22 @@ module.exports = {
 }
 
 //helper for other pages to use for authentication in before() their suit
-function authenticate() {
+function authenticate(username, password) {
   this.waitForLoginPageLoad()
-  this.inputUsername()
-  this.inputPassword()
+  this.inputUsername(username)
+  this.inputPassword(password)
   this.submit()
   this.waitForLoginSuccess()
 }
 
-function inputUsername() {
+function inputUsername(username) {
   this.waitForElementVisible('@username')
-    .setValue('@username', config.get('CLUSTER_ADMIN_USR'))
+    .setValue('@username', username || config.get('CLUSTER_ADMIN_USR'))
 }
 
-function inputPassword() {
+function inputPassword(password) {
   this.waitForElementVisible('@password')
-    .setValue('@password', config.get('CLUSTER_ADMIN_PWD'))
+    .setValue('@password', password || config.get('CLUSTER_ADMIN_PWD'))
 }
 
 function submit() {
