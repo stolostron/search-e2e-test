@@ -9,35 +9,17 @@ addons:
 services:
   - xvfb
 
-# Only build on master, stable branches and tag
-# The stable branch and tag should be leading with numbers
+# Only build on master, and release branches
 branches:
   only:
     - master
-    - /^[0-9]+\..*$/
-    - /^v[0-9]+\..*$/
     - /^release-[0-9]+\..*$/
 
 before_install:
-  # https://github.com/golang/dep/blob/master/docs/FAQ.md#how-do-i-get-dep-to-authenticate-via-ssh-to-a-git-repo
-  - git config --global url."git@github.ibm.com:".insteadOf "https://github.ibm.com/"
-  - source download-clis.sh
-  - source install_search_chart.sh
-  - sleep 120 # Wait until search components initialize.
+  - sh download-clis.sh
+  #- sh install_search_chart.sh
+  - sleep 60 # Wait until search components initialize.
 
 script:
   - npm install
   - npm run test:e2e
-
-notifications:
-  # Slack integration: https://ibm-cloudplatform.slack.com/services/BK33RV599?added=1
-  slack:
-    on_failure: always
-    on_success: always
-    on_pull_request: false
-    rooms:
-      - secure: Wp+SZdaBSIlCGqv2lr426jhA34rEE/f/iPuL5qmrhxXPvtUUEfYmYY5h7ZhdpKqwCTzK8CLDd3aD93fHKUT4LYaY+2QvjHXxs100IbDo+FmMNambfNlJhECOF8GgIKv4DI8PWMSMi8nAT4+f1waYt23UH8WQfxyNaFoePiBVjjwBDhg5VZFnP4EdQJt10z+3zPX2tD1KJS/TkkDR2ioltnZGve63zc38ZGSuka1XS+QKRcQQKcDvISJJ7xBdFCivgE/LGAsEByIG2An0QOzR1xGhddKWUFoYsNNl/Z+co0yVHbNT1bxcnX7oBZ6u/6ctmSzlOO30nqM/NA4ZqDq7yuGM/FXZ+4zuoIGGMU5WGtY+n8ZdB1VtbO1F0HJJdm2KxXibN9fgajbP6M+6Jj0Xmf1WbSKSmJ3HK+oAtkE0xuVDRfsuYORd1g0jwpSJvOKyjOlMl3HFKqYf456cLUO6K6zQEcw3UVq/1zaRMrOb2LE10eb7d1y0Lp6cBTbg3tZFb+iK9hxhDbMd0jQC90ZAKaMsb48sLxwSpAwm8spqfLWuC5KQJqNG7onKG9QM/+t5jfJh+k2+2qI/pi6MSTKkFzrE6Y/Rp2WM5K/EiWla8hlJ76Fqy9CZ/KKDaoVzfWSLsVBuGrq8nlNkEZCkVcugZApBDE0TuA+x7a1vfDEb+JM=
-    template:
-      - "Search E2E tests"
-      - "Build <%{build_url}|#%{build_number}> (<%{compare_url}|%{commit}>) of %{repository_slug}@%{branch} %{result} in %{duration}"
-

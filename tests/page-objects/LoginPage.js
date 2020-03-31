@@ -6,6 +6,7 @@
  * Use, duplication or disclosure restricted by GSA ADP Schedule
  * Contract with IBM Corp.
  *******************************************************************************/
+// Copyright (c) 2020 Red Hat, Inc.
 
 const config = require('../../config')
 
@@ -14,12 +15,13 @@ module.exports = {
     return `${this.api.launchUrl}${config.get('contextPath')}`
   },
   elements: {
-    username: '#username',
-    password: '#password',
-    submit: 'button[name="loginButton"]',
+    // identityProvider: 'a.idp',
+    username: '#inputUsername',
+    password: '#inputPassword',
+    submit: '.btn-lg',
     error: '.bx--inline-notification--error',
     header: '.app-header',
-    loginPage: '.login-container'
+    loginPage: '.login-pf'
   },
   commands: [{
     inputUsername,
@@ -34,6 +36,7 @@ module.exports = {
 //helper for other pages to use for authentication in before() their suit
 function authenticate(username, password) {
   this.waitForLoginPageLoad()
+  // this.click('@identityProvider');
   this.inputUsername(username)
   this.inputPassword(password)
   this.submit()
