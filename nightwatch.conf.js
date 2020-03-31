@@ -22,15 +22,15 @@ module.exports = (settings => {
   if (argv.env === 'phantom' || argv.env === 'local')
     settings.selenium.start_process = true
 
-  const clusterIP = config.get('CLUSTER_IP')
-  if (clusterIP == ''){
+  const clusterHost = config.get('CLUSTER_HOST')
+  if (clusterHost == ''){
     console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    console.error('CLUSTER_IP is a required env variable, but got empty or undefined.')
+    console.error('CLUSTER_HOST is a required env variable, but got empty or undefined.')
     console.error('Exiting tests...')
     console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
     process.exit(1)
   }
-  var defaultUrl = `https://${clusterIP}:${config.get('CLUSTER_PORT')}`
+  var defaultUrl = `https://multicloud-console.apps.${clusterHost}:${config.get('CLUSTER_PORT')}`
   settings.test_settings.default.launch_url = defaultUrl
   settings.selenium.server_path += fs.readdirSync('node_modules/selenium-standalone/.selenium/selenium-server/')
   return settings
