@@ -11,7 +11,7 @@ const execCLI = (command) => {
       if (stderr) {
         reject(stderr);
       }
-      resolve(stdout.replace('\n', ''));
+      resolve(stdout.substr(0, stdout.lastIndexOf('\n')));
     });
   })
 }

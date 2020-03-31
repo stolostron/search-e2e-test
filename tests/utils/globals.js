@@ -8,8 +8,8 @@
  *******************************************************************************/
 // Copyright (c) 2020 Red Hat, Inc.
 
-const execCLI = require('./cliHelper');
-const { request, getAccessToken, getKubeToken, kubeRequest } = require('../utils/requestClient')
+const getKubeToken = require('./tokenHelper')
+const { kubeRequest } = require('../utils/requestClient')
 const config = require('../../config');
 
 let accessToken = null;
@@ -21,17 +21,10 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED='0'
 module.exports = {
   // External before hook is ran at the beginning of the tests run, before creating the Selenium session
   before: async function(done) {
-    try {
-      const ocVersion = await execCLI('oc version');
-      console.log('oc version', ocVersion);
-      await execCLI(`oc login -u ${config.get('CLUSTER_ADMIN_USR')} -p ${config.get('CLUSTER_ADMIN_PWD')} --server=https://api.${config.get('CLUSTER_HOST')}:6443 --insecure-skip-tls-verify=true`);
-      kubeToken = await execCLI('oc whoami -t');
-    } catch (e){
-      console.error('Error getting kube token. ', e);
-    }
-
+    kubeToken = await getKubeToken();
+    
     // Create test namespace
-    const response = await kubeRequest(
+    await kubeRequest(
       '/api/v1/namespaces',
       'post',
       {
@@ -47,7 +40,7 @@ module.exports = {
       kubeToken
     )
     console.log('Success: Created test namespace')
-
+    
     // create secret on test namespace
     await kubeRequest(
       `/api/v1/namespaces/${namespaceName}/secrets`,
