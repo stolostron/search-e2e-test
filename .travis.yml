@@ -9,34 +9,17 @@ addons:
 services:
   - xvfb
 
-# Only build on master, stable branches and tag
-# The stable branch and tag should be leading with numbers
+# Only build on master, and release branches
 branches:
   only:
     - master
-    - /^[0-9]+\..*$/
-    - /^v[0-9]+\..*$/
     - /^release-[0-9]+\..*$/
 
 before_install:
-  # https://github.com/golang/dep/blob/master/docs/FAQ.md#how-do-i-get-dep-to-authenticate-via-ssh-to-a-git-repo
   - sh download-clis.sh
-  #- source install_search_chart.sh
+  #- sh install_search_chart.sh
   - sleep 60 # Wait until search components initialize.
 
 script:
   - npm install
   - npm run test:e2e
-
-# notifications:
-#   # Slack integration
-#   slack:
-#     on_failure: always
-#     on_success: always
-#     on_pull_request: false
-#     rooms:
-#       - secure: 
-#     template:
-#       - "Search E2E tests"
-#       - "Build <%{build_url}|#%{build_number}> (<%{compare_url}|%{commit}>) of %{repository_slug}@%{branch} %{result} in %{duration}"
-
