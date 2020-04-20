@@ -7,38 +7,14 @@
   "page_objects_path": "tests/page-objects",
   "custom_commands_path": "tests/commands",
   "globals_path": "tests/utils/globals.js",
-  "selenium": {
-    "start_process": true,
-    "server_path": "node_modules/selenium-standalone/.selenium/selenium-server/",
-    "log_path": "",
-    "port": 4444,
-    "cli_args": {
-      "webdriver.chrome.driver": "node_modules/selenium-standalone/.selenium/chromedriver/2.36-x64-chromedriver",
-      "webdriver.gecko.driver": "node_modules/selenium-standalone/.selenium/geckodriver/0.16.01-x64-geckodriver",
-      "webdriver.edge.driver": ""
-    }
-  },
   "test_settings": {
     "default": {
       "launch_url": "//SET DYNAMICALLY VIA CONFIG",
-      "selenium_port": 4444,
-      "selenium_host": "localhost",
       "silent": true,
       "screenshots": {
         "enabled": true,
         "path": "test-output/e2e/screenshots",
         "on_failure": true
-      },
-      "desiredCapabilities": {
-        "browserName": "chrome",
-        "javascriptEnabled": true,
-        "acceptSslCerts": true,
-        "chromeOptions": {
-          "args": [
-            "--no-sandbox",
-            "--disable-gpu"
-          ]
-        }
       },
       "globals": {
         "waitForConditionTimeout": 30000
@@ -48,22 +24,96 @@
       "launch_url": "${CLUSTER}"
     },
     "chrome": {
+      "webdriver": {
+        "start_process" : true,
+        "server_path": "node_modules/.bin/chromedriver",
+        "cli_args": ["--verbose"],
+        "port": 9515
+      },
       "desiredCapabilities": {
         "browserName": "chrome",
+        "javascriptEnabled": true,
+        "acceptSslCerts": true,
         "chromeOptions": {
-          "args" : ["window-size=1024,768"]
+          "w3c": false,
+          "args" : [
+            "window-size=1280,950",
+            "--no-sandbox",
+            "--disable-gpu",
+            "ignore-certificate-errors"
+          ]
+        }
+      }
+    },
+    "chrome.headless": {
+      "webdriver": {
+        "start_process" : true,
+        "server_path": "node_modules/.bin/chromedriver",
+        "cli_args": ["--verbose"],
+        "port": 9515
+      },
+      "desiredCapabilities": {
+        "browserName": "chrome",
+        "javascriptEnabled": true,
+        "acceptSslCerts": true,
+        "chromeOptions": {
+          "w3c": false,
+          "args" : [
+            "--headless",
+            "window-size=1280,950",
+            "--no-sandbox",
+            "--disable-gpu",
+            "ignore-certificate-errors"
+          ]
         }
       }
     },
     "firefox": {
+      "webdriver": {
+        "start_process" : true,
+        "server_path": "node_modules/.bin/geckodriver",
+        "cli_args": ["--log", "debug"],
+        "port": 4444
+      },
       "desiredCapabilities": {
         "browserName": "firefox",
-        "version": ""
+        "javascriptEnabled": true,
+        "acceptInsecureCerts": true,
+        "version": "",
+        "alwaysMatch": {
+          "acceptInsecureCerts": true
+        }
+      }
+    },
+    "firefox.headless": {
+      "webdriver": {
+        "start_process" : true,
+        "server_path": "node_modules/.bin/geckodriver",
+        "cli_args": ["--log", "debug"],
+        "port": 4444
+      },
+      "desiredCapabilities": {
+        "browserName": "firefox",
+        "javascriptEnabled": true,
+        "acceptInsecureCerts": true,
+        "version": "",
+        "alwaysMatch": {
+          "acceptInsecureCerts": true,
+          "moz:firefoxOptions": { "args": [ "-headless" ]}
+        }
       }
     },
     "safari": {
+      "webdriver": {
+        "start_process" : true,
+        "server_path": "/usr/bin/safaridriver",
+        "port": 4445,
+        "use_legacy_jsonwire": false
+      },
       "desiredCapabilities": {
-        "browserName": "safari"
+        "browserName": "safari",
+        "javascriptEnabled": true,
+        "acceptSslCerts": true
       }
     },
     "ie": {

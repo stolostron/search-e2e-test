@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test:e2e": "nightwatch",
-    "test:install-selenium": "selenium-standalone install --version=3.141.5 --drivers.chrome.version=2.36"
+    "test:e2e": "nightwatch ./tests/e2e -e chrome",
+    "test:e2e-headless": "nightwatch ./tests/e2e -e chrome.headless"
   },
   "repository": {
     "type": "git",
@@ -24,7 +24,9 @@
     "xml2json": "^0.11.2"
   },
   "devDependencies": {
-    "nightwatch": "^0.9.21",
+    "chromedriver": "^81.0.0",
+    "geckodriver": "^1.19.1",
+    "nightwatch": "^1.3.4",
     "querystring": "^0.2.0",
     "selenium-standalone": "^6.16.0"
   }
