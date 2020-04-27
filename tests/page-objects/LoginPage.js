@@ -15,7 +15,6 @@ module.exports = {
     return `${this.api.launchUrl}${config.get('contextPath')}`
   },
   elements: {
-    // identityProvider: 'a.idp',
     username: '#inputUsername',
     password: '#inputPassword',
     submit: '.btn-lg',
@@ -24,23 +23,34 @@ module.exports = {
     loginPage: '.login-pf'
   },
   commands: [{
+    waitForLoginPageLoad,
+    chooseIdentityProvider,
     inputUsername,
     inputPassword,
     submit,
     authenticate,
-    waitForLoginSuccess,
-    waitForLoginPageLoad
+    waitForLoginSuccess
   }]
 }
 
 //helper for other pages to use for authentication in before() their suit
-function authenticate(username, password) {
+function authenticate(idprovider, username, password) {
   this.waitForLoginPageLoad()
-  // this.click('@identityProvider');
+  this.chooseIdentityProvider(idprovider)
   this.inputUsername(username)
   this.inputPassword(password)
   this.submit()
   this.waitForLoginSuccess()
+}
+
+function waitForLoginPageLoad() {
+  this.waitForElementPresent('@loginPage')
+}
+
+function chooseIdentityProvider(idprovider) {
+  // This will click the id option we created in before setup.
+  const userSelector = `a.idp[title="Log in with ${idprovider || 'kube:admin'}"]`
+  this.click(userSelector)
 }
 
 function inputUsername(username) {
@@ -60,8 +70,4 @@ function submit() {
 
 function waitForLoginSuccess() {
   this.waitForElementVisible('@header', 20000)
-}
-
-function waitForLoginPageLoad() {
-  this.waitForElementPresent('@loginPage')
 }

@@ -145,7 +145,6 @@ function verifyPageContent() {
 }
 
 function checkSpecificSearchFilter(idx, query) {
-  this.expect.element('@searchTable').to.be.present
   this.api.useXpath()
   this.expect.element(`//*[@id="page"]/div/div/div/div[2]/div[1]/div[1]/div[2]/div/div[1]/button[${idx}]/span`).text.to.contain(query)
   this.api.useCss()

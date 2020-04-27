@@ -8,9 +8,11 @@
  *******************************************************************************/
 // Copyright (c) 2020 Red Hat, Inc.
 
-const getKubeToken = require('./tokenHelper')
-const { kubeRequest } = require('../utils/requestClient')
+const fs = require('fs');
 const config = require('../../config');
+const execCLI = require('./cliHelper');
+const getKubeToken = require('./tokenHelper');
+const { kubeRequest } = require('./requestClient');
 
 let accessToken = null;
 let kubeToken = null;
@@ -22,7 +24,7 @@ module.exports = {
   // External before hook is ran at the beginning of the tests run, before creating the Selenium session
   before: async function(done) {
     kubeToken = await getKubeToken();
-    
+
     // Create test namespace
     await kubeRequest(
       '/api/v1/namespaces',
@@ -76,11 +78,35 @@ module.exports = {
     )
     console.log('Success: Created test configmap')
 
+    //TODO see if using a kustomization.yaml will work here instead of multiple kube applies
+    // Create secret with user passwords
+    await execCLI(`kubectl create secret generic e2e-test-secret --from-file=htpasswd=./tests/utils/kube-resources/passwdfile -n ${namespaceName}`)
+
+    // Create the test Oauth
+    await execCLI(`kubectl patch OAuth cluster --type='json' -p='[{"op": "add", "path": "/spec/identityProviders/-", "value": {"htpasswd":{"fileData":{"name":"e2e-test-secret"}},"mappingMethod":"claim","name":"e2e-testing","type": "HTPasswd"}}]'`)
+    // await execCLI(`kubectl apply -f ./tests/utils/kube-resources/OAuth.yaml`)
+
+    // Create the viewer user (might be created when the user logs in?)
+    // validation is off so we dont have to specify a user group
+    // await execCLI(`kubectl apply -f ./tests/utils/kube-resources/new-user.yaml --validate=false`)
+
+    // Create the role & roleBinding for viewer
+    // await execCLI(`kubectl apply -f ./tests/utils/kube-resources/viewer-role.yaml`)
+    // await execCLI(`kubectl apply -f ./tests/utils/kube-resources/viewer-binding.yaml`)
+
+
     done();
   },
 
-  // External after hook is ran at the very end of the tests run, after closing the Selenium session
+  // External after hook is run at the very end of the tests run, after closing the Selenium session
   after: async function(done) {
+    // Remove the test Oauth
+    // await execCLI(`kubectl apply -f ./tests/utils/kube-resources/OAuth.yaml`)
+
+    // Remove the viewer user
+
+    // Remove the role & roleBinding for viewer
+
     // Remove test namespace
     await kubeRequest(
       `/api/v1/namespaces/${namespaceName}`,
