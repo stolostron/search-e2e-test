@@ -6,10 +6,9 @@ const execCLI = (command) => {
   return new Promise((resolve, reject) => {
     exec(command, (error, stdout, stderr) => {
       if (error) {
-        reject(error.message);
-      }
-      if (stderr) {
-        reject(stderr);
+        resolve(error.message);
+      } else if (stderr) {
+        resolve(stderr);
       }
       resolve(stdout.substr(0, stdout.lastIndexOf('\n')));
     });

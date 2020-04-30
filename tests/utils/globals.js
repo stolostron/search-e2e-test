@@ -8,22 +8,62 @@
  *******************************************************************************/
 // Copyright (c) 2020 Red Hat, Inc.
 
-const fs = require('fs');
-const config = require('../../config');
 const execCLI = require('./cliHelper');
 const getKubeToken = require('./tokenHelper');
 const { kubeRequest } = require('./requestClient');
 
-let accessToken = null;
 let kubeToken = null;
 const namespaceName = `e2e-test-${Date.now()}`
 process.env.NODE_TLS_REJECT_UNAUTHORIZED='0'
+
+const sleep = (milliseconds) => {
+  const date = Date.now();
+  let currentDate = null;
+  do {
+    currentDate = Date.now();
+  } while (currentDate - date < milliseconds);
+}
 
 /* eslint-disable no-console*/
 module.exports = {
   // External before hook is ran at the beginning of the tests run, before creating the Selenium session
   before: async function(done) {
     kubeToken = await getKubeToken();
+    // TODO use kustomization.yaml???
+    // TODO move setup and teardown logic to scripts? That way we can setup as npm command in package.json?
+
+    const userSecretCheck = await execCLI(`oc get secret htpasswd-e2e -n openshift-config`)
+    if (userSecretCheck.includes('Command failed') || userSecretCheck.includes('Error')) {
+      console.log('Creating RBAC user secret')
+      await execCLI(`oc create secret generic htpasswd-e2e --from-file=htpasswd=./tests/utils/kube-resources/passwdfile -n openshift-config`)
+      console.log('Success: Creating RBAC user secret')
+      sleep(3000)
+    }
+
+    const oauthCheck = await kubeRequest(`/apis/config.openshift.io/v1/oauths/cluster`, 'get', {}, kubeToken)
+    if (oauthCheck && !oauthCheck.spec.identityProviders) {
+      console.log('Adding e2e identity provider')
+      await execCLI(`oc patch OAuth cluster --type='json' -p='[{"op": "add", "path": "/spec", "value": {"identityProviders":[{"htpasswd":{"fileData":{"name":"htpasswd-e2e"}},"mappingMethod":"claim","name":"e2e-testing","type": "HTPasswd"}]}}]'`)
+      console.log('Success: Adding e2e identity provider')
+    } else if (oauthCheck && oauthCheck.spec.identityProviders.findIndex(provider => provider.name === 'e2e-testing') === -1) {
+      console.log('Adding e2e identity provider')
+      await execCLI(`oc patch OAuth cluster --type='json' -p='[{"op": "add", "path": "/spec/identityProviders/-", "value": {"htpasswd":{"fileData":{"name":"htpasswd-e2e"}},"mappingMethod":"claim","name":"e2e-testing","type": "HTPasswd"}}]'`)
+      console.log('Success: Adding e2e identity provider')
+    }
+
+    const roleCheck = await execCLI(`oc get clusterrole view`)
+    if (roleCheck.includes('Command failed') || roleCheck.includes('Error')) {
+      console.log('Creating cluster role - viewer')
+      await execCLI(`oc apply -f ./tests/utils/kube-resources/viewer-role.yaml`)
+      console.log('Success: Creating cluster role - viewer')
+    }
+
+    const roleBindingCheck = await execCLI(`oc get clusterrolebinding viewer-binding`)
+    if (roleBindingCheck.includes('Command failed') || roleBindingCheck.includes('Error')) {
+      console.log('Creating cluster role binding - viewer')
+      await execCLI(`oc apply -f ./tests/utils/kube-resources/viewer-roleBinding.yaml`)
+      console.log('Success: Creating cluster role binding- viewer')
+    }
 
     // Create test namespace
     await kubeRequest(
@@ -78,36 +118,15 @@ module.exports = {
     )
     console.log('Success: Created test configmap')
 
-    //TODO see if using a kustomization.yaml will work here instead of multiple kube applies
-    // Create secret with user passwords
-    await execCLI(`kubectl create secret generic e2e-test-secret --from-file=htpasswd=./tests/utils/kube-resources/passwdfile -n ${namespaceName}`)
-
-    // Create the test Oauth
-    await execCLI(`kubectl patch OAuth cluster --type='json' -p='[{"op": "add", "path": "/spec/identityProviders/-", "value": {"htpasswd":{"fileData":{"name":"e2e-test-secret"}},"mappingMethod":"claim","name":"e2e-testing","type": "HTPasswd"}}]'`)
-    // await execCLI(`kubectl apply -f ./tests/utils/kube-resources/OAuth.yaml`)
-
-    // Create the viewer user (might be created when the user logs in?)
-    // validation is off so we dont have to specify a user group
-    // await execCLI(`kubectl apply -f ./tests/utils/kube-resources/new-user.yaml --validate=false`)
-
-    // Create the role & roleBinding for viewer
-    // await execCLI(`kubectl apply -f ./tests/utils/kube-resources/viewer-role.yaml`)
-    // await execCLI(`kubectl apply -f ./tests/utils/kube-resources/viewer-binding.yaml`)
-
-
+    // Need to pause after Rbac creation so resources are able to be used.
+    sleep(30000)
     done();
   },
 
   // External after hook is run at the very end of the tests run, after closing the Selenium session
   after: async function(done) {
-    // Remove the test Oauth
-    // await execCLI(`kubectl apply -f ./tests/utils/kube-resources/OAuth.yaml`)
 
-    // Remove the viewer user
-
-    // Remove the role & roleBinding for viewer
-
-    // Remove test namespace
+    // Remove test namespace & resources (Keep the Oauth provider & users)
     await kubeRequest(
       `/api/v1/namespaces/${namespaceName}`,
       'delete',

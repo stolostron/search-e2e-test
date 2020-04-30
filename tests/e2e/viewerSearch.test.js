@@ -12,11 +12,11 @@ const config = require('../../config')
 let searchPage
 
 module.exports = {
-  '@disabled': true,
+  '@disabled': false,
   before: function (browser) {
     const loginPage = browser.page.LoginPage()
     loginPage.navigate()
-    loginPage.authenticate(config.get('CLUSTER_VIEWER_USR'), config.get('CLUSTER_VIEWER_PWD'))
+    loginPage.authenticate('e2e-testing', config.get('CLUSTER_VIEWER_USR'), config.get('CLUSTER_VIEWER_PWD'))
 
     const url = `${browser.launch_url}${config.get('contextPath')}/search`
     searchPage = browser.page.SearchPage()

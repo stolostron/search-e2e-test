@@ -15,6 +15,7 @@ module.exports = {
     return `${this.api.launchUrl}${config.get('contextPath')}`
   },
   elements: {
+    identityProvider: 'a.idp',
     username: '#inputUsername',
     password: '#inputPassword',
     submit: '.btn-lg',
@@ -48,6 +49,7 @@ function waitForLoginPageLoad() {
 }
 
 function chooseIdentityProvider(idprovider) {
+  this.waitForElementPresent('@identityProvider')
   // This will click the id option we created in before setup.
   const userSelector = `a.idp[title="Log in with ${idprovider || 'kube:admin'}"]`
   this.click(userSelector)
