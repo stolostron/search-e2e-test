@@ -63,6 +63,20 @@ module.exports = {
       console.log('Creating cluster role binding - viewer')
       await execCLI(`oc apply -f ./tests/utils/kube-resources/viewer-roleBinding.yaml`)
       console.log('Success: Creating cluster role binding- viewer')
+    } else {
+      const viewerBinding = await kubeRequest(`/apis/rbac.authorization.k8s.io/v1/clusterrolebindings/viewer-binding`, 'get', {}, kubeToken)
+      if (!viewerBinding.subjects || viewerBinding.subjects.findIndex(subject => subject.name === 'user0') === -1) {
+        viewerBinding.subjects = [
+          {
+            "kind": "User",
+            "apiGroup": "rbac.authorization.k8s.io",
+            "name": "user1"
+          },
+          ...viewerBinding.subjects || []
+        ]
+        await kubeRequest(`/apis/rbac.authorization.k8s.io/v1/clusterrolebindings/viewer-binding`, 'put', viewerBinding, kubeToken)
+        console.log('Success: Adding new user to role binding')
+      }
     }
 
     // Create test namespace
