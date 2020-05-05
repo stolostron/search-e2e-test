@@ -26,12 +26,11 @@ const sleep = (milliseconds) => {
 
 /* eslint-disable no-console*/
 module.exports = {
-  // External before hook is ran at the beginning of the tests run, before creating the Selenium session
+  // External before hook is run at the beginning of the tests run, before creating the Selenium session
   before: async function(done) {
     kubeToken = await getKubeToken();
-    // TODO use kustomization.yaml???
-    // TODO move setup and teardown logic to scripts? That way we can setup as npm command in package.json?
 
+    // Check if user password secret exists, if not create it.
     const userSecretCheck = await execCLI(`oc get secret htpasswd-e2e -n openshift-config`)
     if (userSecretCheck.includes('Command failed') || userSecretCheck.includes('Error')) {
       console.log('Creating RBAC user secret')
@@ -40,6 +39,7 @@ module.exports = {
       sleep(3000)
     }
 
+    // Check if cluster OAuth resource has the e2e testing identity provider, if not add it.
     const oauthCheck = await kubeRequest(`/apis/config.openshift.io/v1/oauths/cluster`, 'get', {}, kubeToken)
     if (oauthCheck && !oauthCheck.spec.identityProviders) {
       console.log('Adding e2e identity provider')
@@ -51,6 +51,7 @@ module.exports = {
       console.log('Success: Adding e2e identity provider')
     }
 
+    // Check if viewer ClusterRole exists, if not create it.
     const roleCheck = await execCLI(`oc get clusterrole view`)
     if (roleCheck.includes('Command failed') || roleCheck.includes('Error')) {
       console.log('Creating cluster role - viewer')
@@ -58,6 +59,7 @@ module.exports = {
       console.log('Success: Creating cluster role - viewer')
     }
 
+    // Check if viewer ClusterRoleBinding exists, if not create it.
     const roleBindingCheck = await execCLI(`oc get clusterrolebinding viewer-binding`)
     if (roleBindingCheck.includes('Command failed') || roleBindingCheck.includes('Error')) {
       console.log('Creating cluster role binding - viewer')

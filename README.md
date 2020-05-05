@@ -19,6 +19,11 @@ Alternatively you can update `./config-defaults.json` with your environment info
 ### Run the tests
 
 1. Run `npm install`
-2. Run `npm run test:install-selenium`
-3. Run `npm test:e2e`
+2. Run `npm run test:e2e` OR `npm run test:e2e-headless`
 
+The tests consist of two user scenarios:
+
+1. Cluster Admin user
+2. Viewer user
+
+Before the tests are run, we create an identity provider (provider can be found using: `oc describe oauth cluster`) and user for the viewer scenario. This allows us to test regressions in Role-Based Access Control.
