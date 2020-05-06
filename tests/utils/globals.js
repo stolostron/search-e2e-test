@@ -17,11 +17,7 @@ const namespaceName = `e2e-test-${Date.now()}`
 process.env.NODE_TLS_REJECT_UNAUTHORIZED='0'
 
 const sleep = (milliseconds) => {
-  const date = Date.now();
-  let currentDate = null;
-  do {
-    currentDate = Date.now();
-  } while (currentDate - date < milliseconds);
+  return new Promise((resolve) => setTimeout(resolve(), milliseconds));
 }
 
 /* eslint-disable no-console*/
@@ -33,9 +29,9 @@ module.exports = {
     // Check if user password secret exists, if not create it.
     const userSecretCheck = await execCLI(`oc get secret htpasswd-e2e -n openshift-config`)
     if (userSecretCheck.includes('Command failed') || userSecretCheck.includes('Error')) {
-      console.log('Creating RBAC user secret')
-      await execCLI(`oc create secret generic htpasswd-e2e --from-file=htpasswd=./tests/utils/kube-resources/passwdfile -n openshift-config`)
-      console.log('Success: Creating RBAC user secret')
+      console.log('Creating Oauth Provider secret')
+      await execCLI(`oc create secret generic search-e2e --from-file=htpasswd=./tests/utils/kube-resources/passwdfile -n openshift-config`)
+      console.log('Success: Created Oauth Provider secret')
       sleep(3000)
     }
 
@@ -67,12 +63,12 @@ module.exports = {
       console.log('Success: Creating cluster role binding- viewer')
     } else {
       const viewerBinding = await kubeRequest(`/apis/rbac.authorization.k8s.io/v1/clusterrolebindings/viewer-binding`, 'get', {}, kubeToken)
-      if (!viewerBinding.subjects || viewerBinding.subjects.findIndex(subject => subject.name === 'user0') === -1) {
+      if (!viewerBinding.subjects || viewerBinding.subjects.findIndex(subject => subject.name === 'user-viewer') === -1) {
         viewerBinding.subjects = [
           {
             "kind": "User",
             "apiGroup": "rbac.authorization.k8s.io",
-            "name": "user1"
+            "name": "user-viewer"
           },
           ...viewerBinding.subjects || []
         ]

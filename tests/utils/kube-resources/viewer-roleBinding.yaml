@@ -5,7 +5,7 @@ metadata:
 subjects:
   - kind: User
     apiGroup: rbac.authorization.k8s.io
-    name: user1
+    name: user-viewer
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
