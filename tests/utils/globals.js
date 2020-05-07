@@ -17,7 +17,11 @@ const namespaceName = `e2e-test-${Date.now()}`
 process.env.NODE_TLS_REJECT_UNAUTHORIZED='0'
 
 const sleep = (milliseconds) => {
-  return new Promise((resolve) => setTimeout(resolve(), milliseconds));
+  const date = Date.now();
+  let currentDate = null;
+  do {
+    currentDate = Date.now();
+  } while (currentDate - date < milliseconds)
 }
 
 /* eslint-disable no-console*/
@@ -27,23 +31,22 @@ module.exports = {
     kubeToken = await getKubeToken();
 
     // Check if user password secret exists, if not create it.
-    const userSecretCheck = await execCLI(`oc get secret htpasswd-e2e -n openshift-config`)
+    const userSecretCheck = await execCLI(`oc get secret search-e2e-secret -n openshift-config`)
     if (userSecretCheck.includes('Command failed') || userSecretCheck.includes('Error')) {
       console.log('Creating Oauth Provider secret')
-      await execCLI(`oc create secret generic search-e2e --from-file=htpasswd=./tests/utils/kube-resources/passwdfile -n openshift-config`)
+      await execCLI(`oc create secret generic search-e2e-secret --from-file=htpasswd=./tests/utils/kube-resources/passwdfile -n openshift-config`)
       console.log('Success: Created Oauth Provider secret')
-      sleep(3000)
     }
 
     // Check if cluster OAuth resource has the e2e testing identity provider, if not add it.
     const oauthCheck = await kubeRequest(`/apis/config.openshift.io/v1/oauths/cluster`, 'get', {}, kubeToken)
     if (oauthCheck && !oauthCheck.spec.identityProviders) {
       console.log('Adding e2e identity provider')
-      await execCLI(`oc patch OAuth cluster --type='json' -p='[{"op": "add", "path": "/spec", "value": {"identityProviders":[{"htpasswd":{"fileData":{"name":"htpasswd-e2e"}},"mappingMethod":"claim","name":"e2e-testing","type": "HTPasswd"}]}}]'`)
+      await execCLI(`oc patch OAuth cluster --type='json' -p='[{"op": "add", "path": "/spec", "value": {"identityProviders":[{"htpasswd":{"fileData":{"name":"search-e2e-secret"}},"mappingMethod":"claim","name":"search-e2e","type": "HTPasswd"}]}}]'`)
       console.log('Success: Adding e2e identity provider')
-    } else if (oauthCheck && oauthCheck.spec.identityProviders.findIndex(provider => provider.name === 'e2e-testing') === -1) {
+    } else if (oauthCheck && oauthCheck.spec.identityProviders.findIndex(provider => provider.name === 'search-e2e') === -1) {
       console.log('Adding e2e identity provider')
-      await execCLI(`oc patch OAuth cluster --type='json' -p='[{"op": "add", "path": "/spec/identityProviders/-", "value": {"htpasswd":{"fileData":{"name":"htpasswd-e2e"}},"mappingMethod":"claim","name":"e2e-testing","type": "HTPasswd"}}]'`)
+      await execCLI(`oc patch OAuth cluster --type='json' -p='[{"op": "add", "path": "/spec/identityProviders/-", "value": {"htpasswd":{"fileData":{"name":"search-e2e-secret"}},"mappingMethod":"claim","name":"search-e2e","type": "HTPasswd"}}]'`)
       console.log('Success: Adding e2e identity provider')
     }
 

@@ -9,19 +9,22 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
 const config = require('../../config')
+const execCLI = require('../utils/cliHelper')
 
 module.exports = {
   url: function () {
     return `${this.api.launchUrl}${config.get('contextPath')}`
   },
   elements: {
-    identityProvider: 'a.idp',
+    identityProvider43: 'a.idp',
+    identityProvider44: 'a.pf-c-button',
     username: '#inputUsername',
     password: '#inputPassword',
-    submit: '.btn-lg',
+    submit: 'button[type="submit"]',
     error: '.bx--inline-notification--error',
     header: '.app-header',
-    loginPage: '.login-pf'
+    loginPage43: '.login-pf',
+    loginPage44: '.pf-c-login'
   },
   commands: [{
     waitForLoginPageLoad,
@@ -35,23 +38,34 @@ module.exports = {
 }
 
 //helper for other pages to use for authentication in before() their suit
-function authenticate(idprovider, username, password) {
-  this.waitForLoginPageLoad()
-  this.chooseIdentityProvider(idprovider)
+async function authenticate(idprovider, username, password) {
+  let ocpVersion = await execCLI(`oc version | grep Server`)
+  const parsedOCPVersion = parseFloat(ocpVersion.substring(16, 19))
+  this.waitForLoginPageLoad(parsedOCPVersion)
+  this.chooseIdentityProvider(parsedOCPVersion, idprovider)
   this.inputUsername(username)
   this.inputPassword(password)
   this.submit()
   this.waitForLoginSuccess()
 }
 
-function waitForLoginPageLoad() {
-  this.waitForElementPresent('@loginPage')
+function waitForLoginPageLoad(parsedOCPVersion) {
+  parsedOCPVersion >= 4.4
+    ? this.waitForElementPresent('@loginPage44')
+    : this.waitForElementPresent('@loginPage43')
 }
 
-function chooseIdentityProvider(idprovider) {
-  this.waitForElementPresent('@identityProvider')
-  // This will click the id option we created in before setup.
-  const userSelector = `a.idp[title="Log in with ${idprovider || 'kube:admin'}"]`
+function chooseIdentityProvider(parsedOCPVersion, idprovider) {
+  let userSelector = ''
+  if (parsedOCPVersion >= 4.4) {
+    this.waitForElementPresent('@identityProvider44')
+    // This will click the id option we created in before setup.
+    userSelector = `a.pf-c-button[title="Log in with ${idprovider || 'kube:admin'}"]`
+  } else {
+    this.waitForElementPresent('@identityProvider43')
+    // This will click the id option we created in before setup.
+    userSelector = `a.idp[title="Log in with ${idprovider || 'kube:admin'}"]`
+  }
   this.click(userSelector)
 }
 

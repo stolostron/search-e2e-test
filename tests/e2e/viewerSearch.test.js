@@ -16,7 +16,7 @@ module.exports = {
   before: function (browser) {
     const loginPage = browser.page.LoginPage()
     loginPage.navigate()
-    loginPage.authenticate('e2e-testing', config.get('CLUSTER_VIEWER_USR'), config.get('CLUSTER_VIEWER_PWD'))
+    loginPage.authenticate('search-e2e', config.get('CLUSTER_VIEWER_USR'), config.get('CLUSTER_VIEWER_PWD'))
 
     const url = `${browser.launch_url}${config.get('contextPath')}/search`
     searchPage = browser.page.SearchPage()
