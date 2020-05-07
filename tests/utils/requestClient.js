@@ -35,7 +35,7 @@ module.exports = {
       data: jsonBody,
       headers: {
         Authorization: `bearer ${kubeToken}`,
-        'Content-Type': 'application/json',
+        'Content-Type': method !== 'patch' ? 'application/json' : 'application/json-patch+json',
         'Accept': 'application/json',
       }
     })

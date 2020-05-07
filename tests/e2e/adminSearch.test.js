@@ -16,7 +16,7 @@ module.exports = {
   before: function (browser) {
     const loginPage = browser.page.LoginPage()
     loginPage.navigate()
-    loginPage.authenticate(config.get('CLUSTER_ADMIN_USR'), config.get('CLUSTER_ADMIN_PWD'))
+    loginPage.authenticate('kube:admin', config.get('CLUSTER_ADMIN_USR'), config.get('CLUSTER_ADMIN_PWD'))
 
     const url = `${browser.launch_url}${config.get('contextPath')}/search`
     searchPage = browser.page.SearchPage()
