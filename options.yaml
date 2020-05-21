@@ -1,0 +1,5 @@
+options:
+  hub:
+    baseDomain: ds3-44.aws.red-chesterfield.com
+    user: kubeadmin
+    password: JMjjF-Ctmij-8RF97-33Jnf
