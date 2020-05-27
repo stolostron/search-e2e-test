@@ -1,11 +1,12 @@
+FROM golang:1.14 as builder
+# get yq
+RUN go get github.com/mikefarah/yq
+
 FROM node:12.16.3-stretch as production
 
 USER root
 # Install yq
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys CC86BB64
-RUN add-apt-repository ppa:rmescandon/yq
-RUN apt update
-RUN apt install yq -y
+COPY --from=builder /go/bin/yq /usr/bin/yq
 
 # Install Firefox
 RUN apt-get update && apt-get install -y firefox-esr
