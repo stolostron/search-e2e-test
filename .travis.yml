@@ -8,6 +8,7 @@ addons:
 
 services:
   - xvfb
+  - docker
 
 # Only build on master, and release branches
 branches:
@@ -15,6 +16,57 @@ branches:
     - master
     - /^release-[0-9]+\..*$/
 
-script:
-  - docker build -t search-e2e:latest .  
-  - docker run -it --volume $(pwd)/test-output:/results -e OPTIONS_HUB_BASEDOMAIN=${OPTIONS_HUB_BASEDOMAIN} -e OPTIONS_HUB_USER=${OPTIONS_HUB_USER} -e OPTIONS_HUB_PASSWORD=${OPTIONS_HUB_PASSWORD} search-e2e:latest
+after_success:
+  - echo "after success"
+after_failure:
+  - echo "after failure"
+
+stages:
+  - build
+  - test
+  - release-ff
+  - publish
+
+jobs:
+  include:
+    - stage: build
+      name: Build the image, push it
+      script:
+        - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export SEMVERSION="$(cat COMPONENT_VERSION)-PR${TRAVIS_PULL_REQUEST}-${TRAVIS_COMMIT}";
+          else export SEMVERSION="$(cat COMPONENT_VERSION)-${TRAVIS_COMMIT}"; fi;
+        - |
+          make
+          make component/build
+          make component/push
+    - stage: test
+      script:
+        - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export COMPONENT_TAG_EXTENSION="-PR${TRAVIS_PULL_REQUEST}-${TRAVIS_COMMIT}"; fi;
+        - |
+          make
+          make component/pull
+          export COMPONENT_E2E_TEST_COMMAND="docker run -it --volume $(pwd)/test-output:/results -e OPTIONS_HUB_BASEDOMAIN=${OPTIONS_HUB_BASEDOMAIN} -e OPTIONS_HUB_USER=${OPTIONS_HUB_USER} -e OPTIONS_HUB_PASSWORD=${OPTIONS_HUB_PASSWORD}"
+          make component/test/e2e
+    - stage: release-ff
+      name: Push commits from master to branch defined in RELEASE_FF_BRANCH
+      if: type = push AND branch =~ /^master$/
+      script:
+        - |
+          export SEMVERSION="$(cat COMPONENT_VERSION)-${TRAVIS_COMMIT}"
+          make
+          make release-ff
+    - stage: publish
+      name:
+        Publish the image to quay with an official version/sha tag and publish entry
+        to integration pipeline stage
+      if: type = push AND branch =~ /^release-[0-9]+\..*$/
+      script:
+        - |-
+          export SEMVERSION="$(cat COMPONENT_VERSION)-${TRAVIS_COMMIT}"
+          export COMPONENT_NAME="$(cat COMPONENT_NAME)"
+          export COMPONENT_VERSION="$(cat COMPONENT_VERSION)"
+          make
+          make build
+          make push
+          make pipeline-manifest/update PIPELINE_MANIFEST_COMPONENT_SHA256=${TRAVIS_COMMIT} PIPELINE_MANIFEST_COMPONENT_REPO=${TRAVIS_REPO_SLUG} PIPELINE_MANIFEST_BRANCH=${TRAVIS_BRANCH}
+
+
