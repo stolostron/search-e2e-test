@@ -13,6 +13,7 @@ services:
 branches:
   only:
     - master
+    - jorge/containerization
     - /^release-[0-9]+\..*$/
 
 before_install:
