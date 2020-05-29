@@ -24,9 +24,14 @@ nconf.env({ lowerCase: true, separator: '_' })
 
 nconf.required(['options:hub:baseDomain', 'options:hub:user', 'options:hub:password'])
 
-if (nconf.get('options:hub:baseDomain') === ''){
+if (nconf.get('options:hub:baseDomain') === ''
+    || nconf.get('options:hub:user') === ''
+    || nconf.get('options:hub:password') === '') {
     console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    console.error('OPTIONS_HUB_BASEDOMAIN is a required env variable, but got empty or undefined.')
+    console.error('Missing environment variables. The following are required:')
+    console.error('  - OPTIONS_HUB_BASEDOMAIN or options.hub.baseDomain in ./options.yaml.')
+    console.error('  - OPTIONS_HUB_USER or options.hub.user in ./options.yaml.')
+    console.error('  - OPTIONS_HUB_PASSWORD or options.hub.password in ./options.yaml.')
     console.error('Exiting tests...')
     console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
     process.exit(1)
@@ -34,9 +39,9 @@ if (nconf.get('options:hub:baseDomain') === ''){
 
 console.log('Test environment')
 console.log('========================================')
-console.log('baseDomain: ', nconf.get('options:hub:baseDomain'))
-console.log('user      : ', nconf.get('options:hub:user'))
-console.log('password  : ', nconf.get('options:hub:password'))
+console.log('baseDomain : ', nconf.get('options:hub:baseDomain'))
+console.log('user       : ', nconf.get('options:hub:user'))
+console.log('password   : ', nconf.get('options:hub:password'))
 console.log('========================================\n')
 
 module.exports = nconf
