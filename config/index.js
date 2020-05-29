@@ -22,6 +22,15 @@ nconf.env({ lowerCase: true, separator: '_' })
         contextPath: '/multicloud'
     })
 
+// Hack to deal with camelCase when using env OPTIONS_HUB_BASEDOMAIN
+try {
+    nconf.required(['options:hub:baseDomain'])
+} catch {
+    if (process.env.OPTIONS_HUB_BASEDOMAIN) {
+        nconf.set('options:hub:baseDomain', process.env.OPTIONS_HUB_BASEDOMAIN)
+    }
+}
+
 nconf.required(['options:hub:baseDomain', 'options:hub:user', 'options:hub:password'])
 
 if (nconf.get('options:hub:baseDomain') === ''
