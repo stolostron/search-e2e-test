@@ -36,14 +36,12 @@ nconf.required(['options:hub:baseDomain', 'options:hub:user', 'options:hub:passw
 if (nconf.get('options:hub:baseDomain') === ''
     || nconf.get('options:hub:user') === ''
     || nconf.get('options:hub:password') === '') {
-    console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    console.error('Missing environment variables. The following are required:')
-    console.error('  - OPTIONS_HUB_BASEDOMAIN or options.hub.baseDomain in ./options.yaml.')
-    console.error('  - OPTIONS_HUB_USER or options.hub.user in ./options.yaml.')
-    console.error('  - OPTIONS_HUB_PASSWORD or options.hub.password in ./options.yaml.')
-    console.error('Exiting tests...')
-    console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
-    process.exit(1)
+    
+    throw new Error(`Missing environment variables.
+    The following are required to run this tests:
+    - OPTIONS_HUB_BASEDOMAIN or options.hub.baseDomain in options.yaml.
+    - OPTIONS_HUB_USER or options.hub.user in options.yaml.
+    - OPTIONS_HUB_PASSWORD or options.hub.password in options.yaml.`)
   }
 
 console.log('Test environment')
