@@ -5,6 +5,7 @@
  * Note to U.S. Government Users Restricted Rights:
  * Use, duplication or disclosure restricted by GSA ADP Schedule
  * Contract with IBM Corp.
+ * * Copyright (c) 2020 Red Hat, Inc.
  *******************************************************************************/
 
 const config = require('../../config')
@@ -16,7 +17,7 @@ module.exports = {
   before: function (browser) {
     const loginPage = browser.page.LoginPage()
     loginPage.navigate()
-    loginPage.authenticate('kube:admin', config.get('CLUSTER_ADMIN_USR'), config.get('CLUSTER_ADMIN_PWD'))
+    loginPage.authenticate('kube:admin', config.get('options:hub:user'), config.get('options:hub:password'))
 
     const url = `${browser.launch_url}${config.get('contextPath')}/search`
     searchPage = browser.page.SearchPage()

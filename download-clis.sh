@@ -1,9 +1,10 @@
 # Install OpenShift CLI.
-curl -kLo oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/4.3/linux/oc.tar.gz
+echo "Installing oc CLI..."
+curl -kLo oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/4.4/linux/oc.tar.gz
 mkdir oc-unpacked
-tar -xvzf oc.tar.gz -C oc-unpacked
+tar -xzf oc.tar.gz -C oc-unpacked
 chmod 755 ./oc-unpacked/oc
-sudo mv ./oc-unpacked/oc /usr/local/bin/oc
+mv ./oc-unpacked/oc /usr/local/bin/oc
 rm -rf ./oc-unpacked ./oc.tar.gz
 
 # oc login --server=${OCP_SERVER} -u ${OCP_CONSOLE_USR} -p ${OCP_CONSOLE_PWD} --insecure-skip-tls-verify=true
