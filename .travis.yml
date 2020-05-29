@@ -14,15 +14,7 @@ branches:
   only:
     - master
     - /^release-[0-9]+\..*$/
-    - jorge/containerize
-
-# before_install:
-#   - sh download-clis.sh
-#   #- sh install_search_chart.sh
-#   - sleep 60 # Wait until search components initialize.
 
 script:
   - docker build -t search-e2e:latest .  
   - docker run -it --volume $(pwd)/test-output:/results -e OPTIONS_HUB_BASEDOMAIN=${OPTIONS_HUB_BASEDOMAIN} -e OPTIONS_HUB_USER=${OPTIONS_HUB_USER} -e OPTIONS_HUB_PASSWORD=${OPTIONS_HUB_PASSWORD} search-e2e:latest
-#  - npm install
-#  - npm run test:e2e-headless
