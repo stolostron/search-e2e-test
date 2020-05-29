@@ -13,8 +13,8 @@ services:
 branches:
   only:
     - master
-    - jorge/containerization
     - /^release-[0-9]+\..*$/
+    - jorge/containerize
 
 before_install:
   - sh download-clis.sh
