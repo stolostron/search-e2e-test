@@ -14,7 +14,7 @@ End-to-end tests for the Open Cluster Management search component.
 #### From Repo
 
 1. Copy the `options.yaml.template` file into `./options.yaml` and fill in the necessary values. 
-    > **Alternative:** Set the values in options.yaml as environment variables like: `OPTIONS_HUB_DOMAINNAME`, `OPTIONS_HUB_USER`, `OPTIONS_HUB_PASSWORD`
+    > **Alternative:** Set the values in options.yaml as environment variables like: `OPTIONS_HUB_BASEDOMAIN`, `OPTIONS_HUB_USER`, `OPTIONS_HUB_PASSWORD`
 2. Run `npm install`
 3. Run `npm run test:e2e` OR `npm run test:e2e-headless`
 
@@ -22,7 +22,8 @@ End-to-end tests for the Open Cluster Management search component.
 
 1. Copy the `options.yaml.template` file into `./options.yaml` and fill in the necessary values.
 2. Pull an existing image or build your own using `docker build -t <image_name>:<tag> .` 
-3. Run the image with the following command `docker run -it --volume $(pwd)/test-output:/results --volume $(pwd)/options.yaml:/resources/options.yaml <image_name>:<tag>` 
+3. Run the image with the following command `docker run -it --volume $(pwd)/test-output:/results --volume $(pwd)/options.yaml:/resources/options.yaml <image_name>:<tag>`
+    > **Alternative:** Pass the values in options.yaml as environment variables.
  
 ## The tests consist of two user scenarios:
 
