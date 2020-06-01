@@ -35,14 +35,14 @@ jobs:
         - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export SEMVERSION="$(cat COMPONENT_VERSION)-PR${TRAVIS_PULL_REQUEST}-${TRAVIS_COMMIT}";
           else export SEMVERSION="$(cat COMPONENT_VERSION)-${TRAVIS_COMMIT}"; fi;
         - |
-          make
+          make init
           make component/build
           make component/push
     - stage: test
       script:
         - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export COMPONENT_TAG_EXTENSION="-PR${TRAVIS_PULL_REQUEST}-${TRAVIS_COMMIT}"; fi;
         - |
-          make
+          make init
           make component/pull
           export COMPONENT_E2E_TEST_COMMAND="docker run -it --volume $(pwd)/test-output:/results -e OPTIONS_HUB_BASEDOMAIN=${OPTIONS_HUB_BASEDOMAIN} -e OPTIONS_HUB_USER=${OPTIONS_HUB_USER} -e OPTIONS_HUB_PASSWORD=${OPTIONS_HUB_PASSWORD}"
           make component/test/e2e
@@ -52,7 +52,7 @@ jobs:
       script:
         - |
           export SEMVERSION="$(cat COMPONENT_VERSION)-${TRAVIS_COMMIT}"
-          make
+          make init
           make release-ff
     - stage: publish
       name:
@@ -64,7 +64,7 @@ jobs:
           export SEMVERSION="$(cat COMPONENT_VERSION)-${TRAVIS_COMMIT}"
           export COMPONENT_NAME="$(cat COMPONENT_NAME)"
           export COMPONENT_VERSION="$(cat COMPONENT_VERSION)"
-          make
+          make init
           make build
           make push
           make pipeline-manifest/update PIPELINE_MANIFEST_COMPONENT_SHA256=${TRAVIS_COMMIT} PIPELINE_MANIFEST_COMPONENT_REPO=${TRAVIS_REPO_SLUG} PIPELINE_MANIFEST_BRANCH=${TRAVIS_BRANCH}
