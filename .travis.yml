@@ -23,11 +23,6 @@ branches:
     - master
     - /^release-[0-9]+\..*$/
 
-after_success:
-  - echo "after success"
-after_failure:
-  - echo "after failure"
-
 stages:
   - build
   - test
