@@ -8,20 +8,24 @@ End-to-end tests for the Open Cluster Management search component.
 1. nodeJS
 2. OpenShift CLI
 
-### Setup environment
-```bash
-$ export CLUSTER_HOST=<ocp-hostname>
-$ export CLUSTER_ADMIN_USER=kubeadmin
-$ export CLUSTER_ADMIN_PWD=<kubeadmin-password>
-```
-Alternatively you can update `./config-defaults.json` with your environment info.
 
 ### Run the tests
 
-1. Run `npm install`
-2. Run `npm run test:e2e` OR `npm run test:e2e-headless`
+#### From Repo
 
-The tests consist of two user scenarios:
+1. Copy the `options.yaml.template` file into `./options.yaml` and fill in the necessary values. 
+    > **Alternative:** Set the values in options.yaml as environment variables like: `OPTIONS_HUB_BASEDOMAIN`, `OPTIONS_HUB_USER`, `OPTIONS_HUB_PASSWORD`
+2. Run `npm install`
+3. Run `npm run test:e2e` OR `npm run test:e2e-headless`
+
+#### From Dockerfile
+
+1. Copy the `options.yaml.template` file into `./options.yaml` and fill in the necessary values.
+2. Pull an existing image or build your own using `docker build -t <image_name>:<tag> .` 
+3. Run the image with the following command `docker run -it --volume $(pwd)/test-output:/results --volume $(pwd)/options.yaml:/resources/options.yaml <image_name>:<tag>`
+    > **Alternative:** Pass the values in options.yaml as environment variables.
+ 
+## The tests consist of two user scenarios:
 
 1. Cluster Admin user
 2. Viewer user
