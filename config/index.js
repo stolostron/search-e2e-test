@@ -9,12 +9,19 @@
  *******************************************************************************/
 var nconf = require('nconf'),
     nconfYaml = require('nconf-yaml'),
-    path = require('path')
-
+    path = require('path'),
+    fs = require('fs')
+    
 var configDir = path.resolve(__dirname)
+var optionsFile = './options.yaml'
+
+if (fs.existsSync('./resources/options.yaml')) {
+    optionsFile = './resources/options.yaml'
+}
+
 
 nconf.env({ lowerCase: true, separator: '_' })
-    .file({file: './options.yaml', format: nconfYaml })
+    .file({file: optionsFile, format: nconfYaml })
     .defaults({
         CLUSTER_PORT: '443',
         CLUSTER_VIEWER_USR: 'user-viewer',
