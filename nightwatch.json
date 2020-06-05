@@ -2,7 +2,7 @@
   "src_folders": [
     "tests/e2e"
   ],
-  "output_folder": "test-output/e2e",
+  "output_folder": "/results",
   "custom_assertions_path": "",
   "page_objects_path": "tests/page-objects",
   "custom_commands_path": "tests/commands",

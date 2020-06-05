@@ -4,3 +4,4 @@ test-output/
 selenium-debug.log
 options.yaml
 chromedriver.log
+/results
