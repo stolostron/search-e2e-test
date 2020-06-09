@@ -39,7 +39,7 @@ module.exports = {
     textArea: "textarea.ace_text-input" ,
     save: 'button[class="bx--btn bx--btn--danger--primary"]',
     dialog: "div.bx--modal-container",
-    aceEditorTextInput: '#brace-editor',
+    // aceEditorTextInput: '#brace-editor',
     registerAppModal: '.bx--modal'
   },
   commands: [{
@@ -114,7 +114,7 @@ function save(browser) {
 
 function enterTextInYamlEditor(browser, yaml){
   this.waitForElementPresent('@registerAppModal')
-  this.click('@aceEditorTextInput')
+  // this.click('@aceEditorTextInput')
 
   const keystrokes = []
   yaml.split(/\r?\n/).forEach(line => {
