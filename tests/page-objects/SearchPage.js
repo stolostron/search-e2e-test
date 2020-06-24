@@ -108,7 +108,7 @@ function save(browser) {
   this.waitForElementVisible('@saveBtn').click('@saveBtn')
   this.waitForElementPresent('@modal')
   this.waitForElementVisible('@dialog')
-  browser.pause(3000)
+  browser.pause(5000)
   this.waitForElementVisible('@save')
     .click('@save')
   this.waitForElementNotPresent('@modal')
