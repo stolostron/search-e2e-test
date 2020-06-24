@@ -111,8 +111,7 @@ function save(browser) {
   browser.pause(5000)
   this.waitForElementVisible('@save')
     .click('@save')
-    browser.pause(5000)
-  this.waitForElementNotPresent('@modal')
+  // this.waitForElementNotPresent('@modal')
 }
 
 function enterTextInYamlEditor(browser, yaml){
