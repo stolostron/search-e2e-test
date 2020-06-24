@@ -24,7 +24,7 @@ module.exports = {
     tableHeader: '.search--resource-table-header-button',
     tableHeaderLast: '.search--resource-table-header-button:last-child',
     queryTerms: '.react-tags__selected',
-    searchTable: '.bx--data-table-v2.bx--data-table-v2--zebra',
+    searchTable: '.bx--data-table-v2',
     overflow: 'div.bx--overflow-menu',
     overflowIcon: '.bx--overflow-menu__icon',
     overflowButton: '.bx--overflow-menu-options__btn',
@@ -35,6 +35,7 @@ module.exports = {
     // YAML/Edit elements
     yamlDisplay: "div.resource-details-page",
     edit: 'button[class="bx--btn bx--btn--primary"]',
+    saveBtn: '.bx--btn.bx--btn--primary:nth-of-type(2)',
     yamlContainer: "div.page-content-container",
     textArea: "textarea.ace_text-input" ,
     save: 'button[class="bx--btn bx--btn--danger--primary"]',
@@ -56,7 +57,8 @@ module.exports = {
     verifyPageContent,
     verifySearchResult,
     verifyNoResults,
-    verifyEditBtnTxt
+    verifyEditBtnTxt,
+    verifySaveBtnTxt
   }]
 }
 
@@ -104,6 +106,7 @@ function edit() {
 }
 
 function save(browser) {
+  this.waitForElementVisible('@saveBtn').click('@saveBtn')
   this.waitForElementPresent('@registerAppModal')
   this.waitForElementVisible('@dialog')
   browser.pause(3000)
@@ -114,15 +117,18 @@ function save(browser) {
 
 function enterTextInYamlEditor(browser, yaml){
   this.waitForElementPresent('@registerAppModal')
-  // this.click('@aceEditorTextInput')
 
-  const keystrokes = []
+  const keystrokes = [
+    // Tab to editor area.
+    browser.Keys.TAB, browser.Keys.TAB, 
+    // Go to end of document
+    browser.Keys.COMMAND, browser.Keys.DOWN_ARROW, browser.Keys.COMMAND, 
+    // Position in the data field.
+    browser.Keys.UP_ARROW, browser.Keys.ENTER, browser.Keys.UP_ARROW,
+    // Add indentation.
+    browser.Keys.SPACE, browser.Keys.SPACE]
   yaml.split(/\r?\n/).forEach(line => {
-    const indentation = line.search(/\S|$/)
     keystrokes.push(line)
-    keystrokes.push(browser.Keys.RETURN)
-    for (let i = 0; i < indentation / 2; i++ )
-      keystrokes.push(browser.Keys.BACK_SPACE)
   })
   this.api.keys(keystrokes)
 }
@@ -164,7 +170,12 @@ function verifyNoResults() {
 
 function verifyEditBtnTxt(browser, text) {
   this.waitForElementPresent('@edit').getText('@edit', function readNotification(result) {
-      console.log('active line Response(s)', result);
+      browser.assert.equal(result.value, text)
+  })
+}
+
+function verifySaveBtnTxt(browser, text) {
+  this.waitForElementPresent('@saveBtn').getText('@saveBtn', function readNotification(result) {
       browser.assert.equal(result.value, text)
   })
 }
