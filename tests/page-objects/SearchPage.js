@@ -40,8 +40,7 @@ module.exports = {
     textArea: "textarea.ace_text-input" ,
     save: 'button[class="bx--btn bx--btn--danger--primary"]',
     dialog: "div.bx--modal-container",
-    // aceEditorTextInput: '#brace-editor',
-    registerAppModal: '.bx--modal'
+    modal: '.bx--modal'
   },
   commands: [{
     checkAccess,
@@ -107,16 +106,17 @@ function edit() {
 
 function save(browser) {
   this.waitForElementVisible('@saveBtn').click('@saveBtn')
-  this.waitForElementPresent('@registerAppModal')
+  this.waitForElementPresent('@modal')
   this.waitForElementVisible('@dialog')
-  browser.pause(3000)
+  browser.pause(5000)
   this.waitForElementVisible('@save')
     .click('@save')
-  this.waitForElementNotPresent('@registerAppModal')
+    browser.pause(5000)
+  this.waitForElementNotPresent('@modal')
 }
 
 function enterTextInYamlEditor(browser, yaml){
-  this.waitForElementPresent('@registerAppModal')
+  this.waitForElementPresent('@modal')
 
   const keystrokes = [
     // Tab to editor area.
