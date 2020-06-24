@@ -38,9 +38,9 @@ module.exports = {
     saveBtn: '.bx--btn.bx--btn--primary:nth-of-type(2)',
     yamlContainer: "div.page-content-container",
     textArea: "textarea.ace_text-input" ,
-    save: 'button[class="bx--btn bx--btn--danger--primary"]',
+    save: '.bx--btn.bx--btn--danger--primary',
     dialog: "div.bx--modal-container",
-    modal: '.bx--modal'
+    modal: '.bx--modal-container'
   },
   commands: [{
     checkAccess,
@@ -108,14 +108,13 @@ function save(browser) {
   this.waitForElementVisible('@saveBtn').click('@saveBtn')
   this.waitForElementPresent('@modal')
   this.waitForElementVisible('@dialog')
-  browser.pause(5000)
+  browser.pause(3000)
   this.waitForElementVisible('@save')
     .click('@save')
-  // this.waitForElementNotPresent('@modal')
+  this.waitForElementNotPresent('@modal')
 }
 
 function enterTextInYamlEditor(browser, yaml){
-  this.waitForElementPresent('@modal')
 
   const keystrokes = [
     // Tab to editor area.
