@@ -42,8 +42,7 @@ module.exports = {
     searchPage.verifyEditBtnTxt(browser, 'EditEdit')
     searchPage.edit()
     searchPage.enterTextInYamlEditor(browser, 'test: test')
-    searchPage.edit()
-    searchPage.verifyEditBtnTxt(browser, 'Save')
+    searchPage.verifySaveBtnTxt(browser, 'Save')
     searchPage.save(browser)
   },
 
