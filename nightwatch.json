@@ -2,10 +2,10 @@
   "src_folders": [
     "tests/e2e"
   ],
-  "output_folder": "/results",
+  "output_folder": "test-output/e2e",
   "custom_assertions_path": "",
+  "custom_commands_path": "node_modules/nightwatch-coverage/commands",
   "page_objects_path": "tests/page-objects",
-  "custom_commands_path": "tests/commands",
   "globals_path": "tests/utils/globals.js",
   "test_settings": {
     "default": {
@@ -17,8 +17,7 @@
         "on_failure": true
       },
       "globals": {
-        "waitForConditionTimeout": 30000,
-        "asyncHookTimeout" : 60000
+        "waitForConditionTimeout": 60000
       }
     },
     "remote": {
@@ -35,32 +34,10 @@
         "browserName": "chrome",
         "javascriptEnabled": true,
         "acceptSslCerts": true,
+        "acceptInsecureCerts": true,
         "chromeOptions": {
           "w3c": false,
           "args" : [
-            "window-size=1280,950",
-            "--no-sandbox",
-            "--disable-gpu",
-            "ignore-certificate-errors"
-          ]
-        }
-      }
-    },
-    "chrome.headless": {
-      "webdriver": {
-        "start_process" : true,
-        "server_path": "node_modules/.bin/chromedriver",
-        "cli_args": ["--verbose"],
-        "port": 9515
-      },
-      "desiredCapabilities": {
-        "browserName": "chrome",
-        "javascriptEnabled": true,
-        "acceptSslCerts": true,
-        "chromeOptions": {
-          "w3c": false,
-          "args" : [
-            "--headless",
             "window-size=1280,950",
             "--no-sandbox",
             "--disable-gpu",
@@ -83,6 +60,30 @@
         "version": "",
         "alwaysMatch": {
           "acceptInsecureCerts": true
+        }
+      }
+    },
+    "chrome.headless": {
+      "webdriver": {
+        "start_process" : true,
+        "server_path": "node_modules/.bin/chromedriver",
+        "cli_args": ["--verbose"],
+        "port": 9515
+      },
+      "desiredCapabilities": {
+        "browserName": "chrome",
+        "javascriptEnabled": true,
+        "acceptSslCerts": true,
+        "acceptInsecureCerts": true,
+        "chromeOptions": {
+          "w3c": false,
+          "args" : [
+            "--headless",
+            "window-size=1280,950",
+            "--no-sandbox",
+            "--disable-gpu",
+            "ignore-certificate-errors"
+          ]
         }
       }
     },

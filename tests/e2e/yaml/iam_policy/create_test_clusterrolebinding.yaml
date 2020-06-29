@@ -1,0 +1,95 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: policy-clusterrolebinding-test-[TIME]
+  namespace: default
+  annotations:
+    policy.open-cluster-management.io/standards: NIST-CSF
+    policy.open-cluster-management.io/categories: PR.AC Identity Management Authentication and Access Control
+    policy.open-cluster-management.io/controls: PR.AC-4 Access Control
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: policy-clusterrolebinding-test-[TIME]
+        spec:
+          remediationAction: enforce
+          severity: low
+          namespaceSelector:
+            exclude: ["kube-*"]
+            include: ["default"]
+          object-templates:
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: rbac.authorization.k8s.io/v1
+                kind: ClusterRoleBinding
+                metadata:
+                  name: e2e-test-crb-[TIME]
+                  labels:
+                    e2e: "true"
+                roleRef:
+                  name: cluster-admin
+                  apiGroup: rbac.authorization.k8s.io
+                  kind: ClusterRole
+                subjects:
+                  - name: e2e-user-1
+                    apiGroup: rbac.authorization.k8s.io
+                    kind: User
+                  - name: e2e-user-2
+                    apiGroup: rbac.authorization.k8s.io
+                    kind: User
+                  - name: e2e-user-3
+                    apiGroup: rbac.authorization.k8s.io
+                    kind: User
+                  - name: e2e-user-4
+                    apiGroup: rbac.authorization.k8s.io
+                    kind: User
+                  - name: e2e-user-5
+                    apiGroup: rbac.authorization.k8s.io
+                    kind: User
+                  - name: e2e-user-6
+                    apiGroup: rbac.authorization.k8s.io
+                    kind: User
+                  - name: e2e-user-7
+                    apiGroup: rbac.authorization.k8s.io
+                    kind: User
+                  - name: e2e-user-8
+                    apiGroup: rbac.authorization.k8s.io
+                    kind: User
+                  - name: e2e-user-9
+                    apiGroup: rbac.authorization.k8s.io
+                    kind: User
+                  - name: e2e-user-10
+                    apiGroup: rbac.authorization.k8s.io
+                    kind: User
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: binding-policy-clusterrolebinding-test-[TIME]
+  namespace: default
+placementRef:
+  name: placement-policy-clusterrolebinding-test-[TIME]
+  kind: PlacementRule
+  apiGroup: apps.open-cluster-management.io
+subjects:
+- name: policy-clusterrolebinding-test-[TIME]
+  kind: Policy
+  apiGroup: policy.open-cluster-management.io
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: placement-policy-clusterrolebinding-test-[TIME]
+  namespace: default
+spec:
+  clusterConditions:
+  - status: "True"
+    type: ManagedClusterConditionAvailable
+  clusterSelector:
+    matchExpressions:
+      []

@@ -5,85 +5,82 @@
  * Note to U.S. Government Users Restricted Rights:
  * Use, duplication or disclosure restricted by GSA ADP Schedule
  * Contract with IBM Corp.
+ *******************************************************************************
+ * Copyright (c) 2020 Red Hat, Inc.
  *******************************************************************************/
-// Copyright (c) 2020 Red Hat, Inc.
 
 const config = require('../../config')
-const execCLI = require('../utils/cliHelper')
 
 module.exports = {
   url: function () {
     return `${this.api.launchUrl}${config.get('contextPath')}`
   },
   elements: {
-    identityProvider43: 'a.idp',
-    identityProvider44: 'a.pf-c-button',
+    userSelect: 'a.idp:nth-of-type(1)',
     username: '#inputUsername',
     password: '#inputPassword',
     submit: 'button[type="submit"]',
     error: '.bx--inline-notification--error',
     header: '.app-header',
-    loginPage43: '.login-pf',
-    loginPage44: '.pf-c-login'
+    loginForm: 'form[role="form"]',
+    spinner: '.content-spinner',
   },
   commands: [{
-    waitForLoginPageLoad,
-    chooseIdentityProvider,
     inputUsername,
     inputPassword,
     submit,
     authenticate,
-    waitForLoginSuccess
+    waitForLoginSuccess,
+    waitForLoginForm
   }]
 }
 
 //helper for other pages to use for authentication in before() their suit
-async function authenticate(idprovider, username, password) {
-  let ocpVersion = await execCLI(`oc version | grep Server`)
-  const parsedOCPVersion = parseFloat(ocpVersion.substring(16, 19))
-  this.waitForLoginPageLoad(parsedOCPVersion)
-  this.chooseIdentityProvider(parsedOCPVersion, idprovider)
-  this.inputUsername(username)
-  this.inputPassword(password)
+function authenticate() {
+  if(process.env.SELENIUM_USER === undefined || process.env.SELENIUM_PASSWORD === undefined){
+    this.api.end()
+    throw new Error('Env variable NOT set.\nPlease export UI user/password as SELENIUM_USER/SELENIUM_PASSWORD')
+  }
+  this.waitForLoginForm()
+  this.waitForElementPresent('@username')
+  this.inputUsername()
+  this.inputPassword()
   this.submit()
   this.waitForLoginSuccess()
 }
 
-function waitForLoginPageLoad(parsedOCPVersion) {
-  parsedOCPVersion >= 4.4
-    ? this.waitForElementPresent('@loginPage44')
-    : this.waitForElementPresent('@loginPage43')
+function inputUsername() {
+  this.waitForElementPresent('@username')
+    .setValue('@username', process.env.SELENIUM_USER )
 }
 
-function chooseIdentityProvider(parsedOCPVersion, idprovider) {
-  let userSelector = ''
-  if (parsedOCPVersion >= 4.4) {
-    this.waitForElementPresent('@identityProvider44')
-    // This will click the id option we created in before setup.
-    userSelector = `a.pf-c-button[title="Log in with ${idprovider || 'kube:admin'}"]`
-  } else {
-    this.waitForElementPresent('@identityProvider43')
-    // This will click the id option we created in before setup.
-    userSelector = `a.idp[title="Log in with ${idprovider || 'kube:admin'}"]`
-  }
-  this.click(userSelector)
-}
-
-function inputUsername(username) {
-  this.waitForElementVisible('@username')
-    .setValue('@username', username || config.get('CLUSTER_ADMIN_USR'))
-}
-
-function inputPassword(password) {
-  this.waitForElementVisible('@password')
-    .setValue('@password', password || config.get('CLUSTER_ADMIN_PWD'))
+function inputPassword() {
+  this.waitForElementPresent('@password')
+    .setValue('@password', process.env.SELENIUM_PASSWORD )
 }
 
 function submit() {
-  this.waitForElementVisible('@submit')
+  this.waitForElementPresent('@submit')
     .click('@submit')
 }
 
 function waitForLoginSuccess() {
-  this.waitForElementVisible('@header', 20000)
+  this.waitForElementPresent('@header')
+  this.waitForElementNotPresent('@spinner')
+}
+
+function waitForLoginForm() {
+  const specialSelect = 'a.idp'
+  this.api.elements('css selector', specialSelect, res => {
+    if (res.status < 0 || res.value.length < 1) {
+      // do nothing
+    }
+    else{
+      // select kube:admin if env SELENIUM_USER_SELECT not specified
+      const userSelector = `a.idp[title="Log in with ${process.env.SELENIUM_USER_SELECT || 'kube:admin'}"]`
+      this.waitForElementPresent(userSelector)
+      this.click(userSelector)
+    }
+  })
+  this.waitForElementVisible('@loginForm')
 }
