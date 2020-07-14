@@ -17,6 +17,7 @@ module.exports = {
     headerTitle: '.bx--detail-page-header-title',
     input: '.react-tags__search-input input',
     querySpan: '.react-tags__selected-tag-name',
+    searchCardLoading: '.search-query-card-loading',
     searchSuggestionCards: '.saved-search-query-header',
     searchbar: '.react-tags',
     searchbarInput: '.react-tags__search-input',
@@ -147,6 +148,7 @@ function navigateToResource() {
 function verifyPageContent() {
   this.expect.element('@headerTitle').to.be.present
   this.expect.element('@searchbar').to.be.present
+  this.expect.element('@searchCardLoading').to.not.be.present
 }
 
 function checkSpecificSearchFilter(idx, query) {

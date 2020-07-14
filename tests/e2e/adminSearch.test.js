@@ -24,11 +24,11 @@ module.exports = {
     searchPage.navigate(url)
   },
 
-  'Search: Load page': () => {
+  'Search: Load page as admin user': () => {
     searchPage.verifyPageContent()
   },
 
-  'Search: Search for secret': (browser) => {
+  'Search: Search for secret as admin user': (browser) => {
     searchPage.focusInput()
     searchPage.enterTextInSearchbar(browser, 'kind', '', 'secret')
     searchPage.enterTextInSearchbar(browser, 'name', '', 'my-test-secret')
@@ -37,7 +37,7 @@ module.exports = {
     searchPage.verifySearchResult(1, 'my-test-secret')
   },
 
-  'Edit secret as Admin user': (browser) => {
+  'Search: Edit secret as admin user': (browser) => {
     searchPage.navigateToResource()
     searchPage.verifyEditBtnTxt(browser, 'EditEdit')
     searchPage.edit()
