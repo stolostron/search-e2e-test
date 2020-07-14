@@ -148,7 +148,7 @@ function navigateToResource() {
 function verifyPageContent() {
   this.expect.element('@headerTitle').to.be.present
   this.expect.element('@searchbar').to.be.present
-  this.expect.element('@searchCardLoadind').to.not.be.present
+  this.expect.element('@searchCardLoading').to.not.be.present
 }
 
 function checkSpecificSearchFilter(idx, query) {
