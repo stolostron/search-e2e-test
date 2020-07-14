@@ -23,7 +23,7 @@ module.exports = {
     searchPage.navigate(url)
   },
 
-  'Search: Load page': () => {
+  'Search: Load page as viewer': () => {
     searchPage.verifyPageContent()
   },
 
@@ -35,7 +35,7 @@ module.exports = {
   //   searchPage.verifyNoResults()
   // },
 
-  'Search: Viewer is NOT able to edit configmaps': (browser) => {
+  'Search: Viewer is not allowed to edit configmap': (browser) => {
     searchPage.focusInput()
     searchPage.enterTextInSearchbar(browser, 'kind', '', 'configmap')
     searchPage.enterTextInSearchbar(browser, 'name', '', 'my-test-config')
