@@ -9,6 +9,7 @@
 
 const config = require('../../config')
 
+const timestamp = config.get('timestamp')
 let searchPage
 
 module.exports = {
@@ -38,10 +39,10 @@ module.exports = {
   'Search: Viewer is not allowed to edit configmap': (browser) => {
     searchPage.focusInput()
     searchPage.enterTextInSearchbar(browser, 'kind', '', 'configmap')
-    searchPage.enterTextInSearchbar(browser, 'name', '', 'my-test-config')
+    searchPage.enterTextInSearchbar(browser, 'name', '', `my-test-config-${timestamp}`)
     searchPage.checkTagArray('kind:configmap')
-    searchPage.checkSpecificSearchFilter(2, 'name:my-test-config')
-    searchPage.verifySearchResult(1, 'my-test-config')
+    searchPage.checkSpecificSearchFilter(2, `name:my-test-config-${timestamp}`)
+    searchPage.verifySearchResult(1, `my-test-config-${timestamp}`)
     // TODO
     searchPage.checkAccess()
   },

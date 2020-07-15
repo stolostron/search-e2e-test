@@ -13,11 +13,11 @@
       "silent": true,
       "screenshots": {
         "enabled": true,
-        "path": "test-output/e2e/screenshots",
+        "path": "results/screenshots",
         "on_failure": true
       },
       "globals": {
-        "waitForConditionTimeout": 30000,
+        "waitForConditionTimeout": 60000,
         "asyncHookTimeout" : 60000
       }
     },

@@ -19,10 +19,12 @@ if (fs.existsSync('./resources/options.yaml')) {
     optionsFile = './resources/options.yaml'
 }
 
+const timeStamp = Date.now()
 
 nconf.env({ lowerCase: true, separator: '_' })
     .file({file: optionsFile, format: nconfYaml })
     .defaults({
+        timestamp: timeStamp,
         CLUSTER_PORT: '443',
         CLUSTER_VIEWER_USR: 'user-viewer',
         CLUSTER_VIEWER_PWD: 'pass-viewer',
@@ -55,7 +57,7 @@ console.log('Test environment')
 console.log('========================================')
 console.log('baseDomain : ', nconf.get('options:hub:baseDomain'))
 console.log('user       : ', nconf.get('options:hub:user'))
-console.log('password   : ', nconf.get('options:hub:password'))
+// console.log('password   : ', nconf.get('options:hub:password'))
 console.log('========================================\n')
 
 module.exports = nconf
