@@ -26,7 +26,7 @@ const sleep = (milliseconds) => {
   } while (currentDate - date < milliseconds)
 }
 
-console.log(config.get('timestamp'))
+console.log('Creating resources for this execution using the unique ID: ', config.get('timestamp'))
 
 /* eslint-disable no-console*/
 module.exports = {
