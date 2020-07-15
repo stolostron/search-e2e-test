@@ -43,15 +43,23 @@ module.exports = {
       kubeToken
     )
     
-    namespaces.items.forEach( items => {
+    namespaces.items.forEach( async items => {
       if(items.metadata.name.includes('e2e-test')){
+        let namespace = items.metadata.name
+        // Manage finalizer issue:
+        await execCLI(
+          `kubectl get ns ${namespace} -o json \
+          | tr -d "\n" | sed "s/\"finalizers\": \[[^]]\+\]/\"finalizers\": []/" \
+          | kubectl replace --raw /api/v1/namespaces/${namespace}/finalize -f -`
+        )
+      
        kubeRequest(
-          `/api/v1/namespaces/${items.metadata.name}`,
+          `/api/v1/namespaces/${namespace}`,
           'delete',
           {},
           kubeToken
         )
-        console.log(`Success: Deleted namespace ${items.metadata.name}`)
+        console.log(`Success: Deleted namespace ${namespace}`)
       }
     })
 
@@ -127,7 +135,7 @@ module.exports = {
           "name": namespaceName,
           "labels": {
             "name": "Namespace-4-e2e-testing"
-          }
+          },
         }
       },
       kubeToken
@@ -168,7 +176,7 @@ module.exports = {
       kubeToken
     )
     console.log('Success: Created test configmap')
-
+    sleep(30000)
     done();
   },
 
@@ -176,6 +184,13 @@ module.exports = {
   after: async function(done) {
 
     // Remove test namespace & resources (Keep the Oauth provider & users)
+    // Manage Finalizers
+    await execCLI(
+      `kubectl get ns ${namespaceName} -o json \
+      | tr -d "\n" | sed "s/\"finalizers\": \[[^]]\+\]/\"finalizers\": []/" \
+      | kubectl replace --raw /api/v1/namespaces/${namespaceName}/finalize -f -`
+    )
+
     await kubeRequest(
       `/api/v1/namespaces/${namespaceName}`,
       'delete',
