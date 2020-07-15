@@ -11,9 +11,11 @@
 const execCLI = require('./cliHelper');
 const getKubeToken = require('./tokenHelper');
 const { kubeRequest } = require('./requestClient');
+const config = require('../../config')
 
 let kubeToken = null;
-const namespaceName = `e2e-test-${Date.now()}`
+const timestamp = config.get('timestamp')
+const namespaceName = `e2e-test-${timestamp}`
 process.env.NODE_TLS_REJECT_UNAUTHORIZED='0'
 
 const sleep = (milliseconds) => {
@@ -23,6 +25,8 @@ const sleep = (milliseconds) => {
     currentDate = Date.now();
   } while (currentDate - date < milliseconds)
 }
+
+console.log('Creating resources for this execution using the unique ID: ', config.get('timestamp'))
 
 /* eslint-disable no-console*/
 module.exports = {
@@ -103,7 +107,7 @@ module.exports = {
           "name": namespaceName,
           "labels": {
             "name": "Namespace-4-e2e-testing"
-          }
+          },
         }
       },
       kubeToken
@@ -118,7 +122,7 @@ module.exports = {
         "apiVersion": "v1",
         "kind": "Secret",
         "metadata": {
-          "name": "my-test-secret"
+          "name": `my-test-secret-${timestamp}`
         },
         "type": "Opaque",
         "data": {
@@ -137,14 +141,15 @@ module.exports = {
         "apiVersion": "v1",
         "kind": "ConfigMap",
         "metadata": {
-          "name": "my-test-config",
+          "name": `my-test-config-${timestamp}`,
           "namespace": `${namespaceName}`
         },
       },
       kubeToken
     )
     console.log('Success: Created test configmap')
-
+    console.log('Waiting 60 seconds to ensure that any existing RBAC cache gets invalidated after the new namespace is detected.')
+    sleep(60000)
     done();
   },
 
@@ -158,8 +163,18 @@ module.exports = {
       {},
       kubeToken
     )
+    sleep(30000)
+    await kubeRequest(
+      `/api/v1/namespaces/${namespaceName}`,
+      'patch',
+      [{
+        "op": "replace",
+        "path":"spec/finalizers",
+        "value":"[]"
+      }],
+      kubeToken
+    )
     console.log('Success: Removing test namespace')
-
     done()
   },
 
