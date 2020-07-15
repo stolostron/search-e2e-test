@@ -10,6 +10,7 @@
 
 const config = require('../../config')
 
+const timestamp = config.get('timestamp')
 let searchPage
 
 module.exports = {
@@ -31,10 +32,10 @@ module.exports = {
   'Search: Search for secret as admin user': (browser) => {
     searchPage.focusInput()
     searchPage.enterTextInSearchbar(browser, 'kind', '', 'secret')
-    searchPage.enterTextInSearchbar(browser, 'name', '', `my-test-secret-${config.get('timestamp')}`)
+    searchPage.enterTextInSearchbar(browser, 'name', '', `my-test-secret-${timestamp}`)
     searchPage.checkTagArray('kind:secret')
-    searchPage.checkSpecificSearchFilter(2, 'name:my-test-secret')
-    searchPage.verifySearchResult(1, `my-test-secret-${config.get('timestamp')}`)
+    searchPage.checkSpecificSearchFilter(2, `name:my-test-secret-${timestamp}`)
+    searchPage.verifySearchResult(1, `my-test-secret-${timestamp}`)
   },
 
   'Search: Edit secret as admin user': (browser) => {
