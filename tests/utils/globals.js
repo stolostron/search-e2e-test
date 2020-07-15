@@ -176,7 +176,7 @@ module.exports = {
       kubeToken
     )
     console.log('Success: Created test configmap')
-    sleep(30000)
+    sleep(60000)
     done();
   },
 
