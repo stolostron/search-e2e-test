@@ -35,34 +35,6 @@ module.exports = {
     kubeToken = await getKubeToken();
     let addedRbacProvider = false
 
-    // Remove existing e2e-test namespaces
-    const namespaces = await kubeRequest(
-      '/api/v1/namespaces',
-      'get',
-      {},
-      kubeToken
-    )
-    
-    namespaces.items.forEach( async items => {
-      if(items.metadata.name.includes('e2e-test')){
-        let namespace = items.metadata.name
-        // Manage finalizer issue:
-        await execCLI(
-          `kubectl get ns ${namespace} -o json \
-          | tr -d "\n" | sed "s/\"finalizers\": \[[^]]\+\]/\"finalizers\": []/" \
-          | kubectl replace --raw /api/v1/namespaces/${namespace}/finalize -f -`
-        )
-      
-       kubeRequest(
-          `/api/v1/namespaces/${namespace}`,
-          'delete',
-          {},
-          kubeToken
-        )
-        console.log(`Success: Deleted namespace ${namespace}`)
-      }
-    })
-
     // Check if user password secret exists, if not create it.
     const userSecretCheck = await execCLI(`oc get secret search-e2e-secret -n openshift-config`)
     if (userSecretCheck.includes('Command failed') || userSecretCheck.includes('Error')) {
@@ -185,21 +157,24 @@ module.exports = {
   after: async function(done) {
 
     // Remove test namespace & resources (Keep the Oauth provider & users)
-    // Manage Finalizers
-    await execCLI(
-      `kubectl get ns ${namespaceName} -o json \
-      | tr -d "\n" | sed "s/\"finalizers\": \[[^]]\+\]/\"finalizers\": []/" \
-      | kubectl replace --raw /api/v1/namespaces/${namespaceName}/finalize -f -`
-    )
-
     await kubeRequest(
       `/api/v1/namespaces/${namespaceName}`,
       'delete',
       {},
       kubeToken
     )
+    sleep(30000)
+    await kubeRequest(
+      `/api/v1/namespaces/${namespaceName}`,
+      'patch',
+      [{
+        "op": "replace",
+        "path":"spec/finalizers",
+        "value":"[]"
+      }],
+      kubeToken
+    )
     console.log('Success: Removing test namespace')
-
     done()
   },
 
