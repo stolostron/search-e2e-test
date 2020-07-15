@@ -11,9 +11,11 @@
 const execCLI = require('./cliHelper');
 const getKubeToken = require('./tokenHelper');
 const { kubeRequest } = require('./requestClient');
+const config = require('../../config')
 
 let kubeToken = null;
-const namespaceName = `e2e-test-${Date.now()}`
+const timestamp = config.get('timestamp')
+const namespaceName = `e2e-test-${timestamp}`
 process.env.NODE_TLS_REJECT_UNAUTHORIZED='0'
 
 const sleep = (milliseconds) => {
@@ -24,12 +26,34 @@ const sleep = (milliseconds) => {
   } while (currentDate - date < milliseconds)
 }
 
+console.log(config.get('timestamp'))
+
 /* eslint-disable no-console*/
 module.exports = {
   // External before hook is run at the beginning of the tests run, before creating the Selenium session
   before: async function(done) {
     kubeToken = await getKubeToken();
     let addedRbacProvider = false
+
+    // Remove existing e2e-test namespaces
+    const namespaces = await kubeRequest(
+      '/api/v1/namespaces',
+      'get',
+      {},
+      kubeToken
+    )
+    
+    namespaces.items.forEach( items => {
+      if(items.metadata.name.includes('e2e-test')){
+       kubeRequest(
+          `/api/v1/namespaces/${items.metadata.name}`,
+          'delete',
+          {},
+          kubeToken
+        )
+        console.log(`Success: Deleted namespace ${items.metadata.name}`)
+      }
+    })
 
     // Check if user password secret exists, if not create it.
     const userSecretCheck = await execCLI(`oc get secret search-e2e-secret -n openshift-config`)
@@ -118,7 +142,7 @@ module.exports = {
         "apiVersion": "v1",
         "kind": "Secret",
         "metadata": {
-          "name": "my-test-secret"
+          "name": `my-test-secret-${timestamp}`
         },
         "type": "Opaque",
         "data": {
@@ -137,7 +161,7 @@ module.exports = {
         "apiVersion": "v1",
         "kind": "ConfigMap",
         "metadata": {
-          "name": "my-test-config",
+          "name": `my-test-config-${timestamp}`,
           "namespace": `${namespaceName}`
         },
       },

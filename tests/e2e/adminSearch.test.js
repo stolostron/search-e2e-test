@@ -31,10 +31,10 @@ module.exports = {
   'Search: Search for secret as admin user': (browser) => {
     searchPage.focusInput()
     searchPage.enterTextInSearchbar(browser, 'kind', '', 'secret')
-    searchPage.enterTextInSearchbar(browser, 'name', '', 'my-test-secret')
+    searchPage.enterTextInSearchbar(browser, 'name', '', `my-test-secret-${config.get('timestamp')}`)
     searchPage.checkTagArray('kind:secret')
     searchPage.checkSpecificSearchFilter(2, 'name:my-test-secret')
-    searchPage.verifySearchResult(1, 'my-test-secret')
+    searchPage.verifySearchResult(1, `my-test-secret-${config.get('timestamp')}`)
   },
 
   'Search: Edit secret as admin user': (browser) => {
