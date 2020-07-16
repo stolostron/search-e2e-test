@@ -1,9 +1,9 @@
 {
   "env": {
-    "baseDomain": "",
-    "baseUrl": "",
-    "subBaseUrl": "",
-    "user": "",
-    "password": ""
+    "baseDomain": "<ocp baseDomain>",
+    "baseUrl": "<openshift-console url>",
+    "subBaseUrl": "<multicloud-console url",
+    "user": "<oc username>",
+    "password": "<oc password>"
   }
 }
