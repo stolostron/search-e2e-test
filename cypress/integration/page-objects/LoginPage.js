@@ -12,7 +12,8 @@ export const page = {
     password: '#inputPassword',
     submit: 'button[type="submit"]',
     error: '.bx--inline-notification--error',
-    header: '.app-header',
+    headerPage43: 'header.app-header',
+    headerPage44: 'header.pf-c-page__header',
     loginPage43: '.login-pf',
     loginPage44: '.pf-c-login', 
   },
@@ -40,7 +41,7 @@ async function authenticate(idprovider, username, password) {
   inputUsername(username)
   inputPassword(password)
   submit()
-  waitForLoginSuccess()
+  waitForLoginSuccess(parsedOCPVersion)
 }
 
 /**
@@ -105,6 +106,8 @@ function submit() {
 /**
  * Wait for the login page to succeed
  */
-function waitForLoginSuccess() {
-  cy.get(page.elements.header /*{ timeout: 20000 }*/)
+function waitForLoginSuccess(parsedOCPVersion) {
+  parsedOCPVersion >= 4.4
+  ? cy.get(page.elements.headerPage44, { timeout: 20000 })
+  : cy.get(page.elements.headerPage43, { timeout: 20000 })
 }

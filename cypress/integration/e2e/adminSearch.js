@@ -8,9 +8,11 @@ import { page as searchPage } from '../page-objects/SearchPage'
 before(() => {
   loginPage.commands.navigate()
   loginPage.commands.authenticate('kube:admin', Cypress.env('user'), Cypress.env('password'))
-  
-  const url = `${Cypress.env('subBaseUrl')}/multicloud/search`
+
+  const url = `${Cypress.env('subBaseUrl')}/multicloud`
   searchPage.commands.navigate(url)
+  searchPage.commands.verifySearchExistInHeader()
+  searchPage.commands.waitForPageToLoad()
 })
 
 describe('Search: Functional Tests', () => {

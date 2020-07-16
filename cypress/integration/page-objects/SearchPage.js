@@ -8,6 +8,7 @@ export const page = {
     clearAllButton: '.tagInput-cleanButton',
     dateTableCell: 'td:last-child',
     dataTableFirstChild: 'td:first-child',
+    header: 'header.app-header',
     headerTitle: '.bx--detail-page-header-title',
     input: '.react-tags__search-input input',
     querySpan: '.react-tags__selected-tag-name',
@@ -20,6 +21,7 @@ export const page = {
     tableHeaderLast: '.search--resource-table-header-button:last-child',
     queryTerms: '.react-tags__selected',
     searchTable: '.bx--data-table-v2',
+    searchIcon: 'li#acm-search',
     overflow: 'div.bx--overflow-menu',
     overflowIcon: '.bx--overflow-menu__icon',
     overflowButton: '.bx--overflow-menu-options__btn',
@@ -43,7 +45,9 @@ export const page = {
     focusInput,
     enterTextInSearchbar,
     navigateToResource,
-    verifyPageContent
+    verifyPageContent,
+    verifySearchExistInHeader,
+    waitForPageToLoad,
   }
 }
 
@@ -103,4 +107,15 @@ function verifyPageContent() {
   cy.expect(page.elements.headerTitle).to.exist
   cy.expect(page.elements.searchbar).to.exist
   cy.expect(page.elements.searchCardLoading).to.exist
+}
+
+function verifySearchExistInHeader() {
+  cy.get(page.elements.searchIcon, { timeout: 5000 }).click()
+}
+
+/**
+ * Wait for the search page to load
+ */
+function waitForPageToLoad() {
+  cy.get(page.elements.header, { timeout: 20000 })
 }
