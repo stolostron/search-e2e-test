@@ -149,7 +149,7 @@ module.exports = {
     )
     console.log('Success: Created test configmap')
     console.log('Waiting 60 seconds to ensure that any existing RBAC cache gets invalidated after the new namespace is detected.')
-    sleep(60000)
+    sleep(90000)
     done();
   },
 
