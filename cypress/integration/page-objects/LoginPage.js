@@ -2,8 +2,6 @@
  * Copyright (c) 2020 Red Hat, Inc.
  */
 
-// import execCLI from "../../tests/utils/cliHelper"
-
 export const page = {
   elements: {
     identityProvider43: 'a.idp',
@@ -34,14 +32,16 @@ export const page = {
  * Helper for other pages to use for authentication in before() their suit
  */
 async function authenticate(idprovider, username, password) {
-  let ocpVersion = 'Server Version: 4.4.9' // await execCLI(`oc version | grep Server`)
-  const parsedOCPVersion = parseFloat(ocpVersion.substring(16, 19))
-  waitForLoginPageLoad(parsedOCPVersion)
-  chooseIdentityProvider(parsedOCPVersion, idprovider)
-  inputUsername(username)
-  inputPassword(password)
-  submit()
-  waitForLoginSuccess(parsedOCPVersion)
+  await cy.exec(`oc version | grep Server`).then((res) => {
+    let ocpVersion = res.stdout
+    const parsedOCPVersion = parseFloat(ocpVersion.substring(16, 19))
+    waitForLoginPageLoad(parsedOCPVersion)
+    chooseIdentityProvider(parsedOCPVersion, idprovider)
+    inputUsername(username)
+    inputPassword(password)
+    submit()
+    waitForLoginSuccess(parsedOCPVersion)
+  })
 }
 
 /**

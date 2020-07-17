@@ -9,13 +9,28 @@
 // https://on.cypress.io/plugins-guide
 // ***********************************************************
 
-// This function is called when a project is opened or re-opened (e.g. due to
-// the project's config changing)
+const fs = require('fs')
 
 /**
  * @type {Cypress.PluginConfig}
  */
 module.exports = (on, config) => {
-  // `on` is used to hook into various events Cypress emits
-  // `config` is the resolved Cypress config
+  var data = null
+  try {
+    fs.readFile(`${__dirname}/../../cypress.json`, (err, res) => {
+      if (err) {
+        console.debug(err)
+      } else {
+        data = JSON.parse(res)
+        console.log('Test environment')
+        console.log('========================================')
+        console.log(`${data.env.baseDomain ? '\033[0;32mbaseDomain\033[0m' : '\033[0;31mbaseDomain\033[0m'}  :  ${data.env.baseDomain}`)
+        console.log(`${data.env.user ? '\033[0;32muser\033[0m' : '\033[0;31muser\033[0m'}  :  ${data.env.user}`)
+        console.log(`${data.env.password ? '\033[0;32mpassword\033[0m' : '\033[0;31mpassword\033[0m'}  :  ${data.env.password}`)
+        console.log('========================================\n')
+      }
+    })
+  } catch (err) {
+    console.debug(err)
+  }
 }

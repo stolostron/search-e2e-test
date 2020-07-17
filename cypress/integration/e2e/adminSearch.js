@@ -4,8 +4,12 @@
 
 import { page as loginPage } from '../page-objects/LoginPage'
 import { page as searchPage } from '../page-objects/SearchPage'
+const global = require('../utils/globals')
 
 before(() => {
+  const setupGlobal = async () => await global.before()
+  setupGlobal()
+
   loginPage.commands.navigate()
   loginPage.commands.authenticate('kube:admin', Cypress.env('user'), Cypress.env('password'))
 
@@ -16,6 +20,8 @@ before(() => {
 })
 
 describe('Search: Functional Tests', () => {
+  const timestamp = Date.now()
+
   it('Search: Load page as admin user', () =>{
     searchPage.commands.verifyPageContent()
   })
@@ -23,7 +29,7 @@ describe('Search: Functional Tests', () => {
   it('Search: Search for secret as admin user', () => {
     searchPage.commands.focusInput()
     searchPage.commands.enterTextInSearchbar('kind', ' ', 'secret')
-    searchPage.commands.enterTextInSearchbar('name', ' ', 'my-test-secret')
+    searchPage.commands.enterTextInSearchbar('name', ' ', `my-test-secret-${timestamp}`)
     searchPage.commands.checkTagArray('kind:secret')
   })
 
@@ -40,6 +46,5 @@ describe('Search: Functional Tests', () => {
 after(() => {
   setTimeout(() => {
     cy.end()
-    // done()
   })
 })
