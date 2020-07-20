@@ -166,8 +166,9 @@ module.exports = {
     sleep(45000)
 
     const namespaces = await kubeRequest(`/api/v1/namespaces`, 'get', {}, kubeToken)
-    if (namespaces.find(ns => ns.metadata.name)) {
-      console.log(`Namespace ${namespaceName} was not deleted within 30 seconds. Remopving finalizers to force delete.`)
+    console.log('> namespaces: ', namespaces)
+    if (namespaces && namespaces.find(ns => ns.metadata.name)) {
+      console.log(`Namespace ${namespaceName} was not deleted within 45 seconds. Removing finalizers to force delete.`)
       await kubeRequest(
         `/api/v1/namespaces/${namespaceName}`,
         'patch',
