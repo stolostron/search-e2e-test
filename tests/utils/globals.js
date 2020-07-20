@@ -149,7 +149,7 @@ module.exports = {
     )
     console.log('Success: Created test configmap')
     console.log('Waiting 60 seconds to ensure that any existing RBAC cache gets invalidated after the new namespace is detected.')
-    sleep(90000)
+    sleep(60000)
     done();
   },
 
@@ -163,17 +163,22 @@ module.exports = {
       {},
       kubeToken
     )
-    sleep(30000)
-    await kubeRequest(
-      `/api/v1/namespaces/${namespaceName}`,
-      'patch',
-      [{
-        "op": "replace",
-        "path":"spec/finalizers",
-        "value":"[]"
-      }],
-      kubeToken
-    )
+    sleep(60000)
+
+    const namespaces = await kubeRequest(`/api/v1/namespaces`, 'get', {}, kubeToken)
+    if (namespaces && namespaces.items && namespaces.items.find(ns => ns.metadata.name)) {
+      console.log(`Namespace ${namespaceName} was not deleted within 60 seconds. Removing finalizers to force delete.`)
+      await kubeRequest(
+        `/api/v1/namespaces/${namespaceName}`,
+        'patch',
+        [{
+          "op": "replace",
+          "path":"spec/finalizers",
+          "value":"[]"
+        }],
+        kubeToken
+      ).catch((e) => console.log(`Unable to force delete of namespace ${namespaceName}.   This happened on the cleanup phase and should not affect the test result.`))
+    }
     console.log('Success: Removing test namespace')
     done()
   },
