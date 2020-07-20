@@ -163,7 +163,7 @@ module.exports = {
       {},
       kubeToken
     )
-    sleep(60000)
+    sleep(45000)
 
     const namespaces = await kubeRequest(`/api/v1/namespaces`, 'get', {}, kubeToken)
     if (namespaces.find(ns => ns.metadata.name)) {
