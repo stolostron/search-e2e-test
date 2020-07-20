@@ -15,7 +15,20 @@
 /**
  * @type {Cypress.PluginConfig}
  */
+
+const testConfig = require('../config').getConfig()
+const { cleanReports } = require('../scripts/helpers')
+
 module.exports = (on, config) => {
+
+  cleanReports()
+
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
+
+  require('cypress-terminal-report/src/installLogsPrinter')(on)
+
+  config.env.TEST_CONFIG = testConfig
+
+  return config
 }
