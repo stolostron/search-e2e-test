@@ -23,8 +23,8 @@ describe('Search', () => {
     searchBar.enterTextInSearchBar('kind', '', 'secret')
     searchBar.enterTextInSearchBar('name', '', `my-test-secret-${timestamp}`)
     searchBar.checkTagArray('kind:secret')
-    // searchBar.checkSpecificSearchFilter(2, `name:my-test-secret-${timestamp}`)
-    // searchBar.verifySearchResult(1, `my-test-secret-${timestamp}`)
+    searchBar.checkSpecificSearchFilter(2, `name:my-test-secret-${timestamp}`)
+    searchBar.verifySearchResult(1, `my-test-secret-${timestamp}`)
   })
 
 })

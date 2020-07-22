@@ -39,11 +39,11 @@ export const searchBar = {
   checkTagArray:(query) => {
     cy.get('.react-tags__selected-tag-name').contains(query)
   },
-  // checkSpecificSearchFilter:(idx, query) => {
-  //   cy.get('').eq(idx).contains(query)
-  // },
-  // verifySearchResult:(idx, query) => {
-  //   cy.get('.bx--data-table-v2').should('exist')
-  //   cy.get('.bx--data-table-v2 tr').eq(idx).contains( query)
-  // }
+  checkSpecificSearchFilter:(idx, query) => {
+    cy.get('').eq(idx).contains(query)
+  },
+  verifySearchResult:(idx, query) => {
+    cy.get('.bx--data-table-v2').should('exist')
+    cy.get('.bx--data-table-v2 tr').eq(idx).contains( query)
+  }
 }
