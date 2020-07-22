@@ -9,8 +9,7 @@
 // https://on.cypress.io/plugins-guide
 // ***********************************************************
 
-// This function is called when a project is opened or re-opened (e.g. due to
-// the project's config changing)
+const fs = require('fs')
 
 /**
  * @type {Cypress.PluginConfig}
@@ -20,7 +19,6 @@ const testConfig = require('../config').getConfig()
 const { cleanReports } = require('../scripts/helpers')
 
 module.exports = (on, config) => {
-
   cleanReports()
 
   // `on` is used to hook into various events Cypress emits

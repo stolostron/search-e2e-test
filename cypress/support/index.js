@@ -199,7 +199,6 @@ before(() => {
         ).catch((e) => console.log(`Unable to force delete of namespace ${namespaceName}.   This happened on the cleanup phase and should not affect the test result.`))
       }
     })
-
     console.log('Success: Removing test namespace')
     done()
   })
