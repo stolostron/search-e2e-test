@@ -24,7 +24,7 @@ require('cypress-terminal-report/src/installLogsCollector')()
 Cypress.Cookies.preserveOnce('acm-access-token-cookie', '_oauth_proxy', 'XSRF-TOKEN', '_csrf')
 
 let kubeToken = null;
-const timestamp = Date.now()
+export const timestamp = Date.now()
 const namespaceName = `e2e-test-${timestamp}`
 process.env.NODE_TLS_REJECT_UNAUTHORIZED='0'
 
@@ -43,7 +43,7 @@ before(() => {
         const userSecretCheck = res.stdout
         if (userSecretCheck.includes('Command failed') || userSecretCheck.includes('Error')) {
           console.log('Creating Oauth Provider secret')
-          cy.exec(`oc create secret generic search-e2e-secret --from-file=htpasswd=./tests/utils/kube-resources/passwdfile -n openshift-config`)
+          cy.exec(`oc create secret generic search-e2e-secret --from-file=htpasswd=../fixtures/passwdfile -n openshift-config`)
           console.log('Success: Created Oauth Provider secret')
           addedRbacProvider = true
         } else {
@@ -72,7 +72,7 @@ before(() => {
         const roleCheck = res.stdout
         if (roleCheck.includes('Command failed') || roleCheck.includes('Error')) {
           console.log('Creating cluster role - viewer')
-          cy.exec(`oc apply -f ../utils/kube-resources/viewer-role.yaml`)
+          cy.exec(`oc apply -f ../fixtures/viewer-role.yaml`)
           console.log('Success: Creating cluster role - viewer')
           addedRbacProvider = true
         }
@@ -84,7 +84,7 @@ before(() => {
           const roleBindingCheck = res.stdout
           if ((res.stderr.includes('Command failed') || res.stderr.includes('Error')) || roleBindingCheck.includes('Command failed') || roleBindingCheck.includes('Error')) {
             console.log('Creating cluster role binding - viewer')
-            cy.exec(`oc apply -f ./utils/kube-resources/viewer-roleBinding.yaml`).then(() => {
+            cy.exec(`oc apply -f ../fixtures/viewer-roleBinding.yaml`).then(() => {
               console.log('Success: Creating cluster role binding- viewer')
               addedRbacProvider = true
             })

@@ -5,7 +5,7 @@
 
 /// <reference types="cypress" />
 
-import { pageLoader, searchPage } from '../views/search'
+import { pageLoader, searchPage, searchBar } from '../views/search'
 
 describe('Login', {
   env: {

@@ -5,7 +5,8 @@
 
 /// <reference types="cypress" />
 
-import { pageLoader, searchPage } from '../views/search'
+import { pageLoader, searchPage, searchBar } from '../views/search'
+import { timestamp } from '../support/index'
 
 describe('Login', () => {
   it('page should load', () => {
@@ -15,3 +16,15 @@ describe('Login', () => {
   })
 })
 
+describe('Search', () => {
+
+  it('Search for secret as admin user', () => {
+    searchBar.focusSearchBar()
+    searchBar.enterTextInSearchBar('kind', '', 'secret')
+    searchBar.enterTextInSearchBar('name', '', `my-test-secret-${timestamp}`)
+    searchBar.checkTagArray('kind:secret')
+    // searchBar.checkSpecificSearchFilter(2, `name:my-test-secret-${timestamp}`)
+    // searchBar.verifySearchResult(1, `my-test-secret-${timestamp}`)
+  })
+
+})
