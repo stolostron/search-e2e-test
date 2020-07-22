@@ -1,0 +1,68 @@
+clusters:
+  aws:
+    name: 'console-ui-test-cluster-aws'
+    releaseImage: ''
+  google:
+    name: 'console-ui-test-cluster-google'
+    releaseImage: ''
+  azure:
+    name: 'console-ui-test-cluster-azure'
+    releaseImage: ''
+importCluster:
+  name: 'console-ui-test-import-cluster'
+connections:
+  aws:
+    name: 'console-ui-test-connection-aws'
+    namespace: 'default'
+    vendor: 'Amazon Web Services'
+    baseDomain: 'dev01.open-cluster-management.com'
+    awsAccessKeyID: 'cluster-lifecycle'
+    awsSecretAccessKeyID: 'cluster-lifecycle'
+  azure:
+    name: 'console-ui-test-connection-azure'
+    namespace: 'default'
+    vendor: 'Microsoft Azure'
+    baseDomain: 'dev02.open-cluster-management.com'
+    baseDomainResourceGroupName: 'open-cluster-management'
+    clientId: 'clientid'
+    clientSecret: 'clientsecret'
+    subscriptionId: 'subscriptionid'
+    tenantId: 'tenantid'
+  google:
+    name: 'console-ui-test-connection-google'
+    namespace: 'default'
+    vendor: 'Google Cloud'
+    baseDomain: 'dev03.open-cluster-management.com'
+    gcProjectID: 'cluster-lifecycle'
+    gcServiceAccountKey: |-
+      {
+        "type": "service_account",
+        "project_id": "gc-clusterlifecycle-dev",
+        "private_key_id": "abcdefgh123563",
+        "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwASDLKNclkjsdlASDFLKsdlkjllkj1232AASDLFKNvASDLKNELKDLKNMSDFLKJDSDVLIJCVLKNEWFDLKJASDFLKNASDFLIJXVLKNSDFLKJSDFLKAJSDFLKANSDFLKSJDFuYg==\n-----END PRIVATE KEY-----\n",
+        "client_email": "ui@cluster-lifecycle.iam.gserviceaccount.com",
+        "client_id": "9872342340928334535",
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/ui%40cluster-lifecycle.iam.gserviceaccount.com"
+      }
+credentials:
+  pullSecret: '{"auths":{"cloud.openshift.com":{"auth":"ABCDEFGH123456","email":"clusterlifecycle@redhat.com"},"quay.io":{"auth":"ABCDEFGH123456","email":"clusterlifecycle@redhat.com"},"registry.connect.redhat.com":{"auth":"ABCDEFGH123456","email":"clusterlifecycle@redhat.com"},"registry.redhat.io":{"auth":"ABCDEFGH123456","email":"clusterlifecycle@redhat.com"}}}'
+  sshPrivatekey: |-
+    -----BEGIN RSA PRIVATE KEY-----
+    MIICXAIBAAKBgQCefWBCzyEuBXaDtNkNMgYqzziRkBirEF8CiibL0YVxqS1va5BI
+    f2AEW2umx/Xop7KHuIUigkSEs8IWU2T948I5z0gTygjq0vAEIZ2NPnHfEffzVsIO
+    bzIyUhRlD1NA0FfBNa/D7oqGHwRHhuo79WvxkPExzn/YXzdHFNbc7rIDzQIDAQAB
+    AoGAR03m+gfQSLFCgbzijjI8XhQ+whaPUp8Z772R+M7594oCnAdLsaJE45Dx3OZH
+    t3WDN9aHZ2AuTXnGT18Tp7pJjh1HnoF8iZC3cgP6XDUvAgVyUlhlyPzhjfLsA+Sc
+    fMJAnGe7Nr38hvvGnGSNKR1JnD8ThVqJDmY/8RkE8f3RISECQQDS+XGlrmwSAqRD
+    kVrsakpwrEpn6x7aDje0uPOQzK722Vv7Q02ARG4jTUMnnRUQDQy+YClJkVaHynY4
+    tdjWJavpAkEAwFBw8CMk/jLe3pvWFTC3RwoKTu0mlp7afpHduS428EpbMDvfNT7e
+    xb11O65zGOuc/LruQ2S8WXMOM4RKTb5+RQJBALbtAdUePyX+lF7hkWybXKAFQx6H
+    huCao0JXexh54Nq37EEYQgKNUtHZE/ktAi5AomQPDL10/woOSiMxySkk0MECQHBE
+    xZm6upbXNbp4+SKHvQbwupHW6icV93HaT7kSXKosjk17NlQMLtr7Plwn/DM5IP19
+    VyjqvvXtMAYtHX+DTI0CQECvsNkLD10Uzw6JeG5SSLcQzWY1bDTNCUZGlelBPOHe
+    AQB84ZSpl1sqKJf4G7hd1Tmynynu0DvLVeN9kG/afvU=
+    -----END RSA PRIVATE KEY-----
+  sshPublickey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQCefWBCzyEuBXaDtNkNMgYqzziRkBirEF8CiibL0YVxqS1va5BIf2AEW2umx/Xop7KHuIUigkSEs8IWU2T948I5z0gTygjq0vAEIZ2NPnHfEffzVsIObzIyUhRlD1NA0FfBNa/D7oqGHwRHhuo79WvxkPExzn/YXzdHFNbc7rIDzQ=='

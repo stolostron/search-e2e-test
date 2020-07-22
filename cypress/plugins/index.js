@@ -14,23 +14,19 @@ const fs = require('fs')
 /**
  * @type {Cypress.PluginConfig}
  */
+
+const testConfig = require('../config').getConfig()
+const { cleanReports } = require('../scripts/helpers')
+
 module.exports = (on, config) => {
-  var data = null
-  try {
-    fs.readFile(`${__dirname}/../../cypress.json`, (err, res) => {
-      if (err) {
-        console.debug(err)
-      } else {
-        data = JSON.parse(res)
-        console.log('Test environment')
-        console.log('========================================')
-        console.log(`${data.env.baseDomain ? '\033[0;32mbaseDomain\033[0m' : '\033[0;31mbaseDomain\033[0m'}  :  ${data.env.baseDomain}`)
-        console.log(`${data.env.user ? '\033[0;32muser\033[0m' : '\033[0;31muser\033[0m'}  :  ${data.env.user}`)
-        console.log(`${data.env.password ? '\033[0;32mpassword\033[0m' : '\033[0;31mpassword\033[0m'}  :  ${data.env.password}`)
-        console.log('========================================\n')
-      }
-    })
-  } catch (err) {
-    console.debug(err)
-  }
+  cleanReports()
+
+  // `on` is used to hook into various events Cypress emits
+  // `config` is the resolved Cypress config
+
+  require('cypress-terminal-report/src/installLogsPrinter')(on)
+
+  config.env.TEST_CONFIG = testConfig
+
+  return config
 }

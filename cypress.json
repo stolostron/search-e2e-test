@@ -6,13 +6,9 @@
   "screenshotsFolder" : "cypress/screenshots",
   "supportFile": "cypress/support/index.js",
   "videosFolder": "cypress/videos",
+  "baseUrl": "https://localhost:3000",
   "nodeVersion": "system",
   "env": {
-    "baseDomain": "<ocp baseDomain>",
-    "baseUrl": "<openshift-console url>",
-    "subBaseUrl": "<multicloud-console url",
-    "user": "<oc username>",
-    "password": "<oc password>",
     "OC_IDP": "kube:admin",
     "OCP_CLUSTER_USER": "kubeadmin"
   },
@@ -26,7 +22,7 @@
       "json": true
     },
     "mochaJunitReporterReporterOptions": {
-      "mochaFile": "tests/test-output/cypress/xml/cypress-[hash].xml"
+      "mochaFile": "test-output/cypress/xml/cypress-[hash].xml"
     }
   }
 }
