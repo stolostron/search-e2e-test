@@ -1,8 +1,5 @@
 {
-<<<<<<< HEAD
-=======
   "chromeWebSecurity": false,
->>>>>>> origin/dbennett/cypress-migration
   "integrationFolder": "cypress/tests",
   "fixturesFolder": "cypress/fixtures",
   "pluginsFile": "cypress/plugins/index.js",
@@ -15,10 +12,6 @@
     "OC_IDP": "kube:admin",
     "OCP_CLUSTER_USER": "kubeadmin"
   },
-<<<<<<< HEAD
-  "chromeWebSecurity": false,
-=======
->>>>>>> origin/dbennett/cypress-migration
   "reporter": "cypress-multi-reporters",
   "reporterOptions": {
     "reporterEnabled": "mochawesome, mocha-junit-reporter",
