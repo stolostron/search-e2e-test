@@ -1,9 +1,32 @@
 {
+  "chromeWebSecurity": false,
+  "integrationFolder": "cypress/tests",
+  "fixturesFolder": "cypress/fixtures",
+  "pluginsFile": "cypress/plugins/index.js",
+  "screenshotsFolder" : "cypress/screenshots",
+  "supportFile": "cypress/support/index.js",
+  "videosFolder": "cypress/videos",
+  "nodeVersion": "system",
   "env": {
     "baseDomain": "<ocp baseDomain>",
     "baseUrl": "<openshift-console url>",
     "subBaseUrl": "<multicloud-console url",
     "user": "<oc username>",
-    "password": "<oc password>"
+    "password": "<oc password>",
+    "OC_IDP": "kube:admin",
+    "OCP_CLUSTER_USER": "kubeadmin"
+  },
+  "reporter": "cypress-multi-reporters",
+  "reporterOptions": {
+    "reporterEnabled": "mochawesome, mocha-junit-reporter",
+    "mochawesomeReporterOptions": {
+      "reportDir": "tests/test-output/cypress/json",
+      "overwrite": false,
+      "html": false,
+      "json": true
+    },
+    "mochaJunitReporterReporterOptions": {
+      "mochaFile": "tests/test-output/cypress/xml/cypress-[hash].xml"
+    }
   }
 }
