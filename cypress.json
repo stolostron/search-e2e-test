@@ -11,6 +11,7 @@
     "OC_IDP": "kube:admin",
     "OCP_CLUSTER_USER": "kubeadmin"
   },
+  "chromeWebSecurity": false,
   "reporter": "cypress-multi-reporters",
   "reporterOptions": {
     "reporterEnabled": "mochawesome, mocha-junit-reporter",

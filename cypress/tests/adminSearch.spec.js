@@ -7,14 +7,11 @@
 
 import { pageLoader, searchPage } from '../views/search'
 
-before(()=>{
-
-})
-
 describe('Login', () => {
   it('page should load', () => {
-    cy.visit('/multicloud/search')
+    cy.login(Cypress.env('OCP_CLUSTER_USER'), Cypress.env('OCP_CLUSTER_PASS'), Cypress.env('OC_IDP'))
     pageLoader.shouldNotExist()
-    searchPage.shouldExist(e)
+    searchPage.shouldExist()
   })
 })
+

@@ -30,33 +30,29 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 const axios = require("axios");
-const config = require('../config')
 
-Cypress.Commands.add('login', (username, password) => {
+Cypress.Commands.add('login', (OCP_CLUSTER_USER, OCP_CLUSTER_PASS, OC_IDP) => {
+  cy.visit('/multicloud/search')
+  cy.get('body').then(body => {
+    // Check if logged in
+    if (body.find('#header').length === 0) {
 
+      // Check if identity providers are configured
+      if (body.find('form').length === 0)
+        cy.contains(OC_IDP).click()
+      cy.get('#inputUsername').type(OCP_CLUSTER_USER)
+      cy.get('#inputPassword').type(OCP_CLUSTER_PASS)
+      cy.get('button[type="submit"]').click()
+      cy.get('#header').should('exist')
+    }
+  })
 })
 
- Cypress.Commands.add('getKubeToken',() => {
-  let kubeToken = ''
-  try {
-    cy.exec(`oc login -u ${Cypress.env('user')} -p ${Cypress.env('password')} --server=https://api.${Cypress.env('baseDomain')}:6443 --insecure-skip-tls-verify=true`)
-     .then(() => {
-       cy.exec('oc whoami -t').then((res) => {
-        process.env.SERVICEACCT_TOKEN = res.stdout
-        kubeToken = res.stdout
-        console.log('kubeToken', kubeToken)
-        return kubeToken
-      })
-     })
-  } catch (e){
-    console.error('Error getting kube token. ', e);
-    return kubeToken
-  }
-})
+
 
 Cypress.Commands.add('kubeRequest', (path, method, jsonBody, kubeToken) => {
   return axios({
-    url: `https://api.${config.get('options:hub:baseDomain')}:6443${path}`,
+    url: `https://api.${Cypress.env('BASE_DOMAIN')}:6443${path}`,
     method,
     data: jsonBody,
     headers: {
@@ -71,12 +67,3 @@ Cypress.Commands.add('kubeRequest', (path, method, jsonBody, kubeToken) => {
   })
   .then(res => res.data)
 })
-
-Cypress.Commands.add('sleep', (milliseconds) => {
-  const data = Date.now();
-  let currentDate = null;
-  do {
-    currentDate = Date.now();
-  } while (currentDate - date < milliseconds )
-})
-
