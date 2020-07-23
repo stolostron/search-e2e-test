@@ -10,7 +10,7 @@ import { timestamp } from '../support/index'
 
 describe('Login', () => {
   it('page should load', () => {
-    cy.login(Cypress.env('OCP_CLUSTER_USER'), Cypress.env('OCP_CLUSTER_PASS'), Cypress.env('OC_IDP'))
+    cy.login(Cypress.env('OPTIONS_HUB_USER'), Cypress.env('OPTIONS_HUB_PASSWORD'), Cypress.env('OC_IDP'))
     pageLoader.shouldNotExist()
     searchPage.shouldExist()
   })

@@ -10,7 +10,9 @@
   "nodeVersion": "system",
   "env": {
     "OC_IDP": "kube:admin",
-    "OCP_CLUSTER_USER": "kubeadmin"
+    "OPTIONS_HUB_BASEDOMAIN": "",
+    "OPTIONS_HUB_USER": "kubeadmin",
+    "OPTIONS_HUB_PASSWORD": ""
   },
   "reporter": "cypress-multi-reporters",
   "reporterOptions": {

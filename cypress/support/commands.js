@@ -52,7 +52,7 @@ Cypress.Commands.add('login', (OCP_CLUSTER_USER, OCP_CLUSTER_PASS, OC_IDP) => {
 
 Cypress.Commands.add('kubeRequest', (path, method, jsonBody, kubeToken) => {
   return axios({
-    url: `https://api.${Cypress.env('BASE_DOMAIN')}:6443${path}`,
+    url: `https://api.${Cypress.env('OPTIONS_HUB_BASEDOMAIN')}:6443${path}`,
     method,
     data: jsonBody,
     headers: {

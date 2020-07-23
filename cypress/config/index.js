@@ -25,9 +25,6 @@ exports.getConfig = () => {
   return JSON.stringify(config)
 }
 
-
-
-
 // // const fs = require('fs')
 // const path = require('path')
 // const nconf = require('nconf')
@@ -83,4 +80,3 @@ exports.getConfig = () => {
 // console.log('========================================\n')
 
 // module.exports = nconf
-dss
