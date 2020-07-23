@@ -8,7 +8,7 @@ The Cypress tests for search within [Console-UI](https://github.com/open-cluster
 
 #### Prerequisites:
 - Install NodeJS (v12) (npm will be installed with Node)
-- From the root console-ui directory, run `npm install`
+- From the root search-e2e-test directory, run `npm install`
 
 #### Live Cluster:
 
