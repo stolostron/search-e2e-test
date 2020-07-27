@@ -36,6 +36,10 @@ endif
 DOCKER_NAMESPACE := open-cluster-management
 DOCKER_REGISTRY := quay.io
 
+BROWSER ?= chrome
+TEST_IMAGE_TAG ?= $(COMPONENT_VERSION)$(COMPONENT_TAG_EXTENSION)
+
+
 .PHONY: build
 build:
 	make docker/info
@@ -53,7 +57,7 @@ run-test-image:
 	docker run \
 	-e BROWSER=$(BROWSER) \
 	--volume $(shell pwd)/options.yaml:/resources/options.yaml \
-	quay.io/open-cluster-management/search-e2e-tests:$(TEST_IMAGE_TAG)
+	quay.io/open-cluster-management/search-e2e-test:$(TEST_IMAGE_TAG)
 
 
 .PHONY: push

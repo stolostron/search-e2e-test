@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "test:e2e": "npx cypress open",
-    "test:e2e-headless": "npx cypress run"
+    "test:e2e-headless": "npx cypress run",
+    "test:merge-xml": "node -e \"require('./tests/cypress/scripts/helpers').mergeXmlReports()\""
   },
   "repository": {
     "type": "git",

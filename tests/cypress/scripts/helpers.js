@@ -14,10 +14,7 @@ exports.cleanReports = () => {
 }
 
 exports.mergeXmlReports = () => {
-  const { TEST_GROUP } = process.env
-  const fileName = `console-ui${TEST_GROUP ? `-${TEST_GROUP}` : ''}.xml`
-  const mergedReportPath = path.join(__dirname, '..', '..', 'test-output', fileName)
   const xmlReportsPath = path.join(__dirname, '..', '..', 'test-output', 'cypress', 'xml')
   const reports = fs.readdirSync(xmlReportsPath).map(report => path.join(xmlReportsPath, report))
-  junitMerger.mergeFiles(mergedReportPath, reports)
+  junitMerger.mergeFiles(reports)
 }
