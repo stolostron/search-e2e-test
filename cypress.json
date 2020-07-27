@@ -1,11 +1,11 @@
 {
   "chromeWebSecurity": false,
-  "integrationFolder": "cypress/tests",
-  "fixturesFolder": "cypress/fixtures",
-  "pluginsFile": "cypress/plugins/index.js",
-  "screenshotsFolder" : "cypress/screenshots",
-  "supportFile": "cypress/support/index.js",
-  "videosFolder": "cypress/videos",
+  "integrationFolder": "tests/cypress/tests",
+  "fixturesFolder": "tests/cypress/fixtures",
+  "pluginsFile": "tests/cypress/plugins/index.js",
+  "screenshotsFolder" : "tests/cypress/screenshots",
+  "supportFile": "tests/cypress/support/index.js",
+  "videosFolder": "tests/cypress/videos",
   "baseUrl": "https://localhost:3000",
   "nodeVersion": "system",
   "env": {
@@ -22,7 +22,7 @@
       "json": true
     },
     "mochaJunitReporterReporterOptions": {
-      "mochaFile": "test-output/cypress/xml/cypress-[hash].xml"
+      "mochaFile": "tests/test-output/cypress/xml/cypress-[hash].xml"
     }
   }
 }

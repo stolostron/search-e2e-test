@@ -25,10 +25,12 @@
     "xml2json": "^0.11.2"
   },
   "devDependencies": {
+    "@cypress/code-coverage": "^3.7.2",
     "chromedriver": "^83.0.0",
     "cypress": "^4.10.0",
     "cypress-multi-reporters": "^1.4.0",
     "cypress-terminal-report": "^1.4.1",
+    "eslint-plugin-cypress": "^2.11.1",
     "geckodriver": "^1.19.1",
     "junit-report-merger": "0.0.6",
     "querystring": "^0.2.0",

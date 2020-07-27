@@ -41,6 +41,21 @@ build:
 	make docker/info
 	make docker/build
 
+.PHONY: build-test-image
+build-test-image:
+	@echo "Building $(COMPONENT_DOCKER_REPO)/$(COMPONENT_NAME)-tests:$(TEST_IMAGE_TAG)"
+	docker build . \
+	-f Dockerfile.cypress \
+	-t $(COMPONENT_DOCKER_REPO)/$(COMPONENT_NAME)-tests:$(TEST_IMAGE_TAG)
+
+.PHONY: run-test-image
+run-test-image:
+	docker run \
+	-e BROWSER=$(BROWSER) \
+	--volume $(shell pwd)/options.yaml:/resources/options.yaml \
+	quay.io/open-cluster-management/search-e2e-tests:$(TEST_IMAGE_TAG)
+
+
 .PHONY: push
 push:: docker/tag docker/login
 	make docker/push
