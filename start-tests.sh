@@ -1,6 +1,8 @@
 #!/bin/bash
 
+###############################################################################
 # Copyright (c) 2020 Red Hat, Inc.
+###############################################################################
 
 echo "Initiating tests..."
 
@@ -18,9 +20,6 @@ if [ -f $OPTIONS_FILE ]; then
   export CYPRESS_OCP_CLUSTER_URL="https://api.$BASE_DOMAIN:6443"
   export CYPRESS_OCP_CLUSTER_USER=`yq r $OPTIONS_FILE 'options.hub.user'`
   export CYPRESS_OCP_CLUSTER_PASS=`yq r $OPTIONS_FILE 'options.hub.password'`,
-
-
-  npm run test:parse-options
 else
   if [[ $CYPRESS_TEST_MODE != "functional" ]]; then
     echo "Options file not found..."
