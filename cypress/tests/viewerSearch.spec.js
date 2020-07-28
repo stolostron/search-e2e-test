@@ -11,7 +11,7 @@ describe('Login', {
   env: {
     OC_IDP: 'search-e2e',
     OPTIONS_HUB_USER: 'user-viewer',
-    OPTIONS_HUB_PASS : 'pass-viewer'
+    OPTIONS_HUB_PASSWORD: 'pass-viewer'
   }
 },() => {
   it('page should load', () => {
