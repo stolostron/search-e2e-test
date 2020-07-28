@@ -77,11 +77,11 @@ run-test-image-pr:
 
 .PHONY: push-test-image
 push-test-image:
-	make component/push COMPONENT_NAME=$(COMPONENT_NAME)-tests
+	make component/push COMPONENT_NAME=$(COMPONENT_NAME)-test
 
 .PHONY: pull-test-image
 pull-test-image:
-	make component/pull COMPONENT_NAME=$(COMPONENT_NAME)-tests
+	make component/pull COMPONENT_NAME=$(COMPONENT_NAME)-test
 
 .PHONY: push
 push:: docker/tag docker/login
