@@ -77,6 +77,7 @@ run-test-image-pr:
 
 .PHONY: push-test-image
 push-test-image:
+	@echo "COMPONENT_NAME = $(COMPONENT_NAME)"
 	make component/push COMPONENT_NAME=$(COMPONENT_NAME)
 
 .PHONY: pull-test-image
