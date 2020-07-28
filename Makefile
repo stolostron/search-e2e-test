@@ -40,10 +40,10 @@ BROWSER ?= chrome
 TEST_IMAGE_TAG ?= $(COMPONENT_VERSION)$(COMPONENT_TAG_EXTENSION)
 
 
-.PHONY: build
-build:
-	make docker/info
-	make docker/build
+# .PHONY: build
+# build:
+# 	make docker/info
+# 	make docker/build
 
 .PHONY: build-test-image
 build-test-image:
@@ -59,6 +59,29 @@ run-test-image:
 	--volume $(shell pwd)/options.yaml:/resources/options.yaml \
 	quay.io/open-cluster-management/search-e2e-test:$(TEST_IMAGE_TAG)
 
+	.PHONY: run-test-image-pr
+run-test-image-pr:
+	docker run \
+	--network host \
+	-v /var/run/docker.sock:/var/run/docker.sock \
+	-e BROWSER=$(BROWSER) \
+	-e USER=$(shell git log -1 --format='%ae') \
+	-e GITHUB_TOKEN=$(GITHUB_TOKEN) \
+	-e TRAVIS_BUILD_WEB_URL=$(TRAVIS_BUILD_WEB_URL) \
+	-e TRAVIS_REPO_SLUG=$(TRAVIS_REPO_SLUG) \
+	-e TRAVIS_PULL_REQUEST=$(TRAVIS_PULL_REQUEST) \
+	-e CYPRESS_OCP_CLUSTER_URL=$(OCP_CLUSTER_URL) \
+	-e CYPRESS_OCP_CLUSTER_USER=$(OCP_CLUSTER_USER) \
+	-e CYPRESS_OCP_CLUSTER_PASS=$(OCP_CLUSTER_PASS) \
+	$(COMPONENT_DOCKER_REPO)/$(COMPONENT_NAME)-tests:$(TEST_IMAGE_TAG)
+
+.PHONY: push-test-image
+push-test-image:
+	make component/push COMPONENT_NAME=$(COMPONENT_NAME)-tests
+
+.PHONY: pull-test-image
+pull-test-image:
+	make component/pull COMPONENT_NAME=$(COMPONENT_NAME)-tests
 
 .PHONY: push
 push:: docker/tag docker/login
