@@ -73,15 +73,15 @@ run-test-image-pr:
 	-e CYPRESS_OCP_CLUSTER_URL=$(OCP_CLUSTER_URL) \
 	-e CYPRESS_OCP_CLUSTER_USER=$(OCP_CLUSTER_USER) \
 	-e CYPRESS_OCP_CLUSTER_PASS=$(OCP_CLUSTER_PASS) \
-	$(COMPONENT_DOCKER_REPO)/$(COMPONENT_NAME)-tests:$(TEST_IMAGE_TAG)
+	$(COMPONENT_DOCKER_REPO)/$(COMPONENT_NAME):$(TEST_IMAGE_TAG)
 
 .PHONY: push-test-image
 push-test-image:
-	make component/push COMPONENT_NAME=$(COMPONENT_NAME)-test
+	make component/push COMPONENT_NAME=$(COMPONENT_NAME)
 
 .PHONY: pull-test-image
 pull-test-image:
-	make component/pull COMPONENT_NAME=$(COMPONENT_NAME)-test
+	make component/pull COMPONENT_NAME=$(COMPONENT_NAME)
 
 .PHONY: push
 push:: docker/tag docker/login
