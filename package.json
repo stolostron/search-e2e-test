@@ -2,7 +2,13 @@
   "name": "search-e2e-test",
   "version": "1.0.0",
   "description": "",
-  "scripts": {},
+  "scripts": {
+    "cypress:open": "npx cypress open",
+    "test:e2e": "npx cypress run",
+    "test:e2e-headless": "npx cypress run --headless",
+    "test:chrome": "npx cypress run --browser chrome",
+    "test:firefox": "npx cypress run --browser firefox"
+  },
   "repository": {
     "type": "git",
     "url": "git@github.com:open-cluster-management/search-e2e-test.git"
