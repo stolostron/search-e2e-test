@@ -41,7 +41,7 @@ jobs:
         - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export COMPONENT_TAG_EXTENSION="-PR${TRAVIS_PULL_REQUEST}-${TRAVIS_COMMIT}"; fi;
         - |
           make
-          make component/build
+          make build-test-image
           make push-test-image
     - stage: test
       script:
