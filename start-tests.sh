@@ -11,16 +11,16 @@ if [ -z "$BROWSER" ]; then
   export BROWSER="chrome"
 fi
 
-# # check and load options.yaml
-# OPTIONS_FILE=/resources/options.yaml
-# if [ -f $OPTIONS_FILE ]; then
-#   echo "Processing options file..."
-#   BASE_DOMAIN=`yq r $OPTIONS_FILE 'options.hub.baseDomain'`
-#   export CYPRESS_BASE_URL="https://multicloud-console.apps.$BASE_DOMAIN"
-#   export OPTIONS_HUB_BASEDOMAIN="https://api.$BASE_DOMAIN:6443"
-#   export OPTIONS_HUB_USER=`yq r $OPTIONS_FILE 'options.hub.user'`
-#   export OPTIONS_HUB_PASSWORD=`yq r $OPTIONS_FILE 'options.hub.password'`,
-# fi
+# check and load options.yaml
+OPTIONS_FILE=/resources/options.yaml
+if [ -f $OPTIONS_FILE ]; then
+  echo "Processing options file..."
+  BASE_DOMAIN=`yq r $OPTIONS_FILE 'options.hub.baseDomain'`
+  export CYPRESS_BASE_URL="https://multicloud-console.apps.$BASE_DOMAIN"
+  export OPTIONS_HUB_BASEDOMAIN="https://api.$BASE_DOMAIN:6443"
+  export OPTIONS_HUB_USER=`yq r $OPTIONS_FILE 'options.hub.user'`
+  export OPTIONS_HUB_PASSWORD=`yq r $OPTIONS_FILE 'options.hub.password'`,
+fi
 
 echo "Logging into Kube API server $OPTIONS_HUB_BASEDOMAIN..."
 oc login --server="https://api.$OPTIONS_HUB_BASEDOMAIN:6443 -u $OPTIONS_HUB_USER -p $OPTIONS_HUB_PASSWORD --insecure-skip-tls-verify"
