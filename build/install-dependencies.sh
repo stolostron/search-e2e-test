@@ -4,4 +4,5 @@
 
 #!/bin/bash
 set -e
-exit 0
+
+make install

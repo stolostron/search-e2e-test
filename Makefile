@@ -45,6 +45,9 @@ TEST_IMAGE_TAG ?= $(COMPONENT_VERSION)$(COMPONENT_TAG_EXTENSION)
 # 	make docker/info
 # 	make docker/build
 
+install:
+	npm install
+
 .PHONY: build-test-image
 build-test-image:
 	@echo "Building $(COMPONENT_DOCKER_REPO)/$(COMPONENT_NAME):$(TEST_IMAGE_TAG)"
