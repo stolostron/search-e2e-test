@@ -6,12 +6,11 @@
 
 set -e
 
-export OC_CLUSTER_URL=$OPTIONS_HUB_BASEDOMAIN
-export OC_CLUSTER_USER=$OPTIONS_HUB_USER
-export OC_CLUSTER_PASS=$OPTIONS_HUB_PASSWORD
+# export OC_CLUSTER_URL=$OPTIONS_HUB_BASEDOMAIN
+# export OC_CLUSTER_USER=$OPTIONS_HUB_USER
+# export OC_CLUSTER_PASS=$OPTIONS_HUB_PASSWORD
 
-make oc/install
-make oc/login
+# make oc/install
+# make oc/login
 
-make pull-test-image
 make run-test-image-pr

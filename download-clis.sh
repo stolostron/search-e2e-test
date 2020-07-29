@@ -13,12 +13,6 @@ chmod 755 ./clis-unpacked/kubectl
 mv ./clis-unpacked/oc /usr/local/bin/oc
 mv ./clis-unpacked/kubectl /usr/local/bin/kubectl
 
-# Install Kind CLI
-echo "Installing kind cli"
-curl -Lo ./clis-unpacked/kind "https://kind.sigs.k8s.io/dl/v0.8.1/kind-$(uname)-amd64"
-chmod +x ./clis-unpacked/kind
-mv ./clis-unpacked/kind /usr/local/bin/kind
-
 # Install Docker CLI
 echo "Installing docker cli..."
 curl -kLo docker.tgz https://download.docker.com/linux/static/stable/x86_64/docker-18.06.0-ce.tgz

@@ -6,7 +6,6 @@
   "screenshotsFolder" : "tests/cypress/screenshots",
   "supportFile": "tests/cypress/support/index.js",
   "videosFolder": "tests/cypress/videos",
-  "baseUrl": "https://localhost:3000",
   "nodeVersion": "system",
   "env": {
     "OC_IDP": "kube:admin",

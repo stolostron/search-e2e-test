@@ -57,9 +57,9 @@ run-test-image:
 	docker run \
 	-e BROWSER=$(BROWSER) \
 	--volume $(shell pwd)/options.yaml:/resources/options.yaml \
-	quay.io/open-cluster-management/search-e2e-test:$(TEST_IMAGE_TAG)
+	quay.io/open-cluster-management/search-e2e:$(TEST_IMAGE_TAG)
 
-	.PHONY: run-test-image-pr
+.PHONY: run-test-image-pr
 run-test-image-pr:
 	docker run \
 	--network host \
@@ -70,9 +70,9 @@ run-test-image-pr:
 	-e TRAVIS_BUILD_WEB_URL=$(TRAVIS_BUILD_WEB_URL) \
 	-e TRAVIS_REPO_SLUG=$(TRAVIS_REPO_SLUG) \
 	-e TRAVIS_PULL_REQUEST=$(TRAVIS_PULL_REQUEST) \
-	-e CYPRESS_OCP_CLUSTER_URL=$(OCP_CLUSTER_URL) \
-	-e CYPRESS_OCP_CLUSTER_USER=$(OCP_CLUSTER_USER) \
-	-e CYPRESS_OCP_CLUSTER_PASS=$(OCP_CLUSTER_PASS) \
+	-e CYPRESS_OCP_CLUSTER_URL=$(OPTIONS_HUB_BASEDOMAIN) \
+	-e CYPRESS_OCP_CLUSTER_USER=$(OPTIONS_HUB_USER) \
+	-e CYPRESS_OCP_CLUSTER_PASS=$(OPTIONS_HUB_PASSWORD) \
 	$(COMPONENT_DOCKER_REPO)/$(COMPONENT_NAME):$(TEST_IMAGE_TAG)
 
 .PHONY: push-test-image

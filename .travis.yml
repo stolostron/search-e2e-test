@@ -2,8 +2,9 @@ sudo: required
 language: node_js
 
 addons:
-  packages:
-    - openjdk-8-jdk
+  apt:
+    packages:
+      - libgconf-2-4
   chrome: stable
 
 services:
