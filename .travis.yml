@@ -42,12 +42,12 @@ jobs:
         - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export COMPONENT_TAG_EXTENSION="-PR${TRAVIS_PULL_REQUEST}-${TRAVIS_COMMIT}"; fi;
         - make
         - make build-test-image
-        - make push-test-image
+        - make component/push
     - stage: test
       script:
         - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export COMPONENT_TAG_EXTENSION="-PR${TRAVIS_PULL_REQUEST}-${TRAVIS_COMMIT}"; fi;
         - make
-        - make pull-test-image
+        - make component/pull
         - make component/test/e2e
     - stage: release-ff
       name: Push commits from master to branch defined in RELEASE_FF_BRANCH

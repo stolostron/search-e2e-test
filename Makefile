@@ -78,14 +78,6 @@ run-test-image-pr:
 	-e CYPRESS_OCP_CLUSTER_PASS=$(OPTIONS_HUB_PASSWORD) \
 	$(COMPONENT_DOCKER_REPO)/$(COMPONENT_NAME):$(TEST_IMAGE_TAG)
 
-.PHONY: push-test-image
-push-test-image:
-	make component/push COMPONENT_NAME=$(COMPONENT_NAME)
-
-.PHONY: pull-test-image
-pull-test-image:
-	make component/pull COMPONENT_NAME=$(COMPONENT_NAME)
-
 .PHONY: push
 push:: docker/tag docker/login
 	make docker/push
