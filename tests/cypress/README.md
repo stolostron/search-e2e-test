@@ -13,10 +13,10 @@ The Cypress tests for search within [Console-UI](https://github.com/open-cluster
 #### Live Cluster:
 
 1. Export the following environment variables:
-    - CYPRESS_BASE_URL (e.g. `https://multicloud-console.apps.<cluster>.dev07.open-cluster-management.com`)
-    - CYPRESS_OC_IDP (the desired identity provider group on OCP login page; defaults to `kube:admin` if not set)
-    - CYPRESS_OCP_CLUSTER_USER (`login username`; defaults to `kubeadmin` if not set)
-    - CYPRESS_OCP_CLUSTER_PASS (`login password`)
+    - OPTIONS_HUB_BASEDOMAIN (e.g. `<cluster>.dev07.open-cluster-management.com`)
+    - OPTIONS_HUB_IDP (the desired identity provider group on OCP login page; defaults to `kube:admin` if not set)
+    - OPTIONS_HUB_USER (`login username`; defaults to `kubeadmin` if not set)
+    - OPTIONS_HUB_PASSWORD (`login password`)
 2. From the root console-ui directory, run `npx cypress open`
 
 #### Local Environment
