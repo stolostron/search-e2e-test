@@ -25,7 +25,7 @@ echo "options hub user $OPTIONS_HUB_USER"
 echo "Logging into Kube API server"
 oc login --server=https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443 -u $CYPRESS_OPTIONS_HUB_USER -p $CYPRESS_OPTIONS_HUB_PASSWORD --insecure-skip-tls-verify
 
-echo "Running tests on https://multicloud-console.apps.$OPTIONS_HUB_BASEDOMAIN"
+echo "Running tests on https://multicloud-console.apps.$CYPRESS_OPTIONS_HUB_BASEDOMAIN"
 testCode=0
 npx cypress run --browser $BROWSER --headless --spec ./tests/cypress/tests/**/*.spec.js --reporter cypress-multi-reporters
 testCode=$?
