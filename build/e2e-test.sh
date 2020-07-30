@@ -19,7 +19,7 @@ function fold_end() {
 fold_start test-setup "Test Setup"
 
 make oc/install
-oc login -u ${OPTIONS_HUB_USER} -p ${OPTIONS_HUB_PASSWORD} --server=https://api.${OPTIONS_HUB_BASEDOMAIN}:6443
+oc login -u ${OPTIONS_HUB_USER} -p ${OPTIONS_HUB_PASSWORD} --server=https://api.${OPTIONS_HUB_BASEDOMAIN}:6443 --insecure-skip-tls-verify
 export SERVICEACCT_TOKEN=`${BUILD_HARNESS_PATH}/vendor/oc whoami --show-token`
 
 fold_end test-setup
