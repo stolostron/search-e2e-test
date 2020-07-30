@@ -12,10 +12,7 @@ cache:
     - ~/.cache
 
 install:
-  - npm ci
-
-script:
-  - $(npm bin)/cypress run --record
+  - npm i
 
 services:
   - xvfb
