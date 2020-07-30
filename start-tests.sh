@@ -27,7 +27,7 @@ echo "Running tests on https://multicloud-console.apps.$CYPRESS_OPTIONS_HUB_BASE
 testCode=0
 
 # Try to install binary
-cypress install
+npx cypress install
 npx cypress run --browser $BROWSER --headless --spec ./tests/cypress/tests/**/*.spec.js --reporter cypress-multi-reporters
 
 testCode=$?
