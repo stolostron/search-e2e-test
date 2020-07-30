@@ -11,9 +11,6 @@ cache:
   directories:
     - ~/.cache
 
-install:
-  - npm i
-
 services:
   - xvfb
   - docker
