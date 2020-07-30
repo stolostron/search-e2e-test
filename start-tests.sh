@@ -15,13 +15,15 @@ fi
 OPTIONS_FILE=tests/resources/options.yaml
 if [ -f $OPTIONS_FILE ]; then
   echo "Processing options file..."
-  export OPTIONS_HUB_BASEDOMAIN=`yq r $OPTIONS_FILE 'options.hub.baseDomain'`
-  export OPTIONS_HUB_USER=`yq r $OPTIONS_FILE 'options.hub.user'`
-  export OPTIONS_HUB_PASSWORD=`yq r $OPTIONS_FILE 'options.hub.password'`
+  export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq r $OPTIONS_FILE 'options.hub.baseDomain'`
+  export CYPRESS_OPTIONS_HUB_USER=`yq r $OPTIONS_FILE 'options.hub.user'`
+  export CYPRESS_OPTIONS_HUB_PASSWORD=`yq r $OPTIONS_FILE 'options.hub.password'`
 fi
 
+echo "options hub user $OPTIONS_HUB_USER"
+
 echo "Logging into Kube API server"
-oc login --server=`https://api.${OPTIONS_HUB_BASEDOMAIN}:6443` -u $OPTIONS_HUB_USER -p $OPTIONS_HUB_PASSWORD --insecure-skip-tls-verify
+oc login --server=https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443 -u $CYPRESS_OPTIONS_HUB_USER -p $CYPRESS_OPTIONS_HUB_PASSWORD --insecure-skip-tls-verify
 
 echo "Running tests on https://multicloud-console.apps.$OPTIONS_HUB_BASEDOMAIN"
 testCode=0

@@ -31,7 +31,7 @@
 
 const axios = require("axios");
 
-Cypress.Commands.add('login', (OCP_CLUSTER_USER, OCP_CLUSTER_PASS, OC_IDP) => {
+Cypress.Commands.add('login', (OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OC_IDP) => {
   cy.visit('/multicloud/search')
   cy.get('body').then(body => {
     // Check if logged in
@@ -40,8 +40,8 @@ Cypress.Commands.add('login', (OCP_CLUSTER_USER, OCP_CLUSTER_PASS, OC_IDP) => {
       // Check if identity providers are configured
       if (body.find('form').length === 0)
         cy.contains(OC_IDP).click()
-      cy.get('#inputUsername').type(OCP_CLUSTER_USER)
-      cy.get('#inputPassword').type(OCP_CLUSTER_PASS)
+      cy.get('#inputUsername').type(OPTIONS_HUB_USER)
+      cy.get('#inputPassword').type(OPTIONS_HUB_PASSWORD)
       cy.get('button[type="submit"]').click()
       cy.get('#header').should('exist')
     }
