@@ -1,5 +1,5 @@
-sudo: required
-language: node_js
+os:
+ - linux
 
 addons:
   apt:
@@ -31,13 +31,11 @@ stages:
   - release-ff
   - publish
 
-before_script:
-  - make init  
-
 jobs:
   include:
     - stage: build
       name: "Build the image and push it"
+      language: node_js
       script:
         - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export COMPONENT_TAG_EXTENSION="-PR${TRAVIS_PULL_REQUEST}-${TRAVIS_COMMIT}"; fi;
         - make
@@ -45,9 +43,11 @@ jobs:
         - make component/push
     - stage: test
       name: "Run e2e tests"
+      if: type = pull_request
       script:
         - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export COMPONENT_TAG_EXTENSION="-PR${TRAVIS_PULL_REQUEST}-${TRAVIS_COMMIT}"; fi;
         - make
+        - make component/pull
         - make component/test/e2e
     - stage: release-ff
       name: "Push commits from master to branch defined in RELEASE_FF_BRANCH"
