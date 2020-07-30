@@ -17,7 +17,7 @@ if [ -f $OPTIONS_FILE ]; then
   echo "Processing options file..."
   export OPTIONS_HUB_BASEDOMAIN=`yq r $OPTIONS_FILE 'options.hub.baseDomain'`
   export OPTIONS_HUB_USER=`yq r $OPTIONS_FILE 'options.hub.user'`
-  export OPTIONS_HUB_PASSWORD=`yq r $OPTIONS_FILE 'options.hub.password'`,
+  export OPTIONS_HUB_PASSWORD=`yq r $OPTIONS_FILE 'options.hub.password'`
 fi
 
 echo "Logging into Kube API server"
@@ -25,7 +25,7 @@ oc login --server=`https://api.${OPTIONS_HUB_BASEDOMAIN}:6443` -u $OPTIONS_HUB_U
 
 echo "Running tests on https://multicloud-console.apps.$OPTIONS_HUB_BASEDOMAIN"
 testCode=0
-npx cypress run --browser $BROWSER --headless --spec ./tests/cypress/tests/**/*.spec.js
+npx cypress run --browser $BROWSER --headless --spec ./tests/cypress/tests/**/*.spec.js --reporter cypress-multi-reporters
 testCode=$?
 
 mkdir /results
@@ -33,7 +33,7 @@ mkdir /results/recordings
 
 echo "Merging xml reports..."
 npm run test:merge-xml
-cp ./tests/test-output/*.xml /results
+cp ./tests/test-output/cypress/xml/*.xml /results
 ls -al /results
 
 echo "Copying recordings to results"
