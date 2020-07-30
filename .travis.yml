@@ -7,6 +7,17 @@ addons:
       - libgconf-2-4
   chrome: stable
 
+cache:
+  npm: true
+  directories:
+    - ~/.cache
+
+install:
+  - npm ci
+
+script:
+  - $(npm bin)/cypress run --record
+
 services:
   - xvfb
   - docker
