@@ -18,29 +18,9 @@ function fold_end() {
 
 fold_start test-setup "Test Setup"
 
-export OC_CLUSTER_URL=$OPTIONS_HUB_BASEDOMAIN
-export OC_CLUSTER_USER=$OPTIONS_HUB_USER
-export OC_CLUSTER_PASS=$OPTIONS_HUB_PASSWORD
-
 make oc/install
-make oc/login
-
+oc login -u ${OPTIONS_HUB_USER} -p ${OPTIONS_HUB_PASSWORD} --server=`https://api.${OPTIONS_HUB_BASEDOMAIN}:6443`
 export SERVICEACCT_TOKEN=`${BUILD_HARNESS_PATH}/vendor/oc whoami --show-token`
-
-docker network create --subnet 10.10.0.0/16 test-network
-
-pids=()
-for script in ./build/e2e/*; do
-  echo "Running $script"
-  bash $script &
-  pids+=($!)
-done
-
-for pid in ${pids[*]}; do
-  wait $pid
-done
-
-docker container ls -a
 
 fold_end test-setup
 
