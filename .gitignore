@@ -5,3 +5,5 @@ selenium-debug.log
 options.yaml
 chromedriver.log
 /results
+tests/cypress/videos
+tests/cypress/screenshots
