@@ -28,16 +28,15 @@ testCode=0
 npx cypress run --browser $BROWSER --headless --spec ./tests/cypress/tests/**/*.spec.js --reporter cypress-multi-reporters
 testCode=$?
 
-mkdir /results
-mkdir /results/recordings
+mkdir -p results/recordings
 
 echo "Merging xml reports..."
 npm run test:merge-xml
-cp ./tests/test-output/cypress/xml/*.xml /results
-ls -al /results
+cp ./tests/test-output/cypress/**/*.xml ./results
+ls -al ./results
 
 echo "Copying recordings to results"
-cp ./tests/cypress/videos/**/*.mp4 /results/recordings
-ls -al /results/recordings
+cp ./tests/cypress/**/*.js.mp4 ./results/recordings
+ls -al ./results/recordings
 
 exit $testCode

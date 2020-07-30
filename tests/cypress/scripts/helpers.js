@@ -16,5 +16,5 @@ exports.cleanReports = () => {
 exports.mergeXmlReports = () => {
   const xmlReportsPath = path.join(__dirname, '..', '..', 'test-output', 'cypress', 'xml')
   const reports = fs.readdirSync(xmlReportsPath).map(report => path.join(xmlReportsPath, report))
-  junitMerger.mergeFiles(reports)
+  junitMerger.mergeFiles(`${xmlReportsPath}/cypress-report.xml`, reports)
 }
