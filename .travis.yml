@@ -1,24 +1,15 @@
 os:
  - linux
 
-language: node_js
-
-node_js:
-  - 10.15.3
-
 addons:
   apt:
     packages:
       - libgconf-2-4
+  chrome: stable
 
 cache:
   directories:
-    - ~/.npm
     - ~/.cache
-  override:
-    - npm ci
-    - npm run cy:verify
-    - npm run cy:info
 
 services:
   - xvfb
@@ -61,7 +52,7 @@ jobs:
         - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export COMPONENT_TAG_EXTENSION="-PR${TRAVIS_PULL_REQUEST}-${TRAVIS_COMMIT}"; fi;
         - make
         - make component/pull
-        - make component/test/e2e
+        - make run-test-image-pr
     - stage: release-ff
       name: "Push commits from master to branch defined in RELEASE_FF_BRANCH"
       if: type = push AND branch =~ /^master$/
