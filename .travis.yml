@@ -1,15 +1,24 @@
 os:
  - linux
 
+language: node_js
+
+node_js:
+  - 10.15.3
+
 addons:
   apt:
     packages:
       - libgconf-2-4
 
 cache:
-  npm: true
   directories:
+    - ~/.npm
     - ~/.cache
+  override:
+    - npm ci
+    - npm run cy:verify
+    - npm run cy:info
 
 services:
   - xvfb
