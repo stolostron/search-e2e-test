@@ -65,7 +65,6 @@ run-test-image:
 .PHONY: run-test-image-pr
 run-test-image-pr:
 	docker run \
-	--network host \
 	-v /var/run/docker.sock:/var/run/docker.sock \
 	-e BROWSER=$(BROWSER) \
 	-e USER=$(shell git log -1 --format='%ae') \
