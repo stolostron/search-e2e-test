@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test:merge-xml": "node -e \"require('./tests/cypress/scripts/helpers').mergeXmlReports()\""
+    "test:merge-xml": "node -e \"require('./tests/cypress/scripts/helpers').mergeXmlReports()\"",
+    "cypress:headless": "export NODE_ENV=dev && ./start-tests.sh"
   },
   "repository": {
     "type": "git",

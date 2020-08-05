@@ -28,8 +28,12 @@ oc login --server=https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443 -u $CYPRESS
 echo "Running tests on https://multicloud-console.apps.$CYPRESS_OPTIONS_HUB_BASEDOMAIN"
 testCode=0
 
-# Locally it needs npx to run successfully, however, containerized, it does not need it
-cypress run --browser $BROWSER --headless --spec ./tests/cypress/tests/**/*.spec.js --reporter cypress-multi-reporters
+# We are caching the cypress binary for containerization, therefore it does not need npx. However, locally we need it.
+if [ -n "$NODE_ENV" == "dev" ]; then
+  npx cypress run --browser $BROWSER --headless --spec ./tests/cypress/tests/**/*.spec.js --reporter cypress-multi-reporters  
+else
+  cypress run --browser $BROWSER --headless --spec ./tests/cypress/tests/**/*.spec.js --reporter cypress-multi-reporters
+fi
 
 testCode=$?
 
