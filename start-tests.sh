@@ -29,7 +29,7 @@ echo "Running tests on https://multicloud-console.apps.$CYPRESS_OPTIONS_HUB_BASE
 testCode=0
 
 # We are caching the cypress binary for containerization, therefore it does not need npx. However, locally we need it.
-if [ -n "$NODE_ENV" == "dev" ]; then
+if [ "$NODE_ENV" == "dev" ]; then
   npx cypress run --browser $BROWSER --headless --spec ./tests/cypress/tests/**/*.spec.js --reporter cypress-multi-reporters  
 else
   cypress run --browser $BROWSER --headless --spec ./tests/cypress/tests/**/*.spec.js --reporter cypress-multi-reporters
@@ -37,15 +37,12 @@ fi
 
 testCode=$?
 
-mkdir -p results/recordings
+echo "Merging XML and JSON reports..."
+npm run test:merge-reports
 
-echo "Merging xml reports..."
-npm run test:merge-xml
-cp ./tests/test-output/cypress/**/*.xml ./results
-ls -al ./results
+# echo "Cleaning XML and JSON reports"
+# npm run test:clean-reports
 
-echo "Copying recordings to results"
-cp ./tests/cypress/**/*.js.mp4 ./results/recordings
-ls -al ./results/recordings
+ls -al ./results/**/*
 
 exit $testCode

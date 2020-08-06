@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test:merge-xml": "node -e \"require('./tests/cypress/scripts/helpers').mergeXmlReports()\"",
-    "cypress:headless": "export NODE_ENV=dev && ./start-tests.sh"
+    "cypress:headless": "set -e NODE_ENV=dev && ./start-tests.sh",
+    "test:clean-reports": "rm -rf ./results/xml/cypress* ./results/json/mochawesome-report*",
+    "test:merge-xml": "npx junit-merge --dir=results/xml -o results/xml/merge-test-results.xml",
+    "test:merge-json": "npx mochawesome-merge ./results/json/*.json -o results/json/mochawesome-merge-results.json",
+    "test:merge-reports": "npm run test:merge-xml && npm run test:merge-json"
   },
   "repository": {
     "type": "git",
@@ -36,6 +39,7 @@
     "mocha": "^8.1.0",
     "mocha-junit-reporter": "^2.0.0",
     "mochawesome": "^6.1.1",
+    "mochawesome-merge": "^4.1.0",
     "querystring": "^0.2.0",
     "selenium-standalone": "^6.16.0"
   }
