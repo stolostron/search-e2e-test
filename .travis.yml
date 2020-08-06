@@ -31,6 +31,10 @@ branches:
     - master
     - /^release-[0-9]+\..*$/
 
+before_scripts:
+  - make init
+
+
 stages:
   - build
   - test
@@ -44,7 +48,6 @@ jobs:
       language: node_js
       script:
         - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export COMPONENT_TAG_EXTENSION="-PR${TRAVIS_PULL_REQUEST}-${TRAVIS_COMMIT}"; fi;
-        - make
         - make build-test-image
         - make component/push
     - stage: test
@@ -52,18 +55,15 @@ jobs:
       if: type = pull_request
       script:
         - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export COMPONENT_TAG_EXTENSION="-PR${TRAVIS_PULL_REQUEST}-${TRAVIS_COMMIT}"; fi;
-        - make
         - make component/pull
         - make run-test-image-pr
     - stage: release-ff
       name: "Push commits from master to branch defined in RELEASE_FF_BRANCH"
       if: type = push AND branch =~ /^master$/
       script:
-        - make
         - make release-ff
     - stage: publish
       name: "Publish the image to quay with an official version/sha tag and publish entry to integration pipeline stage"
       if: type = push AND branch =~ /^release-[0-9]+\..*$/
       script:
-        - make
         - make pipeline-manifest/update PIPELINE_MANIFEST_COMPONENT_SHA256=${TRAVIS_COMMIT} PIPELINE_MANIFEST_COMPONENT_REPO=${TRAVIS_REPO_SLUG} PIPELINE_MANIFEST_BRANCH=${TRAVIS_BRANCH}
