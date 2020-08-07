@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "cypress:headless": "set -e NODE_ENV=dev && ./start-tests.sh",
-    "test": "npm run test:clean-reports && npm run cypress:headless && npm run test:merge-reports",
+    "test": "npm run test:clean-reports && npm run test:headless && npm run test:merge-reports",
     "test:clean-reports": "rm -rf ./results/**/*",
-    "test:merge-xml": "npx junit-merge --dir=results/xml -o results/xml/merge-test-results.xml",
+    "test:headed": "npx cypress run --headed",
+    "test:headless": "set -e NODE_ENV=dev && ./start-tests.sh",
     "test:merge-json": "npx mochawesome-merge ./results/json/*.json -o results/json/mochawesome-merge-results.json",
-    "test:merge-reports": "npm run test:merge-xml && npm run test:merge-json"
+    "test:merge-reports": "npm run test:merge-xml && npm run test:merge-json",
+    "test:merge-xml": "npx junit-merge --dir=results/xml -o results/xml/merge-test-results.xml"
   },
   "repository": {
     "type": "git",
