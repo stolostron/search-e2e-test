@@ -11,15 +11,15 @@ if [ -z "$BROWSER" ]; then
   export BROWSER="chrome"
 fi
 
-# local - - check and load options.yaml
-OPTIONS_FILE=resources/options.yaml
+# Load test config mounted at /resources/options.yaml
+OPTIONS_FILE=/resources/options.yaml
 if [ -f $OPTIONS_FILE ]; then
   echo "Processing options file..."
   export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq r $OPTIONS_FILE 'options.hub.baseDomain'`
   export CYPRESS_OPTIONS_HUB_USER=`yq r $OPTIONS_FILE 'options.hub.user'`
   export CYPRESS_OPTIONS_HUB_PASSWORD=`yq r $OPTIONS_FILE 'options.hub.password'`
 else
-  echo -e "File 'resources/options.yaml' does not exist, using settings from environment variables.\n"
+  echo -e "File '/resources/options.yaml' does not exist, using test config from environment variables.\n"
 fi
 
 export CYPRESS_BASE_URL=https://multicloud-console.apps.$CYPRESS_OPTIONS_HUB_BASEDOMAIN
