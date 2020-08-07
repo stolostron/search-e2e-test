@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "cypress:headless": "set -e NODE_ENV=dev && ./start-tests.sh",
-    "test:clean-reports": "rm -rf ./results/xml/cypress* ./results/json/mochawesome-report*",
+    "test": "npm run test:clean-reports && npm run cypress:headless && npm run test:merge-reports",
+    "test:clean-reports": "rm -rf ./results/**/*",
     "test:merge-xml": "npx junit-merge --dir=results/xml -o results/xml/merge-test-results.xml",
     "test:merge-json": "npx mochawesome-merge ./results/json/*.json -o results/json/mochawesome-merge-results.json",
     "test:merge-reports": "npm run test:merge-xml && npm run test:merge-json"

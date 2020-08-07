@@ -40,9 +40,6 @@ testCode=$?
 echo "Merging XML and JSON reports..."
 npm run test:merge-reports
 
-# echo "Cleaning XML and JSON reports"
-# npm run test:clean-reports
-
 ls -al ./results/**/*
 
 exit $testCode
