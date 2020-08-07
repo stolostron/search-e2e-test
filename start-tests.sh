@@ -12,7 +12,7 @@ if [ -z "$BROWSER" ]; then
 fi
 
 # local - - check and load options.yaml
-OPTIONS_FILE=tests/resources/options.yaml
+OPTIONS_FILE=resources/options.yaml
 if [ -f $OPTIONS_FILE ]; then
   echo "Processing options file..."
   export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq r $OPTIONS_FILE 'options.hub.baseDomain'`
