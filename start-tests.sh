@@ -19,16 +19,16 @@ if [ -f $OPTIONS_FILE ]; then
   export CYPRESS_OPTIONS_HUB_USER=`yq r $OPTIONS_FILE 'options.hub.user'`
   export CYPRESS_OPTIONS_HUB_PASSWORD=`yq r $OPTIONS_FILE 'options.hub.password'`
 else
-  echo "File 'resources/options.yaml' does not exist, using settings from environment variables.
+  echo -e "File 'resources/options.yaml' does not exist, using settings from environment variables.\n"
 fi
 
 export CYPRESS_BASE_URL=https://multicloud-console.apps.$CYPRESS_OPTIONS_HUB_BASEDOMAIN
 
-echo "Target environment:"
-echo "\tCYPRESS_OPTIONS_HUB_BASEDOMAIN : $CYPRESS_OPTIONS_HUB_BASEDOMAIN"
-echo "\tCYPRESS_OPTIONS_HUB_BASE_URL    : $CYPRESS_OPTIONS_HUB_BASE_URL"
-echo "\tCYPRESS_OPTIONS_HUB_USER       : $CYPRESS_OPTIONS_HUB_USER"
-echo "Logging into Kube API server"
+echo -e "Target environment:\n"
+echo -e "\tCYPRESS_OPTIONS_HUB_BASEDOMAIN : $CYPRESS_OPTIONS_HUB_BASEDOMAIN"
+echo -e "\tCYPRESS_OPTIONS_HUB_BASE_URL   : $CYPRESS_BASE_URL"
+echo -e "\tCYPRESS_OPTIONS_HUB_USER       : $CYPRESS_OPTIONS_HUB_USER"
+echo -e "\nLogging into Kube API server\n"
 oc login --server=https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443 -u $CYPRESS_OPTIONS_HUB_USER -p $CYPRESS_OPTIONS_HUB_PASSWORD --insecure-skip-tls-verify
 
 echo "Running tests on https://multicloud-console.apps.$CYPRESS_OPTIONS_HUB_BASEDOMAIN"
