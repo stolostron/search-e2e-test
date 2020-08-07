@@ -3,25 +3,26 @@
   "integrationFolder": "tests/cypress/tests",
   "fixturesFolder": "tests/cypress/fixtures",
   "pluginsFile": "tests/cypress/plugins/index.js",
-  "screenshotsFolder" : "tests/cypress/screenshots",
+  "screenshotsFolder" : "results/screenshots",
   "supportFile": "tests/cypress/support/index.js",
-  "videosFolder": "tests/cypress/videos",
+  "videosFolder": "results/videos",
+  "watchForFileChanges": true,
   "nodeVersion": "system",
   "env": {
-    "OC_IDP": "kube:admin",
-    "OCP_CLUSTER_USER": "kubeadmin"
+    "OC_IDP": "kube:admin"
   },
   "reporter": "cypress-multi-reporters",
   "reporterOptions": {
     "reporterEnabled": "mochawesome, mocha-junit-reporter",
     "mochawesomeReporterOptions": {
-      "reportDir": "tests/test-output/cypress/json",
+      "reportDir": "results/json",
+      "reportFilename": "mochawesome-report.json",
       "overwrite": false,
       "html": false,
       "json": true
     },
     "mochaJunitReporterReporterOptions": {
-      "mochaFile": "tests/test-output/cypress/xml/cypress-[hash].xml"
+      "mochaFile": "results/xml/cypress-[hash].xml"
     }
   }
 }
