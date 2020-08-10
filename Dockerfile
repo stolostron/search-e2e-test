@@ -1,19 +1,24 @@
 # Copyright (c) 2020 Red Hat, Inc.
 
-FROM node:12.16.3-stretch as production
+FROM mikefarah/yq as builder
+FROM cypress/included:4.9.0 as production
 
 USER root
 
-# Install Firefox
-RUN apt-get update && apt-get install -y firefox-esr
-# Install Chrome
-RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-RUN dpkg -i google-chrome-stable_current_amd64.deb; apt-get -fy install
+COPY --from=builder /usr/bin/yq /usr/local/bin/yq
 
-WORKDIR .
-ADD . .
+WORKDIR /usr/src/app
+
+COPY package.json .
+COPY package-lock.json .
+COPY cypress.json .
+COPY start-tests.sh .
+COPY download-clis.sh .
+COPY tests ./tests
+COPY node_modules ./node_modules
 
 RUN sh download-clis.sh
-RUN npm install
 
-CMD ["npm", "run", "test:e2e-headless"]
+RUN ["chmod", "+x", "start-tests.sh"]
+
+ENTRYPOINT ["./start-tests.sh"]
