@@ -1,3 +1,5 @@
+# Copyright (c) 2020 Red Hat, Inc
+
 # Bootstrap (pull) the build harness
 
 # GITHUB_USER containing '@' char must be escaped with '%40'
@@ -36,10 +38,40 @@ endif
 DOCKER_NAMESPACE := open-cluster-management
 DOCKER_REGISTRY := quay.io
 
-.PHONY: build
-build:
-	make docker/info
-	make docker/build
+BROWSER ?= chrome
+TEST_IMAGE_TAG ?= $(COMPONENT_VERSION)$(COMPONENT_TAG_EXTENSION)
+
+
+install:
+	npm install
+
+.PHONY: build-test-image
+build-test-image:
+	@echo "Building $(COMPONENT_DOCKER_REPO)/$(COMPONENT_NAME):$(TEST_IMAGE_TAG)"
+	docker build . \
+	-t $(COMPONENT_DOCKER_REPO)/$(COMPONENT_NAME):$(TEST_IMAGE_TAG)
+
+.PHONY: run-test-image
+run-test-image:
+	docker run \
+	-e BROWSER=$(BROWSER) \
+	--volume $(shell pwd)/options.yaml:/resources/options.yaml \
+	quay.io/open-cluster-management/search-e2e:$(TEST_IMAGE_TAG)
+
+.PHONY: run-test-image-pr
+run-test-image-pr:
+	docker run \
+	-v /var/run/docker.sock:/var/run/docker.sock \
+	-e BROWSER=$(BROWSER) \
+	-e USER=$(shell git log -1 --format='%ae') \
+	-e GITHUB_TOKEN=$(GITHUB_TOKEN) \
+	-e TRAVIS_BUILD_WEB_URL=$(TRAVIS_BUILD_WEB_URL) \
+	-e TRAVIS_REPO_SLUG=$(TRAVIS_REPO_SLUG) \
+	-e TRAVIS_PULL_REQUEST=$(TRAVIS_PULL_REQUEST) \
+	-e CYPRESS_OPTIONS_HUB_BASEDOMAIN=$(OPTIONS_HUB_BASEDOMAIN) \
+	-e CYPRESS_OPTIONS_HUB_USER=$(OPTIONS_HUB_USER) \
+	-e CYPRESS_OPTIONS_HUB_PASSWORD=$(OPTIONS_HUB_PASSWORD) \
+	$(COMPONENT_DOCKER_REPO)/$(COMPONENT_NAME):$(TEST_IMAGE_TAG)
 
 .PHONY: push
 push:: docker/tag docker/login

@@ -1,0 +1,28 @@
+{
+  "chromeWebSecurity": false,
+  "integrationFolder": "tests/cypress/tests",
+  "fixturesFolder": "tests/cypress/fixtures",
+  "pluginsFile": "tests/cypress/plugins/index.js",
+  "screenshotsFolder" : "results/screenshots",
+  "supportFile": "tests/cypress/support/index.js",
+  "videosFolder": "results/videos",
+  "watchForFileChanges": true,
+  "nodeVersion": "system",
+  "env": {
+    "OC_IDP": "kube:admin"
+  },
+  "reporter": "cypress-multi-reporters",
+  "reporterOptions": {
+    "reporterEnabled": "mochawesome, mocha-junit-reporter",
+    "mochawesomeReporterOptions": {
+      "reportDir": "results/json",
+      "reportFilename": "mochawesome-report.json",
+      "overwrite": false,
+      "html": false,
+      "json": true
+    },
+    "mochaJunitReporterReporterOptions": {
+      "mochaFile": "results/xml/cypress-[hash].xml"
+    }
+  }
+}
