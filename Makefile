@@ -53,6 +53,7 @@ build-test-image:
 
 .PHONY: run-test-image
 run-test-image:
+	npm run test:clean-reports
 	docker run \
 	-e BROWSER=$(BROWSER) \
 	--volume $(shell pwd)/options.yaml:/resources/options.yaml \

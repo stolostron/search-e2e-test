@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "test": "npm run test:clean-reports && npm run test:headless && npm run test:merge-reports",
-    "test:clean-reports": "rm -rf /results/**/*",
+    "test:clean-reports": "rm -rf ./results",
     "test:headed": "npx cypress run --headed",
     "test:headless": "set -e NODE_ENV=dev && ./start-tests.sh",
     "test:merge-json": "npx mochawesome-merge /results/json/*.json -o /results/json/mochawesome-merge-results.json",
