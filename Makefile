@@ -53,9 +53,11 @@ build-test-image:
 
 .PHONY: run-test-image
 run-test-image:
+	npm run test:clean-reports
 	docker run \
 	-e BROWSER=$(BROWSER) \
 	--volume $(shell pwd)/options.yaml:/resources/options.yaml \
+	--volume $(shell pwd)/results:/results \
 	quay.io/open-cluster-management/search-e2e:$(TEST_IMAGE_TAG)
 
 .PHONY: run-test-image-pr

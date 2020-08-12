@@ -7,8 +7,6 @@ USER root
 
 COPY --from=builder /usr/bin/yq /usr/local/bin/yq
 
-WORKDIR /usr/src/app
-
 COPY package.json .
 COPY package-lock.json .
 COPY cypress.json .
