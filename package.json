@@ -7,9 +7,9 @@
     "test:clean-reports": "rm -rf ./results",
     "test:headed": "npx cypress run --headed",
     "test:headless": "set -e NODE_ENV=dev && ./start-tests.sh",
-    "test:merge-json": "npx mochawesome-merge /results/json/*.json -o /results/json/mochawesome-merge-results.json",
+    "test:merge-json": "npx mochawesome-merge results/json/*.json -o results/json/mochawesome-merge-results.json",
     "test:merge-reports": "npm run test:merge-xml && npm run test:merge-json",
-    "test:merge-xml": "npx junit-merge --dir=/results -o /results/merge-test-results.xml"
+    "test:merge-xml": "npx junit-merge --dir=results -o results/merge-test-results.xml"
   },
   "repository": {
     "type": "git",

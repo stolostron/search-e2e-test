@@ -46,6 +46,6 @@ testCode=$?
 echo "Merging XML and JSON reports..."
 npm run test:merge-reports
 
-ls -R /results
+ls -R results
 
 exit $testCode
