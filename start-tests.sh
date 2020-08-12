@@ -29,7 +29,6 @@ echo -e "\tCYPRESS_OPTIONS_HUB_BASEDOMAIN : $CYPRESS_OPTIONS_HUB_BASEDOMAIN"
 echo -e "\tCYPRESS_OPTIONS_HUB_BASE_URL   : $CYPRESS_BASE_URL"
 echo -e "\tCYPRESS_OPTIONS_HUB_USER       : $CYPRESS_OPTIONS_HUB_USER"
 
-
 echo -e "\nLogging into Kube API server\n"
 oc login --server=https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443 -u $CYPRESS_OPTIONS_HUB_USER -p $CYPRESS_OPTIONS_HUB_PASSWORD --insecure-skip-tls-verify
 
@@ -47,6 +46,6 @@ testCode=$?
 echo "Merging XML and JSON reports..."
 npm run test:merge-reports
 
-ls -al ./results/**/*
+ls -R /results
 
 exit $testCode
