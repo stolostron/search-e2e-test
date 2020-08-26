@@ -1,4 +1,5 @@
 {
+  "ignoreTestFiles": "**/ignoredTestFiles/*.js",
   "chromeWebSecurity": false,
   "integrationFolder": "tests/cypress/tests",
   "fixturesFolder": "tests/cypress/fixtures",
