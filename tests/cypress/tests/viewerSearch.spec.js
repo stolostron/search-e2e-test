@@ -5,7 +5,7 @@
 
 /// <reference types="cypress" />
 
-import { pageLoader, searchPage, searchBar } from '../../views/search'
+import { pageLoader, searchPage, searchBar } from '../views/search'
 
 describe('Login', {
   env: {
@@ -14,10 +14,9 @@ describe('Login', {
     CYPRESS_OPTIONS_HUB_PASSWORD : 'pass-viewer'
   }
 },() => {
-  it('page should load', () => {
+  xit('page should load', () => {
     cy.login(Cypress.env('OPTIONS_HUB_USER'), Cypress.env('OPTIONS_HUB_PASSWORD'), Cypress.env('OC_IDP'))
     pageLoader.shouldNotExist()
     searchPage.shouldExist()
   })
 })
-s
