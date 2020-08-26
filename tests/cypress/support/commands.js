@@ -44,7 +44,7 @@ Cypress.Commands.add('login', (OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OC_IDP) =
       cy.get('#inputPassword').type(OPTIONS_HUB_PASSWORD)
       cy.get('button[type="submit"]').click()
       cy.wait(6000)
-      cy.get('#header', {timeout: 10000}).should('exist')
+      cy.get('#header', {timeout: 30000}).should('exist')
     }
   })
 })
