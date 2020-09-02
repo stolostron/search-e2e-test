@@ -36,9 +36,9 @@ testCode=0
 
 # We are caching the cypress binary for containerization, therefore it does not need npx. However, locally we need it.
 if [ "$NODE_ENV" == "dev" ]; then
-  npx cypress run --browser $BROWSER --headless --spec ./tests/cypress/tests/**/*.spec.js --reporter cypress-multi-reporters  
+  npx cypress run --browser $BROWSER --headless --spec ./tests/cypress/tests/*.spec.js --reporter cypress-multi-reporters  
 else
-  cypress run --browser $BROWSER --headless --spec ./tests/cypress/tests/**/*.spec.js --reporter cypress-multi-reporters
+  cypress run --browser $BROWSER --headless --spec ./tests/cypress/tests/*.spec.js --reporter cypress-multi-reporters
 fi
 
 testCode=$?
