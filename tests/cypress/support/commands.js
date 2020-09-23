@@ -31,20 +31,33 @@
 
 const axios = require("axios");
 
+import { searchPage } from '../views/search'
+
 Cypress.Commands.add('login', (OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OC_IDP) => {
-  cy.visit('/multicloud/search')
+  var user = OPTIONS_HUB_USER || Cypress.env('OPTIONS_HUB_USER');
+  var password = OPTIONS_HUB_PASSWORD || Cypress.env('OPTIONS_HUB_PASSWORD');
+  var idp = OC_IDP || Cypress.env('OC_IDP');
+  searchPage.whenGoToSearchPage()
   cy.get('body').then(body => {
     // Check if logged in
     if (body.find('#header').length === 0) {
 
       // Check if identity providers are configured
       if (body.find('form').length === 0)
-        cy.contains(OC_IDP).click()
-      cy.get('#inputUsername').type(OPTIONS_HUB_USER)
-      cy.get('#inputPassword').type(OPTIONS_HUB_PASSWORD)
+        cy.contains(idp).click()
+      cy.get('#inputUsername').type(user)
+      cy.get('#inputPassword').type(password)
       cy.get('button[type="submit"]').click()
       cy.wait(6000)
       cy.get('#header', {timeout: 30000}).should('exist')
     }
   })
+})
+
+Cypress.Commands.add('logout', () => {
+  cy.get('#acm-user-dropdown').click().then(() => cy.get('#acm-logout').click())
+})
+
+Cypress.Commands.add('generateNamespace', () => {
+  return 'search-e2e-' + Math.floor(Math.random() * 10000);
 })
