@@ -13,7 +13,7 @@ COPY cypress.json .
 COPY start-tests.sh .
 COPY download-clis.sh .
 COPY tests ./tests
-COPY node_modules ./node_modules
+RUN npm i
 
 RUN sh download-clis.sh
 
