@@ -15,7 +15,7 @@ export const pageLoader = {
 export const searchPage = {
   whenGoToSearchPage:() => cy.visit('/multicloud/search'),
   whenExpandQuickFilters:() => {
-    cy.get('.show-more-results-button > button').focus().click()
+    cy.get('.show-more-results-button > button', { timeout: 20000 }).focus().click()
   },
   whenGetResourceDetailItem:(resource, name) => {
     return cy.contains('.search--resource-table-header-button', resource, {timeout: 6000})
