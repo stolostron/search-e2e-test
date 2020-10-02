@@ -21,6 +21,8 @@ During the test setup, we create an identity provider (provider can be found usi
   > Pre-requisites for running locally:
   >  - nodeJS
   >  - OpenShift CLI
+  >  - yq command - [link](https://snapcraft.io/install/yq/fedora) for Fedora
+  >  - a browser - either chrome or firefox
 
 1. Copy the `options.yaml.template` file into `./options.yaml` and fill in the necessary values.
     > **Alternative:** Set the values in options.yaml as environment variables like: `OPTIONS_HUB_BASEDOMAIN`, `OPTIONS_HUB_USER`, `OPTIONS_HUB_PASSWORD`
