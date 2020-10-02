@@ -6,7 +6,11 @@
 /// <reference types="cypress" />
 
 import { popupModal } from '../views/popup'
+import { getOpt } from '../scripts/utils'
 
+const SEARCH_MESSAGES_LOADING = 'Loading results'
+const SEARCH_MESSAGES_NO_RESULTS = 'No search results found'
+const SEARCH_MESSAGES_FEW_SECONDS_AGO = 'a few seconds ago'
 
 export const pageLoader = {
   shouldExist: () => cy.get('.content-spinner', { timeout: 20000 }).should('exist')  ,
@@ -34,26 +38,49 @@ export const searchPage = {
   whenGoToResourceDetailItemPage: (resource, name) => {
     searchPage.whenGetResourceDetailItem(resource, name).find('td').eq(0).find('a').click()
   },
-  shouldLoadResults:() => cy.waitUntilNotContains('.search--results-view > h4', 'Loading results', { timeout: 60000, interval: 1000 }),
+  whenDeleteNamespace: (namespace, options) => {
+    var ignoreIfDoesNotExist = getOpt(options, 'ignoreIfDoesNotExist', true)
+    var deleteFn = () => searchPage.whenDeleteResourceDetailItem('namespace', namespace)
+
+    searchPage.whenGoToSearchPage()
+    searchBar.whenFilterByKind('namespace')
+    searchBar.whenFilterByName(namespace)
+    searchPage.shouldLoadResults()
+    if (ignoreIfDoesNotExist == true) {
+      cy.ifNotContains('.page-content-container', SEARCH_MESSAGES_NO_RESULTS, deleteFn)
+    } else {
+      deleteFn()
+    }
+  },
+  whenWaitUntilFindResults:(options) => {
+    cy.reloadUntil(() => {
+      searchPage.shouldLoadResults()
+      return cy.ifNotContains('.page-content-container', SEARCH_MESSAGES_NO_RESULTS)
+    }, options)
+  },
+  shouldLoadResults:() => cy.waitUntilNotContains('.search--results-view > h4', SEARCH_MESSAGES_LOADING, { timeout: 60000, interval: 1000 }),
   shouldExist:() => {
     cy.get('.bx--detail-page-header-title', {timeout: 20000}).should('exist')
     cy.get('.react-tags__search-input input', {timeout: 20000}).should('exist')
     cy.get('.saved-search-query-header', { timeout: 20000}).should('exist')
   },
-  shouldFindNoResults: () => {
-    cy.get('.page-content-container', { timeout: 60000}).contains('No search results found.')
+  shouldFindNoResults: (options) => {
+    cy.reloadUntil(() => {
+      searchPage.shouldLoadResults()
+      return cy.ifContains('.page-content-container', SEARCH_MESSAGES_NO_RESULTS)
+    }, options)
   },
   shouldFindQuickFilter: (resource, count) => {
-    cy.get('[for="related-resource-' + resource + '"] > .bx--tile-content', {timeout: 20000})
-      .should('exist')
-      .invoke('text')
-      .should('contain', count)
+    cy.reloadUntil(() => {
+      searchPage.shouldLoadResults()
+      return cy.ifContains('[for="related-resource-' + resource + '"] > .bx--tile-content', count)
+    })
   },
   shouldFindResourceDetailItem: (resource, name) => {
     searchPage.whenGetResourceDetailItem(resource, name).should('exist')
   },
   shouldBeResourceDetailItemCreatedFewSecondsAgo: (resource, name) => {
-    searchPage.whenGetResourceDetailItem(resource, name).parent().contains('td', 'a few seconds ago')
+    searchPage.whenGetResourceDetailItem(resource, name).parent().contains('td', SEARCH_MESSAGES_FEW_SECONDS_AGO)
   }
 }
 

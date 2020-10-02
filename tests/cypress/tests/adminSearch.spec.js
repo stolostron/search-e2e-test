@@ -36,7 +36,6 @@ clusterModes.forEach((clusterMode) =>   {
     it('should load the search page', function() {
       pageLoader.shouldNotExist()
       searchPage.shouldExist()
-      cy.waitUsingSLA().reload()
     })
   
     it('should not see any cluster and namespace', function() {
@@ -68,20 +67,11 @@ clusterModes.forEach((clusterMode) =>   {
       })
 
       after(function() {
-        searchPage.whenGoToSearchPage()
-        searchBar.whenFilterByKind('namespace')
-        searchBar.whenFilterByName(this.namespace)
-        searchPage.shouldLoadResults()
-        cy.ifNotContains('.search--results-view > p', 'No search results found', 
-          () => searchPage.whenDeleteResourceDetailItem('namespace', this.namespace))
+        searchPage.whenDeleteNamespace(this.namespace, { ignoreIfDoesNotExist: true })
       })
   
       it('should have expected count of resource tiles', function() {
-        // WORKAROUND: Running on local cluster takes more time to namespaces to be created. Reported: https://github.com/open-cluster-management/backlog/issues/5852
-        if (clusterMode.label == 'Local') {
-          cy.wait(120000).reload()
-        }
-
+        searchPage.whenWaitUntilFindResults()
         searchPage.whenExpandQuickFilters()
         searchPage.shouldFindQuickFilter('cluster', '1')
         searchPage.shouldFindQuickFilter('deployment', '1')
@@ -108,9 +98,9 @@ clusterModes.forEach((clusterMode) =>   {
       it('should delete pod', function() {
         searchBar.whenFilterByKind('pod')
         searchPage.whenDeleteResourceDetailItem('pod', this.namespace + '-deployment')
-        // SMELL: But the result page is not asynced updated... To be improved in https://issues.redhat.com/browse/ACM-352
         cy.wait(10000).reload()
-    
+
+        searchPage.shouldLoadResults()
         searchPage.shouldBeResourceDetailItemCreatedFewSecondsAgo('pod', this.namespace + '-deployment')
       });
   
@@ -118,8 +108,6 @@ clusterModes.forEach((clusterMode) =>   {
         searchBar.whenFilterByKind('deployment')
         searchPage.whenGoToResourceDetailItemPage('deployment', this.namespace + '-deployment')
         deploymentDetailPage.whenScaleReplicasTo(2)
-        // SMELL: But the result page is not asynced updated... To be improved in https://issues.redhat.com/browse/ACM-352
-        cy.go('back').waitUsingSLA().reload()
   
         searchPage.shouldFindQuickFilter('pod', '2')
       })
@@ -127,27 +115,13 @@ clusterModes.forEach((clusterMode) =>   {
       it('should delete deployment', function() {
         searchBar.whenFilterByKind('deployment')
         searchPage.whenDeleteResourceDetailItem('deployment', this.namespace + '-deployment')
-        // SMELL: But the result page is not asynced updated... To be improved in https://issues.redhat.com/browse/ACM-352
-        if (clusterMode.label == 'Managed') {
-          // Workaround: Performance issue when deleting deployment in a managed cluster
-          cy.wait(30000).reload()
-        } else {
-          cy.waitUsingSLA().reload()
-        }
     
         searchPage.shouldFindNoResults()
       });
   
       it('should delete namespace', function() {
-        searchBar.whenClearFilters()
-        searchBar.whenFilterByKind('namespace')
-        searchBar.whenFilterByName(this.namespace)
-        searchPage.shouldLoadResults()
-        searchPage.whenDeleteResourceDetailItem('namespace', this.namespace)
-        // SMELL: But the result page is not asynced updated... To be improved in https://issues.redhat.com/browse/ACM-352
-        cy.wait(30000).reload()
-  
-        // then deployment is not found
+        searchPage.whenDeleteNamespace(this.namespace)
+
         searchPage.shouldFindNoResults()
       });
     })

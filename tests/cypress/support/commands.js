@@ -55,29 +55,59 @@ Cypress.Commands.add('login', (OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OC_IDP) =
   })
 })
 
+Cypress.Commands.add('reloadUntil', (condition, options) => {
+  if (!options) {
+    options = {}
+  }
+
+  var startTime = getOpt(options, 'startTime', new Date())
+  var timeout = getOpt(options, 'timeout', 300000) 
+  var interval = getOpt(options, 'interval', 0) 
+  var currentTime = new Date()
+  if (currentTime - startTime < timeout) {
+    condition().then(result => {
+      if (result == false) {
+        cy.reload()
+        if (interval > 0) {
+          cy.wait(interval)
+        }
+        
+        options.startTime = startTime
+        cy.reloadUntil(condition, options)
+      }
+    })
+  }
+})
+
 Cypress.Commands.add('waitUntilContains', (selector, text, options) => {
-  cy.waitUntil(() => cy.ifContains(selector, text, () => true), options);
+  cy.waitUntil(() => cy.ifContains(selector, text), options);
 })
 
 Cypress.Commands.add('waitUntilNotContains', (selector, text, options) => {
-  cy.waitUntil(() => cy.ifNotContains(selector, text, () => true), options);
+  cy.waitUntil(() => cy.ifNotContains(selector, text), options);
 })
 
 Cypress.Commands.add('ifContains', (selector, text, action) => {
-  cy.get('body').then($body => {
+  return cy.get('body').then($body => {
     var $elem = $body.find(selector)
-    if ($elem && $elem.text().includes(text)) {
+    var result = $elem && $elem.text().includes(text)
+    if (result == true && action) {
       return action($elem)
     }
+
+    return result
   })
 })
 
 Cypress.Commands.add('ifNotContains', (selector, text, action) => {
-  cy.get('body').then($body => {
+  return cy.get('body').then($body => {
     var $elem = $body.find(selector)
-    if (!$elem || !$elem.text().includes(text)) {
+    var result = !$elem || !$elem.text().includes(text)
+    if (result == true && action) {
       return action($elem)
     }
+
+    return cy.wrap(result)
   })
 })
 
