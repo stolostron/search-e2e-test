@@ -1,7 +1,7 @@
 {
   "name": "search-e2e-test",
-  "version": "1.0.0",
-  "description": "",
+  "version": "2.1.0",
+  "description": "End to end test for Search component",
   "scripts": {
     "test": "npm run test:clean-reports && npm run test:headless && npm run test:merge-reports",
     "test:clean-reports": "rm -rf ./results",

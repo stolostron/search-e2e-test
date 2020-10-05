@@ -33,6 +33,7 @@ branches:
 
 before_scripts:
   - make init
+  - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export COMPONENT_TAG_EXTENSION="-PR${TRAVIS_PULL_REQUEST}-${TRAVIS_COMMIT}"; fi;
 
 
 stages:
@@ -47,14 +48,12 @@ jobs:
       name: "Build the image and push it"
       language: node_js
       script:
-        - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export COMPONENT_TAG_EXTENSION="-PR${TRAVIS_PULL_REQUEST}-${TRAVIS_COMMIT}"; fi;
         - make build-test-image
         - make component/push
     - stage: test
-      name: "Run e2e tests"
-      if: type = pull_request
+      name: "Run Search E2E tests"
+      language: node_js
       script:
-        - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export COMPONENT_TAG_EXTENSION="-PR${TRAVIS_PULL_REQUEST}-${TRAVIS_COMMIT}"; fi;
         - make component/pull
         - make run-test-image-pr
     - stage: release-ff
