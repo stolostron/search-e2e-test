@@ -26,5 +26,7 @@
     "mochaJunitReporterReporterOptions": {
       "mochaFile": "results/cypress-[hash].xml"
     }
-  }
+  },
+  "viewportHeight": 820,
+  "viewportWidth": 1280
 }
