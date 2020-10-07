@@ -98,9 +98,7 @@ clusterModes.forEach((clusterMode) =>   {
       it('should delete pod', function() {
         searchBar.whenFilterByKind('pod')
         searchPage.whenDeleteResourceDetailItem('pod', this.namespace + '-deployment')
-        cy.wait(10000).reload()
-
-        searchPage.shouldLoadResults()
+        
         searchPage.shouldBeResourceDetailItemCreatedFewSecondsAgo('pod', this.namespace + '-deployment')
       });
   
@@ -108,6 +106,7 @@ clusterModes.forEach((clusterMode) =>   {
         searchBar.whenFilterByKind('deployment')
         searchPage.whenGoToResourceDetailItemPage('deployment', this.namespace + '-deployment')
         deploymentDetailPage.whenScaleReplicasTo(2)
+        cy.go('back')
   
         searchPage.shouldFindQuickFilter('pod', '2')
       })
