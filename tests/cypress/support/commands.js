@@ -49,7 +49,7 @@ Cypress.Commands.add('login', (OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OC_IDP) =
       cy.get('#inputUsername').type(user)
       cy.get('#inputPassword').type(password)
       cy.get('button[type="submit"]').click()
-      cy.wait(6000)
+      searchPage.shouldPageBeReady()
       cy.get('#header', {timeout: 30000}).should('exist')
     }
   })
@@ -87,22 +87,26 @@ Cypress.Commands.add('waitUntilNotContains', (selector, text, options) => {
   cy.waitUntil(() => cy.ifNotContains(selector, text), options);
 })
 
-Cypress.Commands.add('ifContains', (selector, text, action) => {
-  return cy.get('body').then($body => {
-    var $elem = $body.find(selector)
-    var result = $elem && $elem.text().includes(text)
-    if (result == true && action) {
-      return action($elem)
-    }
+Cypress.Commands.add('waitUntilAttrIs', (selector, attr, value, options) => {
+  cy.waitUntil(() => cy.ifAttrIs(selector, attr, value), options);
+})
 
-    return result
-  })
+Cypress.Commands.add('ifAttrIs', (selector, attr, value, action) => {
+  return cy.checkCondition(selector, ($elem) => $elem && $elem.attr(attr) && $elem.attr(attr).includes(value), action)
+})
+
+Cypress.Commands.add('ifContains', (selector, text, action) => {
+  return cy.checkCondition(selector, ($elem) => $elem && $elem.text().includes(text), action)
 })
 
 Cypress.Commands.add('ifNotContains', (selector, text, action) => {
+  return cy.checkCondition(selector, ($elem) => !$elem || !$elem.text().includes(text), action)
+})
+
+Cypress.Commands.add('checkCondition', (selector, condition, action) => {
   return cy.get('body').then($body => {
     var $elem = $body.find(selector)
-    var result = !$elem || !$elem.text().includes(text)
+    var result = condition($elem)
     if (result == true && action) {
       return action($elem)
     }

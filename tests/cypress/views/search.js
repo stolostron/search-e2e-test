@@ -8,7 +8,8 @@
 import { popupModal } from '../views/popup'
 import { getOpt } from '../scripts/utils'
 
-const SEARCH_MESSAGES_LOADING = 'Loading results'
+const SEARCH_MESSAGES_INPUT_PLACE_HOLDER = 'Search items'
+const SEARCH_MESSAGES_LOADING_RESULTS = 'Loading results'
 const SEARCH_MESSAGES_NO_RESULTS = 'No search results found'
 const SEARCH_MESSAGES_FEW_SECONDS_AGO = 'a few seconds ago'
 const SEARCH_MESSAGES_LOADING_SUGGESTIONS = 'Loading...'
@@ -30,8 +31,7 @@ export const searchPage = {
              .find('table.bx--data-table-v2 tbody tr', {timeout: 20000}).contains('td', name)
              .parent();
   },
-  whenDeleteResourceDetailItem:(resource, name, options) => {
-    var force = true
+  whenDeleteResourceDetailItem:(resource, name) => {
     searchPage.whenGetResourceDetailItem(resource, name).find('td .bx--overflow-menu__icon', {timeout: 2000}).click({ force: true })
     cy.get('.bx--overflow-menu-options button[data-table-action="table.actions.remove"]', {timeout: 2000}).click({ force: true }).wait(1000)
     popupModal.whenAccept()
@@ -59,7 +59,8 @@ export const searchPage = {
       return cy.ifNotContains('.page-content-container', SEARCH_MESSAGES_NO_RESULTS)
     }, options)
   },
-  shouldLoadResults:() => cy.waitUntilNotContains('.search--results-view > h4', SEARCH_MESSAGES_LOADING, { timeout: 60000, interval: 1000 }),
+  shouldPageBeReady:() => cy.waitUntilAttrIs('.react-tags__search-input input', 'placeholder', SEARCH_MESSAGES_INPUT_PLACE_HOLDER),
+  shouldLoadResults:() => cy.waitUntilNotContains('.search--results-view > h4', SEARCH_MESSAGES_LOADING_RESULTS, { timeout: 60000, interval: 1000 }),
   shouldExist:() => {
     cy.get('.bx--detail-page-header-title', {timeout: 20000}).should('exist')
     cy.get('.react-tags__search-input input', {timeout: 20000}).should('exist')
@@ -91,7 +92,10 @@ export const searchPage = {
     searchPage.whenGetResourceDetailItem(resource, name).should('exist')
   },
   shouldBeResourceDetailItemCreatedFewSecondsAgo: (resource, name) => {
-    searchPage.whenGetResourceDetailItem(resource, name).parent().contains('td', SEARCH_MESSAGES_FEW_SECONDS_AGO)
+    cy.reloadUntil(() => {
+      searchPage.shouldLoadResults()
+      return cy.ifContains('.search--resource-table', SEARCH_MESSAGES_FEW_SECONDS_AGO)
+    })
   }
 }
 
