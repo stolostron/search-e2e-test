@@ -11,6 +11,7 @@ import { getOpt } from '../scripts/utils'
 const SEARCH_MESSAGES_LOADING = 'Loading results'
 const SEARCH_MESSAGES_NO_RESULTS = 'No search results found'
 const SEARCH_MESSAGES_FEW_SECONDS_AGO = 'a few seconds ago'
+const SEARCH_MESSAGES_LOADING_SUGGESTIONS = 'Loading...'
 
 export const pageLoader = {
   shouldExist: () => cy.get('.content-spinner', { timeout: 20000 }).should('exist')  ,
@@ -64,17 +65,27 @@ export const searchPage = {
     cy.get('.react-tags__search-input input', {timeout: 20000}).should('exist')
     cy.get('.saved-search-query-header', { timeout: 20000}).should('exist')
   },
-  shouldFindNoResults: (options) => {
+  shouldFindNoResults:(options) => {
     cy.reloadUntil(() => {
       searchPage.shouldLoadResults()
       return cy.ifContains('.page-content-container', SEARCH_MESSAGES_NO_RESULTS)
     }, options)
+  },
+  shouldValidateSearchQuery:() => {
+    searchPage.shouldLoadResults()
+    cy.get('.bx--inline-notification__details').should('not.exist')
   },
   shouldFindQuickFilter: (resource, count) => {
     cy.reloadUntil(() => {
       searchPage.shouldLoadResults()
       return cy.ifContains('[for="related-resource-' + resource + '"] > .bx--tile-content', count)
     })
+  },
+  shouldFindResourceDetail: (resource) => {
+    cy.contains('.search--resource-table-header-button', resource, {timeout: 6000})
+  },
+  shouldFindAnyResourceDetail: () => {
+    cy.get('.search--resource-table-header-button', {timeout: 6000 }).should('exist')
   },
   shouldFindResourceDetailItem: (resource, name) => {
     searchPage.whenGetResourceDetailItem(resource, name).should('exist')
@@ -95,8 +106,8 @@ export const searchBar = {
     cy.get('.react-tags__search-input input', {timeout: 20000}).should('exist').focus().click().type(property).wait(200)
     cy.get('.react-tags', {timeout: 20000}).should('exist')
     cy.get('.react-tags__search-input', {timeout: 20000}).should('exist')
-    cy.get('.react-tags__search-input input', {timeout: 20000}).type(' ')
-    if (value !== null) {
+    cy.get('.react-tags__search-input input', {timeout: 20000}).type(' ').wait(200)
+    if (value && value !== null) {
       cy.get('.react-tags__search-input input', {timeout: 20000}).type(value)
       cy.get('.react-tags__search-input input', {timeout: 20000}).type(' ').wait(200)
     }
@@ -113,5 +124,13 @@ export const searchBar = {
   },
   whenFilterByName:(name) => {
     searchBar.whenEnterTextInSearchBar('name', name)
+  },
+  whenSelectFirstSuggestedValue:() => {
+    searchBar.shouldSuggestValues()
+
+    cy.get('.react-tags__suggestions li[role="option"]', { timeout: 10000 }).eq(1).click()
+  },
+  shouldSuggestValues:() => {
+    cy.waitUntilNotContains('.react-tags__suggestions', SEARCH_MESSAGES_LOADING_SUGGESTIONS, { timeout: 60000, interval: 1000 })
   }
 }
