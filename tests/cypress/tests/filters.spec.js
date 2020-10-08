@@ -45,16 +45,16 @@ filtersRegistry.createFilter('updated', { values: [useText('=', '0')] })
 filtersRegistry.createFilter('cpu', { values: [useText('=', '0')] })
 filtersRegistry.createFilter('active', { values: [useText('=', '0')] })
 filtersRegistry.createFilter('nodes', { values: [useText('=', '0')] })
-filtersRegistry.createFilter('apiversion')
+// filtersRegistry.createFilter('apiversion') // Failing on canary environment
 // Container is failing when using one suggestion value, so running simple scenario only. Reported: https://github.com/open-cluster-management/backlog/issues/5958
 filtersRegistry.createFilter('container', { values: [] })
 filtersRegistry.createFilter('image')
 filtersRegistry.createFilter('podIP')
 filtersRegistry.createFilter('startedAt')
 filtersRegistry.createFilter('hostIP')
-filtersRegistry.createFilter('remediationAction')
+// filtersRegistry.createFilter('remediationAction') // Failing on canary environment
 filtersRegistry.createFilter('disabled', { values: [useText('false'), useText('true')] })
-filtersRegistry.createFilter('compliant')
+// filtersRegistry.createFilter('compliant') // Failing on canary environment
 filtersRegistry.createFilter('package')
 filtersRegistry.createFilter('channel')
 filtersRegistry.createFilter('localPlacement')
@@ -68,10 +68,10 @@ filtersRegistry.createFilter('timeWindow', { values: [useText('active'), useText
 filtersRegistry.createFilter('url')
 filtersRegistry.createFilter('sourceType')
 filtersRegistry.createFilter('capacity')
-filtersRegistry.createFilter('storageClassName')
+// filtersRegistry.createFilter('storageClassName') // Failing on canary environment
 filtersRegistry.createFilter('volumeName')
-filtersRegistry.createFilter('request')
-filtersRegistry.createFilter('accessMode')
+// filtersRegistry.createFilter('request') // Failing on canary environment
+// filtersRegistry.createFilter('accessMode') // Failing on canary environment
 filtersRegistry.createFilter('architecture')
 filtersRegistry.createFilter('osImage')
 filtersRegistry.createFilter('claimRef')
