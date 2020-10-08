@@ -46,8 +46,8 @@ Cypress.Commands.add('login', (OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OC_IDP) =
       // Check if identity providers are configured
       if (body.find('form').length === 0)
         cy.contains(idp).click()
-      cy.get('#inputUsername').type(user)
-      cy.get('#inputPassword').type(password)
+      cy.get('#inputUsername').click().focused().type(user)
+      cy.get('#inputPassword').click().focused().type(password)
       cy.get('button[type="submit"]').click()
       searchPage.shouldPageBeReady()
       cy.get('#header', {timeout: 30000}).should('exist')
