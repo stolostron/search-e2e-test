@@ -74,7 +74,7 @@ filtersRegistry.createFilter('volumeName')
 // filtersRegistry.createFilter('accessMode') // Failing on canary environment
 filtersRegistry.createFilter('architecture')
 // osImage has no suggestions because values have blank spaces. Issue: https://github.com/open-cluster-management/backlog/issues/1715
-filtersRegistry.createFilter('osImage', { values: [] })
+// filtersRegistry.createFilter('osImage', { values: [] })
 filtersRegistry.createFilter('claimRef')
 filtersRegistry.createFilter('reclaimPolicy')
 filtersRegistry.createFilter('lastSchedule')
