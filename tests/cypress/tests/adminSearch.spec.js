@@ -9,7 +9,7 @@ import { clustersPage } from '../views/clusters'
 import { deploymentDetailPage } from '../views/deploymentDetailPage'
 import { podDetailPage } from '../views/podDetailPage'
 import { resourcePage } from '../views/resource'
-import { pageLoader, searchPage, searchBar } from '../views/search'
+import { pageLoader, searchPage, searchBar, suggestedTemplate } from '../views/search'
 
 const clusterModes = [{ label: 'Local', valueFn: () => cy.wrap('local-cluster') }, 
                       { label: 'Managed', valueFn: () => clustersPage.givenManagedCluster() }];
@@ -124,6 +124,28 @@ clusterModes.forEach((clusterMode) =>   {
         searchPage.shouldFindNoResults()
       });
     })
-    
+  })
+  describe.only('Verify the suggested search templates', function() {
+
+    before(function() {
+      cy.login()
+    })
+  
+    after(function() {
+      cy.logout()
+    })
+    beforeEach(function() {
+      searchPage.whenGoToSearchPage()
+      
+    })
+    it('should see the created last hour template & search tag in search items', function() {
+      suggestedTemplate.whenSelectCreatesLastHour()
+    });
+    it('should see the workloads template & search tag in search items', function() {
+      suggestedTemplate.whenSelectWorkloads()
+    });
+    it('should see the unhealthy pods template & search tag in search items', function() {
+      suggestedTemplate.whenSelectUnhealthyPods()
+    });
   })
 });

@@ -138,3 +138,20 @@ export const searchBar = {
     cy.waitUntilNotContains('.react-tags__suggestions', SEARCH_MESSAGES_LOADING_SUGGESTIONS, { timeout: 60000, interval: 1000 })
   }
 }
+
+
+export const suggestedTemplate = {
+  whenSelectCreatesLastHour:() => {
+    cy.get('.search-query-result').eq(2).click()
+    cy.get('.react-tags__selected-tag-name').should('contain', 'created:hour')
+  },
+  whenSelectWorkloads:() => {
+    cy.get('.search-query-result').eq(0).click()
+    cy.get('.react-tags__selected-tag-name').should('contain', 'kind:daemonset,deployment,job,statefulset,replicaset')
+  },
+  whenSelectUnhealthyPods:() => {
+    cy.get('.search-query-result').eq(1).click()
+    cy.get('.react-tags__selected-tag-name').should('contain', 'kind:pod')
+  }
+  
+}
