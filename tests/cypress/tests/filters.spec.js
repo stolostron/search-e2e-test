@@ -28,6 +28,10 @@ const labelFilter = filtersRegistry.createFilter('label')
 const kindFilter = filtersRegistry.createFilter('kind', { strategies: [ multipleValues(2), combined([nameFilter, labelFilter])] })
 filtersRegistry.createFilter('role', { values: [useText('master'), useText('worker')], strategies: [ multipleValues(2) ] })
 filtersRegistry.createFilter('status', { strategies: [ simple, multipleValues(2) ]} )
+
+
+/* NOTE: Will move the API tests.  API test is faster and more reliable to test all filters.
+
 filtersRegistry.createFilter('created')
 filtersRegistry.createFilter('selfLink')
 filtersRegistry.createFilter('apigroup')
@@ -89,6 +93,7 @@ filtersRegistry.createFilter('ManagedClusterConditionAvailable')
 filtersRegistry.createFilter('consoleURL')
 filtersRegistry.createFilter('app_instance', { values: [useText('any')] })
 filtersRegistry.createFilter('cluster', { strategies: [ combined([kindFilter, nameFilter])] })
+*/
 
 describe('Search using filters', function() {
   before(function() {

@@ -5,7 +5,7 @@
 
 /// <reference types="cypress" />
 
-const typeDelay = 10
+const typeDelay = 1
 
 export const resourcePage = {
   whenGoToResourcePage: () => cy.get('#acm-create-resource', { timeout: 20000 }).click(),
