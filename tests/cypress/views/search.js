@@ -32,8 +32,8 @@ export const searchPage = {
              .parent();
   },
   whenDeleteResourceDetailItem:(resource, name) => {
-    searchPage.whenGetResourceDetailItem(resource, name).find('td .bx--overflow-menu__icon', {timeout: 2000}).click({ force: true })
-    cy.get('.bx--overflow-menu-options button[data-table-action="table.actions.remove"]', {timeout: 2000}).click({ force: true }).wait(1000)
+    searchPage.whenGetResourceDetailItem(resource, name).find('td .bx--overflow-menu__icon', {timeout: 2000}).click()
+    cy.get('.bx--overflow-menu-options button[data-table-action="table.actions.remove"]', {timeout: 2000}).click({ timeout: 10000 }).wait(1000)
     popupModal.whenAccept()
   },
   whenGoToResourceDetailItemPage: (resource, name) => {
