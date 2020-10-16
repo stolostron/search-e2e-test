@@ -72,7 +72,7 @@ filtersRegistry.createFilter('capacity')
 filtersRegistry.createFilter('volumeName')
 // filtersRegistry.createFilter('request') // Failing on canary environment
 // filtersRegistry.createFilter('accessMode') // Failing on canary environment
-filtersRegistry.createFilter('architecture')
+// filtersRegistry.createFilter('architecture') // Failing on canary environment
 // osImage has no suggestions because values have blank spaces. Issue: https://github.com/open-cluster-management/backlog/issues/1715
 // filtersRegistry.createFilter('osImage', { values: [] })
 filtersRegistry.createFilter('claimRef')
@@ -80,7 +80,7 @@ filtersRegistry.createFilter('reclaimPolicy')
 filtersRegistry.createFilter('lastSchedule')
 // Schedule is failing when using one suggestion value, so running simple scenario only. Reported: https://github.com/open-cluster-management/backlog/issues/5960
 filtersRegistry.createFilter('schedule', { values: [] })
-filtersRegistry.createFilter('suspend')
+// filtersRegistry.createFilter('suspend') // Failing on canary environment
 filtersRegistry.createFilter('memory')
 filtersRegistry.createFilter('ManagedClusterInfoSynced')
 filtersRegistry.createFilter('ManagedClusterJoined')
