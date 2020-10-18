@@ -125,7 +125,7 @@ clusterModes.forEach((clusterMode) =>   {
       });
     })
   })
-  describe.only('Verify the suggested search templates', function() {
+  describe('Verify the suggested search templates', function() {
 
     before(function() {
       cy.login()
