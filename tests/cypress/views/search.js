@@ -152,6 +152,7 @@ export const suggestedTemplate = {
   whenSelectUnhealthyPods:() => {
     cy.get('.search-query-result').eq(1).click()
     cy.get('.react-tags__selected-tag-name').should('contain', 'kind:pod')
+    cy.get('.react-tags__selected-tag-name').should('contain','status:Pending,Error,Failed,Terminating,ImagePullBackOff,CrashLoopBackOff,RunContainerError,ContainerCreating')
   }
   
 }
