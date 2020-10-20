@@ -12,5 +12,8 @@ export const clustersPage = {
     return cy.contains('table.resource-table th', 'Name', {timeout: 6000})
              .invoke('index')
              .then((index) => cy.get('table.resource-table tbody tr').filter(':not(:contains("local-cluster"))').eq(0).get('td').eq(index).invoke('text'));
+  },
+  shouldExist: () => {
+    cy.get('.bx--detail-page-header-title').should('contain', 'Clusters')
   }
 }
