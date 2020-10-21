@@ -8,8 +8,8 @@
 export const popupModal = {
   whenAccept:() => {
     popupModal.shouldExist()
-    cy.get('.bx--btn--danger--primary', { timeout: 20000}).click({ force: true })
-    cy.get('.bx--inline-notification', { timeout: 20000 }).should('not.exist')
+    cy.get('.bx--btn--danger--primary', { timeout: 10000}).click({ timeout: 10000, force: true })
+    cy.get('.bx--inline-notification', { timeout: 10000 }).should('not.exist')
     popupModal.shouldNotExist()
   },
   shouldNotExist:() => cy.get('.bx--btn--danger--primary', { timeout: 60000 }).should('not.exist'),

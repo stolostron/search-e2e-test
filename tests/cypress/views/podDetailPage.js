@@ -6,8 +6,8 @@
 /// <reference types="cypress" />
 
 export const podDetailPage = {
-  whenClickOnLogsTag:() => {
-    cy.get('#logs-tab').click()
+  whenClickOnLogsTab:() => {
+    cy.get('#logs-tab', { timeout: 10000 }).click({ timeout: 10000 })
   },
   shouldSeeLogs:(expected) => {
     cy.contains('.logs-container__content', expected, { timeout: 5000 })

@@ -1,5 +1,6 @@
 {
   "chromeWebSecurity": false,
+  "defaultCommandTimeout": 10000,
   "integrationFolder": "tests/cypress/tests",
   "ignoreTestFiles": "**/ignoredTestFiles/*.spec.js",
   "fixturesFolder": "tests/cypress/fixtures",
@@ -27,6 +28,6 @@
       "mochaFile": "results/cypress-[hash].xml"
     }
   },
-  "viewportHeight": 820,
-  "viewportWidth": 1280
+  "viewportHeight": 1050,
+  "viewportWidth": 1680
 }

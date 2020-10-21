@@ -48,8 +48,7 @@ clusterModes.forEach((clusterMode) =>   {
   
     describe('create namespace and deployment resources', function() {
       before(function() {
-        // searchPage.whenGoToSearchPage()
-        searchPage.whenGoToWelcomePage() // WORKAROUND for https://github.com/open-cluster-management/backlog/issues/5725
+        searchPage.whenGoToSearchPage()
         // given namespace
         resourcePage.whenGoToResourcePage()
         resourcePage.whenSelectTargetCluster(this.clusterName)
@@ -91,7 +90,7 @@ clusterModes.forEach((clusterMode) =>   {
       it('should see pod logs', function() {
         searchBar.whenFilterByKind('pod')
         searchPage.whenGoToResourceDetailItemPage('pod', this.namespace + '-deployment-')
-        podDetailPage.whenClickOnLogsTag()
+        podDetailPage.whenClickOnLogsTab()
         podDetailPage.shouldSeeLogs('serving on')
       });
   
