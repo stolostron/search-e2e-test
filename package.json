@@ -5,7 +5,7 @@
   "scripts": {
     "test": "npm run test:clean-reports && npm run test:headless && npm run test:merge-reports",
     "test:clean-reports": "rm -rf ./results",
-    "test:headed": "npx cypress run --headed",
+    "test:headed": "export LIVE_MODE=true && export BROWSER=chrome && ./start-tests.sh",
     "test:headless": "set -e NODE_ENV=dev && ./start-tests.sh",
     "test:merge-json": "npx mochawesome-merge results/json/*.json -o results/json/mochawesome-merge-results.json",
     "test:merge-reports": "npm run test:merge-xml && npm run test:merge-json",
