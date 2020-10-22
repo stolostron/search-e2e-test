@@ -37,6 +37,7 @@ export const searchPage = {
     popupModal.whenAccept()
   },
   whenGoToResourceDetailItemPage: (resource, name) => {
+    pageLoader.shouldNotExist()
     searchPage.whenGetResourceDetailItem(resource, name).find('td').eq(0).find('a').click()
   },
   whenDeleteNamespace: (namespace, options) => {
