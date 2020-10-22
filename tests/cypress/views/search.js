@@ -14,6 +14,8 @@ const SEARCH_MESSAGES_NO_RESULTS = 'No search results found'
 const SEARCH_MESSAGES_FEW_SECONDS_AGO = 'a few seconds ago'
 const SEARCH_MESSAGES_LOADING_SUGGESTIONS = 'Loading...'
 
+
+
 export const pageLoader = {
   shouldExist: () => cy.get('.content-spinner', { timeout: 20000 }).should('exist')  ,
   shouldNotExist: () => cy.get('.content-spinner', { timeout: 20000 }).should('not.exist')
@@ -154,6 +156,25 @@ export const suggestedTemplate = {
     cy.get('.search-query-result').eq(1).click()
     cy.get('.react-tags__selected-tag-name').should('contain', 'kind:pod')
     cy.get('.react-tags__selected-tag-name').should('contain','status:Pending,Error,Failed,Terminating,ImagePullBackOff,CrashLoopBackOff,RunContainerError,ContainerCreating')
+  },
+  whenGetRelatedItemDetails:(resource) => {
+    return cy.contains('.search--resource-table', resource, {timeout: 20000})
+             .find('table.bx--data-table-v2 tbody tr', {timeout: 20000})
+             .parent();
+  },
+  whenVerifyRelatedItemsDetails:() => {
+    cy.waitUsingSLA()
+    cy.get('.page-content-container > :nth-child(2)').then(($span) => {
+    if (($span.text()) !== 'No search results found.')
+    {
+      cy.contains('Show all').click()
+      cy.get('.bx--tile-content > :nth-child(1) > .content > .text').each(($el) => {
+          const itemName = $el.text()
+          cy.wrap($el).click()
+       suggestedTemplate.whenGetRelatedItemDetails(itemName).should('exist', {timeout: 20000} )
+       cy.wrap($el).click()
+      })
+    }
+   })
   }
-  
 }
