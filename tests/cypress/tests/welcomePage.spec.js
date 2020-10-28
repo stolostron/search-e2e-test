@@ -5,11 +5,10 @@
 
 /// <reference types="cypress" />
 
-import { use } from 'chai'
 import { searchPage } from '../views/search'
 import { welcomePage, leftNav, userMenu } from '../views/welcome'
 
-describe('Validate links on welcome page', function () {
+describe('Welcome page', function () {
     before(function () {
         cy.login()
         searchPage.whenGoToWelcomePage()
@@ -19,16 +18,16 @@ describe('Validate links on welcome page', function () {
         cy.logout()
     })
 
-    it('Load the welcome page', function () {
+    it('should load', function () {
         welcomePage.shouldExist()
     })
 
-    it('Validate links on main welcome page', function () {
+    it('should be validated for the links on main page', function () {
         welcomePage.validateSvcs()
         welcomePage.validateConnect()
     })
 
-    it('Validate menu items on left nav bar', function () {
+    it('should be validated for the menu items on left nav bar', function () {
         leftNav.openMenu()
         leftNav.goToHome()
         leftNav.goToOverview()
@@ -39,7 +38,7 @@ describe('Validate links on welcome page', function () {
         leftNav.goToGRC()
     })
 
-    it('Validate nav icons on header', function () {
+    it('should be validated for the nav icons on the header', function () {
         userMenu.openApps()
         userMenu.openSearch()
         userMenu.openResources()

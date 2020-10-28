@@ -33,9 +33,7 @@ import { getOpt } from '../scripts/utils'
 
 import 'cypress-wait-until'
 import { searchPage } from '../views/search'
-
-var apiUrl =
-  Cypress.config().baseUrl.replace("multicloud-console.apps", "api") + ":6443";
+import { oauthIssuer } from '../views/welcome'
 
 Cypress.Commands.add('login', (OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OC_IDP) => {
   var user = OPTIONS_HUB_USER || Cypress.env('OPTIONS_HUB_USER');
@@ -134,7 +132,11 @@ Cypress.Commands.add('forEach', (selector, action, options) => {
 })
 
 Cypress.Commands.add('logout', () => {
-  cy.get('#acm-user-dropdown').click().then(() => cy.get('#acm-logout').click().then(() => cy.url().should('include', '/oauth/authorize?')))
+  cy.getCookie('acm-access-token-cookie').should('exist').then((token) => {
+    oauthIssuer(token.value).then((issuer) => {
+      cy.get('#acm-user-dropdown').click().then(() => cy.get('#acm-logout').click().then(() => cy.url().should('include', issuer)))
+    })
+  })
 })
 
 Cypress.Commands.add('generateNamespace', () => {
@@ -143,33 +145,4 @@ Cypress.Commands.add('generateNamespace', () => {
 
 Cypress.Commands.add('waitUsingSLA', () => {
   return cy.wait(parseInt(Cypress.env('SERVICE_SLA'), 10) || 5000)
-})
-
-Cypress.Commands.add('consolePublic', token => {
-  cy.request({
-    url: apiUrl + "/api/v1/namespaces/openshift-config-managed/configmaps/console-public",
-    headers: {
-      Authorization: "Bearer " + token,
-      "Content-Type": "application/json",
-      Accept: "application/json"
-    }
-  }).then(resp => {
-    return cy.wrap(resp.body['data']['consoleURL'])
-  })
-})
-
-Cypress.Commands.add('version', () => {
-  cy.request({
-    url: Cypress.config().baseUrl + "/multicloud/header/version"
-  }).then(resp => {
-    return cy.wrap(resp.body['status']['currentVersion'])
-  })
-})
-
-Cypress.Commands.add('oauthEndpoint', () => {
-  cy.request({
-    url: apiUrl + "/.well-known/oauth-authorization-server"
-  }).then(resp => {
-    return cy.wrap(resp.body['token_endpoint'])
-  })
 })
