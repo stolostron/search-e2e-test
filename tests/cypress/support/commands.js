@@ -33,6 +33,7 @@ import { getOpt } from '../scripts/utils'
 
 import 'cypress-wait-until'
 import { searchPage } from '../views/search'
+import { oauthIssuer } from '../views/welcome'
 
 Cypress.Commands.add('login', (OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OC_IDP) => {
   var user = OPTIONS_HUB_USER || Cypress.env('OPTIONS_HUB_USER');
@@ -46,11 +47,11 @@ Cypress.Commands.add('login', (OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OC_IDP) =
       // Check if identity providers are configured
       if (body.find('form').length === 0)
         cy.contains(idp).click()
-      cy.get('#inputUsername',{timeout: 20000}).click().focused().type(user)
-      cy.get('#inputPassword',{timeout: 20000}).click().focused().type(password)
-      cy.get('button[type="submit"]',{timeout: 20000}).click()
+      cy.get('#inputUsername', { timeout: 20000 }).click().focused().type(user)
+      cy.get('#inputPassword', { timeout: 20000 }).click().focused().type(password)
+      cy.get('button[type="submit"]', { timeout: 20000 }).click()
       searchPage.shouldPageBeReady()
-      cy.get('#header', {timeout: 30000}).should('exist')
+      cy.get('#header', { timeout: 30000 }).should('exist')
     }
   })
 })
@@ -61,8 +62,8 @@ Cypress.Commands.add('reloadUntil', (condition, options) => {
   }
 
   var startTime = getOpt(options, 'startTime', new Date())
-  var timeout = getOpt(options, 'timeout', 300000) 
-  var interval = getOpt(options, 'interval', 0) 
+  var timeout = getOpt(options, 'timeout', 300000)
+  var interval = getOpt(options, 'interval', 0)
   var currentTime = new Date()
   if (currentTime - startTime < timeout) {
     condition().then(result => {
@@ -71,7 +72,7 @@ Cypress.Commands.add('reloadUntil', (condition, options) => {
         if (interval > 0) {
           cy.wait(interval)
         }
-        
+
         options.startTime = startTime
         cy.reloadUntil(condition, options)
       }
@@ -131,7 +132,11 @@ Cypress.Commands.add('forEach', (selector, action, options) => {
 })
 
 Cypress.Commands.add('logout', () => {
-  cy.get('#acm-user-dropdown').click().then(() => cy.get('#acm-logout').click()).wait(1000)
+  cy.getCookie('acm-access-token-cookie').should('exist').then((token) => {
+    oauthIssuer(token.value).then((issuer) => {
+      cy.get('#acm-user-dropdown').click().then(() => cy.get('#acm-logout').click().then(() => cy.url().should('include', issuer)))
+    })
+  })
 })
 
 Cypress.Commands.add('generateNamespace', () => {
