@@ -204,6 +204,7 @@ export const userMenu = {
         cy.get('.navigation-container #acm-info-dropdown').click()
         cy.get('#acm-info-dropdown #info-dropdown-content li').should('be.visible').and('have.length', 2).then((c) => {
             cy.getCookie('acm-access-token-cookie').should('exist').then((token, c) => {
+                // TODO: Refine the documentation check. The docs for a certain version might not be available by the time the test is updated.
                 acmVersion(token.value).then((version) => {
                     let url = 'https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/'
                     url += version === '2.2.0' ? '2.1/' : version.match(/[0-9]+\.[0-9]+/) + '/'
