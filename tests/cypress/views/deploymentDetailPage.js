@@ -10,7 +10,7 @@ import { popupModal } from '../views/popup'
 export const deploymentDetailPage = {
   whenScaleReplicasTo:(replicas) => {
     cy.get('.details-yaml-editOptions > .bx--btn').click()
-    cy.get('.react-monaco-editor-container').click().type('{ctrl}f')
+    cy.get('.react-monaco-editor-container').click().type(Cypress.platform !== 'darwin' ? '{ctrl}f' : '{meta}f')
       .get('.find-widget .monaco-inputbox textarea:first').focus().click().type('replicas: ')
     cy.get('.react-monaco-editor-container .view-line > span')
       .contains('replicas: ').parent()
