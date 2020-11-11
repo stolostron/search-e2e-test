@@ -33,7 +33,6 @@ const acmVersion = (token) => {
             Accept: "application/json"
         }
     }).then(resp => {
-        if (resp.body['status']['currentVersion'])
         return resp.body['status']['currentVersion']
     })
 }
