@@ -139,25 +139,28 @@ describe('Verify the suggested search templates', function() {
     searchPage.whenGoToSearchPage()
     
   })
-  it('should see the created last hour template & search tag in search items', function() {
-    suggestedTemplate.whenSelectCreatesLastHour()
-  });
+
   it('should see the workloads template & search tag in search items', function() {
     suggestedTemplate.whenSelectWorkloads()
   });
   it('should see the unhealthy pods template & search tag in search items', function() {
     suggestedTemplate.whenSelectUnhealthyPods()
   });
-  it('should see the created last hour template & related items details', function() {
+  it('should see the created last hour template & search tag in search items', function() {
     suggestedTemplate.whenSelectCreatesLastHour()
-    suggestedTemplate.whenVerifyRelatedItemsDetails()
   });
+
+  // Verify the related resources.
   it('should see the workload template & related items details', function() {
     suggestedTemplate.whenSelectWorkloads()
     suggestedTemplate.whenVerifyRelatedItemsDetails()
   });
   it('should see the unhealthy pods template & related items details', function() {
     suggestedTemplate.whenSelectUnhealthyPods()
+    suggestedTemplate.whenVerifyRelatedItemsDetails()
+  });
+  it('should see the created last hour template & related items details', function() {
+    suggestedTemplate.whenSelectCreatesLastHour()
     suggestedTemplate.whenVerifyRelatedItemsDetails()
   });
 })
