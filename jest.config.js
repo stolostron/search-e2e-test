@@ -7,7 +7,7 @@ module.exports = {
             { 
               suiteName: "jest api tests",
               outputDirectory: "results/json",
-              outputName: "junit.xml"
+              outputName: "api-tests.xml"
             }
         ]
     ]

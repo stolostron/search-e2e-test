@@ -19,8 +19,6 @@ if (fs.existsSync('./resources/options.yaml')) {
     optionsFile = './resources/options.yaml'
 }
 
-console.log('Using options.yaml file: ', optionsFile)
-
 const timeStamp = Date.now()
 
 nconf.env({ lowerCase: true, separator: '_' })
@@ -55,11 +53,11 @@ if (nconf.get('options:hub:baseDomain') === ''
     - OPTIONS_HUB_PASSWORD or options.hub.password in options.yaml.`)
   }
 
-console.log('Test environment')
-console.log('========================================')
-console.log('baseDomain : ', nconf.get('options:hub:baseDomain'))
-console.log('user       : ', nconf.get('options:hub:user'))
-// console.log('password   : ', nconf.get('options:hub:password'))
-console.log('========================================\n')
+// console.log('Test environment')
+// console.log('========================================')
+// console.log('baseDomain : ', nconf.get('options:hub:baseDomain'))
+// console.log('user       : ', nconf.get('options:hub:user'))
+// // console.log('password   : ', nconf.get('options:hub:password'))
+// console.log('========================================\n')
 
 module.exports = nconf
