@@ -13,4 +13,4 @@ chmod 755 ./clis-unpacked/kubectl
 mv ./clis-unpacked/oc /usr/local/bin/oc
 mv ./clis-unpacked/kubectl /usr/local/bin/kubectl
 
-echo 'set up complete'
+echo 'OC CLI set up complete'
