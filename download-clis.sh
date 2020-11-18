@@ -6,7 +6,7 @@ mkdir clis-unpacked
 
 # Install OpenShift and Kubectl CLI.
 echo "Installing oc and kubectl clis..."
-curl -kLo oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/ocp/4.4.3/openshift-client-linux-4.4.3.tar.gz
+curl -kLo oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/ocp/4.6.4/openshift-client-linux-4.6.4.tar.gz
 tar -xzf oc.tar.gz -C clis-unpacked
 chmod 755 ./clis-unpacked/oc
 chmod 755 ./clis-unpacked/kubectl
