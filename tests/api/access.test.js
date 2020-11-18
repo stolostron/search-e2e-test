@@ -1,20 +1,31 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
 const request = require('supertest');
+const config = require('../../config');
+const { execSync } = require('child_process');
 
-const searchApiRoute = 'https://search-api-open-cluster-management.apps.jorge-dev.dev07.red-chesterfield.com'
-const token = 'I209Sps-hGvGfGkvMvoq3dNTuxWAQ-sVRoLHK1Upfnc'  // oc whoami -t
+const searchApiRoute = `https://search-api-tests-open-cluster-management.apps.${config.get('options:hub:baseDomain')}`
+var token = ''
 
+const sleep = (milliseconds) => {
+    return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
 
 describe('Verify access to the search-api', () => {
 
-    beforeAll(() => {
-        // Maybe this should be in common-lib.
+    beforeAll(async() => {
 
-        // TODO: Create a route to access the search-api.
-        // oc create route passthrough search-api --service=search-search-api --insecure-policy=Redirect -n open-cluster-management
+        // Get bearer token
+        execSync(`oc login -u ${config.get('options:hub:user')} -p ${config.get('options:hub:password')} --server=https://api.${config.get('options:hub:baseDomain')}:6443`)
+        token = execSync('oc whoami -t').toString().replace('\n', '')
+        
+        // Create search-api-test route if it doesn't exist
+        var routes = execSync(`oc get routes -n open-cluster-management`).toString()
+        if (routes.indexOf('search-api-tests') == -1){
+            execSync(`oc create route passthrough search-api-tests --service=search-search-api --insecure-policy=Redirect -n open-cluster-management`)
+            await sleep(1000)
+        }
 
-        // TODO: Get the search-api route from target cluster.
 
         // TODO: Get SSL cert from cluster.
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0 // Temporary workaround.
