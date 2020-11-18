@@ -18,11 +18,17 @@ if [ -f $OPTIONS_FILE ]; then
   export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq r $OPTIONS_FILE 'options.hub.baseDomain'`
   export CYPRESS_OPTIONS_HUB_USER=`yq r $OPTIONS_FILE 'options.hub.user'`
   export CYPRESS_OPTIONS_HUB_PASSWORD=`yq r $OPTIONS_FILE 'options.hub.password'`
+  export OPTIONS_HUB_BASEDOMAIN=`yq r $OPTIONS_FILE 'options.hub.baseDomain'`
+  export OPTIONS_HUB_USER=`yq r $OPTIONS_FILE 'options.hub.user'`
+  export OPTIONS_HUB_PASSWORD=`yq r $OPTIONS_FILE 'options.hub.password'`
 elif [ -f $USER_OPTIONS_FILE ]; then
   echo "Using test config from '$USER_OPTIONS_FILE' file."
   export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq r $USER_OPTIONS_FILE 'options.hub.baseDomain'`
   export CYPRESS_OPTIONS_HUB_USER=`yq r $USER_OPTIONS_FILE 'options.hub.user'`
   export CYPRESS_OPTIONS_HUB_PASSWORD=`yq r $USER_OPTIONS_FILE 'options.hub.password'`
+  export OPTIONS_HUB_BASEDOMAIN=`yq r $USER_OPTIONS_FILE 'options.hub.baseDomain'`
+  export OPTIONS_HUB_USER=`yq r $USER_OPTIONS_FILE 'options.hub.user'`
+  export OPTIONS_HUB_PASSWORD=`yq r $USER_OPTIONS_FILE 'options.hub.password'`
 else
   echo -e "Options file does not exist, using test config from environment variables.\n"
 fi

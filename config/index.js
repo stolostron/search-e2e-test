@@ -19,6 +19,8 @@ if (fs.existsSync('./resources/options.yaml')) {
     optionsFile = './resources/options.yaml'
 }
 
+console.log('Using options.yaml file: ', optionsFile)
+
 const timeStamp = Date.now()
 
 nconf.env({ lowerCase: true, separator: '_' })
