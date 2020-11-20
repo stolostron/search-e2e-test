@@ -1,8 +1,10 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
+import { clusterLogin, getToken } from '../../config'
 const request = require('supertest');
 const config = require('../../config');
 const { execSync } = require('child_process');
+
 
 const searchApiRoute = `https://search-api-tests-open-cluster-management.apps.${config.get('options:hub:baseDomain')}`
 var token = ''
@@ -16,8 +18,10 @@ describe('Verify access to the search-api', () => {
     beforeAll(async() => {
 
         // Get bearer token
-        execSync(`oc login -u ${config.get('options:hub:user')} -p ${config.get('options:hub:password')} --server=https://api.${config.get('options:hub:baseDomain')}:6443`)
-        token = execSync('oc whoami -t').toString().replace('\n', '')
+        clusterLogin()
+        token = getToken()
+        // execSync(`oc login -u ${config.get('options:hub:user')} -p ${config.get('options:hub:password')} --server=https://api.${config.get('options:hub:baseDomain')}:6443`)
+        // token = execSync('oc whoami -t').toString().replace('\n', '')
         
         // Create search-api-test route if it doesn't exist
         var routes = execSync(`oc get routes -n open-cluster-management`).toString()
