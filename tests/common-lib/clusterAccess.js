@@ -17,7 +17,7 @@ const getToken = () => {
 
 // Create a route to access the Search API.
 var searchApiRoute = '' // Used like a cache to avoid requesting the route multiple times.
-const getSearchApiRoute = ()  => {
+const getSearchApiRoute = async ()  => {
     if (searchApiRoute != '') {
         return searchApiRoute
     }
