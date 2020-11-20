@@ -51,9 +51,12 @@ if [[ "$LIVE_MODE" == true ]]; then
   HEADLESS=""
 fi
 
-# Run API tests
+
+echo "Running API tests."
 npm run test:api
 
+
+echo "Running UI tests."
 if [ "$NODE_ENV" == "dev" ]; then
   npx cypress run --browser $BROWSER $HEADLESS --spec ./tests/cypress/tests/*.spec.js --reporter cypress-multi-reporters  
 elif [ "$NODE_ENV" == "debug" ]; then

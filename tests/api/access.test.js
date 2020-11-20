@@ -1,6 +1,6 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
-const { clusterLogin, getToken } = require('../../config')
+const { clusterLogin, getToken } = require('../common-lib/clusterAccess')
 const request = require('supertest');
 const config = require('../../config');
 const { execSync } = require('child_process');
