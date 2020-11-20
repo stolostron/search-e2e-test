@@ -24,7 +24,7 @@ const getSearchApiRoute = async ()  => {
 
     // Check if the route exist and create a new route if needed.
     var routes = execSync(`oc get routes -n open-cluster-management`).toString()
-    if (routes.indexOf('search-api-tests') == -1){
+    if (routes.indexOf('search-api-automation') == -1){
         execSync(`oc create route passthrough search-api-automation --service=search-search-api --insecure-policy=Redirect -n open-cluster-management`)
         await sleep(1000)
     }
