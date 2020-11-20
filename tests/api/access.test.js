@@ -20,7 +20,7 @@ describe('Verify access to the search-api', () => {
         token = getToken()
         
         // Create a route to access the Search API.
-        searchApiRoute = getSearchApiRoute()
+        searchApiRoute = await getSearchApiRoute()
 
         // TODO: Get SSL cert from cluster.
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0 // Temporary workaround.
