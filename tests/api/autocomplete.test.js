@@ -2,7 +2,7 @@
 
 describe('Validate autocomplete suggestions', () => {
 
-    test('Search: Test not implemented', (done) => {
+    test('Search: [PLACEHOLDER] This test not yet implemented.', (done) => {
         done()
     })
 })
