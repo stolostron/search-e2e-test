@@ -155,12 +155,15 @@ describe('Verify the suggested search templates', function() {
     suggestedTemplate.whenSelectWorkloads()
     suggestedTemplate.whenVerifyRelatedItemsDetails()
   });
-  it('should see the unhealthy pods template & related items details', function() {
-    suggestedTemplate.whenSelectUnhealthyPods()
-    suggestedTemplate.whenVerifyRelatedItemsDetails()
-  });
-  it('should see the created last hour template & related items details', function() {
-    suggestedTemplate.whenSelectCreatesLastHour()
-    suggestedTemplate.whenVerifyRelatedItemsDetails()
-  });
+
+  // DISABLED:  These are testing the same path as the above test and it's adding 
+  //            a high load. Hoping that this can help with our canary issues.
+  // it('should see the unhealthy pods template & related items details', function() {
+  //   suggestedTemplate.whenSelectUnhealthyPods()
+  //   suggestedTemplate.whenVerifyRelatedItemsDetails()
+  // });
+  // it('should see the created last hour template & related items details', function() {
+  //   suggestedTemplate.whenSelectCreatesLastHour()
+  //   suggestedTemplate.whenVerifyRelatedItemsDetails()
+  // });
 })
