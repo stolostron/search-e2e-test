@@ -13,4 +13,5 @@ const getToken = () => {
 }
 
 
-export { clusterLogin, getToken }
+exports.clusterLogin = clusterLogin
+exports.getToken = getToken
