@@ -1,6 +1,6 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
-import { clusterLogin, getToken } from '../../config'
+const { clusterLogin, getToken } = require('../../config')
 const request = require('supertest');
 const config = require('../../config');
 const { execSync } = require('child_process');

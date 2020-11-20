@@ -1,6 +1,6 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
-import config from '../../config'
+const config = require('../../config')
 const { execSync } = require('child_process');
 
 
