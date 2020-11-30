@@ -10,5 +10,6 @@ module.exports = {
               outputName: "api-tests.xml"
             }
         ]
-    ]
+    ],
+    testResultsProcessor: "jest-junit"
 };
