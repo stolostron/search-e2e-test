@@ -56,6 +56,7 @@ echo "Running Search API tests."
 npm run test:api
 
 
+echo "\n\n"
 echo "Running Search UI tests."
 if [ "$NODE_ENV" == "dev" ]; then
   npx cypress run --browser $BROWSER $HEADLESS --spec ./tests/cypress/tests/*.spec.js --reporter cypress-multi-reporters  
