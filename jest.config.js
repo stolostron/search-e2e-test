@@ -11,6 +11,5 @@ module.exports = {
             }
         ]
     ],
-    testResultsProcessor: "jest-junit",
-    colors: true
+    testResultsProcessor: "jest-junit"
 };

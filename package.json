@@ -4,7 +4,7 @@
   "description": "End to end test for Search component",
   "scripts": {
     "test": "npm run test:clean-reports && npm run test:headless && npm run test:merge-reports",
-    "test:api": "jest",
+    "test:api": "jest --colors",
     "test:clean-reports": "rm -rf ./results",
     "test:headed": "export LIVE_MODE=true && export BROWSER=chrome && ./start-tests.sh",
     "test:headless": "set -e NODE_ENV=dev && ./start-tests.sh",
