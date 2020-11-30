@@ -3,7 +3,7 @@
 ###############################################################################
 # Copyright (c) 2020 Red Hat, Inc.
 ###############################################################################
-echo "Initiating tests..."
+echo "Initiating Search E2E tests..."
 
 if [ -z "$BROWSER" ]; then
   echo "BROWSER not exported; setting to 'chrome' (options available: 'chrome', 'firefox')"
@@ -52,11 +52,11 @@ if [[ "$LIVE_MODE" == true ]]; then
 fi
 
 
-echo "Running API tests."
+echo "Running Search API tests."
 npm run test:api
 
 
-echo "Running UI tests."
+echo "Running Search UI tests."
 if [ "$NODE_ENV" == "dev" ]; then
   npx cypress run --browser $BROWSER $HEADLESS --spec ./tests/cypress/tests/*.spec.js --reporter cypress-multi-reporters  
 elif [ "$NODE_ENV" == "debug" ]; then

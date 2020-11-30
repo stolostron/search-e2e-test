@@ -41,6 +41,7 @@ During the test setup, we create an identity provider (provider can be found usi
 | Command                                | Description                                                                                    |
 |----------------------------------------|------------------------------------------------------------------------------------------------|
 | `npm run test`                         | Run Cypress tests                                                                              |
+| `npm run test:api`                     | Run Search API tests (jest)                                                                    |
 | `npm run test:clean-reports`           | Remove reports within the results directory                                                    |
 | `npm run test:headed`                  | Run Cypress tests and display test being executed within the browser (Default browser: chrome) |
 | `npm run test:headless`                | Run Cypress tests while hiding the browser                                                     |
