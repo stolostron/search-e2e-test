@@ -6,7 +6,7 @@
 echo "Initiating Search E2E tests..."
 
 section_title () {
-  printf "\n $(tput bold) $1 $(tput sgr0)\n"
+  printf "\n$(tput bold)$1 $(tput sgr0)\n"
 }
 
 if [ -z "$BROWSER" ]; then
