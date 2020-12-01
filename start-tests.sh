@@ -3,7 +3,11 @@
 ###############################################################################
 # Copyright (c) 2020 Red Hat, Inc.
 ###############################################################################
-echo "Initiating tests..."
+echo "Initiating Search E2E tests..."
+
+section_title () {
+  printf "\n$(tput bold)$1 $(tput sgr0)\n"
+}
 
 if [ -z "$BROWSER" ]; then
   echo "BROWSER not exported; setting to 'chrome' (options available: 'chrome', 'firefox')"
@@ -18,11 +22,17 @@ if [ -f $OPTIONS_FILE ]; then
   export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq r $OPTIONS_FILE 'options.hub.baseDomain'`
   export CYPRESS_OPTIONS_HUB_USER=`yq r $OPTIONS_FILE 'options.hub.user'`
   export CYPRESS_OPTIONS_HUB_PASSWORD=`yq r $OPTIONS_FILE 'options.hub.password'`
+  export OPTIONS_HUB_BASEDOMAIN=`yq r $OPTIONS_FILE 'options.hub.baseDomain'`
+  export OPTIONS_HUB_USER=`yq r $OPTIONS_FILE 'options.hub.user'`
+  export OPTIONS_HUB_PASSWORD=`yq r $OPTIONS_FILE 'options.hub.password'`
 elif [ -f $USER_OPTIONS_FILE ]; then
   echo "Using test config from '$USER_OPTIONS_FILE' file."
   export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq r $USER_OPTIONS_FILE 'options.hub.baseDomain'`
   export CYPRESS_OPTIONS_HUB_USER=`yq r $USER_OPTIONS_FILE 'options.hub.user'`
   export CYPRESS_OPTIONS_HUB_PASSWORD=`yq r $USER_OPTIONS_FILE 'options.hub.password'`
+  export OPTIONS_HUB_BASEDOMAIN=`yq r $USER_OPTIONS_FILE 'options.hub.baseDomain'`
+  export OPTIONS_HUB_USER=`yq r $USER_OPTIONS_FILE 'options.hub.user'`
+  export OPTIONS_HUB_PASSWORD=`yq r $USER_OPTIONS_FILE 'options.hub.password'`
 else
   echo -e "Options file does not exist, using test config from environment variables.\n"
 fi
@@ -45,17 +55,22 @@ if [[ "$LIVE_MODE" == true ]]; then
   HEADLESS=""
 fi
 
+section_title "Running Search API tests."
+npm run test:api
+
+
+section_title "Running Search UI tests."
 if [ "$NODE_ENV" == "dev" ]; then
-  npx cypress run --browser $BROWSER $HEADLESS --spec ./tests/cypress/tests/*.spec.js --reporter cypress-multi-reporters  
+  npx cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/*.spec.js" --reporter cypress-multi-reporters  
 elif [ "$NODE_ENV" == "debug" ]; then
   npx cypress open --browser $BROWSER --config numTestsKeptInMemory=0
 else 
-  cypress run --browser $BROWSER $HEADLESS --spec ./tests/cypress/tests/*.spec.js --reporter cypress-multi-reporters
+  cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/*.spec.js" --reporter cypress-multi-reporters
 fi
 
 testCode=$?
 
-echo "Merging XML and JSON reports..."
+section_title "Merging XML and JSON reports..."
 npm run test:merge-reports
 
 ls -R results
