@@ -5,6 +5,10 @@
 ###############################################################################
 echo "Initiating Search E2E tests..."
 
+section_title () {
+  printf "\n $(tput bold) $1 $(tput sgr0)\n"
+}
+
 if [ -z "$BROWSER" ]; then
   echo "BROWSER not exported; setting to 'chrome' (options available: 'chrome', 'firefox')"
   export BROWSER="chrome"
@@ -51,12 +55,11 @@ if [[ "$LIVE_MODE" == true ]]; then
   HEADLESS=""
 fi
 
-
-echo "Running Search API tests."
+section_title "Running Search API tests."
 npm run test:api
 
 
-echo "\n\nRunning Search UI tests."
+section_title "Running Search UI tests."
 if [ "$NODE_ENV" == "dev" ]; then
   npx cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/*.spec.js" --reporter cypress-multi-reporters  
 elif [ "$NODE_ENV" == "debug" ]; then
@@ -67,7 +70,7 @@ fi
 
 testCode=$?
 
-echo "Merging XML and JSON reports..."
+section_title "Merging XML and JSON reports..."
 npm run test:merge-reports
 
 ls -R results
