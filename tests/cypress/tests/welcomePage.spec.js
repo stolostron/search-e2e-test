@@ -38,14 +38,14 @@ describe('Welcome page', function () {
         leftNav.goToGRC()
     })
 
+    /* Skipping this test because it's intermittently becoming unresponsive and causing the canaries to fail.
     it('should be validated for the nav icons on the header', function () {
-        // Skipping this test because it's intermittently becoming unresponsive and causing the canaries to fail.
-        this.skip()
-        // userMenu.openApps()
-        // userMenu.openSearch()
-        // userMenu.openResources()
-        // userMenu.openTerminal()
-        // userMenu.openInfo()
-        // userMenu.openUser()
+        userMenu.openApps()
+        userMenu.openSearch()
+        userMenu.openResources()
+        userMenu.openTerminal()
+        userMenu.openInfo()
+        userMenu.openUser()
     })
+    */
 })
