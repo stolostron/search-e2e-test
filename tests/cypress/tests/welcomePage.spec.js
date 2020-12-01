@@ -39,13 +39,13 @@ describe('Welcome page', function () {
     })
 
     it('should be validated for the nav icons on the header', function () {
-        // Skipping this test because it's hanging and causing the canaries to fail.
+        // Skipping this test because it's intermittently becoming unresponsive and causing the canaries to fail.
         this.skip()
-        userMenu.openApps()
-        userMenu.openSearch()
-        userMenu.openResources()
-        userMenu.openTerminal()
-        userMenu.openInfo()
-        userMenu.openUser()
+        // userMenu.openApps()
+        // userMenu.openSearch()
+        // userMenu.openResources()
+        // userMenu.openTerminal()
+        // userMenu.openInfo()
+        // userMenu.openUser()
     })
 })
