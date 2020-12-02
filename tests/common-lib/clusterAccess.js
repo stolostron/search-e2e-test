@@ -1,6 +1,7 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
 const config = require('../../config')
+const { sleep } = require('./sleep')
 const { execSync } = require('child_process');
 
 

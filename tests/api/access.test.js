@@ -8,9 +8,6 @@ const { execSync } = require('child_process');
 var searchApiRoute = ''
 var token = ''
 
-const sleep = (milliseconds) => {
-    return new Promise(resolve => setTimeout(resolve, milliseconds))
-}
 const query = {
     operationName: 'searchResult',
     variables: {
