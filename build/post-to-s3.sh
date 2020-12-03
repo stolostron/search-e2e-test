@@ -14,10 +14,10 @@ function install_aws_cli() {
     echo "aws_secret_access_key = " $AWS_SECRET_ACCESS_KEY >> ./aws/credentials
 }
 
-# copies the test results to the search-e2e-test/data S3 bucket
+# copies the test results to the search-e2e-test S3 bucket
 function post_s3() {
-    echo "Uploading files to AWS S3 bucket.  search-e2e-test/data/${TRAVIS_BUILD_ID}"  
+    echo "Uploading files to AWS S3 bucket.  search-e2e-test/${TRAVIS_BUILD_ID}"  
 
-    aws s3 sync ./search-test-results s3://search-e2e-results/data/${TRAVIS_BUILD_ID}
+    aws s3 sync ./search-test-results s3://search-e2e-results/${TRAVIS_BUILD_ID}
     set +x
 }
