@@ -62,6 +62,8 @@ run-test-image:
 
 .PHONY: run-test-image-pr
 run-test-image-pr:
+# make a directory to mount our results into
+mkdir search-test-results
 	docker run \
 	-v /var/run/docker.sock:/var/run/docker.sock \
 	-e BROWSER=$(BROWSER) \
@@ -76,6 +78,7 @@ run-test-image-pr:
 	-e OPTIONS_HUB_BASEDOMAIN=$(OPTIONS_HUB_BASEDOMAIN) \
 	-e OPTIONS_HUB_USER=$(OPTIONS_HUB_USER) \
 	-e OPTIONS_HUB_PASSWORD=$(OPTIONS_HUB_PASSWORD) \
+	--volume $(shell pwd)/search-test-results:/results \
 	$(COMPONENT_DOCKER_REPO)/$(COMPONENT_NAME):$(TEST_IMAGE_TAG)
 
 .PHONY: push
