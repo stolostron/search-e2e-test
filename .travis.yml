@@ -54,9 +54,7 @@ jobs:
       name: "Run Search E2E tests"
       language: node_js
       script:
-        - echo -e "travis_fold:start:pull_image\033[33;1mPull Docker Image\033[0m"
         - make component/pull
-        - echo -e "\ntravis_fold:end:pull_image\r"
         - make component/test/e2e
     - stage: release-ff
       name: "Push commits from master to branch defined in RELEASE_FF_BRANCH"
