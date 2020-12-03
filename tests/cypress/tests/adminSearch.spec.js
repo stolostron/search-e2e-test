@@ -124,27 +124,35 @@ clusterModes.forEach((clusterMode) =>   {
       });
     })
   })
-  describe('Verify the suggested search templates', function() {
-
-    before(function() {
-      cy.login()
-    })
-  
-    after(function() {
-      cy.logout()
-    })
-    beforeEach(function() {
-      searchPage.whenGoToSearchPage()
-      
-    })
-    it('should see the created last hour template & search tag in search items', function() {
-      suggestedTemplate.whenSelectCreatesLastHour()
-    });
-    it('should see the workloads template & search tag in search items', function() {
-      suggestedTemplate.whenSelectWorkloads()
-    });
-    it('should see the unhealthy pods template & search tag in search items', function() {
-      suggestedTemplate.whenSelectUnhealthyPods()
-    });
-  })
 });
+
+/****
+DISABLED: These tests fail when another test or user makes changes that removed 
+           the related resources from kubernetes.
+
+describe('Verify the suggested search templates', function() {
+
+  before(function() {
+    cy.login()
+  })
+
+  after(function() {
+    cy.logout()
+  })
+  beforeEach(function() {
+    searchPage.whenGoToSearchPage()
+    
+  })
+  it('should see the workloads template & search tag in search items', function() {
+    suggestedTemplate.whenSelectWorkloads()
+  });
+  
+  it('should see the created last hour template & search tag in search items', function() {
+    suggestedTemplate.whenSelectCreatesLastHour()
+  });
+  it('should see the unhealthy pods template & search tag in search items', function() {
+    suggestedTemplate.whenSelectUnhealthyPods()
+  });
+})
+*/
+
