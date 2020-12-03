@@ -55,7 +55,7 @@ jobs:
       language: node_js
       script:
         - make component/pull
-        - make run-test-image-pr
+        - make component/test/e2e
     - stage: release-ff
       name: "Push commits from master to branch defined in RELEASE_FF_BRANCH"
       if: type = push AND branch =~ /^master$/
