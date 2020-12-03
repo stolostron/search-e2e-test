@@ -62,8 +62,9 @@ run-test-image:
 
 .PHONY: run-test-image-pr
 run-test-image-pr:
-# make a directory to mount our results into
-mkdir search-test-results
+	# make a directory to mount our results into
+	mkdir search-test-results
+
 	docker run \
 	-v /var/run/docker.sock:/var/run/docker.sock \
 	-e BROWSER=$(BROWSER) \
