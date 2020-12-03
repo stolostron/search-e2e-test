@@ -28,6 +28,7 @@
       "mochaFile": "results/cypress-[hash].xml"
     }
   },
+  "retries": { "runMode": 3, "openMode": 3 },
   "viewportHeight": 1050,
   "viewportWidth": 1680
 }
