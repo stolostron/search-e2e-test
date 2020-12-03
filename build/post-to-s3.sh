@@ -14,10 +14,6 @@ function install_aws_cli() {
     echo "aws_access_key_id = " $AWS_ACCESS_KEY_ID > ./aws/credentials
     echo "aws_secret_access_key = " $AWS_SECRET_ACCESS_KEY >> ./aws/credentials
   
-#   mkdir -p $my_dir/TMP
-#   cd $my_dir/TMP
-#   echo "getting data for ... ${TRAVIS_BUILD_ID}"
-#   aws s3 cp --recursive --quiet s3://$RESULTS_S3_BUCKET/data/${TRAVIS_BUILD_ID} .
 }
 
 function post_s3() {
@@ -29,6 +25,6 @@ function post_s3() {
   
     # cd $my_dir/TMP
     # copies travis_build_id/results.xml to data
-    aws s3 sync --quiet ./search-test-results s3://search-e2e-results/data/
+    aws s3 sync ./search-test-results s3://search-e2e-results/data/
     set +x
 }

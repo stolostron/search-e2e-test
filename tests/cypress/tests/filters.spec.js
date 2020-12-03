@@ -95,31 +95,31 @@ filtersRegistry.createFilter('app_instance', { values: [useText('any')] })
 filtersRegistry.createFilter('cluster', { strategies: [ combined([kindFilter, nameFilter])] })
 */
 
-describe('Search using filters', function() {
-  before(function() {
-    cy.login()
-    searchPage.whenGoToSearchPage()
-  })
+// describe('Search using filters', function() {
+//   before(function() {
+//     cy.login()
+//     searchPage.whenGoToSearchPage()
+//   })
   
-  filtersRegistry.filters.forEach((filter) =>   {
-    if (filter.skip) {
-      return;
-    }
+//   filtersRegistry.filters.forEach((filter) =>   {
+//     if (filter.skip) {
+//       return;
+//     }
 
-    describe('Search using "' + filter.type + '" filter', function() {
+//     describe('Search using "' + filter.type + '" filter', function() {
 
-      beforeEach(function() {
-        searchBar.whenClearFilters()
-        searchBar.whenFocusSearchBar()
-      })
+//       beforeEach(function() {
+//         searchBar.whenClearFilters()
+//         searchBar.whenFocusSearchBar()
+//       })
   
-      if (filter.strategies) {
-        filter.strategies.forEach((runner) => runner(filter))
-      }
-    })
-  })
+//       if (filter.strategies) {
+//         filter.strategies.forEach((runner) => runner(filter))
+//       }
+//     })
+//   })
   
-  after(function() {
-    cy.logout()
-  })
-})
+//   after(function() {
+//     cy.logout()
+//   })
+// })

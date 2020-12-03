@@ -14,9 +14,6 @@ function fold_end() {
   echo -e "\ntravis_fold:end:$1\r"
 }
 
-echo "(1) current directory: "
-pwd
-
 # fold_start cypress "Functional Tests"
 make run-test-image-pr
 # fold_end cypress
