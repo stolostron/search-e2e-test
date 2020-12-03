@@ -26,7 +26,7 @@ describe('Search and validate all clusters have default namespace', function(){
   it('should find each managed cluster has default namespace', function() {
     clusterNamespace.validateClusterNamespace({"namespace": "default"}, "")
   })
-
+  /*
   it('should find open-cluster-management-agent namespace exists', function() {
     clusterNamespace.validateClusterNamespace({"kind": "namespace","name" : "open-cluster-management-agent" }, "has_local-cluster")
   })
@@ -42,4 +42,5 @@ describe('Search and validate all clusters have default namespace', function(){
     clusterNamespace.getSavedSearch(quaryDefaultNamespaceName)
     clusterNamespace.getSavedSearch(quaryOcmaNamespaceName)
   })
+  */
 })

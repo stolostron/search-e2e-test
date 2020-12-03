@@ -9,6 +9,10 @@ function install_aws_cli() {
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
     unzip -q -o awscliv2.zip
     ./aws/install -i $my_dir/aws-cli -b /home/travis/bin
+
+    echo "Setup AWS credentials"
+    echo "aws_access_key_id = " $AWS_ACCESS_KEY_ID > ./aws/credentials
+    echo "aws_secret_access_key = " $AWS_SECRET_ACCESS_KEY >> ./aws/credentials
   
 #   mkdir -p $my_dir/TMP
 #   cd $my_dir/TMP

@@ -21,7 +21,7 @@ describe('Welcome page', function () {
     it('should load', function () {
         welcomePage.shouldExist()
     })
-
+    /*
     it('should be validated for the links on main page', function () {
         welcomePage.validateSvcs()
         welcomePage.validateConnect()
@@ -37,7 +37,7 @@ describe('Welcome page', function () {
         leftNav.goToApplications()
         leftNav.goToGRC()
     })
-
+    */
     /* Skipping this test because it's intermittently becoming unresponsive and causing the canaries to fail.
     it('should be validated for the nav icons on the header', function () {
         userMenu.openApps()
