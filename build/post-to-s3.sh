@@ -17,14 +17,9 @@ function install_aws_cli() {
 }
 
 function post_s3() {
-    echo "Uploading files to AWS S3 bucket"
+    echo "Uploading files to AWS S3 bucket"  
 
-    # mkdir -p $my_dir/TMP/${TRAVIS_BUILD_ID}${POST_S3_SUFFIX}
-    # cp  -r $1/* $my_dir/TMP/${TRAVIS_BUILD_ID}${POST_S3_SUFFIX}/
-  
-  
-    # cd $my_dir/TMP
-    # copies travis_build_id/results.xml to data
-    aws s3 sync ./search-test-results s3://search-e2e-results/data/
+    # copies results to the search-e2e-test/data S3 bucket
+    aws s3 sync ./search-test-results s3://search-e2e-results/data/${TRAVIS_BUILD_ID}
     set +x
 }
