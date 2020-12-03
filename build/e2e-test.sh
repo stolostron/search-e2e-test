@@ -14,14 +14,18 @@ function fold_end() {
   echo -e "\ntravis_fold:end:$1\r"
 }
 
-echo "(1) current directory: " $pwd
+echo "(1) current directory: "
+pwd
 
 # fold_start cypress "Functional Tests"
 make run-test-image-pr
 # fold_end cypress
 
 echo "Uploading results to AWS S3"
-echo "(2) current directory: " $pwd
+echo "(2) current directory: "
+pwd
+echo 'Files (ls):'
+ls
 source ./post-to-s3.sh
 
 install_aws_cli
