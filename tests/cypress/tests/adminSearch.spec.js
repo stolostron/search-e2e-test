@@ -11,8 +11,8 @@ import { podDetailPage } from '../views/podDetailPage'
 import { resourcePage } from '../views/resource'
 import { pageLoader, searchPage, searchBar, suggestedTemplate } from '../views/search'
 
-const clusterModes = [{ label: 'Local', valueFn: () => cy.wrap('local-cluster'), skip: true}, 
-                      { label: 'Managed', valueFn: () => clustersPage.givenManagedCluster(), skip: true }];
+const clusterModes = [{ label: 'Local', valueFn: () => cy.wrap('local-cluster') }, 
+                      { label: 'Managed', valueFn: () => clustersPage.givenManagedCluster() }];
 
 clusterModes.forEach((clusterMode) =>   {
 
@@ -126,7 +126,7 @@ clusterModes.forEach((clusterMode) =>   {
   })
 });
 
-/*
+
 describe('Verify the suggested search templates', function() {
 
   before(function() {
@@ -168,4 +168,3 @@ describe('Verify the suggested search templates', function() {
   //   suggestedTemplate.whenVerifyRelatedItemsDetails()
   // });
 })
-*/
