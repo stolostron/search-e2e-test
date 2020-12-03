@@ -26,7 +26,7 @@ echo "(2) current directory: "
 pwd
 echo 'Files (ls):'
 ls
-source ./post-to-s3.sh
+source ./build/post-to-s3.sh
 
 install_aws_cli
 post_s3
