@@ -5,6 +5,7 @@
   "ignoreTestFiles": "**/ignoredTestFiles/*.spec.js",
   "fixturesFolder": "tests/cypress/fixtures",
   "pluginsFile": "tests/cypress/plugins/index.js",
+  "numTestsKeptInMemory": 10,
   "screenshotsFolder" : "results/screenshots",
   "supportFile": "tests/cypress/support/index.js",
   "videosFolder": "results/videos",
