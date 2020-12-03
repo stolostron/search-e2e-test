@@ -126,7 +126,6 @@ clusterModes.forEach((clusterMode) =>   {
   })
 });
 
-
 describe('Verify the suggested search templates', function() {
 
   before(function() {
