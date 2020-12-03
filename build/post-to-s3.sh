@@ -9,9 +9,9 @@ function install_aws_cli() {
     unzip -q -o awscliv2.zip
     ./aws/install -i $my_dir/aws-cli -b /home/travis/bin
 
-    echo "Setup AWS credentials"
-    echo "aws_access_key_id = " $AWS_ACCESS_KEY_ID > ./aws/credentials
-    echo "aws_secret_access_key = " $AWS_SECRET_ACCESS_KEY >> ./aws/credentials
+    # Setup AWS credentials.
+    # echo "aws_access_key_id = " $AWS_ACCESS_KEY_ID > ./aws/credentials
+    # echo "aws_secret_access_key = " $AWS_SECRET_ACCESS_KEY >> ./aws/credentials
 }
 
 # copies the test results to the search-e2e-test S3 bucket

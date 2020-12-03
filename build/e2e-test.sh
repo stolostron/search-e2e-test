@@ -14,7 +14,7 @@ function fold_end() {
   echo -e "\ntravis_fold:end:$1\r"
 }
 
-fold_start cypress "Search Tests"
+fold_start cypress "Execute Search Tests"
 make run-test-image-pr
 fold_end cypress
 
