@@ -28,6 +28,7 @@
       "mochaFile": "results/cypress-[hash].xml"
     }
   },
+  "retries": 2,
   "viewportHeight": 1050,
   "viewportWidth": 1680
 }
