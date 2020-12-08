@@ -2,8 +2,6 @@
 
 const { getSearchApiRoute, getToken } = require('../common-lib/clusterAccess')
 const request = require('supertest');
-const config = require('../../config');
-const { execSync } = require('child_process');
 
 var searchApiRoute = ''
 var token = ''
