@@ -27,7 +27,7 @@ const getSearchApiRoute = async ()  => {
     var routes = execSync(`oc get routes -n open-cluster-management`).toString()
     if (routes.indexOf('search-api-automation') == -1){
         execSync(`oc create route passthrough search-api-automation --service=search-search-api --insecure-policy=Redirect -n open-cluster-management`)
-        await sleep(2000)
+        await sleep(10000)
     }
     searchApiRoute = `https://search-api-automation-open-cluster-management.apps.${config.get('options:hub:baseDomain')}`
     return searchApiRoute

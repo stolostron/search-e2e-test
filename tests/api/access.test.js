@@ -2,8 +2,6 @@
 
 const { getSearchApiRoute, getToken } = require('../common-lib/clusterAccess')
 const request = require('supertest');
-const config = require('../../config');
-const { execSync } = require('child_process');
 
 var searchApiRoute = ''
 var token = ''
@@ -21,7 +19,7 @@ const query = {
 }
 
 
-describe('Search: Verify access to the search-api', () => {
+describe('Search API: Verify access: ', () => {
 
     beforeAll(async() => {
         // Log in and get access token
@@ -38,14 +36,14 @@ describe('Search: Verify access to the search-api', () => {
     afterAll(() => {
     })
 
-    test('Should get 401 if authorization header is not present.', ()=>{ 
+    test('should get 401 if authorization header is not present.', ()=>{ 
         return request(searchApiRoute)
             .post('/searchapi/graphql')
             .send(query)
             .expect(401)
     })
 
-    test('Should get 401 if authorization header is incorrect.', ()=>{
+    test('should get 401 if authorization header is incorrect.', ()=>{
         return request(searchApiRoute)
             .post('/searchapi/graphql')
             .send(query)
@@ -53,7 +51,7 @@ describe('Search: Verify access to the search-api', () => {
             .expect(401)
     })
 
-    test('Search for kind:pod should return results.', ()=>{
+    test('should return results when searching for kind:pod.', ()=>{
         return request(searchApiRoute)
             .post('/searchapi/graphql')
             .send(query)
