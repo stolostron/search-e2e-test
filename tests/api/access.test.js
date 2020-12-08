@@ -21,7 +21,7 @@ const query = {
 }
 
 
-describe('Search: Verify access to the search-api', () => {
+describe('Search: [P1][Sev1][search] Verify access to the search-api', () => {
 
     beforeAll(async() => {
         // Log in and get access token

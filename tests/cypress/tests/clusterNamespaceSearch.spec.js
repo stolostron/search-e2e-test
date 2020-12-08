@@ -13,7 +13,7 @@ const quaryDefaultNamespaceDesc = "this is searching that each cluser should hav
 const quaryOcmaNamespaceName = "open-cluster-management-agent search"
 const quaryOcmaNamespaceDesc = "this is searching that each cluser should have open-cluster-management-agent"
 
-describe('Search and validate all clusters have default namespace', function(){
+describe('Search: [P1][Sev1][search] Search and validate all clusters have default namespace', function(){
 
   before(function() {
     cy.login()

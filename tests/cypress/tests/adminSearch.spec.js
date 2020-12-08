@@ -20,7 +20,7 @@ clusterModes.forEach((clusterMode) =>   {
     return;
   }
 
-  describe('Search in ' + clusterMode.label + ' Cluster', function() {
+  describe('Search: [P1][Sev1][search] Search in ' + clusterMode.label + ' Cluster', function() {
 
     before(function() {
       cy.login()
@@ -97,7 +97,6 @@ clusterModes.forEach((clusterMode) =>   {
       it('should delete pod', function() {
         searchBar.whenFilterByKind('pod')
         searchPage.whenDeleteResourceDetailItem('pod', this.namespace + '-deployment')
-        
         searchPage.shouldBeResourceDetailItemCreatedFewSecondsAgo('pod', this.namespace + '-deployment')
       });
   
@@ -113,20 +112,18 @@ clusterModes.forEach((clusterMode) =>   {
       it('should delete deployment', function() {
         searchBar.whenFilterByKind('deployment')
         searchPage.whenDeleteResourceDetailItem('deployment', this.namespace + '-deployment')
-    
         searchPage.shouldFindNoResults()
       });
   
       it('should delete namespace', function() {
         searchPage.whenDeleteNamespace(this.namespace)
-
         searchPage.shouldFindNoResults()
       });
     })
   })
 });
 
-describe('Verify the suggested search templates', function() {
+describe('Search: [P1][Sev1][search] Verify the suggested search templates', function() {
 
   before(function() {
     cy.login()

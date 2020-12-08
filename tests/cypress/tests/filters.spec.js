@@ -95,7 +95,7 @@ filtersRegistry.createFilter('app_instance', { values: [useText('any')] })
 filtersRegistry.createFilter('cluster', { strategies: [ combined([kindFilter, nameFilter])] })
 */
 
-describe('Search using filters', function() {
+describe('Search: [P1][Sev1][search] Search using filters', function() {
   before(function() {
     cy.login()
     searchPage.whenGoToSearchPage()

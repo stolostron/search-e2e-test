@@ -8,7 +8,7 @@
 import { searchPage } from '../views/search'
 import { welcomePage, leftNav, userMenu } from '../views/welcome'
 
-describe('Welcome page', function () {
+describe('Search: [P1][Sev1][search] Welcome page', function () {
     before(function () {
         cy.login()
         searchPage.whenGoToWelcomePage()
