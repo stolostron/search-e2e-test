@@ -5,7 +5,7 @@
 
 /// <reference types="cypress" />
 
-import { searchPage, searchBar, SQUAD } from '../views/search'
+import { searchPage, searchBar, squad } from '../views/search'
 import { filtersRegistry, multipleValues, combined, simple, useText } from '../scripts/filters'
 
 // Filter Specification
@@ -106,7 +106,7 @@ describe('Search: Search using filters', function() {
       return;
     }
 
-    describe('[P1][Sev1]['+ SQUAD +'] Search using "' + filter.type + '" filter', function() {
+    describe('[P1][Sev1]['+ squad +'] Search using "' + filter.type + '" filter', function() {
 
       beforeEach(function() {
         searchBar.whenClearFilters()

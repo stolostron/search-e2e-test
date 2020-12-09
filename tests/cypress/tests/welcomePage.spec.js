@@ -5,7 +5,7 @@
 
 /// <reference types="cypress" />
 
-import { searchPage, SQUAD } from '../views/search'
+import { searchPage, squad } from '../views/search'
 import { welcomePage, leftNav, userMenu } from '../views/welcome'
 
 describe('Search: Welcome page', function () {
@@ -18,16 +18,16 @@ describe('Search: Welcome page', function () {
         cy.logout()
     })
 
-    it('[P1][Sev1]['+ SQUAD +'] should load', function () {
+    it('[P1][Sev1]['+ squad +'] should load', function () {
         welcomePage.shouldExist()
     })
 
-    it('[P3][Sev3]['+ SQUAD +'] should be validated for the links on main page', function () {
+    it('[P3][Sev3]['+ squad +'] should be validated for the links on main page', function () {
         welcomePage.validateSvcs()
         welcomePage.validateConnect()
     })
 
-    it('[P3][Sev3]['+ SQUAD +'] should be validated for the menu items on left nav bar', function () {
+    it('[P3][Sev3]['+ squad +'] should be validated for the menu items on left nav bar', function () {
         leftNav.openMenu()
         leftNav.goToHome()
         leftNav.goToOverview()

@@ -14,7 +14,7 @@ const SEARCH_MESSAGES_NO_RESULTS = 'No search results found'
 const SEARCH_MESSAGES_FEW_SECONDS_AGO = 'a few seconds ago'
 const SEARCH_MESSAGES_LOADING_SUGGESTIONS = 'Loading...'
 
-export const SQUAD = "search"
+export const squad = "search"
 
 export const pageLoader = {
   shouldExist: () => cy.get('.content-spinner', { timeout: 20000 }).should('exist')  ,
