@@ -18,7 +18,7 @@ const query = {
     query: 'query searchResult($input: [SearchInput]) {\n  searchResult: search(input: $input) {\n    items\n    __typename\n  }\n}\n'
 }
 
-describe('Search API: [P1][Sev1][search] Verify access:', () => {
+describe('Search API: Verify access:', () => {
 
     beforeAll(async() => {
         // Log in and get access token
@@ -35,14 +35,14 @@ describe('Search API: [P1][Sev1][search] Verify access:', () => {
     afterAll(() => {
     })
 
-    test('should get 401 if authorization header is not present.', ()=>{ 
+    test('[P1][Sev1]['+ SQUAD +'] should get 401 if authorization header is not present.', () => {
         return request(searchApiRoute)
             .post('/searchapi/graphql')
             .send(query)
             .expect(401)
     })
 
-    test('should get 401 if authorization header is incorrect.', ()=>{
+    test('[P1][Sev1]['+ SQUAD +'] should get 401 if authorization header is incorrect.', () => {
         return request(searchApiRoute)
             .post('/searchapi/graphql')
             .send(query)
@@ -50,7 +50,7 @@ describe('Search API: [P1][Sev1][search] Verify access:', () => {
             .expect(401)
     })
 
-    test('should return results when searching for kind:pod.', ()=>{
+    test('[P1][Sev1]['+ SQUAD +'] should return results when searching for kind:pod.', () => {
         return request(searchApiRoute)
             .post('/searchapi/graphql')
             .send(query)

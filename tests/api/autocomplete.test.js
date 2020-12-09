@@ -1,8 +1,8 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
-describe('Search API: [P1][Sev1][search] Validate autocomplete', () => {
+describe('Search API: Validate autocomplete', () => {
 
-    test('[PLACEHOLDER] This test not yet implemented.', (done) => {
+    test('[P3][Sev3]['+ SQUAD +'][PLACEHOLDER] This test not yet implemented.', (done) => {
         done()
     })
 })

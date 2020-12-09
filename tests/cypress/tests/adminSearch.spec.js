@@ -9,7 +9,7 @@ import { clustersPage } from '../views/clusters'
 import { deploymentDetailPage } from '../views/deploymentDetailPage'
 import { podDetailPage } from '../views/podDetailPage'
 import { resourcePage } from '../views/resource'
-import { pageLoader, searchPage, searchBar, suggestedTemplate } from '../views/search'
+import { pageLoader, searchPage, searchBar, suggestedTemplate, SQUAD } from '../views/search'
 
 const clusterModes = [{ label: 'Local', valueFn: () => cy.wrap('local-cluster') }, 
                       { label: 'Managed', valueFn: () => clustersPage.givenManagedCluster() }];
@@ -20,7 +20,7 @@ clusterModes.forEach((clusterMode) =>   {
     return;
   }
 
-  describe('Search: [P1][Sev1][search] Search in ' + clusterMode.label + ' Cluster', function() {
+  describe('Search: Search in ' + clusterMode.label + ' Cluster', function() {
 
     before(function() {
       cy.login()
@@ -28,24 +28,24 @@ clusterModes.forEach((clusterMode) =>   {
       cy.generateNamespace().as('namespace')
       searchPage.whenGoToSearchPage()
     })
-  
+
     after(function() {
       cy.logout()
     })
-  
-    it('should load the search page', function() {
+
+    it('[P1][Sev1]['+ SQUAD +'] should load the search page', function() {
       pageLoader.shouldNotExist()
       searchPage.shouldExist()
     })
-  
-    it('should not see any cluster and namespace', function() {
+
+    it('[P1][Sev1]['+ SQUAD +'] should not see any cluster and namespace', function() {
       // when
       searchBar.whenFocusSearchBar()
       searchBar.whenFilterByClusterAndNamespace(this.clusterName, this.namespace)
       // then
       searchPage.shouldFindNoResults()
     })
-  
+
     describe('create namespace and deployment resources', function() {
       before(function() {
         searchPage.whenGoToSearchPage()
@@ -53,13 +53,13 @@ clusterModes.forEach((clusterMode) =>   {
         resourcePage.whenGoToResourcePage()
         resourcePage.whenSelectTargetCluster(this.clusterName)
         resourcePage.whenCreateNamespace(this.namespace)
-  
+
         // given deployment
         resourcePage.whenGoToResourcePage()
         resourcePage.whenSelectTargetCluster(this.clusterName)
         resourcePage.whenCreateDeployment(this.namespace, this.namespace + '-deployment', 'openshift/hello-openshift')
       })
-  
+
       beforeEach(function() {
         searchPage.whenGoToSearchPage()
         searchBar.whenFilterByClusterAndNamespace(this.clusterName, this.namespace)
@@ -68,39 +68,39 @@ clusterModes.forEach((clusterMode) =>   {
       after(function() {
         searchPage.whenDeleteNamespace(this.namespace, { ignoreIfDoesNotExist: true })
       })
-  
-      it('should have expected count of resource tiles', function() {
+
+      it('[P3][Sev3]['+ SQUAD + '] should have expected count of resource tiles', function() {
         searchPage.whenWaitUntilFindResults()
         searchPage.whenExpandQuickFilters()
         searchPage.shouldFindQuickFilter('cluster', '1')
         searchPage.shouldFindQuickFilter('deployment', '1')
         searchPage.shouldFindQuickFilter('pod', '1')
       });
-    
-      it('should work kind filter for deployment', function() {
+
+      it('[P1][Sev1]['+ SQUAD +'] should work kind filter for deployment', function() {
         searchBar.whenFilterByKind('deployment')
         searchPage.shouldFindResourceDetailItem('deployment', this.namespace + '-deployment')
       });
-  
-      it('should work kind filter for pod', function() {
+
+      it('[P1][Sev1]['+ SQUAD +'] should work kind filter for pod', function() {
         searchBar.whenFilterByKind('pod')
         searchPage.shouldFindResourceDetailItem('pod', this.namespace + '-deployment-')
       });
-  
-      it('should see pod logs', function() {
+
+      it('[P2][Sev2]['+ SQUAD +'] should see pod logs', function() {
         searchBar.whenFilterByKind('pod')
         searchPage.whenGoToResourceDetailItemPage('pod', this.namespace + '-deployment-')
         podDetailPage.whenClickOnLogsTab()
         podDetailPage.shouldSeeLogs('serving on')
       });
-  
-      it('should delete pod', function() {
+
+      it('[P2][Sev2]['+ SQUAD +'] should delete pod', function() {
         searchBar.whenFilterByKind('pod')
         searchPage.whenDeleteResourceDetailItem('pod', this.namespace + '-deployment')
         searchPage.shouldBeResourceDetailItemCreatedFewSecondsAgo('pod', this.namespace + '-deployment')
       });
-  
-      it('should scale deployment', function() {
+
+      it('[P3][Sev3]['+ SQUAD +'] should scale deployment', function() {
         searchBar.whenFilterByKind('deployment')
         searchPage.whenGoToResourceDetailItemPage('deployment', this.namespace + '-deployment')
         deploymentDetailPage.whenScaleReplicasTo(2)
@@ -108,14 +108,14 @@ clusterModes.forEach((clusterMode) =>   {
   
         searchPage.shouldFindQuickFilter('pod', '2')
       })
-  
-      it('should delete deployment', function() {
+
+      it('[P2][Sev2]['+ SQUAD +'] should delete deployment', function() {
         searchBar.whenFilterByKind('deployment')
         searchPage.whenDeleteResourceDetailItem('deployment', this.namespace + '-deployment')
         searchPage.shouldFindNoResults()
       });
-  
-      it('should delete namespace', function() {
+
+      it('[P2][Sev2]['+ SQUAD +'] should delete namespace', function() {
         searchPage.whenDeleteNamespace(this.namespace)
         searchPage.shouldFindNoResults()
       });
@@ -123,7 +123,7 @@ clusterModes.forEach((clusterMode) =>   {
   })
 });
 
-describe('Search: [P1][Sev1][search] Verify the suggested search templates', function() {
+describe('Search: Verify the suggested search templates', function() {
 
   before(function() {
     cy.login()
@@ -137,18 +137,18 @@ describe('Search: [P1][Sev1][search] Verify the suggested search templates', fun
     
   })
 
-  it('should see the workloads template & search tag in search items', function() {
+  it('[P3][Sev3]['+ SQUAD +'] should see the workloads template & search tag in search items', function() {
     suggestedTemplate.whenSelectWorkloads()
   });
-  it('should see the unhealthy pods template & search tag in search items', function() {
+  it('[P3][Sev3]['+ SQUAD +'] should see the unhealthy pods template & search tag in search items', function() {
     suggestedTemplate.whenSelectUnhealthyPods()
   });
-  it('should see the created last hour template & search tag in search items', function() {
+  it('[P3][Sev3]['+ SQUAD +'] should see the created last hour template & search tag in search items', function() {
     suggestedTemplate.whenSelectCreatesLastHour()
   });
 
   // Verify the related resources.
-  it('should see the workload template & related items details', function() {
+  it('[P3][Sev3]['+ SQUAD +'] should see the workload template & related items details', function() {
     suggestedTemplate.whenSelectWorkloads()
     suggestedTemplate.whenVerifyRelatedItemsDetails()
   });
