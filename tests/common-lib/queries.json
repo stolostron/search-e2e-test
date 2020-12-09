@@ -1,0 +1,120 @@
+{
+  "querySecret": {
+    "operationName": "searchResult",
+    "variables": {
+      "input": [
+        {
+          "keywords": [],
+          "filters": [
+            {
+              "property": "kind",
+              "values": [
+                "secret"
+              ]
+            },
+            {
+              "property": "name",
+              "values": [
+                "jad-test"
+              ]
+            }
+          ],
+          "limit": 1000
+        }
+      ]
+    },
+    "query": "query searchResult($input: [SearchInput]) {\n  searchResult: search(input: $input) {\n    items\n    __typename\n  }\n}\n"
+  },
+  "cluster": {
+    "operationName": "searchResult",
+    "variables": {
+      "input": [
+        {
+          "keywords": [],
+          "filters": [
+            {
+              "property": "kind",
+              "values": [
+                "cluster"
+              ]
+            }
+          ],
+          "limit": 1000
+        }
+      ]
+    },
+    "query": "query searchResult($input: [SearchInput]) {\n  searchResult: search(input: $input) {\n    items\n    __typename\n  }\n}\n"
+  },
+  "pod": {
+    "operationName": "searchResult",
+    "variables": {
+      "input": [
+        {
+          "keywords": [],
+          "filters": [
+            {
+              "property": "kind",
+              "values": [
+                "pod"
+              ]
+            }
+          ],
+          "limit": 1000
+        }
+      ]
+    },
+    "query": "query searchResult($input: [SearchInput]) {\n  searchResult: search(input: $input) {\n    items\n    __typename\n  }\n}\n"
+  },
+  "managedClusterJoined": {
+    "operationName": "searchResult",
+    "variables": {
+      "input": [
+        {
+          "keywords": [],
+          "filters": [
+            {
+              "property": "ManagedClusterJoined",
+              "values": [
+                "True"
+              ]
+            }
+          ],
+          "limit": 1000
+        }
+      ]
+    },
+    "query": "query searchResult($input: [SearchInput]) {\n  searchResult: search(input: $input) {\n    items\n    __typename\n  }\n}\n"
+  },
+  "managedClusterAgents": {
+    "operationName": "searchResult",
+    "variables": {
+      "input": [
+        {
+          "keywords": [],
+          "filters": [
+            {
+              "property": "cluster",
+              "values": [
+                "local-cluster"
+              ]
+            },
+            {
+              "property": "kind",
+              "values": [
+                "pod"
+              ]
+            },
+            {
+              "property": "namespace",
+              "values": [
+                "open-cluster-management-agent"
+              ]
+            }
+          ],
+          "limit": 1000
+        }
+      ]
+    },
+    "query": "query searchResult($input: [SearchInput]) {\n  searchResult: search(input: $input) {\n    items\n    __typename\n  }\n}\n"
+  }
+}
