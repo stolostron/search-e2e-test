@@ -16,6 +16,9 @@ const getToken = () => {
     return execSync('oc whoami -t').toString().replace('\n', '')
 }
 
+// Squad name for tests metadata label.
+const squad = "search"   
+
 // Create a route to access the Search API.
 var searchApiRoute = '' // Used like a cache to avoid requesting the route multiple times.
 const getSearchApiRoute = async ()  => {
@@ -37,3 +40,4 @@ const getSearchApiRoute = async ()  => {
 exports.clusterLogin = clusterLogin
 exports.getToken = getToken
 exports.getSearchApiRoute = getSearchApiRoute
+exports.squad = squad
