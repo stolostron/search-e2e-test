@@ -106,7 +106,7 @@ describe('Search: Search using filters', function() {
       return;
     }
 
-    describe('[P1][Sev1]['+ squad +'] Search using "' + filter.type + '" filter', function() {
+    describe(`[P1][Sev1][${squad}] Search using "${filter.type}" filter`, function() {
 
       beforeEach(function() {
         searchBar.whenClearFilters()
