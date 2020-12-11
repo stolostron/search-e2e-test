@@ -5,7 +5,7 @@
 
 /// <reference types="cypress" />
 
-import { searchPage, searchBar } from '../views/search'
+import { searchPage, searchBar, squad } from '../views/search'
 import { filtersRegistry, multipleValues, combined, simple, useText } from '../scripts/filters'
 
 // Filter Specification
@@ -95,7 +95,7 @@ filtersRegistry.createFilter('app_instance', { values: [useText('any')] })
 filtersRegistry.createFilter('cluster', { strategies: [ combined([kindFilter, nameFilter])] })
 */
 
-describe('Search using filters', function() {
+describe('Search: Search using filters', function() {
   before(function() {
     cy.login()
     searchPage.whenGoToSearchPage()
@@ -106,7 +106,7 @@ describe('Search using filters', function() {
       return;
     }
 
-    describe('Search using "' + filter.type + '" filter', function() {
+    describe(`[P1][Sev1][${squad}] Search using "${filter.type}" filter`, function() {
 
       beforeEach(function() {
         searchBar.whenClearFilters()
