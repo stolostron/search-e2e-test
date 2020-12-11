@@ -59,3 +59,4 @@ describe('Search API: Verify access:', () => {
     }, 20000) // Timeout is high at 20 seconds because first search takes longer to build the rbac filter cache.
 
 })
+
