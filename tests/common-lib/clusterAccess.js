@@ -4,6 +4,7 @@ const config = require('../../config')
 const { sleep } = require('./sleep')
 const { execSync } = require('child_process');
 const request = require('supertest');
+const { mainModule } = require('process');
 
 // Login to the cluster
 const clusterLogin = () => {
@@ -60,10 +61,30 @@ function sendRequest(query, token) {
         .expect(200)
 }
 
+function getPods (ns) {
+    var stdout = execSync(`oc get pods -n ${ns} --no-headers`).toString()
+    const pods = stdout.split('\n').map(pod => pod.split(/ +/))
+    const filteredPods = pods.filter((item) => {
+        return (
+            item[0] !== undefined
+        )
+        })
+
+    if (filteredPods[0] !== undefined) {
+        return filteredPods
+    }
+  }
+
+async function deletePod (pod, ns) {
+    execSync(`oc delete pod ${pod} -n ${ns}`)
+    await sleep(5000)
+}
+
 exports.clusterLogin = clusterLogin
 exports.getToken = getToken
 exports.getSearchApiRoute = getSearchApiRoute
 exports.searchQueryBuilder = searchQueryBuilder
 exports.sendRequest = sendRequest
 exports.squad = squad
-
+exports.getPods = getPods
+exports.deletePod = deletePod
