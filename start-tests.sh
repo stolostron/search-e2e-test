@@ -47,6 +47,10 @@ elif [ -f $USER_OPTIONS_FILE ]; then
   export OPTIONS_HUB_PASSWORD=`yq r $USER_OPTIONS_FILE 'options.hub.password'`
 else
   echo -e "Options file does not exist, using test config from environment variables.\n"
+  echo ">>>>>>>> yq --version <<<<<<<<"
+  yq --version
+  echo ">>>>>>>> yq --help <<<<<<<<"
+  yq --help
 fi
 
 export CYPRESS_BASE_URL=https://multicloud-console.apps.$CYPRESS_OPTIONS_HUB_BASEDOMAIN
