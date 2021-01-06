@@ -19,6 +19,12 @@ OPTIONS_FILE=/resources/options.yaml
 USER_OPTIONS_FILE=./options.yaml
 if [ -f $OPTIONS_FILE ]; then
   echo "Using test config from '/resources/options.yaml' file."
+  echo ">>>>>>>> yq --version <<<<<<<<"
+  yq --version
+  echo ">>>>>>>> yq --help <<<<<<<<"
+  yq --help
+  echo ">>>>>>>> cat $OPTIONS_FILE <<<<<<<<"
+  cat $OPTIONS_FILE
   export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq r $OPTIONS_FILE 'options.hub.baseDomain'`
   export CYPRESS_OPTIONS_HUB_USER=`yq r $OPTIONS_FILE 'options.hub.user'`
   export CYPRESS_OPTIONS_HUB_PASSWORD=`yq r $OPTIONS_FILE 'options.hub.password'`
@@ -27,6 +33,12 @@ if [ -f $OPTIONS_FILE ]; then
   export OPTIONS_HUB_PASSWORD=`yq r $OPTIONS_FILE 'options.hub.password'`
 elif [ -f $USER_OPTIONS_FILE ]; then
   echo "Using test config from '$USER_OPTIONS_FILE' file."
+  echo ">>>>>>>> yq --version <<<<<<<<"
+  yq --version
+  echo ">>>>>>>> yq --help <<<<<<<<"
+  yq --help
+  echo ">>>>>>>> cat $USER_OPTIONS_FILE <<<<<<<<"
+  cat $OPTIONS_FILE
   export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq r $USER_OPTIONS_FILE 'options.hub.baseDomain'`
   export CYPRESS_OPTIONS_HUB_USER=`yq r $USER_OPTIONS_FILE 'options.hub.user'`
   export CYPRESS_OPTIONS_HUB_PASSWORD=`yq r $USER_OPTIONS_FILE 'options.hub.password'`
