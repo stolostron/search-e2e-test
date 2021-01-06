@@ -25,12 +25,12 @@ if [ -f $OPTIONS_FILE ]; then
   yq --help
   echo ">>>>>>>> cat $OPTIONS_FILE <<<<<<<<"
   cat $OPTIONS_FILE
-  export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq r $OPTIONS_FILE 'options.hub.baseDomain'`
-  export CYPRESS_OPTIONS_HUB_USER=`yq r $OPTIONS_FILE 'options.hub.user'`
-  export CYPRESS_OPTIONS_HUB_PASSWORD=`yq r $OPTIONS_FILE 'options.hub.password'`
-  export OPTIONS_HUB_BASEDOMAIN=`yq r $OPTIONS_FILE 'options.hub.baseDomain'`
-  export OPTIONS_HUB_USER=`yq r $OPTIONS_FILE 'options.hub.user'`
-  export OPTIONS_HUB_PASSWORD=`yq r $OPTIONS_FILE 'options.hub.password'`
+  export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $OPTIONS_FILE`
+  export CYPRESS_OPTIONS_HUB_USER=`yq e '.options.hub.user' $OPTIONS_FILE`
+  export CYPRESS_OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $OPTIONS_FILE`
+  export OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $OPTIONS_FILE`
+  export OPTIONS_HUB_USER=`yq e '.options.hub.user' $OPTIONS_FILE`
+  export OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $OPTIONS_FILE`
 elif [ -f $USER_OPTIONS_FILE ]; then
   echo "Using test config from '$USER_OPTIONS_FILE' file."
   echo ">>>>>>>> yq --version <<<<<<<<"
@@ -38,19 +38,15 @@ elif [ -f $USER_OPTIONS_FILE ]; then
   echo ">>>>>>>> yq --help <<<<<<<<"
   yq --help
   echo ">>>>>>>> cat $USER_OPTIONS_FILE <<<<<<<<"
-  cat $OPTIONS_FILE
-  export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq r $USER_OPTIONS_FILE 'options.hub.baseDomain'`
-  export CYPRESS_OPTIONS_HUB_USER=`yq r $USER_OPTIONS_FILE 'options.hub.user'`
-  export CYPRESS_OPTIONS_HUB_PASSWORD=`yq r $USER_OPTIONS_FILE 'options.hub.password'`
-  export OPTIONS_HUB_BASEDOMAIN=`yq r $USER_OPTIONS_FILE 'options.hub.baseDomain'`
-  export OPTIONS_HUB_USER=`yq r $USER_OPTIONS_FILE 'options.hub.user'`
-  export OPTIONS_HUB_PASSWORD=`yq r $USER_OPTIONS_FILE 'options.hub.password'`
+  cat $USER_OPTIONS_FILE
+  export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $USER_OPTIONS_FILE`
+  export CYPRESS_OPTIONS_HUB_USER=`yq e '.options.hub.user' $USER_OPTIONS_FILE`
+  export CYPRESS_OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $USER_OPTIONS_FILE`
+  export OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $USER_OPTIONS_FILE`
+  export OPTIONS_HUB_USER=`yq e '.options.hub.user' $USER_OPTIONS_FILE`
+  export OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $USER_OPTIONS_FILE`
 else
   echo -e "Options file does not exist, using test config from environment variables.\n"
-  echo ">>>>>>>> yq --version <<<<<<<<"
-  yq --version
-  echo ">>>>>>>> yq --help <<<<<<<<"
-  yq --help
 fi
 
 export CYPRESS_BASE_URL=https://multicloud-console.apps.$CYPRESS_OPTIONS_HUB_BASEDOMAIN
