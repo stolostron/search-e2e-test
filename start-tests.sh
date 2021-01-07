@@ -19,7 +19,6 @@ OPTIONS_FILE=/resources/options.yaml
 USER_OPTIONS_FILE=./options.yaml
 if [ -f $OPTIONS_FILE ]; then
   echo "Using test config from: $OPTIONS_FILE"
-  cat $OPTIONS_FILE
   export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_USER=`yq e '.options.hub.user' $OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $OPTIONS_FILE`
@@ -28,7 +27,6 @@ if [ -f $OPTIONS_FILE ]; then
   export OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $OPTIONS_FILE`
 elif [ -f $USER_OPTIONS_FILE ]; then
   echo "Using test config from: $USER_OPTIONS_FILE"
-  cat $USER_OPTIONS_FILE
   export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $USER_OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_USER=`yq e '.options.hub.user' $USER_OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $USER_OPTIONS_FILE`
