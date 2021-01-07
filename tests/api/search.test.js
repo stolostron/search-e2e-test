@@ -1,8 +1,9 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
 const { getSearchApiRoute, getToken, searchQueryBuilder, sendRequest, getPods, deletePod } = require('../common-lib/clusterAccess')
+const { execSync } = require('child_process');
 
-describe('RHACM4K-912 - Search - verify managed cluster info in the search page', () => {
+describe('RHACM4K-1695 - Search - verify managed cluster info in the search page', () => {
 
   beforeAll(async () => {
     // Log in and get access token
@@ -19,7 +20,7 @@ describe('RHACM4K-912 - Search - verify managed cluster info in the search page'
   afterAll(() => {
   })
 
-  test('RHACM4K-1695 - Search - verify managed cluster info in the search page.', async () => {
+  test('Search - verify managed cluster info in the search page.', async () => {
     var query = searchQueryBuilder({ filters: [{ property: 'ManagedClusterJoined', values: ['True'] }] })
     var res = await sendRequest(query, token)
     expect(res.body.data.searchResult[0].items[0].ManagedClusterJoined).toEqual("True")
@@ -110,5 +111,64 @@ describe('RHACM4K-1696 - Search - Verify search result with common filter and co
     expect(res.body.data.searchResult[0].items[0].name).toEqual('klusterlet-addon-iampolicyctrl')
     expect(res.body.data.searchResult[0].items[0].kind).toEqual("iampolicycontroller")
     expect(res.body.data.searchResult[0].items[0].namespace).toEqual('open-cluster-management-agent-addon')
-  }, 20000)
+  }, 20000) 
+})
+
+describe('RHACM4K-1709 - Search: Search using filters', () => {
+  
+  var filtersRegistry = [
+    { filters: [{ property: 'created', values: ['month'] }] },
+    { filters: [{ property: 'selfLink', values: ['/api/v1/namespaces/default'] }] },
+    { filters: [{ property: 'apigroup', values: ['apps'] }] },
+    { filters: [{ property: 'desired', values: ['=0'] }] },
+    { filters: [{ property: 'current', values: ['=0'] }] },
+    { filters: [{ property: 'ready', values: ['=0'] }] },
+    { filters: [{ property: 'available', values: ['=0'] }] },
+    { filters: [{ property: 'restarts', values: ['=0'] }] },
+    { filters: [{ property: 'parallelism', values: ['=1'] }] },
+    { filters: [{ property: 'completions', values: ['=1'] }] },
+    { filters: [{ property: 'successful', values: ['=1'] }] },
+    { filters: [{ property: 'updated', values: ['>0'] }] },
+    { filters: [{ property: 'cpu', values: ['>0'] }] },
+    { filters: [{ property: 'active', values: ['=0'] }] },
+    { filters: [{ property: 'nodes', values: ['>0'] }] },
+    { filters: [{ property: 'apiversion', values: ['v1'] }] },
+    { filters: [{ property: 'container', values: ['acm-agent'] }] },
+    { filters: [{ property: 'ManagedClusterJoined', values: ['True'] }] },
+    { filters: [{ property: 'ManagedClusterConditionAvailable', values: ['True'] }] },
+    { filters: [{ property: 'HubAcceptedManagedCluster', values: ['True'] }] },
+    { filters: [{ property: 'podIP', values: [execSync('oc get pods -n openshift-console -o=jsonpath=\'{.items[0].status.podIP}\'').toString()] }] },
+    { filters: [{ property: 'hostIP', values: [execSync('oc get pods -n openshift-console -o=jsonpath=\'{.items[0].status.hostIP}\'').toString()] }] },
+    { filters: [{ property: 'kubernetesVersion', values: [execSync('oc get nodes -o=jsonpath=\'{.items[0].status.nodeInfo.kubeletVersion}\'').toString()] }] },
+    { filters: [{ property: 'memory', values: [execSync('oc get managedclusters -o=jsonpath=\'{.items[0].status.capacity.memory}\'').toString()] }] },
+    { filters: [{ property: 'startedAt', values: ['month'] }] },
+    { filters: [{ property: 'package', values: ['cert-manager'] }] },
+    { filters: [{ property: 'channel', values: ['open-cluster-management/charts-v1'] }] },
+    { filters: [{ property: 'localPlacement', values: ['true'] }] },
+    { filters: [{ property: 'cluster', values: ['local-cluster'] }] },
+    { filters: [{ property: 'port', values: ['8443/TCP'] }] },
+    { filters: [{ property: 'type', values: ['ClusterIP'] }] },
+    { filters: [{ property: 'capacity', values: [execSync('oc get pv -o=jsonpath=\'{.items[0].spec.capacity.storage}\'').toString()] }] },
+    { filters: [{ property: 'clusterIP', values: [execSync('oc get service -o=jsonpath=\'{.items[0].spec.clusterIP}\'').toString()] }] },
+    { filters: [{ property: 'channel', values: [execSync('oc get channel -A -o=jsonpath=\'{range .items[0]}{.metadata.namespace}{"/"}{.metadata.name}{end}\'').toString()] }] },
+    { filters: [{ property: 'url', values: [execSync('oc get helmrelease -A -o=jsonpath=\'{.items[0].repo.source.helmRepo.urls[0]}\'').toString()] }] },
+    { filters: [{ property: 'sourceType', values: [execSync('oc get helmrelease -A -o=jsonpath=\'{.items[0].repo.source.type}\'').toString()] }] },
+    { filters: [{ property: 'pathname', values: [execSync('oc get channel -A -o=jsonpath=\'{.items[0].spec.pathname}\'').toString()] }] },
+    { filters: [{ property: 'lastSchedule', values: ['month'] }] },
+    { filters: [{ property: 'suspend', values: ['false'] }] },
+    { filters: [{ property: 'request', values: [execSync('oc get pv -o=jsonpath=\'{.items[0].spec.capacity.storage}\'').toString()] }] },
+    { filters: [{ property: 'volumeName', values: [execSync('oc get pv -o=jsonpath=\'{.items[0].metadata.name}\'').toString()] }] },
+    { filters: [{ property: 'architecture', values: [execSync('oc get nodes -o=jsonpath=\'{.items[0].status.nodeInfo.architecture}\'').toString()] }] },
+    { filters: [{ property: 'osImage', values: [execSync('oc get nodes -o=jsonpath=\'{.items[0].status.nodeInfo.osImage}\'').toString()] }] },
+    { filters: [{ property: 'claimRef', values: [execSync('oc get pv -o=jsonpath=\'{range .items[0]}{.spec.claimRef.namespace}{"/"}{.spec.claimRef.name}{end}\'').toString()] }] },
+    { filters: [{ property: 'reclaimPolicy', values: [execSync('oc get pv -o=jsonpath=\'{.items[0].spec.persistentVolumeReclaimPolicy}\'').toString()] }] },
+    { filters: [{ property: 'consoleURL', values: [execSync('oc whoami --show-console').toString()] }] }
+  ]
+
+  filtersRegistry.forEach(value => {
+    test(`should filter by ${value.filters[0].property}`, async () => {
+      var query = searchQueryBuilder(value)
+      var res = await sendRequest(query, token)
+    }, 20000)
+  })
 })
