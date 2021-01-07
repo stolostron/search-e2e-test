@@ -6,7 +6,7 @@
 /// <reference types="cypress" />
 
 import { clustersPage } from '../views/clusters'
-import { searchPage } from '../views/search'
+// import { searchPage } from '../views/search'
 
 var apiUrl =
     Cypress.config().baseUrl.replace("multicloud-console.apps", "api") + ":6443";
@@ -90,7 +90,13 @@ export const welcomePage = {
 
 export const overviewPage = {
     shouldExist: () => {
-        cy.get('.overview-page').should('contain', 'Overview')
+        cy.get('.pf-c-page').should('contain', 'Overview')
+    }
+}
+
+export const searchPage = {
+    shouldExist: () => {
+        cy.get('.pf-c-page').should('contain', 'Search')
     }
 }
 
