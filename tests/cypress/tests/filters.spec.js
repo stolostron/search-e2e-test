@@ -5,7 +5,7 @@
 
 /// <reference types="cypress" />
 
-import { searchPage, searchBar, squad } from '../views/search'
+import { searchPage, searchBar, squad } from '../views/search.v1'
 import { filtersRegistry, multipleValues, combined, simple, useText } from '../scripts/filters'
 
 // Filter Specification

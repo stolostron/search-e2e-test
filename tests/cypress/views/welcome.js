@@ -64,6 +64,7 @@ export const oauthIssuer = (token) => {
 }
 
 export const welcomePage = {
+    whenGoToWelcomePage:() => cy.visit('/multicloud/welcome'),
     shouldExist: () => {
         cy.get('.welcome--introduction').should('contain', 'Welcome! Let’s get started.')
         cy.get('.welcome--svcs').should('contain', 'Go to Overview').and('contain', 'Go to Clusters').and('contain', 'Go to Applications').and('contain', 'Go to Governance and risk')

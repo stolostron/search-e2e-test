@@ -5,13 +5,13 @@
 
 /// <reference types="cypress" />
 
-import { searchPage, squad } from '../views/search'
+import { squad } from '../views/search'
 import { welcomePage, leftNav, userMenu } from '../views/welcome'
 
 describe('Search: Welcome page', function () {
     before(function () {
         cy.login()
-        searchPage.whenGoToWelcomePage()
+        welcomePage.whenGoToWelcomePage()
     })
 
     after(function () {

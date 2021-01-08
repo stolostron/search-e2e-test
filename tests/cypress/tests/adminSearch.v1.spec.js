@@ -6,10 +6,10 @@
 /// <reference types="cypress" />
 
 import { clustersPage } from '../views/clusters'
-// import { deploymentDetailPage } from '../views/deploymentDetailPage'
-// import { podDetailPage } from '../views/podDetailPage'
-// import { resourcePage } from '../views/resource'
-import { pageLoader, searchPage, searchBar, suggestedTemplate, squad } from '../views/search'
+import { deploymentDetailPage } from '../views/deploymentDetailPage'
+import { podDetailPage } from '../views/podDetailPage'
+import { resourcePage } from '../views/resource'
+import { pageLoader, searchPage, searchBar, suggestedTemplate, squad } from '../views/search.v1'
 
 const clusterModes = [{ label: 'Local', valueFn: () => cy.wrap('local-cluster') }, 
                       { label: 'Managed', valueFn: () => clustersPage.givenManagedCluster() }];
@@ -34,11 +34,9 @@ clusterModes.forEach((clusterMode) =>   {
     })
 
     it(`[P1][Sev1][${squad}] should load the search page`, function() {
-      // pageLoader.shouldNotExist()
+      pageLoader.shouldNotExist()
       searchPage.shouldExist()
     })
-
-    /* Need to migrate these test before re-enabeling.
 
     it(`[P1][Sev1][${squad}] should not see any cluster and namespace`, function() {
       // when
@@ -122,12 +120,9 @@ clusterModes.forEach((clusterMode) =>   {
         searchPage.shouldFindNoResults()
       });
     })
-    */
   })
 });
 
-
-/* Need to migrate these test before re-enabeling.
 describe('Search: Verify the suggested search templates', function() {
 
   before(function() {
@@ -169,4 +164,3 @@ describe('Search: Verify the suggested search templates', function() {
   //   suggestedTemplate.whenVerifyRelatedItemsDetails()
   // });
 })
-*/

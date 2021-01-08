@@ -22,8 +22,7 @@ export const pageLoader = {
 }
 
 export const searchPage = {
-  whenGoToSearchPage:() => cy.visit('/search'),
-  /* 
+  whenGoToSearchPage:() => cy.visit('/multicloud/search'),
   whenExpandQuickFilters:() => {
     cy.get('.show-more-results-button > button', { timeout: 20000 }).focus().click()
   },
@@ -64,14 +63,11 @@ export const searchPage = {
   },
   shouldPageBeReady:() => cy.waitUntilAttrIs('.react-tags__search-input input', 'placeholder', SEARCH_MESSAGES_INPUT_PLACE_HOLDER),
   shouldLoadResults:() => cy.waitUntilNotContains('.search--results-view > h4', SEARCH_MESSAGES_LOADING_RESULTS, { timeout: 60000, interval: 1000 }),
-  */
-
   shouldExist:() => {
-    cy.get('.react-tags', {timeout: 20000}).should('exist')
-    // cy.get('.react-tags__search-input input', {timeout: 20000}).should('exist')
-    // cy.get('.saved-search-query-header', { timeout: 20000}).should('exist')
+    cy.get('.bx--detail-page-header-title', {timeout: 20000}).should('exist')
+    cy.get('.react-tags__search-input input', {timeout: 20000}).should('exist')
+    cy.get('.saved-search-query-header', { timeout: 20000}).should('exist')
   },
-  /*
   shouldFindNoResults:(options) => {
     cy.reloadUntil(() => {
       searchPage.shouldLoadResults()
@@ -103,10 +99,8 @@ export const searchPage = {
       return cy.ifContains('.search--resource-table', SEARCH_MESSAGES_FEW_SECONDS_AGO)
     })
   }
-  */
 }
 
-/*
 export const searchBar = {
   whenFocusSearchBar:() => {
     cy.get('.react-tags', {timeout: 20000}).click()
@@ -183,4 +177,3 @@ export const suggestedTemplate = {
    })
   }
 }
-*/
