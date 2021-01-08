@@ -20,7 +20,7 @@ clusterModes.forEach((clusterMode) =>   {
     return;
   }
 
-  describe('Search: Search in ' + clusterMode.label + ' Cluster', function() {
+  describe('Search (old UI): Search in ' + clusterMode.label + ' Cluster', function() {
 
     before(function() {
       cy.login()
@@ -123,7 +123,7 @@ clusterModes.forEach((clusterMode) =>   {
   })
 });
 
-describe('Search: Verify the suggested search templates', function() {
+describe('Search (old UI): Verify the suggested search templates', function() {
 
   before(function() {
     cy.login()

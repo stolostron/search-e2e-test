@@ -5,8 +5,8 @@
 
 /// <reference types="cypress" />
 
-import { popupModal } from './popup'
-import { getOpt } from '../scripts/utils'
+// import { popupModal } from './popup'
+// import { getOpt } from '../scripts/utils'
 
 const SEARCH_MESSAGES_INPUT_PLACE_HOLDER = 'Search items'
 const SEARCH_MESSAGES_LOADING_RESULTS = 'Loading results'
@@ -23,7 +23,9 @@ export const pageLoader = {
 
 export const searchPage = {
   whenGoToSearchPage:() => cy.visit('/search'),
-  /* 
+  
+  /* Need to migrate these tests before re-enabeling.
+
   whenExpandQuickFilters:() => {
     cy.get('.show-more-results-button > button', { timeout: 20000 }).focus().click()
   },
@@ -66,12 +68,14 @@ export const searchPage = {
   shouldLoadResults:() => cy.waitUntilNotContains('.search--results-view > h4', SEARCH_MESSAGES_LOADING_RESULTS, { timeout: 60000, interval: 1000 }),
   */
 
-  shouldExist:() => {
+  shouldLoad:() => {
     cy.get('.react-tags', {timeout: 20000}).should('exist')
     // cy.get('.react-tags__search-input input', {timeout: 20000}).should('exist')
     // cy.get('.saved-search-query-header', { timeout: 20000}).should('exist')
   },
-  /*
+
+  /* Need to migrate these tests before re-enabeling.
+
   shouldFindNoResults:(options) => {
     cy.reloadUntil(() => {
       searchPage.shouldLoadResults()
@@ -106,7 +110,8 @@ export const searchPage = {
   */
 }
 
-/*
+/* Need to migrate these tests before re-enabeling.
+
 export const searchBar = {
   whenFocusSearchBar:() => {
     cy.get('.react-tags', {timeout: 20000}).click()

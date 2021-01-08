@@ -35,7 +35,7 @@ clusterModes.forEach((clusterMode) =>   {
 
     it(`[P1][Sev1][${squad}] should load the search page`, function() {
       // pageLoader.shouldNotExist()
-      searchPage.shouldExist()
+      searchPage.shouldLoad()
     })
 
     /* Need to migrate these test before re-enabeling.
@@ -127,7 +127,8 @@ clusterModes.forEach((clusterMode) =>   {
 });
 
 
-/* Need to migrate these test before re-enabeling.
+/* Need to migrate these tests before re-enabeling.
+
 describe('Search: Verify the suggested search templates', function() {
 
   before(function() {
