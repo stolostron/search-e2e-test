@@ -1,4 +1,6 @@
-module.exports = {  
+module.exports = { 
+    globalSetup: './globalSetup.js',
+    globalTeardown: './globalTeardown.js',
     verbose: true,
     rootDir: './tests/api',
     reporters: [

@@ -4,7 +4,6 @@ const config = require('../../config')
 const { sleep } = require('./sleep')
 const { execSync } = require('child_process');
 const request = require('supertest');
-const { mainModule } = require('process');
 
 // Login to the cluster
 const clusterLogin = () => {
@@ -20,21 +19,14 @@ const getToken = () => {
 // Squad name for tests metadata label.
 const squad = "search"   
 
-// Create a route to access the Search API.
-var searchApiRoute = '' // Used like a cache to avoid requesting the route multiple times.
+// Check if the route to Search API exist and create a new route if needed.
 const getSearchApiRoute = async ()  => {
-    if (searchApiRoute != '') {
-        return searchApiRoute
-    }
-
-    // Check if the route exist and create a new route if needed.
-    var routes = execSync(`oc get routes -n open-cluster-management`).toString()
+    const routes = execSync(`oc get routes -n open-cluster-management`).toString()
     if (routes.indexOf('search-api-automation') == -1){
         execSync(`oc create route passthrough search-api-automation --service=search-search-api --insecure-policy=Redirect -n open-cluster-management`)
         await sleep(10000)
     }
-    searchApiRoute = `https://search-api-automation-open-cluster-management.apps.${config.get('options:hub:baseDomain')}`
-    return searchApiRoute
+    return `https://search-api-automation-open-cluster-management.apps.${config.get('options:hub:baseDomain')}`
 }
 
 function searchQueryBuilder({ keywords = [], filters = [], limit = 1000}) {
