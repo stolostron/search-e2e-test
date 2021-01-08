@@ -5,7 +5,7 @@
 
 /// <reference types="cypress" />
 
-import { searchPage, searchBar } from '../views/search'
+import { searchPage, searchBar } from '../views/search.v1'
 
 export const clusterNamespace = {
   validateClusterNamespace: (filterOptions, extraCluster) => {

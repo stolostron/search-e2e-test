@@ -32,7 +32,7 @@
 import { getOpt } from '../scripts/utils'
 
 import 'cypress-wait-until'
-import { searchPage } from '../views/search'
+import { searchPage } from '../views/search.v1'
 import { oauthIssuer } from '../views/welcome'
 
 Cypress.Commands.add('login', (OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OC_IDP) => {
