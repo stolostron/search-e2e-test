@@ -16,9 +16,6 @@ const getToken = () => {
     return execSync('oc whoami -t').toString().replace('\n', '')
 }
 
-// Squad name for tests metadata label.
-const squad = "search"   
-
 // Check if the route to Search API exist and create a new route if needed.
 const getSearchApiRoute = async ()  => {
     const routes = execSync(`oc get routes -n open-cluster-management`).toString()
@@ -77,6 +74,5 @@ exports.getToken = getToken
 exports.getSearchApiRoute = getSearchApiRoute
 exports.searchQueryBuilder = searchQueryBuilder
 exports.sendRequest = sendRequest
-exports.squad = squad
 exports.getPods = getPods
 exports.deletePod = deletePod

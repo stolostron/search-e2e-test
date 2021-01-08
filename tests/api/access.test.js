@@ -1,10 +1,11 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
-const { getSearchApiRoute, getToken, squad } = require('../common-lib/clusterAccess')
+const squad = require('../../config').get('squadName')
+const { getSearchApiRoute, getToken } = require('../common-lib/clusterAccess')
 const request = require('supertest');
 
-var searchApiRoute = ''
-var token = ''
+let searchApiRoute = ''
+let token = ''
 
 const query = {
     operationName: 'searchResult',

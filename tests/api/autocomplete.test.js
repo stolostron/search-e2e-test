@@ -1,6 +1,6 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
-const { squad } = require('../common-lib/clusterAccess')
+const squad = require('../../config').get('squadName')
 
 describe('Search API: Validate autocomplete', () => {
 
