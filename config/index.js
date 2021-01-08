@@ -28,7 +28,8 @@ nconf.env({ lowerCase: true, separator: '_' })
         CLUSTER_PORT: '443',
         CLUSTER_VIEWER_USR: 'user-viewer',
         CLUSTER_VIEWER_PWD: 'pass-viewer',
-        contextPath: '/multicloud'
+        contextPath: '/multicloud',
+        squadName: 'search'
     })
 
 // Hack to deal with camelCase when using env OPTIONS_HUB_BASEDOMAIN
