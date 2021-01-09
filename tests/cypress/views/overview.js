@@ -8,8 +8,16 @@
 
 export const overviewPage = {
     whenGoToOverviewPage:() => cy.visit('/overview'),
-    shouldExist: () => {
+    whenAddCloudConnectionAction: () => {
+        cy.get('#add-cloud-connection').should('exist')
+        cy.get('#add-cloud-connection').click()
+    },
+    shouldLoad: () => {
         cy.get('.pf-c-page').should('contain', 'Overview')
+        cy.get('.pf-c-spinner', { timeout: 20000 }).should('not.exist')
+    },
+    shouldLoadCloudConnectionPage: () => {
+        cy.get('.pf-c-page').should('contain', 'Create cluster')
     },
 }
 
