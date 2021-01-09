@@ -60,23 +60,22 @@ Cypress.Commands.add('reloadUntil', (condition, options) => {
     options = {}
   }
 
-  var startTime = getOpt(options, 'startTime', new Date())
-  var timeout = getOpt(options, 'timeout', 300000)
-  var interval = getOpt(options, 'interval', 0)
-  var currentTime = new Date()
-  if (currentTime - startTime < timeout) {
-    condition().then(result => {
-      if (result == false) {
-        cy.reload()
-        if (interval > 0) {
-          cy.wait(interval)
-        }
-
-        options.startTime = startTime
-        cy.reloadUntil(condition, options)
-      }
-    })
+  let startTime = getOpt(options, 'startTime', Date.now())
+  let timeout = getOpt(options, 'timeout', 30000)
+  let interval = getOpt(options, 'interval', 0)
+  if (Date.now() - startTime > timeout){
+    throw new Error(`command reloaduntil exeeded timeout: ${timeout}`)
   }
+  condition().then(result => {
+    if (result == false) {
+      cy.reload()
+      if (interval > 0) {
+        cy.wait(interval)
+      }
+      options.startTime = startTime
+      cy.reloadUntil(condition, options)
+    }
+  })
 })
 
 Cypress.Commands.add('waitUntilContains', (selector, text, options) => {

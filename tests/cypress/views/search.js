@@ -65,8 +65,11 @@ export const searchPage = {
     }, options)
   },
   shouldPageBeReady:() => cy.waitUntilAttrIs('.react-tags__search-input input', 'placeholder', SEARCH_MESSAGES_INPUT_PLACE_HOLDER),
-  shouldLoadResults:() => cy.waitUntilNotContains('.search--results-view > h4', SEARCH_MESSAGES_LOADING_RESULTS, { timeout: 60000, interval: 1000 }),
   */
+ 
+  // shouldLoadResults:() => cy.waitUntilNotContains('.search--results-view > h4', SEARCH_MESSAGES_LOADING_RESULTS, { timeout: 60000, interval: 1000 }),
+  shouldLoadResults:() => cy.get('.pf-c-spinner', { timeout: 30000 }).should('not.exist'),
+  
 
   shouldLoad:() => {
     cy.get('.react-tags', {timeout: 20000}).should('exist')
@@ -74,14 +77,13 @@ export const searchPage = {
     // cy.get('.saved-search-query-header', { timeout: 20000}).should('exist')
   },
 
-  /* Need to migrate these tests before re-enabeling.
-
-  shouldFindNoResults:(options) => {
-    cy.reloadUntil(() => {
-      searchPage.shouldLoadResults()
-      return cy.ifContains('.page-content-container', SEARCH_MESSAGES_NO_RESULTS)
-    }, options)
+  // TODO: Look for SEARCH_MESSAGES_NO_RESULTS
+  shouldFindNoResults: () => {
+    cy.get('.pf-c-spinner', { timeout: 30000 }).should('not.exist')
+    // cy.get('.pf-c-table', { timeout: 30000 }).should('not.exist')
   },
+
+  /* Need to migrate these tests before re-enabeling.
   shouldValidateSearchQuery:() => {
     searchPage.shouldLoadResults()
     cy.get('.bx--inline-notification__details').should('not.exist')
@@ -110,23 +112,22 @@ export const searchPage = {
   */
 }
 
-/* Need to migrate these tests before re-enabeling.
 
 export const searchBar = {
   whenFocusSearchBar:() => {
     cy.get('.react-tags', {timeout: 20000}).click()
   },
-  whenClearFilters:() => {
-    cy.forEach('.react-tags__selected button', ($elem) => $elem.click(), { failIfNotFound: false })
-  },
+  // whenClearFilters:() => {
+  //   cy.forEach('.react-tags__selected button', ($elem) => $elem.click(), { failIfNotFound: false })
+  // },
   whenEnterTextInSearchBar:(property, value) => {
-    cy.get('.react-tags__search-input input', {timeout: 20000}).should('exist').focus().click().type(property).wait(200)
+    cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').focus().click().type(property).wait(200)
     cy.get('.react-tags', {timeout: 20000}).should('exist')
     cy.get('.react-tags__search-input', {timeout: 20000}).should('exist')
-    cy.get('.react-tags__search-input input', {timeout: 20000}).type(' ').wait(200)
+    cy.get('.react-tags__search-input', {timeout: 20000}).type(' ').wait(200)
     if (value && value !== null) {
-      cy.get('.react-tags__search-input input', {timeout: 20000}).type(value)
-      cy.get('.react-tags__search-input input', {timeout: 20000}).type(' ').wait(200)
+      cy.get('.react-tags__search-input', {timeout: 20000}).type(value)
+      cy.get('.react-tags__search-input', {timeout: 20000}).type(' ').wait(200)
     }
   },
   whenFilterByCluster:(cluster) => {
@@ -136,22 +137,23 @@ export const searchBar = {
     searchBar.whenFilterByCluster(cluster)
     searchBar.whenEnterTextInSearchBar('namespace', namespace)
   },
-  whenFilterByKind:(kind) => {
-    searchBar.whenEnterTextInSearchBar('kind', kind)
-  },
-  whenFilterByName:(name) => {
-    searchBar.whenEnterTextInSearchBar('name', name)
-  },
-  whenSelectFirstSuggestedValue:() => {
-    searchBar.shouldSuggestValues()
+  // whenFilterByKind:(kind) => {
+  //   searchBar.whenEnterTextInSearchBar('kind', kind)
+  // },
+  // whenFilterByName:(name) => {
+  //   searchBar.whenEnterTextInSearchBar('name', name)
+  // },
+  // whenSelectFirstSuggestedValue:() => {
+  //   searchBar.shouldSuggestValues()
 
-    cy.get('.react-tags__suggestions li[role="option"]', { timeout: 10000 }).eq(1).click()
-  },
-  shouldSuggestValues:() => {
-    cy.waitUntilNotContains('.react-tags__suggestions', SEARCH_MESSAGES_LOADING_SUGGESTIONS, { timeout: 60000, interval: 1000 })
-  }
+  //   cy.get('.react-tags__suggestions li[role="option"]', { timeout: 10000 }).eq(1).click()
+  // },
+  // shouldSuggestValues:() => {
+  //   cy.waitUntilNotContains('.react-tags__suggestions', SEARCH_MESSAGES_LOADING_SUGGESTIONS, { timeout: 60000, interval: 1000 })
+  // }
 }
 
+/* Need to migrate these tests before re-enabeling.
 
 export const suggestedTemplate = {
   whenSelectCreatesLastHour:() => {

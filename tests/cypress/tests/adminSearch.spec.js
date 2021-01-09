@@ -38,7 +38,6 @@ clusterModes.forEach((clusterMode) =>   {
       searchPage.shouldLoad()
     })
 
-    /* Need to migrate these test before re-enabeling.
 
     it(`[P1][Sev1][${squad}] should not see any cluster and namespace`, function() {
       // when
@@ -48,6 +47,8 @@ clusterModes.forEach((clusterMode) =>   {
       searchPage.shouldFindNoResults()
     })
 
+    /* Need to migrate these test before re-enabeling.
+    
     describe('create namespace and deployment resources', function() {
       before(function() {
         searchPage.whenGoToSearchPage()
