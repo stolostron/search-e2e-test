@@ -74,7 +74,7 @@ export const welcomePage = {
         overviewPage.shouldExist()
         cy.visit('/multicloud/welcome')
         cy.contains('Go to Clusters').click()
-        cy.get('.bx--detail-page-header-title-container').should('contain', 'Clusters')
+        cy.get('.pf-c-page').should('contain', 'Cluster management')
         cy.visit('/multicloud/welcome')
         cy.contains('Go to Applications').click()
         cy.get('.bx--detail-page-header-title-container').should('contain', 'Applications')
