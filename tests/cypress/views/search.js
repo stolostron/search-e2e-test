@@ -29,6 +29,7 @@ export const searchPage = {
   whenExpandQuickFilters:() => {
     cy.get('.show-more-results-button > button', { timeout: 20000 }).focus().click()
   },
+  */
   whenGetResourceDetailItem:(resource, name) => {
     return cy.contains('.search--resource-table-header-button', resource, {timeout: 6000})
              .parentsUntil('.search--resource-table', {timeout: 20000})
@@ -36,14 +37,16 @@ export const searchPage = {
              .parent();
   },
   whenDeleteResourceDetailItem:(resource, name) => {
-    searchPage.whenGetResourceDetailItem(resource, name).find('td .bx--overflow-menu__icon', {timeout: 2000}).click({ force: true })
+    searchPage.whenGetResourceDetailItem(resource, name).find('#pf-dropdown-toggle-id-50', {timeout: 2000}).click({ force: true })
     cy.get('.bx--overflow-menu-options button[data-table-action="table.actions.remove"]', {timeout: 2000}).click({ timeout: 10000 }).wait(1000)
     popupModal.whenAccept()
   },
+  /*
   whenGoToResourceDetailItemPage: (resource, name) => {
     pageLoader.shouldNotExist()
     searchPage.whenGetResourceDetailItem(resource, name).find('td').eq(0).find('a').click()
   },
+  */
   whenDeleteNamespace: (namespace, options) => {
     var ignoreIfDoesNotExist = getOpt(options, 'ignoreIfDoesNotExist', true)
     var deleteFn = () => searchPage.whenDeleteResourceDetailItem('namespace', namespace)
@@ -58,6 +61,7 @@ export const searchPage = {
       deleteFn()
     }
   },
+  /*
   whenWaitUntilFindResults:(options) => {
     cy.reloadUntil(() => {
       searchPage.shouldLoadResults()
@@ -66,6 +70,11 @@ export const searchPage = {
   },
   shouldPageBeReady:() => cy.waitUntilAttrIs('.react-tags__search-input input', 'placeholder', SEARCH_MESSAGES_INPUT_PLACE_HOLDER),
   */
+
+  whenWaitUntilFindResults: () => {
+    searchPage.shouldLoadResults()
+    cy.get('.pf-c-table', { timeout: 30000 }).should('exist')
+  },
  
   // shouldLoadResults:() => cy.waitUntilNotContains('.search--results-view > h4', SEARCH_MESSAGES_LOADING_RESULTS, { timeout: 60000, interval: 1000 }),
   shouldLoadResults:() => cy.get('.pf-c-spinner', { timeout: 30000 }).should('not.exist'),
@@ -82,12 +91,12 @@ export const searchPage = {
     cy.get('.pf-c-spinner', { timeout: 30000 }).should('not.exist')
     // cy.get('.pf-c-table', { timeout: 30000 }).should('not.exist')
   },
-
-  /* Need to migrate these tests before re-enabeling.
   shouldValidateSearchQuery:() => {
     searchPage.shouldLoadResults()
+    // FIXME: Migrate to new UI.
     cy.get('.bx--inline-notification__details').should('not.exist')
   },
+  /* Need to migrate these tests before re-enabeling.
   shouldFindQuickFilter: (resource, count) => {
     cy.reloadUntil(() => {
       searchPage.shouldLoadResults()
@@ -117,9 +126,10 @@ export const searchBar = {
   whenFocusSearchBar:() => {
     cy.get('.react-tags', {timeout: 20000}).click()
   },
-  // whenClearFilters:() => {
-  //   cy.forEach('.react-tags__selected button', ($elem) => $elem.click(), { failIfNotFound: false })
-  // },
+  whenClearFilters:() => {
+    // FIXME: Use the clear all button instead ofdeleting each filter individually.
+    cy.forEach('.react-tags__selected button', ($elem) => $elem.click(), { failIfNotFound: false })
+  },
   whenEnterTextInSearchBar:(property, value) => {
     cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').focus().click().type(property).wait(200)
     cy.get('.react-tags', {timeout: 20000}).should('exist')
@@ -143,14 +153,14 @@ export const searchBar = {
   // whenFilterByName:(name) => {
   //   searchBar.whenEnterTextInSearchBar('name', name)
   // },
-  // whenSelectFirstSuggestedValue:() => {
-  //   searchBar.shouldSuggestValues()
+  whenSelectFirstSuggestedValue:() => {
+    searchBar.shouldSuggestValues()
 
-  //   cy.get('.react-tags__suggestions li[role="option"]', { timeout: 10000 }).eq(1).click()
-  // },
-  // shouldSuggestValues:() => {
-  //   cy.waitUntilNotContains('.react-tags__suggestions', SEARCH_MESSAGES_LOADING_SUGGESTIONS, { timeout: 60000, interval: 1000 })
-  // }
+    cy.get('.react-tags__suggestions li[role="option"]', { timeout: 10000 }).eq(1).click()
+  },
+  shouldSuggestValues:() => {
+    cy.waitUntilNotContains('.react-tags__suggestions', SEARCH_MESSAGES_LOADING_SUGGESTIONS, { timeout: 60000, interval: 1000 })
+  }
 }
 
 /* Need to migrate these tests before re-enabeling.
