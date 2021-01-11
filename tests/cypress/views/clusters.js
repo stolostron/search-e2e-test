@@ -14,6 +14,6 @@ export const clustersPage = {
              .then((index) => cy.get('table.resource-table tbody tr').filter(':not(:contains("local-cluster"))').filter(':not(:contains("console-ui-test-"))').eq(0).get('td').eq(index).invoke('text'));
   },
   shouldExist: () => {
-    cy.get('.bx--detail-page-header-title').should('contain', 'Clusters')
+    cy.get('.pf-c-title').should('contain', 'Cluster management')
   }
 }

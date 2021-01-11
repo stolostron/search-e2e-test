@@ -74,7 +74,7 @@ export const welcomePage = {
         overviewPage.shouldExist()
         cy.visit('/multicloud/welcome')
         cy.contains('Go to Clusters').click()
-        cy.get('.pf-c-page').should('contain', 'Cluster management')
+        cy.get('.pf-c-title').should('contain', 'Cluster management')
         cy.visit('/multicloud/welcome')
         cy.contains('Go to Applications').click()
         cy.get('.bx--detail-page-header-title-container').should('contain', 'Applications')
@@ -109,7 +109,7 @@ export const topologyPage = {
 
 export const bmAssetPage = {
     shouldExist: () => {
-        cy.get('.bx--detail-page-header-title').should('contain', 'Bare metal assets')
+        cy.get('.pf-c-title').should('contain', 'Bare metal assets')
     }
 }
 
