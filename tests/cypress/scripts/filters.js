@@ -3,7 +3,7 @@
  * Copyright (c) 2020 Red Hat, Inc.
  ****************************************************************************** */
 
-import { searchPage, searchBar } from '../views/search.v1'
+import { searchPage, searchBar } from '../views/search'
 
 export const simple = (filter) =>   {
   it('should suggest values', function() {
