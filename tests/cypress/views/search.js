@@ -5,8 +5,8 @@
 
 /// <reference types="cypress" />
 
-// import { popupModal } from './popup'
-// import { getOpt } from '../scripts/utils'
+import { popupModal } from './popup'
+import { getOpt } from '../scripts/utils'
 
 const SEARCH_MESSAGES_INPUT_PLACE_HOLDER = 'Search items'
 const SEARCH_MESSAGES_LOADING_RESULTS = 'Loading results'
@@ -16,24 +16,22 @@ const SEARCH_MESSAGES_LOADING_SUGGESTIONS = 'Loading...'
 
 export const squad = "search"
 
-export const pageLoader = {
-  shouldExist: () => cy.get('.content-spinner', { timeout: 20000 }).should('exist')  ,
-  shouldNotExist: () => cy.get('.content-spinner', { timeout: 20000 }).should('not.exist')
-}
+// export const pageLoader = {
+//   shouldExist: () => cy.get('.content-spinner', { timeout: 20000 }).should('exist')  ,
+//   shouldNotExist: () => cy.get('.content-spinner', { timeout: 20000 }).should('not.exist')
+// }
 
 export const searchPage = {
   whenGoToSearchPage:() => cy.visit('/search'),
   
-  /* Need to migrate these tests before re-enabeling.
-
-  whenExpandQuickFilters:() => {
-    cy.get('.show-more-results-button > button', { timeout: 20000 }).focus().click()
+  whenExpandRelationshipTiles:() => {
+    // cy.get('.pf-c-page__main-section > div > pf-c-button', { timeout: 20000 }).focus().click()
+    cy.get('button.pf-c-button.pf-m-secondary', { timeout: 20000 }).focus().click()
   },
-  */
   whenGetResourceDetailItem:(resource, name) => {
-    return cy.contains('.search--resource-table-header-button', resource, {timeout: 6000})
-             .parentsUntil('.search--resource-table', {timeout: 20000})
-             .find('table.bx--data-table-v2 tbody tr', {timeout: 20000}).contains('td', name)
+    return cy.contains('.pf-c-card__body', resource, {timeout: 6000})
+             .parentsUntil('.pf-c-table', {timeout: 20000})
+             .find('table.pf-c-table tbody tr', {timeout: 20000}).contains('td', name)
              .parent();
   },
   whenDeleteResourceDetailItem:(resource, name) => {
@@ -41,12 +39,10 @@ export const searchPage = {
     cy.get('.bx--overflow-menu-options button[data-table-action="table.actions.remove"]', {timeout: 2000}).click({ timeout: 10000 }).wait(1000)
     popupModal.whenAccept()
   },
-  /*
   whenGoToResourceDetailItemPage: (resource, name) => {
-    pageLoader.shouldNotExist()
+    // pageLoader.shouldNotExist()
     searchPage.whenGetResourceDetailItem(resource, name).find('td').eq(0).find('a').click()
   },
-  */
   whenDeleteNamespace: (namespace, options) => {
     var ignoreIfDoesNotExist = getOpt(options, 'ignoreIfDoesNotExist', true)
     var deleteFn = () => searchPage.whenDeleteResourceDetailItem('namespace', namespace)
@@ -68,21 +64,21 @@ export const searchPage = {
       return cy.ifNotContains('.page-content-container', SEARCH_MESSAGES_NO_RESULTS)
     }, options)
   },
-  shouldPageBeReady:() => cy.waitUntilAttrIs('.react-tags__search-input input', 'placeholder', SEARCH_MESSAGES_INPUT_PLACE_HOLDER),
   */
+  shouldPageBeReady:() => cy.waitUntilAttrIs('.react-tags__search-input', 'placeholder', SEARCH_MESSAGES_INPUT_PLACE_HOLDER),
 
   whenWaitUntilFindResults: () => {
     searchPage.shouldLoadResults()
     cy.get('.pf-c-table', { timeout: 30000 }).should('exist')
   },
  
-  // shouldLoadResults:() => cy.waitUntilNotContains('.search--results-view > h4', SEARCH_MESSAGES_LOADING_RESULTS, { timeout: 60000, interval: 1000 }),
   shouldLoadResults:() => cy.get('.pf-c-spinner', { timeout: 30000 }).should('not.exist'),
+  // shouldLoadResults:() => cy.waitUntilNotContains('.pf-c-spinner', { timeout: 60000, interval: 1000 }).should('not.exist'),
   
 
   shouldLoad:() => {
     cy.get('.react-tags', {timeout: 20000}).should('exist')
-    // cy.get('.react-tags__search-input input', {timeout: 20000}).should('exist')
+    cy.get('.react-tags__search-input', {timeout: 20000}).should('exist')
     // cy.get('.saved-search-query-header', { timeout: 20000}).should('exist')
   },
 
@@ -93,16 +89,17 @@ export const searchPage = {
   },
   shouldValidateSearchQuery:() => {
     searchPage.shouldLoadResults()
-    // FIXME: Migrate to new UI.
-    cy.get('.bx--inline-notification__details').should('not.exist')
+    cy.get('.pf-c-alert pf-m-inline pf-m-danger').should('not.exist')
   },
-  /* Need to migrate these tests before re-enabeling.
-  shouldFindQuickFilter: (resource, count) => {
+  
+  shouldFindRelationshipTile: (resource, count) => {
     cy.reloadUntil(() => {
       searchPage.shouldLoadResults()
-      return cy.ifContains('[for="related-resource-' + resource + '"] > .bx--tile-content', count)
+
+      return cy.ifContains('.pf-c-page__main-section', `${count} Related ${resource}`)
     })
   },
+
   shouldFindResourceDetail: (resource) => {
     cy.contains('.search--resource-table-header-button', resource, {timeout: 6000})
   },
@@ -118,7 +115,6 @@ export const searchPage = {
       return cy.ifContains('.search--resource-table', SEARCH_MESSAGES_FEW_SECONDS_AGO)
     })
   }
-  */
 }
 
 
@@ -127,8 +123,9 @@ export const searchBar = {
     cy.get('.react-tags', {timeout: 20000}).click()
   },
   whenClearFilters:() => {
+    cy.get('#clear-all-search-tags-button').click()
     // FIXME: Use the clear all button instead ofdeleting each filter individually.
-    cy.forEach('.react-tags__selected button', ($elem) => $elem.click(), { failIfNotFound: false })
+    // cy.forEach('.react-tags__selected button', ($elem) => $elem.click(), { failIfNotFound: false })
   },
   whenEnterTextInSearchBar:(property, value) => {
     cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').focus().click().type(property).wait(200)
@@ -147,12 +144,12 @@ export const searchBar = {
     searchBar.whenFilterByCluster(cluster)
     searchBar.whenEnterTextInSearchBar('namespace', namespace)
   },
-  // whenFilterByKind:(kind) => {
-  //   searchBar.whenEnterTextInSearchBar('kind', kind)
-  // },
-  // whenFilterByName:(name) => {
-  //   searchBar.whenEnterTextInSearchBar('name', name)
-  // },
+  whenFilterByKind:(kind) => {
+    searchBar.whenEnterTextInSearchBar('kind', kind)
+  },
+  whenFilterByName:(name) => {
+    searchBar.whenEnterTextInSearchBar('name', name)
+  },
   whenSelectFirstSuggestedValue:() => {
     searchBar.shouldSuggestValues()
 

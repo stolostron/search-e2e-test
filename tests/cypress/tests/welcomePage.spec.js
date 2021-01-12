@@ -5,7 +5,7 @@
 
 /// <reference types="cypress" />
 
-import { squad } from '../views/search'
+import { squad } from '../config'
 import { welcomePage, leftNav, userMenu } from '../views/welcome'
 
 describe('Search: Welcome page', function () {
