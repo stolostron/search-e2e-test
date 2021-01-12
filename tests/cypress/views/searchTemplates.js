@@ -1,23 +1,20 @@
 /** *****************************************************************************
  * Licensed Materials - Property of Red Hat, Inc.
- * Copyright (c) 2020 Red Hat, Inc.
+ * Copyright (c) 2021 Red Hat, Inc.
  ****************************************************************************** */
 
 /// <reference types="cypress" />
 
-export const suggestedTemplate = {
-    whenSelectCreatesLastHour:() => {
-      cy.get('.suggested-search-queries').children('.query-cards-container').children().eq(2).click()
-      cy.get('.react-tags__selected-tag-name').should('contain', 'created:hour')
+
+export const searchBar = {
+    shouldContainTag: (filter) => {
+        cy.get('.react-tags__selected-tag-name').should('contain', filter)
     },
-    whenSelectWorkloads:() => {
-      cy.get('.suggested-search-queries').children('.query-cards-container').children().eq(0).click()
-      cy.get('.react-tags__selected-tag-name').should('contain', 'kind:daemonset,deployment,job,statefulset,replicaset')
-    },
-    whenSelectUnhealthyPods:() => {
-      cy.get('.suggested-search-queries').children('.query-cards-container').children().eq(1).click()
-      cy.get('.react-tags__selected-tag-name').should('contain', 'kind:pod')
-      cy.get('.react-tags__selected-tag-name').should('contain','status:Pending,Error,Failed,Terminating,ImagePullBackOff,CrashLoopBackOff,RunContainerError,ContainerCreating')
+}
+
+export const savedSearches = {
+    whenSelectCardWithTitle: (title) => {
+        cy.get('.pf-c-card__title').contains(title).click()
     },
     whenGetRelatedItemDetails:(resource) => {
       return cy.contains('.search--resource-table', resource, {timeout: 20000})

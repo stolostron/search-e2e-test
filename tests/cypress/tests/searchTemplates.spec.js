@@ -7,7 +7,7 @@
 
 import { squad } from '../config'
 import { searchPage } from '../views/search'
-import { suggestedTemplate } from '../views/savedSearches'
+import { savedSearches, searchBar } from '../views/searchTemplates'
 
 describe('Search: Verify the suggested search templates', function() {
 
@@ -24,20 +24,24 @@ describe('Search: Verify the suggested search templates', function() {
     })
   
     it(`[P3][Sev3][${squad}] should see the workloads template & search tag in search items`, function() {
-      suggestedTemplate.whenSelectWorkloads()
+      savedSearches.whenSelectCardWithTitle('Workloads')
+      searchBar.shouldContainTag('kind:daemonset,deployment,job,statefulset,replicaset')
     });
     it(`[P3][Sev3][${squad}] should see the unhealthy pods template & search tag in search items`, function() {
-      suggestedTemplate.whenSelectUnhealthyPods()
+      savedSearches.whenSelectCardWithTitle('Unhealthy pods')
+      searchBar.shouldContainTag('kind:pod')
+      searchBar.shouldContainTag('status:Pending,Error,Failed,Terminating,ImagePullBackOff,CrashLoopBackOff,RunContainerError,ContainerCreating')
     });
     it(`[P3][Sev3][${squad}] should see the created last hour template & search tag in search items`, function() {
-      suggestedTemplate.whenSelectCreatesLastHour()
+      savedSearches.whenSelectCardWithTitle('Created last hour')
+      searchBar.shouldContainTag('created:hour')
     });
   
     // Verify the related resources.
-    it(`[P3][Sev3][${squad}] should see the workload template & related items details`, function() {
-      suggestedTemplate.whenSelectWorkloads()
-      suggestedTemplate.whenVerifyRelatedItemsDetails()
-    });
+    // it(`[P3][Sev3][${squad}] should see the workload template & related items details`, function() {
+    //   savedSearches.whenSelectCardWithTitle('Workloads')
+    //   savedSearches.whenVerifyRelatedItemsDetails()
+    // });
   
     // DISABLED:  These are testing the same path as the above test and it's adding 
     //            a high load. Hoping that this can help with our canary issues.
