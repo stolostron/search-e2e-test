@@ -7,7 +7,7 @@
 
 import { squad } from '../config'
 import { searchPage } from '../views/search'
-import { savedSearches, searchBar } from '../views/searchTemplates'
+import { savedSearches, searchBar } from '../views/suggestedSearches'
 
 describe('Search: Verify the suggested search templates', function() {
 
@@ -20,7 +20,6 @@ describe('Search: Verify the suggested search templates', function() {
     })
     beforeEach(function() {
       searchPage.whenGoToSearchPage()
-      
     })
   
     it(`[P3][Sev3][${squad}] should see the workloads template & search tag in search items`, function() {
