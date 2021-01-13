@@ -7,9 +7,9 @@
 
 export const podDetailPage = {
   whenClickOnLogsTab:() => {
-    cy.get('#logs-tab', { timeout: 10000 }).click({ timeout: 10000 })
+    cy.get('.pf-c-nav__link').filter(':contains("Logs")').click({ timeout: 10000 })
   },
   shouldSeeLogs:(expected) => {
-    cy.contains('.logs-container__content', expected, { timeout: 5000 })
+    cy.contains('.log-window-lines-container', expected, { timeout: 5000 })
   }
 }

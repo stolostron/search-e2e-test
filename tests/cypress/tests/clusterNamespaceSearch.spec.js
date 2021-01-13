@@ -5,7 +5,7 @@
 
 /// <reference types="cypress" />
 import { clusterNamespace } from '../views/clusterNamespaceSearch'
-import { squad } from '../views/search'
+import { squad } from '../config'
 
 const quaryDefaultNamespaceName = "default namespace search"
 const quaryDefaultNamespaceDesc = "this is searching that each cluser should have default namespace"

@@ -5,48 +5,32 @@
 
 /// <reference types="cypress" />
 
-// import { popupModal } from './popup'
-// import { getOpt } from '../scripts/utils'
+import { popupModal } from './popup'
+import { getOpt } from '../scripts/utils'
 
 const SEARCH_MESSAGES_INPUT_PLACE_HOLDER = 'Search items'
-const SEARCH_MESSAGES_LOADING_RESULTS = 'Loading results'
-const SEARCH_MESSAGES_NO_RESULTS = 'No search results found'
+const SEARCH_MESSAGES_NO_RESULTS = 'No results found for the current search criteria.'
 const SEARCH_MESSAGES_FEW_SECONDS_AGO = 'a few seconds ago'
 const SEARCH_MESSAGES_LOADING_SUGGESTIONS = 'Loading...'
 
-export const squad = "search"
-
-export const pageLoader = {
-  shouldExist: () => cy.get('.content-spinner', { timeout: 20000 }).should('exist')  ,
-  shouldNotExist: () => cy.get('.content-spinner', { timeout: 20000 }).should('not.exist')
-}
 
 export const searchPage = {
   whenGoToSearchPage:() => cy.visit('/search'),
   
-  /* Need to migrate these tests before re-enabeling.
-
-  whenExpandQuickFilters:() => {
-    cy.get('.show-more-results-button > button', { timeout: 20000 }).focus().click()
+  whenExpandRelationshipTiles:() => {
+    cy.get('button.pf-c-button.pf-m-secondary', { timeout: 20000 }).focus().click()
   },
-  */
-  whenGetResourceDetailItem:(resource, name) => {
-    return cy.contains('.search--resource-table-header-button', resource, {timeout: 6000})
-             .parentsUntil('.search--resource-table', {timeout: 20000})
-             .find('table.bx--data-table-v2 tbody tr', {timeout: 20000}).contains('td', name)
-             .parent();
+  whenGetResourceTableRow:(resource, name) => {
+    return cy.get('tr').filter(`:contains("${name}")`)
   },
   whenDeleteResourceDetailItem:(resource, name) => {
-    searchPage.whenGetResourceDetailItem(resource, name).find('#pf-dropdown-toggle-id-50', {timeout: 2000}).click({ force: true })
-    cy.get('.bx--overflow-menu-options button[data-table-action="table.actions.remove"]', {timeout: 2000}).click({ timeout: 10000 }).wait(1000)
+    searchPage.whenGetResourceTableRow(resource, name).find('.pf-c-dropdown__toggle', {timeout: 2000}).click({ force: true })
+    cy.get('button.pf-c-dropdown__menu-item', {timeout: 2000}).should('contain', `Delete ${resource}`).click({ timeout: 10000 }).wait(1000)
     popupModal.whenAccept()
   },
-  /*
   whenGoToResourceDetailItemPage: (resource, name) => {
-    pageLoader.shouldNotExist()
-    searchPage.whenGetResourceDetailItem(resource, name).find('td').eq(0).find('a').click()
+    searchPage.whenGetResourceTableRow(resource, name).find('td').eq(0).find('a').click()
   },
-  */
   whenDeleteNamespace: (namespace, options) => {
     var ignoreIfDoesNotExist = getOpt(options, 'ignoreIfDoesNotExist', true)
     var deleteFn = () => searchPage.whenDeleteResourceDetailItem('namespace', namespace)
@@ -61,48 +45,38 @@ export const searchPage = {
       deleteFn()
     }
   },
-  /*
-  whenWaitUntilFindResults:(options) => {
-    cy.reloadUntil(() => {
-      searchPage.shouldLoadResults()
-      return cy.ifNotContains('.page-content-container', SEARCH_MESSAGES_NO_RESULTS)
+
+  shouldPageBeReady:() => cy.waitUntilAttrIs('.react-tags__search-input', 'placeholder', SEARCH_MESSAGES_INPUT_PLACE_HOLDER),
+
+  whenReloadUntilFindResults: (options) => {
+    cy.reloadUntil(async() => {
+      // cy.get('.pf-c-spinner', { timeout: 30000 }).should('not.exist')
+      cy.get('.pf-c-table', { timeout: 30000 }).should('exist')
     }, options)
   },
-  shouldPageBeReady:() => cy.waitUntilAttrIs('.react-tags__search-input input', 'placeholder', SEARCH_MESSAGES_INPUT_PLACE_HOLDER),
-  */
-
-  whenWaitUntilFindResults: () => {
-    searchPage.shouldLoadResults()
-    cy.get('.pf-c-table', { timeout: 30000 }).should('exist')
-  },
  
-  // shouldLoadResults:() => cy.waitUntilNotContains('.search--results-view > h4', SEARCH_MESSAGES_LOADING_RESULTS, { timeout: 60000, interval: 1000 }),
+  // shouldLoadResults:() => cy.waitUntilNotContains('.pf-c-spinner', { timeout: 60000, interval: 1000 }).should('not.exist'),
   shouldLoadResults:() => cy.get('.pf-c-spinner', { timeout: 30000 }).should('not.exist'),
-  
 
   shouldLoad:() => {
     cy.get('.react-tags', {timeout: 20000}).should('exist')
-    // cy.get('.react-tags__search-input input', {timeout: 20000}).should('exist')
+    cy.get('.react-tags__search-input', {timeout: 20000}).should('exist')
     // cy.get('.saved-search-query-header', { timeout: 20000}).should('exist')
   },
 
-  // TODO: Look for SEARCH_MESSAGES_NO_RESULTS
   shouldFindNoResults: () => {
-    cy.get('.pf-c-spinner', { timeout: 30000 }).should('not.exist')
-    // cy.get('.pf-c-table', { timeout: 30000 }).should('not.exist')
+    cy.get('.pf-c-alert__title', { timeout: 30000 }).should('contain', SEARCH_MESSAGES_NO_RESULTS)
   },
   shouldValidateSearchQuery:() => {
     searchPage.shouldLoadResults()
-    // FIXME: Migrate to new UI.
-    cy.get('.bx--inline-notification__details').should('not.exist')
+    cy.get('.pf-c-alert pf-m-inline pf-m-danger').should('not.exist')
   },
-  /* Need to migrate these tests before re-enabeling.
-  shouldFindQuickFilter: (resource, count) => {
-    cy.reloadUntil(() => {
-      searchPage.shouldLoadResults()
-      return cy.ifContains('[for="related-resource-' + resource + '"] > .bx--tile-content', count)
-    })
+  
+  shouldFindRelationshipTile: (resource, count) => {
+    cy.get('.pf-c-page__main-section').should('contain', `${count}`)
+    cy.get('.pf-c-page__main-section').should('contain', `Related ${resource}`)
   },
+
   shouldFindResourceDetail: (resource) => {
     cy.contains('.search--resource-table-header-button', resource, {timeout: 6000})
   },
@@ -110,15 +84,14 @@ export const searchPage = {
     cy.get('.search--resource-table-header-button', {timeout: 6000 }).should('exist')
   },
   shouldFindResourceDetailItem: (resource, name) => {
-    searchPage.whenGetResourceDetailItem(resource, name).should('exist')
+    searchPage.whenGetResourceTableRow(resource, name).should('exist')
   },
   shouldBeResourceDetailItemCreatedFewSecondsAgo: (resource, name) => {
     cy.reloadUntil(() => {
       searchPage.shouldLoadResults()
-      return cy.ifContains('.search--resource-table', SEARCH_MESSAGES_FEW_SECONDS_AGO)
+      return cy.ifContains('td', SEARCH_MESSAGES_FEW_SECONDS_AGO)
     })
   }
-  */
 }
 
 
@@ -127,8 +100,7 @@ export const searchBar = {
     cy.get('.react-tags', {timeout: 20000}).click()
   },
   whenClearFilters:() => {
-    // FIXME: Use the clear all button instead ofdeleting each filter individually.
-    cy.forEach('.react-tags__selected button', ($elem) => $elem.click(), { failIfNotFound: false })
+    cy.get('#clear-all-search-tags-button').click()
   },
   whenEnterTextInSearchBar:(property, value) => {
     cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').focus().click().type(property).wait(200)
@@ -147,12 +119,12 @@ export const searchBar = {
     searchBar.whenFilterByCluster(cluster)
     searchBar.whenEnterTextInSearchBar('namespace', namespace)
   },
-  // whenFilterByKind:(kind) => {
-  //   searchBar.whenEnterTextInSearchBar('kind', kind)
-  // },
-  // whenFilterByName:(name) => {
-  //   searchBar.whenEnterTextInSearchBar('name', name)
-  // },
+  whenFilterByKind:(kind) => {
+    searchBar.whenEnterTextInSearchBar('kind', kind)
+  },
+  whenFilterByName:(name) => {
+    searchBar.whenEnterTextInSearchBar('name', name)
+  },
   whenSelectFirstSuggestedValue:() => {
     searchBar.shouldSuggestValues()
 
@@ -162,42 +134,3 @@ export const searchBar = {
     cy.waitUntilNotContains('.react-tags__suggestions', SEARCH_MESSAGES_LOADING_SUGGESTIONS, { timeout: 60000, interval: 1000 })
   }
 }
-
-/* Need to migrate these tests before re-enabeling.
-
-export const suggestedTemplate = {
-  whenSelectCreatesLastHour:() => {
-    cy.get('.suggested-search-queries').children('.query-cards-container').children().eq(2).click()
-    cy.get('.react-tags__selected-tag-name').should('contain', 'created:hour')
-  },
-  whenSelectWorkloads:() => {
-    cy.get('.suggested-search-queries').children('.query-cards-container').children().eq(0).click()
-    cy.get('.react-tags__selected-tag-name').should('contain', 'kind:daemonset,deployment,job,statefulset,replicaset')
-  },
-  whenSelectUnhealthyPods:() => {
-    cy.get('.suggested-search-queries').children('.query-cards-container').children().eq(1).click()
-    cy.get('.react-tags__selected-tag-name').should('contain', 'kind:pod')
-    cy.get('.react-tags__selected-tag-name').should('contain','status:Pending,Error,Failed,Terminating,ImagePullBackOff,CrashLoopBackOff,RunContainerError,ContainerCreating')
-  },
-  whenGetRelatedItemDetails:(resource) => {
-    return cy.contains('.search--resource-table', resource, {timeout: 20000})
-             .find('table.bx--data-table-v2 tbody tr', {timeout: 20000})
-             .parent();
-  },
-  whenVerifyRelatedItemsDetails:() => {
-    cy.waitUsingSLA()
-    cy.get('.page-content-container > :nth-child(2)').then(($span) => {
-    if (($span.text()) !== 'No search results found.')
-    {
-      cy.contains('Show all').click()
-      cy.get('.bx--tile-content > :nth-child(1) > .content > .text').each(($el) => {
-          const itemName = $el.text()
-          cy.wrap($el).click()
-       suggestedTemplate.whenGetRelatedItemDetails(itemName).should('exist', {timeout: 20000} )
-       cy.wrap($el).click()
-      })
-    }
-   })
-  }
-}
-*/
