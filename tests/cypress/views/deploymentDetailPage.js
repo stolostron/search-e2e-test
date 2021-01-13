@@ -9,13 +9,13 @@ import { popupModal } from '../views/popup'
 
 export const deploymentDetailPage = {
   whenScaleReplicasTo:(replicas) => {
-    cy.get('.details-yaml-editOptions > .bx--btn').click()
+    cy.get('button.pf-m-primary').click({ timeout: 10000, force: true })
     cy.get('.react-monaco-editor-container').click().type(Cypress.platform !== 'darwin' ? '{ctrl}f' : '{meta}f')
-      .get('.find-widget .monaco-inputbox textarea:first').focus().click().type('replicas: ')
+      .get('.find-widget .monaco-inputbox textarea:first').focus().click().type('replicas: 1')
     cy.get('.react-monaco-editor-container .view-line > span')
-      .contains('replicas: ').parent()
+      .filter(':contains("replicas:")').contains('1').parent()
       .find('span:last').click().focused().type('{del}' + replicas)
-    cy.get('.details-yaml-editOptions > :nth-child(2)').click()
-    popupModal.whenAccept()
+    cy.get('button.pf-m-primary').filter(':contains("Save")').click({ timeout: 10000, force: true })
+    // popupModal.whenAccept() // FIXME: Jorge
   }
 }
