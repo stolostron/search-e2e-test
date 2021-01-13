@@ -12,8 +12,8 @@ import { podDetailPage } from '../views/podDetailPage'
 import { resourcePage } from '../views/resource'
 import { searchPage, searchBar } from '../views/search'
 
-const clusterModes = [{ label: 'Local', valueFn: () => cy.wrap('local-cluster'), skip: false }, //FIXME Jorge
-                      { label: 'Managed', valueFn: () => clustersPage.givenManagedCluster(), skip: true }];  //FIXME Jorge
+const clusterModes = [{ label: 'Local', valueFn: () => cy.wrap('local-cluster'), },
+                      { label: 'Managed', valueFn: () => clustersPage.givenManagedCluster(), skip: true }];  //FIXME Jorge - Temporarily disabled to break down migration into smaller PRs
 
 clusterModes.forEach((clusterMode) =>   {
 
@@ -56,7 +56,7 @@ clusterModes.forEach((clusterMode) =>   {
       resourcePage.whenGoToResourcePage()
         resourcePage.whenSelectTargetCluster(this.clusterName)
         resourcePage.whenCreateDeployment(this.namespace, this.namespace + '-deployment', 'openshift/hello-openshift')
-        // FIXME - Shouldn't need to logout to see new resources. Something must be cached.
+        // FIXME Jorge - WORKAROUND, we shouldn't need to logout to see new resources. Potential product bug to investigate.
         cy.wait(5000)
         cy.logout()
         cy.login() 
@@ -70,11 +70,9 @@ clusterModes.forEach((clusterMode) =>   {
         searchBar.whenFilterByClusterAndNamespace(this.clusterName, this.namespace)
       })
 
-      /* Need to migrate these test before re-enabeling.
       after(function() {
         searchPage.whenDeleteNamespace(this.namespace, { ignoreIfDoesNotExist: true })
       })
-      */
 
 
       it(`[P3][Sev3][${squad}] should have expected count of relationships`, function() {
@@ -100,7 +98,7 @@ clusterModes.forEach((clusterMode) =>   {
         searchBar.whenFilterByKind('pod')
         searchPage.whenGoToResourceDetailItemPage('pod', this.namespace + '-deployment-')
         podDetailPage.whenClickOnLogsTab()
-        // podDetailPage.shouldSeeLogs('serving on') // FIXME Jorge
+        // podDetailPage.shouldSeeLogs('serving on') // FIXME Jorge - Temporarily disabled to allow merging current progress.
       });
 
 

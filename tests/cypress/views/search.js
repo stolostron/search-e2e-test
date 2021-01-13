@@ -9,7 +9,6 @@ import { popupModal } from './popup'
 import { getOpt } from '../scripts/utils'
 
 const SEARCH_MESSAGES_INPUT_PLACE_HOLDER = 'Search items'
-const SEARCH_MESSAGES_LOADING_RESULTS = 'Loading results'
 const SEARCH_MESSAGES_NO_RESULTS = 'No results found for the current search criteria.'
 const SEARCH_MESSAGES_FEW_SECONDS_AGO = 'a few seconds ago'
 const SEARCH_MESSAGES_LOADING_SUGGESTIONS = 'Loading...'
@@ -19,7 +18,6 @@ export const searchPage = {
   whenGoToSearchPage:() => cy.visit('/search'),
   
   whenExpandRelationshipTiles:() => {
-    // cy.get('.pf-c-page__main-section > div > pf-c-button', { timeout: 20000 }).focus().click()
     cy.get('button.pf-c-button.pf-m-secondary', { timeout: 20000 }).focus().click()
   },
   whenGetResourceTableRow:(resource, name) => {
@@ -31,7 +29,6 @@ export const searchPage = {
     popupModal.whenAccept()
   },
   whenGoToResourceDetailItemPage: (resource, name) => {
-    // pageLoader.shouldNotExist()
     searchPage.whenGetResourceTableRow(resource, name).find('td').eq(0).find('a').click()
   },
   whenDeleteNamespace: (namespace, options) => {
@@ -53,9 +50,8 @@ export const searchPage = {
 
   whenReloadUntilFindResults: (options) => {
     cy.reloadUntil(async() => {
-      // searchPage.shouldLoadResults()
-      cy.get('.pf-c-table', { timeout: 30000 }).should('exist')
       // cy.get('.pf-c-spinner', { timeout: 30000 }).should('not.exist')
+      cy.get('.pf-c-table', { timeout: 30000 }).should('exist')
     }, options)
   },
  
