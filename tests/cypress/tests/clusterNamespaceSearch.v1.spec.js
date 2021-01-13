@@ -4,7 +4,7 @@
  ****************************************************************************** */
 
 /// <reference types="cypress" />
-import { clusterNamespace } from '../views/clusterNamespaceSearch'
+import { clusterNamespace } from '../views/clusterNamespaceSearch.v1'
 import { squad } from '../views/search'
 
 const queryDefaultNamespaceName = "default namespace search"
@@ -13,7 +13,7 @@ const queryDefaultNamespaceDesc = "this is searching that each cluster should ha
 const queryOcmaNamespaceName = "open-cluster-management-agent search"
 const queryOcmaNamespaceDesc = "this is searching that each cluster should have open-cluster-management-agent"
 
-describe('Search: Search and validate all clusters have default namespace', function(){
+describe('Search (old UI): Search and validate all clusters have default namespace', function(){
 
   before(function() {
     cy.login()
@@ -36,14 +36,10 @@ describe('Search: Search and validate all clusters have default namespace', func
     clusterNamespace.saveClusterNamespaceSearch({"kind": "namespace","name" : "open-cluster-management-agent" }, queryOcmaNamespaceName, queryOcmaNamespaceDesc)
   })
 
-  it(`[P2][Sev2][${squad}] should be able to find the saved search after logout and re-login`, function() {
+  it(`[P2][Sev2][${squad}] should be able to find the saved search after logout and re-login`, function(){
     cy.logout()
     cy.login()
     clusterNamespace.getSavedSearch(queryDefaultNamespaceName)
     clusterNamespace.getSavedSearch(queryOcmaNamespaceName)
-  })
-
-  it(`[P2][Sev2][${squad}] should be able to get all saved searches from dropdown list`, function() {
-    clusterNamespace.getSavedSearchFromDropDown()
   })
 })
