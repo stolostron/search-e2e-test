@@ -23,7 +23,7 @@ export const pageLoader = {
 
 export const searchPage = {
   whenGoToWelcomePage:() => cy.visit('/multicloud/welcome'), // WORKAROUND for https://github.com/open-cluster-management/backlog/issues/5725
-  whenGoToSearchPage:() => cy.visit('/multicloud/search'),
+  whenGoToSearchPage:() => cy.visit('/search'),
   whenExpandQuickFilters:() => {
     cy.get('.show-more-results-button > button', { timeout: 20000 }).focus().click()
   },
@@ -62,11 +62,11 @@ export const searchPage = {
       return cy.ifNotContains('.page-content-container', SEARCH_MESSAGES_NO_RESULTS)
     }, options)
   },
-  shouldPageBeReady:() => cy.waitUntilAttrIs('.react-tags__search-input input', 'placeholder', SEARCH_MESSAGES_INPUT_PLACE_HOLDER),
+  shouldPageBeReady:() => cy.waitUntilAttrIs('input.react-tags__search-input', 'placeholder', SEARCH_MESSAGES_INPUT_PLACE_HOLDER),
   shouldLoadResults:() => cy.waitUntilNotContains('.search--results-view > h4', SEARCH_MESSAGES_LOADING_RESULTS, { timeout: 60000, interval: 1000 }),
   shouldExist:() => {
     cy.get('.bx--detail-page-header-title', {timeout: 20000}).should('exist')
-    cy.get('.react-tags__search-input input', {timeout: 20000}).should('exist')
+    cy.get('input.react-tags__search-input', {timeout: 20000}).should('exist')
     cy.get('.saved-search-query-header', { timeout: 20000}).should('exist')
   },
   shouldFindNoResults:(options) => {
@@ -110,13 +110,13 @@ export const searchBar = {
     cy.forEach('.react-tags__selected button', ($elem) => $elem.click(), { failIfNotFound: false })
   },
   whenEnterTextInSearchBar:(property, value) => {
-    cy.get('.react-tags__search-input input', {timeout: 20000}).should('exist').focus().click().type(property).wait(200)
+    cy.get('input.react-tags__search-input', {timeout: 20000}).should('exist').focus().click().type(property).wait(200)
     cy.get('.react-tags', {timeout: 20000}).should('exist')
-    cy.get('.react-tags__search-input', {timeout: 20000}).should('exist')
-    cy.get('.react-tags__search-input input', {timeout: 20000}).type(' ').wait(200)
+    cy.get('input.react-tags__search-input', {timeout: 20000}).should('exist')
+    cy.get('input.react-tags__search-input', {timeout: 20000}).type(' ').wait(200)
     if (value && value !== null) {
-      cy.get('.react-tags__search-input input', {timeout: 20000}).type(value)
-      cy.get('.react-tags__search-input input', {timeout: 20000}).type(' ').wait(200)
+      cy.get('input.react-tags__search-input', {timeout: 20000}).type(value)
+      cy.get('input.react-tags__search-input', {timeout: 20000}).type(' ').wait(200)
     }
   },
   whenFilterByCluster:(cluster) => {

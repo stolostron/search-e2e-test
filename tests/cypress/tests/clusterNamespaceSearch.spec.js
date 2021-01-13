@@ -7,11 +7,11 @@
 import { clusterNamespace } from '../views/clusterNamespaceSearch'
 import { squad } from '../views/search'
 
-const quaryDefaultNamespaceName = "default namespace search"
-const quaryDefaultNamespaceDesc = "this is searching that each cluser should have default namespace"
+const queryDefaultNamespaceName = "default namespace search"
+const queryDefaultNamespaceDesc = "this is searching that each cluster should have default namespace"
 
-const quaryOcmaNamespaceName = "open-cluster-management-agent search"
-const quaryOcmaNamespaceDesc = "this is searching that each cluser should have open-cluster-management-agent"
+const queryOcmaNamespaceName = "open-cluster-management-agent search"
+const queryOcmaNamespaceDesc = "this is searching that each cluster should have open-cluster-management-agent"
 
 describe('Search: Search and validate all clusters have default namespace', function(){
 
@@ -32,14 +32,14 @@ describe('Search: Search and validate all clusters have default namespace', func
   })
 
   it(`[P2][Sev2][${squad}] should be able to save current search`, function(){
-    clusterNamespace.saveClusterNamespaceSearch({"namespace": "default" }, quaryDefaultNamespaceName, quaryDefaultNamespaceDesc)
-    clusterNamespace.saveClusterNamespaceSearch({"kind": "namespace","name" : "open-cluster-management-agent" }, quaryOcmaNamespaceName, quaryOcmaNamespaceDesc)
+    clusterNamespace.saveClusterNamespaceSearch({"namespace": "default" }, queryDefaultNamespaceName, queryDefaultNamespaceDesc)
+    clusterNamespace.saveClusterNamespaceSearch({"kind": "namespace","name" : "open-cluster-management-agent" }, queryOcmaNamespaceName, queryOcmaNamespaceDesc)
   })
 
   it(`[P2][Sev2][${squad}] should be able to find the saved search after logout and re-login`, function(){
     cy.logout()
     cy.login()
-    clusterNamespace.getSavedSearch(quaryDefaultNamespaceName)
-    clusterNamespace.getSavedSearch(quaryOcmaNamespaceName)
+    clusterNamespace.getSavedSearch(queryDefaultNamespaceName)
+    clusterNamespace.getSavedSearch(queryOcmaNamespaceName)
   })
 })
