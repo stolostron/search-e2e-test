@@ -8,7 +8,7 @@
 import { squad } from '../config'
 import { welcomePage, leftNav, userMenu } from '../views/welcome'
 
-describe('Search: Welcome page', function () {
+describe('Welcome page', function () {
     before(function () {
         cy.login()
         welcomePage.whenGoToWelcomePage()
@@ -22,30 +22,53 @@ describe('Search: Welcome page', function () {
         welcomePage.shouldExist()
     })
 
-    it(`[P3][Sev3][${squad}] should be validated for the links on main page`, function () {
+    it(`[P3][Sev3][${squad}] validate links on Welcome page`, function () {
         welcomePage.validateSvcs()
         welcomePage.validateConnect()
     })
 
-    it(`[P3][Sev3][${squad}] should be validated for the menu items on left nav bar`, function () {
-        leftNav.openMenu()
-        leftNav.goToHome()
-        leftNav.goToOverview()
-        leftNav.goToTopology()
-        leftNav.goToClusters()
-        leftNav.goToBMAssets()
-        leftNav.goToApplications()
-        leftNav.goToGRC()
+    describe(`[P3][Sev3][${squad}] validate navigation from left hamburger menu`, () => {
+
+        it(`should validate left navigation`, () => {
+            leftNav.openMenu()
+        })
+
+        it(`should navigate to Home page`, () => {
+            leftNav.goToHome()
+        })
+        it(`should navigate to Overview page`, () => {
+            leftNav.goToOverview()
+        })
+
+        it(`should navigate to Clusters page`, () => {
+            leftNav.goToClusters()
+        })
+
+        it(`should navigate to Bare metal assets page`, () => {
+            leftNav.goToBMAssets()
+        })
+
+        it(`should navigate to Applications page`, () => {
+            leftNav.goToApplications()
+        })
+
+        it(`should navigate to GRC page`, () => {
+            leftNav.goToGRC()
+        })
     })
 
-    /* Skipping this test because it's intermittently becoming unresponsive and causing the canaries to fail.
-    it('should be validated for the nav icons on the header', function () {
-        userMenu.openApps()
-        userMenu.openSearch()
-        userMenu.openResources()
-        userMenu.openTerminal()
-        userMenu.openInfo()
-        userMenu.openUser()
+    describe(`[P3][Sev3][${squad}] validate navigation from header icons`, () => {
+        it(`should navigate to Search page`, () => {
+            userMenu.openSearch()
+        })
+
+        /* FIXME: Skipping these test because it's causing intermittent canaries to fails.
+            userMenu.openApps()
+            userMenu.openSearch()
+            userMenu.openResources()
+            userMenu.openTerminal()
+            userMenu.openInfo()
+            userMenu.openUser()
+        */
     })
-    */
 })
