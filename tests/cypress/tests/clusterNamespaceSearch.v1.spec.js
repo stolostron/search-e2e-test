@@ -37,8 +37,6 @@ describe('Search (old UI): Search and validate all clusters have default namespa
   })
 
   it(`[P2][Sev2][${squad}] should be able to find the saved search after logout and re-login`, function(){
-    cy.logout()
-    cy.login()
     clusterNamespace.getSavedSearch(queryDefaultNamespaceName)
     clusterNamespace.getSavedSearch(queryOcmaNamespaceName)
   })
