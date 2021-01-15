@@ -13,7 +13,7 @@ const queryDefaultNamespaceDesc = "this is searching that each cluster should ha
 const queryOcmaNamespaceName = "open-cluster-management-agent search"
 const queryOcmaNamespaceDesc = "this is searching that each cluster should have open-cluster-management-agent"
 
-describe("Search: Search and validate all clusters have default namespace", function(){
+describe("Search: Saved searches", function(){
 
   before(function() {
     cy.login()
