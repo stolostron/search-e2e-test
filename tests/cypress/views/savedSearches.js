@@ -51,7 +51,7 @@ export const savedSearches = {
   getSavedSearch: (queryName) => {
     searchPage.whenGoToSearchPage()
     cy.get('.pf-c-title.pf-m-md', {timeout: 20000}).contains('Saved searches').should('exist')
-    cy.get('button.pf-c-dropdown__toggle.pf-m-plain', {timeout: 20000}).contains('Saved searches').should('exist').click({force: true})
+    cy.get('button.pf-c-dropdown__toggle', {timeout: 20000}).contains('Saved searches').should('exist').click({force: true})
     cy.get('ul.pf-c-dropdown__menu.pf-m-align-right', {timeout: 20000}).contains(queryName).click()
   },
 
