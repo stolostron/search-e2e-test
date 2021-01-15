@@ -7,7 +7,7 @@
 
 import { searchPage, searchBar } from './search'
 
-export const clusterNamespace = {
+export const savedSearches = {
   validateClusterNamespace: (filterOptions, extraCluster) => {
 
     //get managed clusters count
