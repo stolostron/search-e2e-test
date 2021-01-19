@@ -30,7 +30,7 @@ describe('Search API: Verify access:', () => {
 
         // Temporary workaround. TODO: Get SSL cert from cluster.
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
-    }, 15000) // Timeout 15 seconds to wait for route to get created.
+    })
 
     // Cleanup and teardown here.
     afterAll(() => {
