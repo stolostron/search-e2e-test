@@ -112,8 +112,9 @@ clusterModes.forEach((clusterMode) =>   {
         searchBar.whenFilterByKind('deployment')
         searchPage.whenGoToResourceDetailItemPage('deployment', this.namespace + '-deployment')
         deploymentDetailPage.whenScaleReplicasTo(2)
+        cy.waitUsingSLA() // WORKAROUND to wait for resource to get indexed. Better solution is to retry instead of a hard wait.
         cy.go('back')
-  
+
         searchPage.shouldFindRelationshipTile('pod', '2')
       })
 

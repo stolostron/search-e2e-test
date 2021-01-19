@@ -2,6 +2,6 @@
 
 const { getSearchApiRoute } = require('../common-lib/clusterAccess')
 
-module.exports = async () => {
+module.exports = () => {
     getSearchApiRoute()
 };

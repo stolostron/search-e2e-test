@@ -2,6 +2,6 @@
 
 const { execSync } = require('child_process');
 
-module.exports = async () => {
+module.exports = () => {
     execSync(`oc delete route search-api-automation -n open-cluster-management`)
 };
