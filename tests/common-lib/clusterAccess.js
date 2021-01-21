@@ -65,8 +65,7 @@ function getPods (ns) {
   }
 
 async function deletePod (pod, ns) {
-    execSync(`oc delete pod ${pod} -n ${ns}`)
-    await sleep(5000)
+    execSync(`oc delete pod ${pod} -n ${ns} --wait=true`)
 }
 
 exports.clusterLogin = clusterLogin
