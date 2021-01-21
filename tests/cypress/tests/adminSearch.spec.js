@@ -6,14 +6,14 @@
 /// <reference types="cypress" />
 
 import { squad } from '../config'
-import { clustersPage } from '../views/clusters'
+import { cliHelper } from '../scripts/cliHelper'
 import { deploymentDetailPage } from '../views/deploymentDetailPage'
 import { podDetailPage } from '../views/podDetailPage'
 import { resourcePage } from '../views/resource'
 import { searchPage, searchBar } from '../views/search'
 
-const clusterModes = [{ label: 'Local', valueFn: () => cy.wrap('local-cluster'), },
-                      { label: 'Managed', valueFn: () => clustersPage.givenManagedCluster(), skip: true }];  //FIXME Jorge - Temporarily disabled to break down migration into smaller PRs
+const clusterModes = [{ label: 'Local', valueFn: () => cy.wrap('local-cluster'), skip: false },
+                      { label: 'Managed', valueFn: () => cliHelper.getTargetManagedCluster(), skip: false }];
 
 clusterModes.forEach((clusterMode) =>   {
 

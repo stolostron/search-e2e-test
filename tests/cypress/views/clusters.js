@@ -5,14 +5,8 @@
 
 /// <reference types="cypress" />
 
-export const clustersPage = {
-  givenManagedCluster: () => {
-    cy.visit('/multicloud/clusters');
 
-    return cy.contains('table.resource-table th', 'Name', {timeout: 6000})
-             .invoke('index')
-             .then((index) => cy.get('table.resource-table tbody tr').filter(':not(:contains("local-cluster"))').filter(':not(:contains("console-ui-test-"))').eq(0).get('td').eq(index).invoke('text'));
-  },
+export const clustersPage = {
   shouldExist: () => {
     cy.get('.pf-c-title').should('contain', 'Cluster management')
   }
