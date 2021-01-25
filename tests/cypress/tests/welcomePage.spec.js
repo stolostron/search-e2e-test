@@ -30,7 +30,7 @@ describe('Welcome page', function () {
     
     // Validate left navigation
     it(`[P3][Sev3][${squad}] should open left navigation`, () => {
-        leftNav.openMenu()
+        leftNav.validateMenu()
     })
 
     it(`[P3][Sev3][${squad}] using left navigation - should navigate to Home page`, () => {

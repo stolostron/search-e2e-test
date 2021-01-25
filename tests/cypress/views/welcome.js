@@ -135,45 +135,49 @@ export const leftNav = {
     openMenu: () => {
         cy.get('.hamburger-btn').click()
         cy.get('#left-nav li').should('be.visible').and('have.length', 5)
+    },
+    validateMenu: () => {
+        cy.get('.hamburger-btn').click()
+        cy.get('#left-nav li').should('be.visible').and('have.length', 5)
         cy.get('.hamburger-btn').click()
         cy.get('#left-nav').should('not.exist')
     },
     goToHome: () => {
-        cy.get('.hamburger-btn').click()
+        leftNav.openMenu()
         cy.get('#left-nav').contains('Home').click()
         welcomePage.shouldExist()
     },
     goToOverview: () => {
-        cy.get('.hamburger-btn').click()
+        leftNav.openMenu()
         cy.get('#left-nav').contains('Observe environments').trigger('mouseover').wait(100)
         cy.get('#secondary-nav').contains('Overview').click().wait(100)
         overviewPage.shouldExist()
     },
     goToTopology: () => {
-        cy.get('.hamburger-btn').click()
+        leftNav.openMenu()
         cy.get('#left-nav').contains('Observe environments').trigger('mouseover').wait(100)
         cy.get('#secondary-nav').contains('Topology').click().wait(100)
         topologyPage.shouldExist()
     },
     goToClusters: () => {
-        cy.get('.hamburger-btn').click()
+        leftNav.openMenu()
         cy.get('#left-nav').contains('Automate infrastructure').trigger('mouseover').wait(100)
         cy.get('#secondary-nav').contains('Clusters').click().wait(100)
         clustersPage.shouldExist()
     },
     goToBMAssets: () => {
-        cy.get('.hamburger-btn').click()
+        leftNav.openMenu()
         cy.get('#left-nav').contains('Automate infrastructure').trigger('mouseover').wait(100)
         cy.get('#secondary-nav').contains('Bare metal assets').click().wait(100)
         bmAssetPage.shouldExist()
     },
     goToApplications: () => {
-        cy.get('.hamburger-btn').click()
+        leftNav.openMenu()
         cy.get('#left-nav').contains('Manage applications').click()
         applicationPage.shouldExist()
     },
     goToGRC: () => {
-        cy.get('.hamburger-btn').click()
+        leftNav.openMenu()
         cy.get('#left-nav').contains('Govern risk').click()
         grcPage.shouldExist()
     }
