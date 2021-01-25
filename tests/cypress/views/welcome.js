@@ -145,26 +145,26 @@ export const leftNav = {
     },
     goToOverview: () => {
         cy.get('.hamburger-btn').click()
-        cy.get('#left-nav').contains('Observe environments').trigger('mouseover')
-        cy.get('#secondary-nav').contains('Overview').click()
+        cy.get('#left-nav').contains('Observe environments').trigger('mouseover').wait(100)
+        cy.get('#secondary-nav').contains('Overview').click().wait(100)
         overviewPage.shouldExist()
     },
     goToTopology: () => {
         cy.get('.hamburger-btn').click()
-        cy.get('#left-nav').contains('Observe environments').trigger('mouseover')
-        cy.get('#secondary-nav').contains('Topology').click()
+        cy.get('#left-nav').contains('Observe environments').trigger('mouseover').wait(100)
+        cy.get('#secondary-nav').contains('Topology').click().wait(100)
         topologyPage.shouldExist()
     },
     goToClusters: () => {
         cy.get('.hamburger-btn').click()
-        cy.get('#left-nav').contains('Automate infrastructure').trigger('mouseover')
-        cy.get('#secondary-nav').contains('Clusters').click()
+        cy.get('#left-nav').contains('Automate infrastructure').trigger('mouseover').wait(100)
+        cy.get('#secondary-nav').contains('Clusters').click().wait(100)
         clustersPage.shouldExist()
     },
     goToBMAssets: () => {
         cy.get('.hamburger-btn').click()
-        cy.get('#left-nav').contains('Automate infrastructure').trigger('mouseover')
-        cy.get('#secondary-nav').contains('Bare metal assets').click()
+        cy.get('#left-nav').contains('Automate infrastructure').trigger('mouseover').wait(100)
+        cy.get('#secondary-nav').contains('Bare metal assets').click().wait(100)
         bmAssetPage.shouldExist()
     },
     goToApplications: () => {
