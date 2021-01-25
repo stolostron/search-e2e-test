@@ -88,6 +88,7 @@ export const searchPage = {
   },
   shouldBeResourceDetailItemCreatedFewSecondsAgo: (resource, name) => {
     cy.reloadUntil(() => {
+      cy.wait(500)
       searchPage.shouldLoadResults()
       return cy.ifContains('td', SEARCH_MESSAGES_FEW_SECONDS_AGO)
     })
