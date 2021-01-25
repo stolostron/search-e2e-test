@@ -6,7 +6,7 @@
 function install_aws_cli() {
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
     unzip -q -o awscliv2.zip
-    ./aws/install -i ./aws-cli -b /home/travis/bin
+    sudo ./aws/install -i ./aws-cli -b /home/travis/bin
 
     echo "Validate AWS cli install running [ /home/travis/bin/aws --version ]"
     /home/travis/bin/aws --version
