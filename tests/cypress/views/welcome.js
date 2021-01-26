@@ -6,7 +6,6 @@
 /// <reference types="cypress" />
 
 import { clustersPage } from '../views/clusters'
-// import { searchPage } from '../views/search'
 
 var apiUrl =
     Cypress.config().baseUrl.replace("multicloud-console.apps", "api") + ":6443";
@@ -134,6 +133,7 @@ export const resourcePage = {
 export const leftNav = {
     openMenu: () => {
         cy.get('.hamburger-btn').click()
+        cy.get('.left-nav transition-enter-active').should('not.exist') // Animation has finished.
         cy.get('#left-nav li').should('be.visible').and('have.length', 5)
     },
     validateMenu: () => {
@@ -158,9 +158,10 @@ export const leftNav = {
         cy.get('#left-nav').contains('Automate infrastructure').trigger('mouseover')
         cy.get('#secondary-nav').contains('Clusters').click()
         clustersPage.shouldExist()
-        cy.wait(2000) // WORKAROUND: Hopping this will help with tests hanging around this step.
     },
     goToBMAssets: () => {
+        // cy.wait(2000)
+        welcomePage.whenGoToWelcomePage() // WORKAROUND: This step not required, but I'm hopping this will help with tests hanging around this step.
         leftNav.openMenu()
         cy.get('#left-nav').contains('Automate infrastructure').trigger('mouseover')
         cy.get('#secondary-nav').contains('Bare metal assets').click()
