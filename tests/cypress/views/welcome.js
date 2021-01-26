@@ -160,7 +160,6 @@ export const leftNav = {
         clustersPage.shouldExist()
     },
     goToBMAssets: () => {
-        // cy.wait(2000)
         welcomePage.whenGoToWelcomePage() // WORKAROUND: This step not required, but I'm hopping this will help with tests hanging around this step.
         leftNav.openMenu()
         cy.get('#left-nav').contains('Automate infrastructure').trigger('mouseover')
@@ -168,6 +167,7 @@ export const leftNav = {
         bmAssetPage.shouldExist()
     },
     goToApplications: () => {
+        welcomePage.whenGoToWelcomePage() // WORKAROUND: This step not required, but I'm hopping this will help with tests hanging around this step.
         leftNav.openMenu()
         cy.get('#left-nav').contains('Manage applications').click()
         applicationPage.shouldExist()
