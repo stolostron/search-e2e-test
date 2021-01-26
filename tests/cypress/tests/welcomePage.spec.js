@@ -27,48 +27,47 @@ describe('Welcome page', function () {
         welcomePage.validateConnect()
     })
 
-    describe(`[P3][Sev3][${squad}] validate navigation from left hamburger menu`, () => {
-
-        it(`should validate left navigation`, () => {
-            leftNav.openMenu()
-        })
-
-        it(`should navigate to Home page`, () => {
-            leftNav.goToHome()
-        })
-        it(`should navigate to Overview page`, () => {
-            leftNav.goToOverview()
-        })
-
-        it(`should navigate to Clusters page`, () => {
-            leftNav.goToClusters()
-        })
-
-        it(`should navigate to Bare metal assets page`, () => {
-            leftNav.goToBMAssets()
-        })
-
-        it(`should navigate to Applications page`, () => {
-            leftNav.goToApplications()
-        })
-
-        it(`should navigate to GRC page`, () => {
-            leftNav.goToGRC()
-        })
+    
+    // Validate left navigation
+    it(`[P3][Sev3][${squad}] should open left navigation`, function () {
+        leftNav.validateMenu()
     })
 
-    describe(`[P3][Sev3][${squad}] validate navigation from header icons`, () => {
-        it(`should navigate to Search page`, () => {
-            userMenu.openSearch()
-        })
-
-        /* FIXME: Skipping these test because it's causing intermittent canaries to fails.
-            userMenu.openApps()
-            userMenu.openSearch()
-            userMenu.openResources()
-            userMenu.openTerminal()
-            userMenu.openInfo()
-            userMenu.openUser()
-        */
+    it(`[P3][Sev3][${squad}] using left navigation - should navigate to Home page`, function () {
+        leftNav.goToHome()
     })
+    it(`[P3][Sev3][${squad}] using left navigation - should navigate to Overview page`, function () {
+        leftNav.goToOverview()
+    })
+
+    it(`[P3][Sev3][${squad}] using left navigation - should navigate to Clusters page`, function () {
+        leftNav.goToClusters()
+    })
+
+    it(`[P3][Sev3][${squad}] using left navigation - should navigate to Bare metal assets page`, function () {
+        leftNav.goToBMAssets()
+    })
+
+    it(`[P3][Sev3][${squad}] using left navigation - should navigate to Applications page`, function () {
+        leftNav.goToApplications()
+    })
+
+    it(`[P3][Sev3][${squad}] using left navigation - should navigate to GRC page`, function () {
+        leftNav.goToGRC()
+    })
+
+
+    // Validate navigation from header icons
+    it(`[P3][Sev3][${squad}] using header icons - should navigate to Search page`, function () {
+        userMenu.openSearch()
+    })
+
+    /* FIXME: Skipping these test because it's causing intermittent canaries to fails.
+        userMenu.openApps()
+        userMenu.openResources()
+        userMenu.openTerminal()
+        userMenu.openInfo()
+        userMenu.openUser()
+    */
+
 })

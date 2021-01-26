@@ -6,7 +6,6 @@
 /// <reference types="cypress" />
 
 import { clustersPage } from '../views/clusters'
-// import { searchPage } from '../views/search'
 
 var apiUrl =
     Cypress.config().baseUrl.replace("multicloud-console.apps", "api") + ":6443";
@@ -101,27 +100,21 @@ export const searchPage = {
     }
 }
 
-export const topologyPage = {
-    shouldExist: () => {
-        cy.get('.bx--detail-page-header-title').should('contain', 'Topology')
-    }
-}
-
 export const bmAssetPage = {
     shouldExist: () => {
-        cy.get('.pf-c-title').should('contain', 'Bare metal assets')
+        cy.get('.pf-c-page').should('contain', 'Bare metal assets')
     }
 }
 
 export const applicationPage = {
     shouldExist: () => {
-        cy.get('.bx--detail-page-header-title').should('contain', 'Applications')
+        cy.get('.secondary-header', {timeout: 10000 }).should('contain', 'Applications')
     }
 }
 
 export const grcPage = {
     shouldExist: () => {
-        cy.get('.bx--detail-page-header-title').should('contain', 'Governance and risk')
+        cy.get('.secondary-header', {timeout: 10000 }).should('contain', 'Governance and risk')
     }
 }
 
@@ -134,46 +127,45 @@ export const resourcePage = {
 export const leftNav = {
     openMenu: () => {
         cy.get('.hamburger-btn').click()
+        cy.get('.transition-enter-active').should('not.exist').wait(500) // Animation has finished.
+        cy.get('#left-nav li').should('be.visible').and('have.length', 5)
+    },
+    validateMenu: () => {
+        cy.get('.hamburger-btn').click()
         cy.get('#left-nav li').should('be.visible').and('have.length', 5)
         cy.get('.hamburger-btn').click()
         cy.get('#left-nav').should('not.exist')
     },
     goToHome: () => {
-        cy.get('.hamburger-btn').click()
+        leftNav.openMenu()
         cy.get('#left-nav').contains('Home').click()
         welcomePage.shouldExist()
     },
     goToOverview: () => {
-        cy.get('.hamburger-btn').click()
+        leftNav.openMenu()
         cy.get('#left-nav').contains('Observe environments').trigger('mouseover')
         cy.get('#secondary-nav').contains('Overview').click()
         overviewPage.shouldExist()
     },
-    goToTopology: () => {
-        cy.get('.hamburger-btn').click()
-        cy.get('#left-nav').contains('Observe environments').trigger('mouseover')
-        cy.get('#secondary-nav').contains('Topology').click()
-        topologyPage.shouldExist()
-    },
     goToClusters: () => {
-        cy.get('.hamburger-btn').click()
+        leftNav.openMenu()
         cy.get('#left-nav').contains('Automate infrastructure').trigger('mouseover')
         cy.get('#secondary-nav').contains('Clusters').click()
         clustersPage.shouldExist()
     },
     goToBMAssets: () => {
-        cy.get('.hamburger-btn').click()
+        leftNav.openMenu()
         cy.get('#left-nav').contains('Automate infrastructure').trigger('mouseover')
         cy.get('#secondary-nav').contains('Bare metal assets').click()
         bmAssetPage.shouldExist()
     },
     goToApplications: () => {
-        cy.get('.hamburger-btn').click()
+        leftNav.openMenu()
         cy.get('#left-nav').contains('Manage applications').click()
         applicationPage.shouldExist()
     },
     goToGRC: () => {
-        cy.get('.hamburger-btn').click()
+        leftNav.openMenu()
         cy.get('#left-nav').contains('Govern risk').click()
         grcPage.shouldExist()
     }

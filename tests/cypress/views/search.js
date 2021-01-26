@@ -40,7 +40,7 @@ export const searchPage = {
     searchBar.whenFilterByName(namespace)
     searchPage.shouldLoadResults()
     if (ignoreIfDoesNotExist == true) {
-      cy.ifNotContains('.page-content-container', SEARCH_MESSAGES_NO_RESULTS, deleteFn)
+      cy.ifNotContains('.pf-c-alert__title', SEARCH_MESSAGES_NO_RESULTS, deleteFn)
     } else {
       deleteFn()
     }
@@ -50,12 +50,10 @@ export const searchPage = {
 
   whenReloadUntilFindResults: (options) => {
     cy.reloadUntil(async() => {
-      // cy.get('.pf-c-spinner', { timeout: 30000 }).should('not.exist')
       cy.get('.pf-c-table', { timeout: 30000 }).should('exist')
     }, options)
   },
  
-  // shouldLoadResults:() => cy.waitUntilNotContains('.pf-c-spinner', { timeout: 60000, interval: 1000 }).should('not.exist'),
   shouldLoadResults:() => cy.get('.pf-c-spinner', { timeout: 30000 }).should('not.exist'),
 
   shouldLoad:() => {
@@ -88,6 +86,7 @@ export const searchPage = {
   },
   shouldBeResourceDetailItemCreatedFewSecondsAgo: (resource, name) => {
     cy.reloadUntil(() => {
+      cy.wait(500)
       searchPage.shouldLoadResults()
       return cy.ifContains('td', SEARCH_MESSAGES_FEW_SECONDS_AGO)
     })
