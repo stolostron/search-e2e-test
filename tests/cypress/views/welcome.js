@@ -100,15 +100,9 @@ export const searchPage = {
     }
 }
 
-export const topologyPage = {
-    shouldExist: () => {
-        cy.get('.bx--detail-page-header-title').should('contain', 'Topology')
-    }
-}
-
 export const bmAssetPage = {
     shouldExist: () => {
-        cy.get('.pf-c-title').should('contain', 'Bare metal assets')
+        cy.get('.pf-c-page').should('contain', 'Bare metal assets')
     }
 }
 
@@ -160,14 +154,12 @@ export const leftNav = {
         clustersPage.shouldExist()
     },
     goToBMAssets: () => {
-        welcomePage.whenGoToWelcomePage() // WORKAROUND: This step not required, but I'm hopping this will help with tests hanging around this step.
         leftNav.openMenu()
         cy.get('#left-nav').contains('Automate infrastructure').trigger('mouseover')
         cy.get('#secondary-nav').contains('Bare metal assets').click()
         bmAssetPage.shouldExist()
     },
     goToApplications: () => {
-        welcomePage.whenGoToWelcomePage() // WORKAROUND: This step not required, but I'm hopping this will help with tests hanging around this step.
         leftNav.openMenu()
         cy.get('#left-nav').contains('Manage applications').click()
         applicationPage.shouldExist()
