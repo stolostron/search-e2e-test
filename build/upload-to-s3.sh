@@ -22,5 +22,5 @@ function upload_s3() {
     install_aws_cli
     echo "Uploading files to AWS S3 bucket.  search-e2e-test/travis-${TRAVIS_BUILD_ID}"  
 
-    sudo ./home/travis/bin/aws s3 sync ./search-test-results s3://search-e2e-results/travis-${TRAVIS_BUILD_ID}
+    sudo home/travis/bin/aws s3 sync ./search-test-results s3://search-e2e-results/travis-${TRAVIS_BUILD_ID}
 }
