@@ -40,12 +40,12 @@ describe('Welcome page', function () {
         leftNav.goToOverview()
     })
 
-    it(`[P3][Sev3][${squad}] using left navigation - should navigate to Clusters page`, function () {
-        leftNav.goToClusters()
-    })
-
     it(`[P3][Sev3][${squad}] using left navigation - should navigate to Bare metal assets page`, function () {
         leftNav.goToBMAssets()
+    })
+
+    it(`[P3][Sev3][${squad}] using left navigation - should navigate to Clusters page`, function () {
+        leftNav.goToClusters()
     })
 
     it(`[P3][Sev3][${squad}] using left navigation - should navigate to Applications page`, function () {
