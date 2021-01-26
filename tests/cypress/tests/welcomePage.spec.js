@@ -66,7 +66,6 @@ describe('Welcome page', function () {
 
     /* FIXME: Skipping these test because it's causing intermittent canaries to fails.
         userMenu.openApps()
-        userMenu.openSearch()
         userMenu.openResources()
         userMenu.openTerminal()
         userMenu.openInfo()
