@@ -44,13 +44,9 @@ describe('Welcome page', function () {
         leftNav.goToClusters()
     })
 
-    it(`[P3][Sev3][${squad}] using left navigation - should navigate to Bare metal assets page`, function () {
-        leftNav.goToBMAssets()
-    })
+    it(`[P3][Sev3][${squad}] using left navigation - should navigate to Bare metal assets page`, leftNav.goToBMAssets)
 
-    it(`[P3][Sev3][${squad}] using left navigation - should navigate to Applications page`, function () {
-        leftNav.goToApplications()
-    })
+    it(`[P3][Sev3][${squad}] using left navigation - should navigate to Applications page`, leftNav.goToApplications)
 
     it(`[P3][Sev3][${squad}] using left navigation - should navigate to GRC page`, function () {
         leftNav.goToGRC()
@@ -58,9 +54,7 @@ describe('Welcome page', function () {
 
 
     // Validate navigation from header icons
-    it(`[P3][Sev3][${squad}] using header icons - should navigate to Search page`, function () {
-        userMenu.openSearch()
-    })
+    it(`[P3][Sev3][${squad}] using header icons - should navigate to Search page`, userMenu.openSearch)
 
     /* FIXME: Skipping these test because it's causing intermittent canaries to fails.
         userMenu.openApps()
