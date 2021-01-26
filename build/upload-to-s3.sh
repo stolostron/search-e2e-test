@@ -9,9 +9,9 @@ function install_aws_cli() {
     sudo ./aws/install -i ./aws-cli -b /home/travis/bin
 
     echo "Validate AWS cli install running [ sudo /home/travis/bin/aws --version ]"
-    sudo /home/travis/bin/aws --version
-    echo " >> ls ./aws-cli/v2/current"
-    ls aws-cli/v2/current
+    sudo ./aws-cli/v2/current/bin/aws --version
+    echo " >> ls ./aws-cli/v2/current/bin"
+    ls aws-cli/v2/current/bin
     echo " >> ls -la /home/travis/bin"
     ls -la /home/travis/bin
 }
@@ -20,5 +20,5 @@ function install_aws_cli() {
 function upload_s3() {
     echo "Uploading files to AWS S3 bucket.  search-e2e-test/travis-${TRAVIS_BUILD_ID}"  
 
-    sudo home/travis/bin/aws s3 sync ./search-test-results s3://search-e2e-results/travis-${TRAVIS_BUILD_ID}
+    ./aws-cli/v2/current/bin/aws s3 sync ./search-test-results s3://search-e2e-results/travis-${TRAVIS_BUILD_ID}
 }
