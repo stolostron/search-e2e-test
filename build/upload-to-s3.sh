@@ -10,6 +10,12 @@ function install_aws_cli() {
 
     echo "Validate AWS cli install running [ /home/travis/bin/aws --version ]"
     /home/travis/bin/aws --version
+    echo " >> ls /home"
+    ls /home
+    echo " >> ls /home/travis"
+    ls /home/travis
+    echo " >> ls /home/travis/bin"
+    ls /home/travis/bin
 }
 
 # copies the test results to the search-e2e-test S3 bucket
