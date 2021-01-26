@@ -8,7 +8,7 @@ make run-test-image-pr
 echo "Uploading test results to AWS S3 bucket."
 echo "e2e-test.sh >>> pwd:"
 pwd
-sudo source ./build/upload-to-s3.sh
+source ./build/upload-to-s3.sh
 sudo install_aws_cli
 sudo upload_s3
 
