@@ -55,8 +55,8 @@ if [[ "$LIVE_MODE" == true ]]; then
   HEADLESS=""
 fi
 
-section_title "Running Search API tests."
-npm run test:api
+# section_title "Running Search API tests."
+# npm run test:api
 
 
 section_title "Running Search UI tests."

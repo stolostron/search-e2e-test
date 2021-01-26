@@ -1,5 +1,5 @@
 {
-  "testFiles": "**/*.spec.js",
+  "testFiles": "**/welcomePage.spec.js",
   "chromeWebSecurity": false,
   "defaultCommandTimeout": 10000,
   "integrationFolder": "tests/cypress/tests",
