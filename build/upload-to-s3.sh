@@ -12,8 +12,9 @@ function install_aws_cli() {
     sudo ./aws-cli/v2/current/bin/aws --version
     echo " >> ls ./aws-cli/v2/current/bin"
     ls aws-cli/v2/current/bin
-    echo " >> ls -la /home/travis/bin"
-    ls -la /home/travis/bin
+
+    echo "Printing PATH"
+    echo $PATH
 }
 
 # copies the test results to the search-e2e-test S3 bucket
