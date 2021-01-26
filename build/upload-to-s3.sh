@@ -10,6 +10,8 @@ function install_aws_cli() {
 
     echo "Validate AWS cli install running [ /home/travis/bin/aws --version ]"
     /home/travis/bin/aws --version
+    echo " >> ls ./aws-cli"
+    ls aws-cli
     echo " >> ls /home"
     ls /home
     echo " >> ls /home/travis"
@@ -23,5 +25,5 @@ function upload_s3() {
     install_aws_cli
     echo "Uploading files to AWS S3 bucket.  search-e2e-test/travis-${TRAVIS_BUILD_ID}"  
 
-    /home/travis/bin/aws s3 sync ./search-test-results s3://search-e2e-results/travis-${TRAVIS_BUILD_ID}
+    ./aws-cli/aws s3 sync ./search-test-results s3://search-e2e-results/travis-${TRAVIS_BUILD_ID}
 }

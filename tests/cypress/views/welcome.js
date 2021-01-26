@@ -149,26 +149,21 @@ export const leftNav = {
     },
     goToOverview: () => {
         leftNav.openMenu()
-        cy.get('#left-nav').contains('Observe environments').trigger('mouseover').wait(100)
-        cy.get('#secondary-nav').contains('Overview').click().wait(100)
+        cy.get('#left-nav').contains('Observe environments').trigger('mouseover')
+        cy.get('#secondary-nav').contains('Overview').click()
         overviewPage.shouldExist()
-    },
-    goToTopology: () => {
-        leftNav.openMenu()
-        cy.get('#left-nav').contains('Observe environments').trigger('mouseover').wait(100)
-        cy.get('#secondary-nav').contains('Topology').click().wait(100)
-        topologyPage.shouldExist()
     },
     goToClusters: () => {
         leftNav.openMenu()
-        cy.get('#left-nav').contains('Automate infrastructure').trigger('mouseover').wait(100)
-        cy.get('#secondary-nav').contains('Clusters').click().wait(100)
+        cy.get('#left-nav').contains('Automate infrastructure').trigger('mouseover')
+        cy.get('#secondary-nav').contains('Clusters').click()
         clustersPage.shouldExist()
+        cy.wait(2000) // WORKAROUND: Hopping this will help with tests hanging around this step.
     },
     goToBMAssets: () => {
         leftNav.openMenu()
-        cy.get('#left-nav').contains('Automate infrastructure').trigger('mouseover').wait(100)
-        cy.get('#secondary-nav').contains('Bare metal assets').click().wait(100)
+        cy.get('#left-nav').contains('Automate infrastructure').trigger('mouseover')
+        cy.get('#secondary-nav').contains('Bare metal assets').click()
         bmAssetPage.shouldExist()
     },
     goToApplications: () => {
