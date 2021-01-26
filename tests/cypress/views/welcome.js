@@ -108,13 +108,13 @@ export const bmAssetPage = {
 
 export const applicationPage = {
     shouldExist: () => {
-        cy.get('.bx--detail-page-header', {timeout: 15000 }).should('contain', 'Applications')
+        cy.get('.secondary-header', {timeout: 10000 }).should('contain', 'Applications')
     }
 }
 
 export const grcPage = {
     shouldExist: () => {
-        cy.get('.bx--detail-page-header', {timeout: 15000 }).should('contain', 'Governance and risk')
+        cy.get('.secondary-header', {timeout: 10000 }).should('contain', 'Governance and risk')
     }
 }
 
