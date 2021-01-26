@@ -56,8 +56,7 @@ clusterModes.forEach((clusterMode) =>   {
       resourcePage.whenGoToResourcePage()
         resourcePage.whenSelectTargetCluster(this.clusterName)
         resourcePage.whenCreateDeployment(this.namespace, this.namespace + '-deployment', 'openshift/hello-openshift')
-        // FIXME Jorge - WORKAROUND, we shouldn't need to logout to see new resources. Potential product bug to investigate.
-        cy.wait(5000)
+        cy.wait(5000) // WORKAROUND, we shouldn't need to logout to see new resources. Potential product bug to investigate.
         cy.logout()
         cy.login() 
     })

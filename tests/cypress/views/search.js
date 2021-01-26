@@ -40,7 +40,7 @@ export const searchPage = {
     searchBar.whenFilterByName(namespace)
     searchPage.shouldLoadResults()
     if (ignoreIfDoesNotExist == true) {
-      cy.ifNotContains('.page-content-container', SEARCH_MESSAGES_NO_RESULTS, deleteFn)
+      cy.ifNotContains('.pf-c-alert__title', SEARCH_MESSAGES_NO_RESULTS, deleteFn)
     } else {
       deleteFn()
     }
