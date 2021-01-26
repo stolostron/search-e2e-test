@@ -44,8 +44,6 @@ describe('Welcome page', function () {
         leftNav.goToClusters()
     })
 
-    // FIXME: This test is causing travis to hang. Disabeling until we find a solution.
-    //
     it(`[P3][Sev3][${squad}] using left navigation - should navigate to Bare metal assets page`, function () {
         leftNav.goToBMAssets()
     })
