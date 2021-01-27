@@ -154,15 +154,10 @@ export const leftNav = {
         clustersPage.shouldExist()
     },
     goToBMAssets: () => {
-        cy.screenshot('debug_goToBMAssets_1')
         leftNav.openMenu()
-        cy.screenshot('debug_goToBMAssets_2')
         cy.get('#left-nav').contains('Automate infrastructure').trigger('mouseover')
-        cy.screenshot('debug_goToBMAssets_3')
         cy.get('#secondary-nav').contains('Bare metal assets').click()
-        cy.screenshot('debug_goToBMAssets_4')
         bmAssetPage.shouldExist()
-        cy.screenshot('debug_goToBMAssets_5')
     },
     goToApplications: () => {
         leftNav.openMenu()
