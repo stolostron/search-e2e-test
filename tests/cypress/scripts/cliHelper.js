@@ -17,5 +17,17 @@ export const cliHelper = {
 
         return cy.wrap(targetCluster)
       })
+    },
+    createNamespace: (name) => {
+      cy.exec(`oc create namespace ${name}`)
+    },
+    deleteNamespace: (name) => {
+      cy.exec(`oc delete namespace ${name}`)
+    },
+    createApplication: (appName, namespace) => {
+      cy.readFile('tests/cypress/templates/application.yaml').then((cfg) => {
+        let b64Cfg = btoa(cfg.replaceAll('APPNAME', appName).replaceAll('NAMESPACE', namespace))
+        cy.exec(`echo ${b64Cfg} | base64 -d | oc apply -f -`)
+      })
     }
   }

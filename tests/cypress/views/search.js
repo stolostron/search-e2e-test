@@ -92,6 +92,25 @@ export const searchPage = {
       searchPage.shouldLoadResults()
       return cy.ifContains('td', SEARCH_MESSAGES_FEW_SECONDS_AGO)
     })
+  },
+  shouldHaveCorrectNumberOfRunningPodsInNSByCluster: (count, ns, clusterName) => {
+    searchBar.whenClearFilters()
+    searchBar.whenEnterTextInSearchBar('kind', 'pod')
+    searchBar.whenEnterTextInSearchBar('namespace', ns)
+    searchBar.whenEnterTextInSearchBar('status', 'Running')
+    searchBar.whenEnterTextInSearchBar('cluster', clusterName)
+    cy.get('.pf-c-expandable-section__toggle').contains(`Pod (${count})`)
+  },
+  shouldFindApplicationInNS: (appName, ns) => {
+    searchBar.whenClearFilters()
+    searchBar.whenEnterTextInSearchBar('kind', 'application')
+    searchBar.whenEnterTextInSearchBar('namespace', ns)
+    searchBar.whenEnterTextInSearchBar('name', appName)
+    searchPage.shouldLoadResults()
+  },
+  shouldDeleteApplicationInNS: (appName, ns) => {
+    searchPage.whenDeleteResourceDetailItem('application', appName)
+    searchPage.shouldFindNoResults()
   }
 }
 
