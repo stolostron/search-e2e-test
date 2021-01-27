@@ -27,35 +27,36 @@ describe('Welcome page', function () {
         welcomePage.validateConnect()
     })
 
-    
-    // Validate left navigation
-    it(`[P3][Sev3][${squad}] should open left navigation`, function () {
-        leftNav.validateMenu()
-    })
+    for(let i = 0; i<10; i++) {
+        // Validate left navigation
+        it(`[P3][Sev3][${squad}] should open left navigation`, function () {
+            leftNav.validateMenu()
+        })
 
-    it(`[P3][Sev3][${squad}] using left navigation - should navigate to Home page`, function () {
-        leftNav.goToHome()
-    })
-    it(`[P3][Sev3][${squad}] using left navigation - should navigate to Overview page`, function () {
-        leftNav.goToOverview()
-    })
+        it(`[P3][Sev3][${squad}] using left navigation - should navigate to Home page`, function () {
+            leftNav.goToHome()
+        })
+        it(`[P3][Sev3][${squad}] using left navigation - should navigate to Overview page`, function () {
+            leftNav.goToOverview()
+        })
 
-    it(`[P3][Sev3][${squad}] using left navigation - should navigate to Clusters page`, function () {
-        leftNav.goToClusters()
-    })
+        it(`[P3][Sev3][${squad}] using left navigation - should navigate to Clusters page`, function () {
+            leftNav.goToClusters()
+        })
 
-    it(`[P3][Sev3][${squad}] using left navigation - should navigate to Bare metal assets page`, leftNav.goToBMAssets)
+        it(`[P3][Sev3][${squad}] using left navigation - should navigate to Bare metal assets page`, leftNav.goToBMAssets)
 
-    it(`[P3][Sev3][${squad}] using left navigation - should navigate to Applications page`, leftNav.goToApplications)
+        it(`[P3][Sev3][${squad}] using left navigation - should navigate to Applications page`, leftNav.goToApplications)
 
-    it(`[P3][Sev3][${squad}] using left navigation - should navigate to GRC page`, function () {
-        leftNav.goToGRC()
-    })
+        it(`[P3][Sev3][${squad}] using left navigation - should navigate to GRC page`, function () {
+            leftNav.goToGRC()
+        })
 
 
-    // Validate navigation from header icons
-    it(`[P3][Sev3][${squad}] using header icons - should navigate to Search page`, userMenu.openSearch)
+        // Validate navigation from header icons
+        it(`[P3][Sev3][${squad}] using header icons - should navigate to Search page`, userMenu.openSearch)
 
+    }
     /* FIXME: Skipping these test because it's causing intermittent canaries to fails.
         userMenu.openApps()
         userMenu.openResources()
