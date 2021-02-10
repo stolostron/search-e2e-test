@@ -102,13 +102,13 @@ export const searchBar = {
     cy.get('#clear-all-search-tags-button').click()
   },
   whenEnterTextInSearchBar:(property, value) => {
-    cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').focus().click().type(property).wait(200)
+    cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').focus().click().type(property).wait(1) // FIXME: This is trying to recreate the problem.
     cy.get('.react-tags', {timeout: 20000}).should('exist')
     cy.get('.react-tags__search-input', {timeout: 20000}).should('exist')
-    cy.get('.react-tags__search-input', {timeout: 20000}).type(' ').wait(200)
+    cy.get('.react-tags__search-input', {timeout: 20000}).type(' ').wait(1)
     if (value && value !== null) {
       cy.get('.react-tags__search-input', {timeout: 20000}).type(value)
-      cy.get('.react-tags__search-input', {timeout: 20000}).type(' ').wait(200)
+      cy.get('.react-tags__search-input', {timeout: 20000}).type(' ').wait(1)
     }
   },
   whenFilterByCluster:(cluster) => {
