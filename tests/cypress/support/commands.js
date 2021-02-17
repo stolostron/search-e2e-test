@@ -142,5 +142,6 @@ Cypress.Commands.add('generateNamespace', () => {
 })
 
 Cypress.Commands.add('waitUsingSLA', () => {
-  return cy.wait(parseInt(Cypress.env('SERVICE_SLA'), 10) || 5000)
+  // Our SLO (goal) is to update within 5 seconds.  Setting the default SLA to 10 seconds to stabilize the tests.
+  return cy.wait(parseInt(Cypress.env('SERVICE_SLA'), 10) || 10000)
 })
