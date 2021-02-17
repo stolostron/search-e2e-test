@@ -47,6 +47,7 @@ export const resourcePage = {
   },
   shouldCreateResource: () => {
     cy.get('.bx--btn--primary').click();
+    cy.get('.bx--inline-notification__subtitle').should('not.exist')
     cy.get('.bx--inline-notification', { timeout: 30000 }).should('not.exist');
     cy.get('.react-monaco-editor-container', { timeout: 30000 }).should('not.exist');
   }
