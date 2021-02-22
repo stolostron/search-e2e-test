@@ -122,7 +122,6 @@ clusterModes.forEach((clusterMode) =>   {
         searchBar.whenFilterByKind('deployment')
         if (attempt < 1) {
           searchPage.whenDeleteResourceDetailItem('deployment', this.namespace + '-deployment')
-          status.resourceDidDelete = true
         }
         searchPage.shouldFindNoResults()
       });
@@ -132,7 +131,6 @@ clusterModes.forEach((clusterMode) =>   {
         cy.log('status', status)
         if (attempt < 1) {
           searchPage.whenDeleteNamespace(this.namespace)
-          status.resourceDidDelete = true
         }
         searchPage.shouldFindNoResults()
       });
