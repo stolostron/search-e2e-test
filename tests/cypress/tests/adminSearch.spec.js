@@ -118,13 +118,22 @@ clusterModes.forEach((clusterMode) =>   {
       })
 
       it(`[P2][Sev2][${squad}] should delete deployment`, function() {
+        const attempt = cy.state('runnable')._currentRetry
         searchBar.whenFilterByKind('deployment')
-        searchPage.whenDeleteResourceDetailItem('deployment', this.namespace + '-deployment')
+        if (attempt < 1) {
+          searchPage.whenDeleteResourceDetailItem('deployment', this.namespace + '-deployment')
+          status.resourceDidDelete = true
+        }
         searchPage.shouldFindNoResults()
       });
 
       it(`[P2][Sev2][${squad}] should delete namespace`, function() {
-        searchPage.whenDeleteNamespace(this.namespace)
+        const attempt = cy.state('runnable')._currentRetry
+        cy.log('status', status)
+        if (attempt < 1) {
+          searchPage.whenDeleteNamespace(this.namespace)
+          status.resourceDidDelete = true
+        }
         searchPage.shouldFindNoResults()
       });
     })

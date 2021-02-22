@@ -5,6 +5,7 @@
 
 /// <reference types="cypress" />
 
+import { searchBar } from "./search";
 const typeDelay = 1
 
 export const resourcePage = {
@@ -20,7 +21,7 @@ export const resourcePage = {
       .type('kind: Namespace{enter}', { delay: typeDelay })
       .type('metadata:{enter}', { delay: typeDelay })
       .type('  name: ' + namespace + '{enter}', { delay: typeDelay });
-    resourcePage.shouldCreateResource();
+    resourcePage.shouldCreateResource('namespace', namespace);
   },
   whenCreateDeployment: (namespace, name, image) => {
     // WORKAROUND: delays are needed because this cypress issue https://github.com/cypress-io/cypress/issues/5480
@@ -43,12 +44,27 @@ export const resourcePage = {
       .type('      containers:{enter}{backspace}{backspace}{backspace}', { delay: typeDelay })
       .type('        - name: ' + name + '{enter}{backspace}{backspace}{backspace}{backspace}', { delay: typeDelay })
       .type('          image: ' + image + '{enter}', { delay: typeDelay });
-    resourcePage.shouldCreateResource();
+    resourcePage.shouldCreateResource('deployment', name);
   },
-  shouldCreateResource: () => {
-    cy.get('.bx--btn--primary').click();
-    cy.get('.bx--inline-notification__subtitle').should('not.exist')
-    cy.get('.bx--inline-notification', { timeout: 30000 }).should('not.exist');
-    cy.get('.react-monaco-editor-container', { timeout: 30000 }).should('not.exist');
-  }
+  shouldCreateResource: (resource, name) => {
+    const attempt = cy.state('runnable')._currentRetry
+    cy.get('.bx--btn--primary', {timeout: 30000}).click();
+
+    if (attempt > 0) {
+      cy.get('.bx--inline-notification__subtitle', {timeout: 30000}).should('exist').contains('already exist')
+      cy.get('.bx--btn.bx--btn--secondary', {timeout: 30000}).click().wait(300)
+      cy.get('svg.clear-button', {timeout: 30000}).should('exist').click()
+      resourcePage.shouldCheckIfResourceCreated(resource, name)
+    } else {
+      cy.get('.bx--inline-notification__subtitle').should('not.exist')
+      cy.get('.bx--inline-notification', { timeout: 30000 }).should('not.exist');
+      cy.get('.react-monaco-editor-container', { timeout: 30000 }).should('not.exist');
+    }
+  },
+  shouldCheckIfResourceCreated: (property, value) => {
+    searchBar.whenFocusSearchBar()
+    searchBar.whenFilterByKind(property)
+    searchBar.whenFilterByName(value)
+    cy.get('.pf-l-gallery', {timeout: 20000}).children().wait(1000).should('have.length.greaterThan', 0)
+  },
 }

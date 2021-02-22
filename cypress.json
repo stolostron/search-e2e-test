@@ -6,6 +6,7 @@
   "ignoreTestFiles": [""],
   "fixturesFolder": "tests/cypress/fixtures",
   "pluginsFile": "tests/cypress/plugins/index.js",
+  "pageLoadTimeout": 90000,
   "numTestsKeptInMemory": 10,
   "screenshotsFolder" : "results/screenshots",
   "supportFile": "tests/cypress/support/index.js",

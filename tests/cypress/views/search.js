@@ -23,7 +23,7 @@ export const searchPage = {
       cy.get('button.pf-c-button.pf-m-secondary', { timeout: 20000 }).focus().click()
     })
   },
-  whenGetResourceTableRow:(resource, name) => {
+  whenGetResourceTableRow:(name) => {
     return cy.get('tr').filter(`:contains("${name}")`)
   },
   whenDeleteResourceDetailItem:(resource, name) => {
@@ -104,6 +104,9 @@ export const searchBar = {
   whenClearFilters:() => {
     cy.get('#clear-all-search-tags-button').click()
   },
+  whenToClearTextInSearchBar: () => {
+    cy.get('svg.clear-button', {timeout: 20000}).should('exist').wait(500).click()
+  },
   whenSuggestionsAreAvailable: () => {
     cy.get('.react-tags__suggestions ul#ReactTags', {timeout: 20000}).children().should('have.length.above', 1)
   },
@@ -120,6 +123,7 @@ export const searchBar = {
     searchBar.whenEnterTextInSearchBar('cluster', cluster)
   },
   whenFilterByClusterAndNamespace:(cluster, namespace) => {
+    searchBar.whenToClearTextInSearchBar()
     searchBar.whenFilterByCluster(cluster)
     searchBar.whenEnterTextInSearchBar('namespace', namespace)
   },
