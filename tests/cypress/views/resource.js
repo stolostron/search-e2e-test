@@ -5,6 +5,7 @@
 
 /// <reference types="cypress" />
 
+import { getState, setState } from "../support/commands";
 import { searchBar } from "./search";
 const typeDelay = 1
 
@@ -47,19 +48,18 @@ export const resourcePage = {
     resourcePage.shouldCreateResource('deployment', name);
   },
   shouldCreateResource: (resource, name) => {
-    const attempt = cy.state('runnable')._currentRetry
     cy.get('.bx--btn--primary', {timeout: 30000}).click();
-
-    if (attempt > 0) {
+    if (!getState().didResourceCreate) {
+      cy.get('.bx--inline-notification__subtitle').should('not.exist')
+      cy.get('.bx--inline-notification', { timeout: 30000 }).should('not.exist');
+      cy.get('.react-monaco-editor-container', { timeout: 30000 }).should('not.exist')
+    } else {
       cy.get('.bx--inline-notification__subtitle', {timeout: 30000}).should('exist').contains('already exist')
       cy.get('.bx--btn.bx--btn--secondary', {timeout: 30000}).click().wait(300)
       cy.get('svg.clear-button', {timeout: 30000}).should('exist').click()
       resourcePage.shouldCheckIfResourceCreated(resource, name)
-    } else {
-      cy.get('.bx--inline-notification__subtitle').should('not.exist')
-      cy.get('.bx--inline-notification', { timeout: 30000 }).should('not.exist');
-      cy.get('.react-monaco-editor-container', { timeout: 30000 }).should('not.exist');
     }
+    setState('didResourceCreate', true)
   },
   shouldCheckIfResourceCreated: (property, value) => {
     searchBar.whenFocusSearchBar()

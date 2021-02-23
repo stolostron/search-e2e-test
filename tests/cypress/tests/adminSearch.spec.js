@@ -11,18 +11,17 @@ import { deploymentDetailPage } from '../views/deploymentDetailPage'
 import { podDetailPage } from '../views/podDetailPage'
 import { resourcePage } from '../views/resource'
 import { searchPage, searchBar } from '../views/search'
+import { getState } from '../support/commands'
 
 const clusterModes = [{ label: 'Local', valueFn: () => cy.wrap('local-cluster'), skip: false },
                       { label: 'Managed', valueFn: () => cliHelper.getTargetManagedCluster(), skip: false }];
 
-clusterModes.forEach((clusterMode) =>   {
-
+clusterModes.forEach((clusterMode) => {
   if (clusterMode.skip) {
     return;
   }
 
   describe('Search: Search in ' + clusterMode.label + ' Cluster', function() {
-
     before(function() {
       cy.login()
       clusterMode.valueFn().as('clusterName')
@@ -50,6 +49,7 @@ clusterModes.forEach((clusterMode) =>   {
       resourcePage.whenGoToResourcePage()
       resourcePage.whenSelectTargetCluster(this.clusterName)
       resourcePage.whenCreateNamespace(this.namespace)
+      cy.resetState()
     })
 
     it(`[P1][Sev1][${squad}] should create deployment from create resource UI`, function() {
@@ -58,10 +58,10 @@ clusterModes.forEach((clusterMode) =>   {
         resourcePage.whenCreateDeployment(this.namespace, this.namespace + '-deployment', 'openshift/hello-openshift')
         cy.wait(5000) // WORKAROUND, we shouldn't need to logout to see new resources. Potential product bug to investigate.
         cy.logout()
-        cy.login() 
+        cy.login()
+        cy.resetState()
     })
 
-    
     describe('search resources', function() {
       
       beforeEach(function() {
@@ -105,6 +105,7 @@ clusterModes.forEach((clusterMode) =>   {
         searchBar.whenFilterByKind('pod')
         searchPage.whenDeleteResourceDetailItem('pod', this.namespace + '-deployment')
         searchPage.shouldBeResourceDetailItemCreatedFewSecondsAgo('pod', this.namespace + '-deployment')
+        cy.resetState()
       });
 
       it(`[P3][Sev3][${squad}] should scale deployment`, function() {
@@ -118,23 +119,20 @@ clusterModes.forEach((clusterMode) =>   {
       })
 
       it(`[P2][Sev2][${squad}] should delete deployment`, function() {
-        const attempt = cy.state('runnable')._currentRetry
-        cy.state('runnable')['didResourceDelete'] = false
         searchBar.whenFilterByKind('deployment')
-        if (attempt === 0 || !cy.state('runnable')['didResourceDelete']) {
+        if (!getState().didResourceDelete) {
           searchPage.whenDeleteResourceDetailItem('deployment', this.namespace + '-deployment')
         }
         searchPage.shouldFindNoResults()
+        cy.resetState()
       });
 
       it(`[P2][Sev2][${squad}] should delete namespace`, function() {
-        const attempt = cy.state('runnable')._currentRetry
-        cy.state('runnable')['didResourceDelete'] = false
-
-        if (attempt === 0 || !cy.state('runnable')['didResourceDelete']) {
+        if (!getState().didResourceDelete) {
           searchPage.whenDeleteNamespace(this.namespace)
         }
         searchPage.shouldFindNoResults()
+        cy.resetState()
       });
     })
   })
