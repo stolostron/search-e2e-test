@@ -119,8 +119,9 @@ clusterModes.forEach((clusterMode) =>   {
 
       it(`[P2][Sev2][${squad}] should delete deployment`, function() {
         const attempt = cy.state('runnable')._currentRetry
+        cy.state('runnable')['didResourceDelete'] = false
         searchBar.whenFilterByKind('deployment')
-        if (attempt < 1) {
+        if (attempt === 0 || !cy.state('runnable')['didResourceDelete']) {
           searchPage.whenDeleteResourceDetailItem('deployment', this.namespace + '-deployment')
         }
         searchPage.shouldFindNoResults()
@@ -128,8 +129,9 @@ clusterModes.forEach((clusterMode) =>   {
 
       it(`[P2][Sev2][${squad}] should delete namespace`, function() {
         const attempt = cy.state('runnable')._currentRetry
-        cy.log('status', status)
-        if (attempt < 1) {
+        cy.state('runnable')['didResourceDelete'] = false
+
+        if (attempt === 0 || !cy.state('runnable')['didResourceDelete']) {
           searchPage.whenDeleteNamespace(this.namespace)
         }
         searchPage.shouldFindNoResults()

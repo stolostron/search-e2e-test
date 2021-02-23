@@ -13,7 +13,6 @@ const SEARCH_MESSAGES_NO_RESULTS = 'No results found for the current search crit
 const SEARCH_MESSAGES_FEW_SECONDS_AGO = 'a few seconds ago'
 const SEARCH_MESSAGES_LOADING_SUGGESTIONS = 'Loading...'
 
-
 export const searchPage = {
   whenGoToSearchPage:() => cy.visit('/search'),
   
@@ -23,7 +22,7 @@ export const searchPage = {
       cy.get('button.pf-c-button.pf-m-secondary', { timeout: 20000 }).focus().click()
     })
   },
-  whenGetResourceTableRow:(name) => {
+  whenGetResourceTableRow:(resource, name) => {
     return cy.get('tr').filter(`:contains("${name}")`)
   },
   whenDeleteResourceDetailItem:(resource, name) => {
