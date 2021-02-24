@@ -11,7 +11,6 @@ import { deploymentDetailPage } from '../views/deploymentDetailPage'
 import { podDetailPage } from '../views/podDetailPage'
 import { resourcePage } from '../views/resource'
 import { searchPage, searchBar } from '../views/search'
-import { getState } from '../support/commands'
 
 const clusterModes = [{ label: 'Local', valueFn: () => cy.wrap('local-cluster'), skip: false },
                       { label: 'Managed', valueFn: () => cliHelper.getTargetManagedCluster(), skip: false }];
@@ -120,19 +119,17 @@ clusterModes.forEach((clusterMode) => {
 
       it(`[P2][Sev2][${squad}] should delete deployment`, function() {
         searchBar.whenFilterByKind('deployment')
-        if (!getState().didResourceDelete) {
-          searchPage.whenDeleteResourceDetailItem('deployment', this.namespace + '-deployment')
-        }
+        searchPage.whenDeleteResourceDetailItem('deployment', this.namespace + '-deployment')
+      });
+      it(`should validate deployment was deleted`, function() {
         searchPage.shouldFindNoResults()
-        cy.resetState()
       });
 
       it(`[P2][Sev2][${squad}] should delete namespace`, function() {
-        if (!getState().didResourceDelete) {
-          searchPage.whenDeleteNamespace(this.namespace)
-        }
+        searchPage.whenDeleteNamespace(this.namespace)
+      });
+      it(`should validate namespace was deleted`, function() {
         searchPage.shouldFindNoResults()
-        cy.resetState()
       });
     })
   })

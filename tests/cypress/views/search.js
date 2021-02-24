@@ -101,10 +101,7 @@ export const searchBar = {
     cy.get('.react-tags', {timeout: 20000}).click()
   },
   whenClearFilters:() => {
-    cy.get('#clear-all-search-tags-button').click()
-  },
-  whenToClearTextInSearchBar: () => {
-    cy.get('svg.clear-button', {timeout: 20000}).should('exist').wait(500).click()
+    cy.get('#clear-all-search-tags-button', {timeout: 20000}).should('exist').wait(500).click()
   },
   whenSuggestionsAreAvailable: () => {
     cy.get('.react-tags__suggestions ul#ReactTags', {timeout: 20000}).children().should('have.length.above', 1)
@@ -122,7 +119,7 @@ export const searchBar = {
     searchBar.whenEnterTextInSearchBar('cluster', cluster)
   },
   whenFilterByClusterAndNamespace:(cluster, namespace) => {
-    searchBar.whenToClearTextInSearchBar()
+    searchBar.whenClearFilters()
     searchBar.whenFilterByCluster(cluster)
     searchBar.whenEnterTextInSearchBar('namespace', namespace)
   },
