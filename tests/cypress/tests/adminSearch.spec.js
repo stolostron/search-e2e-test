@@ -128,7 +128,7 @@ clusterModes.forEach((clusterMode) => {
       it(`[P2][Sev2][${squad}] should delete namespace`, function() {
         searchPage.whenDeleteNamespace(this.namespace)
       });
-      it(`should validate namespace was deleted`, function() {
+      it(`[P2][Sev2][${squad}] should validate namespace was deleted`, function() {
         searchPage.shouldFindNoResults()
       });
     })
