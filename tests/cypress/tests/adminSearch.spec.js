@@ -121,7 +121,7 @@ clusterModes.forEach((clusterMode) => {
         searchBar.whenFilterByKind('deployment')
         searchPage.whenDeleteResourceDetailItem('deployment', this.namespace + '-deployment')
       });
-      it(`should validate deployment was deleted`, function() {
+      it(`[P2][Sev2][${squad}] should validate deployment was deleted`, function() {
         searchPage.shouldFindNoResults()
       });
 
