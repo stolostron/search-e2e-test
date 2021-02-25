@@ -103,19 +103,21 @@ export const searchBar = {
   whenClearFilters:() => {
     cy.get('#clear-all-search-tags-button', {timeout: 20000}).should('exist').click({force: true})
   },
-  whenSuggestionsAreAvailable: (value) => {
-    cy.get('.react-tags__suggestions ul#ReactTags', {timeout: 20000}).children().should('have.length.above', 1)
+  whenSuggestionsAreAvailable: (value, ignoreIfDoesNotExist=false) => {
+    if(!ignoreIfDoesNotExist) {
+      cy.get('.react-tags__suggestions ul#ReactTags', {timeout: 20000}).children().should('have.length.above', 1)
+    }
     cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').click().type(value)
   },
-  whenEnterTextInSearchBar:(property, value) => {
+  whenEnterTextInSearchBar:(property, value, ignoreIfDoesNotExist=false) => {
     cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').click()
-    searchBar.whenSuggestionsAreAvailable(property)
+    searchBar.whenSuggestionsAreAvailable(property, ignoreIfDoesNotExist)
 
     cy.get('.react-tags', {timeout: 20000}).should('exist')
     cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').type(' ').wait(100)
 
     if (value && value !== null) {
-      searchBar.whenSuggestionsAreAvailable(value)
+      searchBar.whenSuggestionsAreAvailable(value, ignoreIfDoesNotExist)
       cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').type(' ').wait(100)
     }
   },
@@ -126,11 +128,11 @@ export const searchBar = {
     searchBar.whenFilterByCluster(cluster)
     searchBar.whenEnterTextInSearchBar('namespace', namespace)
   },
-  whenFilterByKind:(kind) => {
-    searchBar.whenEnterTextInSearchBar('kind', kind)
+  whenFilterByKind:(kind, ignoreIfDoesNotExist=false) => {
+    searchBar.whenEnterTextInSearchBar('kind', kind, ignoreIfDoesNotExist)
   },
-  whenFilterByName:(name) => {
-    searchBar.whenEnterTextInSearchBar('name', name)
+  whenFilterByName:(name, ignoreIfDoesNotExist=false) => {
+    searchBar.whenEnterTextInSearchBar('name', name, ignoreIfDoesNotExist)
   },
   whenSelectFirstSuggestedValue:() => {
     searchBar.shouldSuggestValues()

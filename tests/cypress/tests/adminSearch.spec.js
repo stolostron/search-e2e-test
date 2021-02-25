@@ -133,8 +133,8 @@ clusterModes.forEach((clusterMode) => {
       });
 
       it(`[P2][Sev2][${squad}] should validate deployment was deleted`, function() {
-        searchBar.whenFilterByKind('deployment')
-        searchBar.whenFilterByName(this.namespace + '-deployment')
+        searchBar.whenFilterByKind('deployment', true)
+        searchBar.whenFilterByName(this.namespace + '-deployment', true)
         searchPage.shouldFindNoResults()
       });
 
