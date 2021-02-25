@@ -63,14 +63,14 @@ clusterModes.forEach((clusterMode) => {
       resourcePage.whenGoToResourcePage()
       resourcePage.whenSelectTargetCluster(this.clusterName)
       resourcePage.whenCreateDeployment(this.namespace, this.namespace + '-deployment', 'openshift/hello-openshift')
-      cy.wait(5000) // WORKAROUND, we shouldn't need to logout to see new resources. Potential product bug to investigate.
     })
 
     it(`[P1][Sev1][${squad}] should verify that deployment resource exist`, function() {
+      cy.waitUsingSLA()
       resourcePage.whenGoToResourcePage()
       resourcePage.whenSelectTargetCluster(this.clusterName)
       resourcePage.whenCreateDeployment(this.namespace, this.namespace + '-deployment', 'openshift/hello-openshift', true)
-      cy.logout()
+      cy.logout() // WORKAROUND, we shouldn't need to logout to see new resources. Potential product bug to investigate.
       cy.login()
     })
 
