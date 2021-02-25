@@ -123,7 +123,7 @@ clusterModes.forEach((clusterMode) => {
 
       it(`[P3][Sev3][${squad}] should verify that the deployment scaled`, function() {
         searchBar.whenFilterByKind('deployment')
-        searchPage.whenFilterByName(this.namespace + '-deployment')
+        searchBar.whenFilterByName(this.namespace + '-deployment')
         searchPage.shouldFindRelationshipTile('pod', '2')
       })
 
