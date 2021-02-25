@@ -15,18 +15,19 @@ import { searchPage, searchBar } from '../views/search'
 const clusterModes = [{ label: 'Local', valueFn: () => cy.wrap('local-cluster'), skip: false },
                       { label: 'Managed', valueFn: () => cliHelper.getTargetManagedCluster(), skip: false }];
 
-clusterModes.forEach((clusterMode) =>   {
-
+clusterModes.forEach((clusterMode) => {
   if (clusterMode.skip) {
     return;
   }
 
   describe('Search: Search in ' + clusterMode.label + ' Cluster', function() {
-
     before(function() {
       cy.login()
       clusterMode.valueFn().as('clusterName')
       cy.generateNamespace().as('namespace')
+    })
+
+    beforeEach(function() {
       searchPage.whenGoToSearchPage()
     })
 
@@ -52,27 +53,35 @@ clusterModes.forEach((clusterMode) =>   {
       resourcePage.whenCreateNamespace(this.namespace)
     })
 
-    it(`[P1][Sev1][${squad}] should create deployment from create resource UI`, function() {
+    it(`[P1][Sev1][${squad}] should verify that namespace already exist`, function() {
       resourcePage.whenGoToResourcePage()
-        resourcePage.whenSelectTargetCluster(this.clusterName)
-        resourcePage.whenCreateDeployment(this.namespace, this.namespace + '-deployment', 'openshift/hello-openshift')
-        cy.wait(5000) // WORKAROUND, we shouldn't need to logout to see new resources. Potential product bug to investigate.
-        cy.logout()
-        cy.login() 
+      resourcePage.whenSelectTargetCluster(this.clusterName)
+      resourcePage.whenCreateNamespace(this.namespace, true)
     })
 
-    
+    it(`[P1][Sev1][${squad}] should create deployment from create resource UI`, function() {
+      resourcePage.whenGoToResourcePage()
+      resourcePage.whenSelectTargetCluster(this.clusterName)
+      resourcePage.whenCreateDeployment(this.namespace, this.namespace + '-deployment', 'openshift/hello-openshift')
+    })
+
+    it(`[P1][Sev1][${squad}] should verify that deployment resource exist`, function() {
+      cy.waitUsingSLA()
+      resourcePage.whenGoToResourcePage()
+      resourcePage.whenSelectTargetCluster(this.clusterName)
+      resourcePage.whenCreateDeployment(this.namespace, this.namespace + '-deployment', 'openshift/hello-openshift', true)
+      cy.logout() // WORKAROUND, we shouldn't need to logout to see new resources. Potential product bug to investigate.
+      cy.login()
+    })
+
     describe('search resources', function() {
-      
       beforeEach(function() {
-        searchPage.whenGoToSearchPage()
         searchBar.whenFilterByClusterAndNamespace(this.clusterName, this.namespace)
       })
 
       after(function() {
         searchPage.whenDeleteNamespace(this.namespace, { ignoreIfDoesNotExist: true })
       })
-
 
       it(`[P3][Sev3][${squad}] should have expected count of relationships`, function() {
         searchPage.shouldLoadResults()
@@ -81,7 +90,6 @@ clusterModes.forEach((clusterMode) =>   {
         searchPage.shouldFindRelationshipTile('deployment', '1')
         searchPage.shouldFindRelationshipTile('pod', '1')
       });
-
 
       it(`[P1][Sev1][${squad}] should work kind filter for deployment`, function() {
         searchBar.whenFilterByKind('deployment')
@@ -100,7 +108,6 @@ clusterModes.forEach((clusterMode) =>   {
         // podDetailPage.shouldSeeLogs('serving on') // FIXME Jorge - Temporarily disabled to allow merging current progress.
       });
 
-
       it(`[P2][Sev2][${squad}] should delete pod`, function() {
         searchBar.whenFilterByKind('pod')
         searchPage.whenDeleteResourceDetailItem('pod', this.namespace + '-deployment')
@@ -112,19 +119,30 @@ clusterModes.forEach((clusterMode) =>   {
         searchPage.whenGoToResourceDetailItemPage('deployment', this.namespace + '-deployment')
         deploymentDetailPage.whenScaleReplicasTo(2)
         cy.waitUsingSLA() // WORKAROUND to wait for resource to get indexed. Better solution is to retry instead of a hard wait.
-        cy.go('back')
+      })
 
+      it(`[P3][Sev3][${squad}] should verify that the deployment scaled`, function() {
+        searchBar.whenFilterByKind('deployment')
+        searchBar.whenFilterByName(this.namespace + '-deployment')
         searchPage.shouldFindRelationshipTile('pod', '2')
       })
 
       it(`[P2][Sev2][${squad}] should delete deployment`, function() {
         searchBar.whenFilterByKind('deployment')
         searchPage.whenDeleteResourceDetailItem('deployment', this.namespace + '-deployment')
+      });
+
+      it(`[P2][Sev2][${squad}] should validate deployment was deleted`, function() {
+        searchBar.whenFilterByKind('deployment', true)
+        searchBar.whenFilterByName(this.namespace + '-deployment', true)
         searchPage.shouldFindNoResults()
       });
 
       it(`[P2][Sev2][${squad}] should delete namespace`, function() {
         searchPage.whenDeleteNamespace(this.namespace)
+      });
+
+      it(`[P2][Sev2][${squad}] should validate namespace was deleted`, function() {
         searchPage.shouldFindNoResults()
       });
     })

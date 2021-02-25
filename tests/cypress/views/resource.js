@@ -5,6 +5,7 @@
 
 /// <reference types="cypress" />
 
+import { searchBar } from "./search";
 const typeDelay = 1
 
 export const resourcePage = {
@@ -13,16 +14,16 @@ export const resourcePage = {
     cy.get('#create-resource-select', { timeout: 20000 }).click()
     cy.get('.bx--checkbox-wrapper input[name="' + clusterName + '"]').parent().click()
   },
-  whenCreateNamespace: (namespace) => {
+  whenCreateNamespace: (namespace, previouslyCreated=false) => {
     // WORKAROUND: delays are needed because this cypress issue https://github.com/cypress-io/cypress/issues/5480
     cy.get('.react-monaco-editor-container').click().focused().type(Cypress.platform !== 'darwin' ? '{ctrl}a' : '{meta}a')
       .type('{enter}apiVersion: v1{enter}', { delay: typeDelay })
       .type('kind: Namespace{enter}', { delay: typeDelay })
       .type('metadata:{enter}', { delay: typeDelay })
       .type('  name: ' + namespace + '{enter}', { delay: typeDelay });
-    resourcePage.shouldCreateResource();
+    resourcePage.shouldCreateResource(previouslyCreated);
   },
-  whenCreateDeployment: (namespace, name, image) => {
+  whenCreateDeployment: (namespace, name, image, previouslyCreated=false) => {
     // WORKAROUND: delays are needed because this cypress issue https://github.com/cypress-io/cypress/issues/5480
     cy.get('.react-monaco-editor-container').click().focused().type(Cypress.platform !== 'darwin' ? '{ctrl}a' : '{meta}a')
       .type('{enter}apiVersion: apps/v1{enter}', { delay: typeDelay })
@@ -43,12 +44,17 @@ export const resourcePage = {
       .type('      containers:{enter}{backspace}{backspace}{backspace}', { delay: typeDelay })
       .type('        - name: ' + name + '{enter}{backspace}{backspace}{backspace}{backspace}', { delay: typeDelay })
       .type('          image: ' + image + '{enter}', { delay: typeDelay });
-    resourcePage.shouldCreateResource();
+      resourcePage.shouldCreateResource(previouslyCreated);
   },
-  shouldCreateResource: () => {
-    cy.get('.bx--btn--primary').click();
-    cy.get('.bx--inline-notification__subtitle').should('not.exist')
-    cy.get('.bx--inline-notification', { timeout: 30000 }).should('not.exist');
-    cy.get('.react-monaco-editor-container', { timeout: 30000 }).should('not.exist');
-  }
+  shouldCreateResource: (previouslyCreated) => {
+    cy.get('.bx--btn--primary', {timeout: 30000}).click();
+
+    if (previouslyCreated) { // Test both scenarios if resource already exist or not.
+      cy.get('.bx--inline-notification__subtitle').should('exist').contains('already exist')
+    } else {
+      cy.get('.bx--inline-notification__subtitle').should('not.exist')
+      cy.get('.bx--inline-notification', { timeout: 30000 }).should('not.exist');
+      cy.get('.react-monaco-editor-container', { timeout: 30000 }).should('not.exist')
+    }
+  },
 }

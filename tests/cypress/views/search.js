@@ -13,7 +13,6 @@ const SEARCH_MESSAGES_NO_RESULTS = 'No results found for the current search crit
 const SEARCH_MESSAGES_FEW_SECONDS_AGO = 'a few seconds ago'
 const SEARCH_MESSAGES_LOADING_SUGGESTIONS = 'Loading...'
 
-
 export const searchPage = {
   whenGoToSearchPage:() => cy.visit('/search'),
   
@@ -32,7 +31,7 @@ export const searchPage = {
     popupModal.whenAccept()
   },
   whenGoToResourceDetailItemPage: (resource, name) => {
-    searchPage.whenGetResourceTableRow(resource, name).find('td').eq(0).find('a').click()
+    searchPage.whenGetResourceTableRow(resource, name).find('td').eq(0).find('a').click({force: true})
   },
   whenDeleteNamespace: (namespace, options) => {
     var ignoreIfDoesNotExist = getOpt(options, 'ignoreIfDoesNotExist', true)
@@ -102,18 +101,24 @@ export const searchBar = {
     cy.get('.react-tags', {timeout: 20000}).click()
   },
   whenClearFilters:() => {
-    cy.get('#clear-all-search-tags-button').click()
+    cy.get('#clear-all-search-tags-button', {timeout: 20000}).should('exist').click({force: true})
   },
-  whenSuggestionsAreAvailable: () => {
-    cy.get('.react-tags__suggestions ul#ReactTags', {timeout: 20000}).children().should('have.length.above', 1)
+  whenSuggestionsAreAvailable: (value, ignoreIfDoesNotExist=false) => {
+    if(!ignoreIfDoesNotExist) {
+      cy.get('.react-tags__suggestions ul#ReactTags', {timeout: 20000}).children().should('have.length.above', 1)
+    }
+    cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').click().type(value)
   },
-  whenEnterTextInSearchBar:(property, value) => {
-    cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').focus().click().type(property).wait(200)
+  whenEnterTextInSearchBar:(property, value, ignoreIfDoesNotExist=false) => {
+    cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').click()
+    searchBar.whenSuggestionsAreAvailable(property, ignoreIfDoesNotExist)
+
     cy.get('.react-tags', {timeout: 20000}).should('exist')
-    cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').type(' ').wait(200)
-    searchBar.whenSuggestionsAreAvailable()
+    cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').type(' ').wait(100)
+
     if (value && value !== null) {
-      cy.get('.react-tags__search-input', {timeout: 20000}).type(value).type(' ').wait(200)
+      searchBar.whenSuggestionsAreAvailable(value, ignoreIfDoesNotExist)
+      cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').type(' ').wait(100)
     }
   },
   whenFilterByCluster:(cluster) => {
@@ -123,11 +128,11 @@ export const searchBar = {
     searchBar.whenFilterByCluster(cluster)
     searchBar.whenEnterTextInSearchBar('namespace', namespace)
   },
-  whenFilterByKind:(kind) => {
-    searchBar.whenEnterTextInSearchBar('kind', kind)
+  whenFilterByKind:(kind, ignoreIfDoesNotExist=false) => {
+    searchBar.whenEnterTextInSearchBar('kind', kind, ignoreIfDoesNotExist)
   },
-  whenFilterByName:(name) => {
-    searchBar.whenEnterTextInSearchBar('name', name)
+  whenFilterByName:(name, ignoreIfDoesNotExist=false) => {
+    searchBar.whenEnterTextInSearchBar('name', name, ignoreIfDoesNotExist)
   },
   whenSelectFirstSuggestedValue:() => {
     searchBar.shouldSuggestValues()
