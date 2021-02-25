@@ -105,7 +105,7 @@ export const searchBar = {
   },
   whenSuggestionsAreAvailable: (value) => {
     cy.get('.react-tags__suggestions ul#ReactTags', {timeout: 20000}).children().should('have.length.above', 1)
-    cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').click().type(value).wait(100)
+    cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').click().type(value)
   },
   whenEnterTextInSearchBar:(property, value) => {
     cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').click()
