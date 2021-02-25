@@ -31,7 +31,7 @@ export const searchPage = {
     popupModal.whenAccept()
   },
   whenGoToResourceDetailItemPage: (resource, name) => {
-    searchPage.whenGetResourceTableRow(resource, name).find('td').eq(0).find('a').click()
+    searchPage.whenGetResourceTableRow(resource, name).find('td').eq(0).find('a').click({force: true})
   },
   whenDeleteNamespace: (namespace, options) => {
     var ignoreIfDoesNotExist = getOpt(options, 'ignoreIfDoesNotExist', true)
