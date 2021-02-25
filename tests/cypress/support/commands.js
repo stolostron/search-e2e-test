@@ -34,18 +34,6 @@ import { getOpt } from '../scripts/utils'
 import 'cypress-wait-until'
 import { oauthIssuer } from '../views/welcome'
 
-// Create a local state for the test to track resource creation/deletion
-export const state = {
-  didResourceCreate: false,
-  didResourceDelete: false
-}
-export const getState = () => {
-  return state
-}
-export const setState = (key, value) => {
-  state[key] = value
-}
-
 Cypress.Commands.add('login', (OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OC_IDP) => {
   var user = OPTIONS_HUB_USER || Cypress.env('OPTIONS_HUB_USER');
   var password = OPTIONS_HUB_PASSWORD || Cypress.env('OPTIONS_HUB_PASSWORD');
@@ -156,9 +144,4 @@ Cypress.Commands.add('generateNamespace', () => {
 Cypress.Commands.add('waitUsingSLA', () => {
   // Our SLO (goal) is to update within 5 seconds.  Setting the default SLA to 10 seconds to stabilize the tests.
   return cy.wait(parseInt(Cypress.env('SERVICE_SLA'), 10) || 10000)
-})
-
-Cypress.Commands.add('resetState', () => {
-  setState('didResourceCreate', false)
-  setState('didResourceDelete', false)
 })

@@ -101,25 +101,28 @@ export const searchBar = {
     cy.get('.react-tags', {timeout: 20000}).click()
   },
   whenClearFilters:() => {
-    cy.get('#clear-all-search-tags-button', {timeout: 20000}).should('exist').wait(500).click()
+    cy.get('#clear-all-search-tags-button', {timeout: 20000}).should('exist').click({force: true})
   },
-  whenSuggestionsAreAvailable: () => {
+  whenSuggestionsAreAvailable: (value) => {
     cy.get('.react-tags__suggestions ul#ReactTags', {timeout: 20000}).children().should('have.length.above', 1)
+    cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').click().type(value).wait(100)
   },
   whenEnterTextInSearchBar:(property, value) => {
-    cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').focus().click().type(property).wait(200)
+    cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').click()
+    searchBar.whenSuggestionsAreAvailable(property)
+
     cy.get('.react-tags', {timeout: 20000}).should('exist')
-    cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').type(' ').wait(200)
-    searchBar.whenSuggestionsAreAvailable()
+    cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').type(' ').wait(100)
+
     if (value && value !== null) {
-      cy.get('.react-tags__search-input', {timeout: 20000}).type(value).type(' ').wait(200)
+      searchBar.whenSuggestionsAreAvailable(value)
+      cy.get('.react-tags__search-input', {timeout: 20000}).should('exist').type(' ').wait(100)
     }
   },
   whenFilterByCluster:(cluster) => {
     searchBar.whenEnterTextInSearchBar('cluster', cluster)
   },
   whenFilterByClusterAndNamespace:(cluster, namespace) => {
-    searchBar.whenClearFilters()
     searchBar.whenFilterByCluster(cluster)
     searchBar.whenEnterTextInSearchBar('namespace', namespace)
   },

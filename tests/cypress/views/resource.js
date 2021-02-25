@@ -5,7 +5,6 @@
 
 /// <reference types="cypress" />
 
-import { getState, setState } from "../support/commands";
 import { searchBar } from "./search";
 const typeDelay = 1
 
@@ -15,16 +14,16 @@ export const resourcePage = {
     cy.get('#create-resource-select', { timeout: 20000 }).click()
     cy.get('.bx--checkbox-wrapper input[name="' + clusterName + '"]').parent().click()
   },
-  whenCreateNamespace: (namespace) => {
+  whenCreateNamespace: (namespace, previouslyCreated=false) => {
     // WORKAROUND: delays are needed because this cypress issue https://github.com/cypress-io/cypress/issues/5480
     cy.get('.react-monaco-editor-container').click().focused().type(Cypress.platform !== 'darwin' ? '{ctrl}a' : '{meta}a')
       .type('{enter}apiVersion: v1{enter}', { delay: typeDelay })
       .type('kind: Namespace{enter}', { delay: typeDelay })
       .type('metadata:{enter}', { delay: typeDelay })
       .type('  name: ' + namespace + '{enter}', { delay: typeDelay });
-    resourcePage.shouldCreateResource('namespace', namespace);
+    resourcePage.shouldCreateResource(previouslyCreated);
   },
-  whenCreateDeployment: (namespace, name, image) => {
+  whenCreateDeployment: (namespace, name, image, previouslyCreated=false) => {
     // WORKAROUND: delays are needed because this cypress issue https://github.com/cypress-io/cypress/issues/5480
     cy.get('.react-monaco-editor-container').click().focused().type(Cypress.platform !== 'darwin' ? '{ctrl}a' : '{meta}a')
       .type('{enter}apiVersion: apps/v1{enter}', { delay: typeDelay })
@@ -45,26 +44,17 @@ export const resourcePage = {
       .type('      containers:{enter}{backspace}{backspace}{backspace}', { delay: typeDelay })
       .type('        - name: ' + name + '{enter}{backspace}{backspace}{backspace}{backspace}', { delay: typeDelay })
       .type('          image: ' + image + '{enter}', { delay: typeDelay });
-    resourcePage.shouldCreateResource('deployment', name);
+      resourcePage.shouldCreateResource(previouslyCreated);
   },
-  shouldCreateResource: (resource, name) => {
+  shouldCreateResource: (previouslyCreated) => {
     cy.get('.bx--btn--primary', {timeout: 30000}).click();
-    if (!getState().didResourceCreate) {
+
+    if (previouslyCreated) { // Test both scenarios if resource already exist or not.
+      cy.get('.bx--inline-notification__subtitle').should('exist').contains('already exist')
+    } else {
       cy.get('.bx--inline-notification__subtitle').should('not.exist')
       cy.get('.bx--inline-notification', { timeout: 30000 }).should('not.exist');
       cy.get('.react-monaco-editor-container', { timeout: 30000 }).should('not.exist')
-    } else {
-      cy.get('.bx--inline-notification__subtitle', {timeout: 30000}).should('exist').contains('already exist')
-      cy.get('.bx--btn.bx--btn--secondary', {timeout: 30000}).click().wait(300)
-      cy.get('svg.clear-button', {timeout: 30000}).should('exist').click()
-      resourcePage.shouldCheckIfResourceCreated(resource, name)
     }
-    setState('didResourceCreate', true)
-  },
-  shouldCheckIfResourceCreated: (property, value) => {
-    searchBar.whenFocusSearchBar()
-    searchBar.whenFilterByKind(property)
-    searchBar.whenFilterByName(value)
-    cy.get('.pf-l-gallery', {timeout: 20000}).children().wait(1000).should('have.length.greaterThan', 0)
   },
 }
