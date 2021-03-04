@@ -76,10 +76,10 @@ export const welcomePage = {
         cy.get('.pf-c-title').should('contain', 'Cluster management')
         cy.visit('/multicloud/welcome')
         cy.contains('Go to Applications').click()
-        cy.get('.bx--detail-page-header-title-container').should('contain', 'Applications')
+        cy.get('.secondary-header-wrapper').find('h1').should('contain', 'Applications')
         cy.visit('/multicloud/welcome')
         cy.contains('Go to Governance and risk').click()
-        cy.get('.bx--detail-page-header-title-container').should('contain', 'Governance and risk')
+        cy.get('.secondary-header-wrapper').find('h1').should('contain', 'Governance and risk')
         cy.visit('/multicloud/welcome')
     },
     validateConnect: () => {
