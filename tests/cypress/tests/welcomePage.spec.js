@@ -11,6 +11,9 @@ import { welcomePage, leftNav, userMenu } from '../views/welcome'
 describe('Welcome page', function () {
     before(function () {
         cy.login()
+    })
+
+    beforeEach(() => {
         welcomePage.whenGoToWelcomePage()
     })
 
@@ -26,7 +29,6 @@ describe('Welcome page', function () {
         welcomePage.validateSvcs()
         welcomePage.validateConnect()
     })
-
     
     // Validate left navigation
     it(`[P3][Sev3][${squad}] should open left navigation`, function () {
