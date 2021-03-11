@@ -12,7 +12,7 @@ import { podDetailPage } from '../views/podDetailPage'
 import { resourcePage } from '../views/resource'
 import { searchPage, searchBar } from '../views/search'
 
-const clusterModes = [//{ label: 'Local', valueFn: () => cy.wrap('local-cluster'), skip: false },
+const clusterModes = [{ label: 'Local', valueFn: () => cy.wrap('local-cluster'), skip: false },
                       { label: 'Managed', valueFn: () => cliHelper.getTargetManagedCluster(), skip: false }];
 
 clusterModes.forEach((clusterMode) => {
