@@ -9,12 +9,17 @@ export const cliHelper = {
         const managedClusters = result.stdout.split('\n').slice(1)
         let targetCluster
 
-        if (process.env.NODE_ENV !== 'dev' || process.env.NODE_ENV !== 'debug') { // In the canary tests, we only need to focus on the import-xxxx managed cluster.
+        // In the canary tests, we only need to focus on the import-xxxx managed cluster.
+        if (process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'debug') {
           targetCluster = managedClusters.find((c) => c.startsWith('import-'))
-        } else { // We need to access a managed cluster locally.
+        }
+        
+        // When running locally or if the cluster is not available, try testing on an available managed cluster.
+        if (targetCluster === undefined) {
           targetCluster = managedClusters.find((c) => !c.includes('local-cluster'))
         }
 
+        cy.log(`Testing with Managed Cluster: ${targetCluster}`)
         return cy.wrap(targetCluster)
       })
     }

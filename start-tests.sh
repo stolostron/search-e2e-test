@@ -60,7 +60,7 @@ npm run test:api
 
 
 section_title "Running Search UI tests."
-if [ "$NODE_ENV" == "dev" ]; then
+if [ "$NODE_ENV" == "development" ]; then
   npx cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/*.spec.js" --reporter cypress-multi-reporters  
 elif [ "$NODE_ENV" == "debug" ]; then
   npx cypress open --browser $BROWSER --config numTestsKeptInMemory=0
