@@ -7,6 +7,8 @@ USER root
 
 COPY --from=builder /usr/bin/yq /usr/local/bin/yq
 
+ENV NODE_ENV="test"
+
 COPY package.json .
 COPY package-lock.json .
 COPY cypress.json .

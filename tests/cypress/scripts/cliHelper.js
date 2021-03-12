@@ -9,9 +9,7 @@ export const cliHelper = {
         const managedClusters = result.stdout.split('\n').slice(1)
         let targetCluster
 
-        cy.log(`env: ${process.env.NODE_ENV}`)
-
-        if (process.env.NODE_ENV !== 'development' || process.env.NODE_ENV !== 'debug') { // In the canary tests, we only need to focus on the import-xxxx managed cluster.
+        if (process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'debug') { // In the canary tests, we only need to focus on the import-xxxx managed cluster.
           targetCluster = managedClusters.find((c) => c.startsWith('import-'))
 
           if (targetCluster === undefined) { // Incase the cluster is not available, try testing on an available managed cluster.

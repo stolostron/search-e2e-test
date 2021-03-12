@@ -79,7 +79,6 @@ run-test-image-pr:
 	-e OPTIONS_HUB_BASEDOMAIN=$(OPTIONS_HUB_BASEDOMAIN) \
 	-e OPTIONS_HUB_USER=$(OPTIONS_HUB_USER) \
 	-e OPTIONS_HUB_PASSWORD=$(OPTIONS_HUB_PASSWORD) \
-	-e NODE_ENV=test \
 	--volume $(shell pwd)/search-test-results:/results \
 	$(COMPONENT_DOCKER_REPO)/$(COMPONENT_NAME):$(TEST_IMAGE_TAG)
 
