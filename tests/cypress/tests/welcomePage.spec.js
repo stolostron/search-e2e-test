@@ -7,6 +7,7 @@
 
 import { squad } from '../config'
 import { welcomePage, leftNav, userMenu } from '../views/welcome'
+var timeoutID
 
 describe('Welcome page', function () {
     before(function () {
@@ -15,10 +16,17 @@ describe('Welcome page', function () {
 
     beforeEach(() => {
         welcomePage.whenGoToWelcomePage()
+        timeoutId = setTimeout(() => {
+            throw new Error("Test taking too long!")
+          }, 60000 * 5);
     })
 
     after(function () {
         cy.logout()
+    })
+
+    afterEach(() => {
+        clearTimeout(timeoutID)
     })
 
     it(`[P1][Sev1][${squad}] should load`, function () {
