@@ -70,7 +70,7 @@ if [ "$NODE_ENV" == "development" ]; then
 elif [ "$NODE_ENV" == "debug" ]; then
   npx cypress open --browser $BROWSER --config numTestsKeptInMemory=0 --env NODE_ENV=$NODE_ENV
 else 
-  cypress run --browser $BROWSER  --spec "./tests/cypress/tests/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV
+  cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV
 fi
 
 testCode=$?
