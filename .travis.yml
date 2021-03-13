@@ -24,6 +24,7 @@ env:
     - COMPONENT_E2E_TEST_COMMAND=${TRAVIS_BUILD_DIR}/build/e2e-test.sh
     # - COMPONENT_E2E_TEST_COMMAND="docker run -it --volume $(pwd)/test-output:/results -e OPTIONS_HUB_BASEDOMAIN=${OPTIONS_HUB_BASEDOMAIN} -e OPTIONS_HUB_USER=${OPTIONS_HUB_USER} -e OPTIONS_HUB_PASSWORD=${OPTIONS_HUB_PASSWORD}"
     - CYPRESS_CACHE_FOLDER=${TRAVIS_BUILD_DIR}/.cache/Cypress
+    - NODE_ENV=test
 
 # Only build on main, and release branches
 branches:
