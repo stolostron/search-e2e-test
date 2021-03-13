@@ -6,12 +6,12 @@
 export const cliHelper = {
     getTargetManagedCluster: () => {
       return cy.exec('oc get managedclusters -o custom-columns=NAME:.metadata.name').then(result => {
-        cy.log(`env: ${process.env.NODE_ENV}`)
+        cy.log(`env: ${Cypress.env('NODE_ENV')}`)
         const managedClusters = result.stdout.split('\n').slice(1)
         let targetCluster
 
         // In the canary tests, we only need to focus on the import-xxxx managed cluster.
-        if (process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'debug') {
+        if (Cypress.env('NODE_ENV') !== 'development' && Cypress.env('NODE_ENV') !== 'debug') {
           targetCluster = managedClusters.find((c) => c.startsWith('import-'))
         }
         
