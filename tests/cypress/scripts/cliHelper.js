@@ -6,7 +6,6 @@
 export const cliHelper = {
     getTargetManagedCluster: () => {
       return cy.exec('oc get managedclusters -o custom-columns=NAME:.metadata.name').then(result => {
-        cy.log(`env: ${Cypress.env('NODE_ENV')}`)
         const managedClusters = result.stdout.split('\n').slice(1)
         let targetCluster
 
