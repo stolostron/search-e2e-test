@@ -55,17 +55,22 @@ if [[ "$LIVE_MODE" == true ]]; then
   HEADLESS=""
 fi
 
+if [ -z "$NODE_ENV" ]; then
+  export NODE_ENV="production" || set NODE_ENV="production"
+fi
+
+echo -e "Setting env to run in: $NODE_ENV"
+
 section_title "Running Search API tests."
 npm run test:api
 
-
 section_title "Running Search UI tests."
 if [ "$NODE_ENV" == "development" ]; then
-  npx cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/*.spec.js" --reporter cypress-multi-reporters  
+  npx cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV
 elif [ "$NODE_ENV" == "debug" ]; then
-  npx cypress open --browser $BROWSER --config numTestsKeptInMemory=0
+  npx cypress open --browser $BROWSER --config numTestsKeptInMemory=0 --env NODE_ENV=$NODE_ENV
 else 
-  cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/*.spec.js" --reporter cypress-multi-reporters
+  cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV
 fi
 
 testCode=$?
