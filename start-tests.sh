@@ -44,6 +44,20 @@ echo -e "\tCYPRESS_OPTIONS_HUB_BASEDOMAIN : $CYPRESS_OPTIONS_HUB_BASEDOMAIN"
 echo -e "\tCYPRESS_OPTIONS_HUB_BASE_URL   : $CYPRESS_BASE_URL"
 echo -e "\tCYPRESS_OPTIONS_HUB_USER       : $CYPRESS_OPTIONS_HUB_USER"
 
+if [[ -z $OPTIONS_MANAGED_BASEDOMAIN || -z $OPTIONS_MANAGED_USER || -z $OPTIONS_MANAGED_PASSWORD ]]; then
+   echo 'One or more variables are undefined. Copying kubeconfigs...'
+   cp /opt/.kube/import-kubeconfig ./config/import-kubeconfig
+else
+  echo "Logging into the managed cluster using credentials and generating the kubeconfig..."
+  mkdir ./import-kubeconfig && touch ./import-kubeconfig/kubeconfig
+  export KUBECONFIG=$(pwd)/import-kubeconfig/kubeconfig
+  export OPTIONS_MANAGED_URL="https://api.$OPTIONS_MANAGED_BASEDOMAIN:6443"
+  oc login --server=$OPTIONS_MANAGED_URL -u $OPTIONS_MANAGED_USER -p $OPTIONS_MANAGED_PASSWORD --insecure-skip-tls-verify
+  unset KUBECONFIG
+  echo "Copying managed cluster kubeconfig to ./cypress/config/import-kubeconfig ..."
+  cp ./import-kubeconfig/* ./config/import-kubeconfig
+fi
+
 echo -e "\nLogging into Kube API server\n"
 oc login --server=https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443 -u $CYPRESS_OPTIONS_HUB_USER -p $CYPRESS_OPTIONS_HUB_PASSWORD --insecure-skip-tls-verify
 

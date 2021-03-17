@@ -1,7 +1,7 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
-const { getSearchApiRoute, getToken, searchQueryBuilder, sendRequest, getPods, deletePod } = require('../common-lib/clusterAccess')
-const { execSync } = require('child_process');
+const { getSearchApiRoute, getToken, getKubeConfig, searchQueryBuilder, sendRequest, getPods, deletePod } = require('../common-lib/clusterAccess')
+const { exec, execSync } = require('child_process');
 
 describe('RHACM4K-1695: Search - verify managed cluster info in the search page', () => {
 
@@ -35,9 +35,11 @@ describe('RHACM4K-1695: Search - verify managed cluster info in the search page'
     res = await sendRequest(query, token)
     expect(res.body.data.searchResult[0].items[0].kind).toEqual("pod")
 
-    query = searchQueryBuilder({ filters: [{ property: 'cluster', values: ['local-cluster'] },
-                                           { property: 'kind', values: ['pod'] },
-                                           { property: 'namespace', values: ['open-cluster-management-agent'] }] })
+    query = searchQueryBuilder({
+      filters: [{ property: 'cluster', values: ['local-cluster'] },
+      { property: 'kind', values: ['pod'] },
+      { property: 'namespace', values: ['open-cluster-management-agent'] }]
+    })
     res = await sendRequest(query, token)
 
     var pods = res.body.data.searchResult[0].items
@@ -52,9 +54,11 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
   const namespace = 'openshift-console'
 
   test('Verify a deleted pod is recreated.', async () => {
-    var query = searchQueryBuilder({ filters: [{ property: 'kind', values: ['deployment'] },
-                                               { property: 'name', values: [app] },
-                                               { property: 'namespace', values: [namespace] }] })
+    var query = searchQueryBuilder({
+      filters: [{ property: 'kind', values: ['deployment'] },
+      { property: 'name', values: [app] },
+      { property: 'namespace', values: [namespace] }]
+    })
     var res = await sendRequest(query, token)
     expect(res.body.data.searchResult[0].items[0].current).toEqual(2)
     var pods = getPods(namespace)
@@ -67,9 +71,11 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
   }, 20000)
 
   test('Search kind application on specific namespace.', async () => {
-    var query = searchQueryBuilder({ filters: [{ property: 'kind', values: ['deployment'] },
-                                               { property: 'name', values: [app] },
-                                               { property: 'namespace', values: [namespace] }] })
+    var query = searchQueryBuilder({
+      filters: [{ property: 'kind', values: ['deployment'] },
+      { property: 'name', values: [app] },
+      { property: 'namespace', values: [namespace] }]
+    })
     var res = await sendRequest(query, token)
     expect(res.body.data.searchResult[0].items[0].name).toEqual(app)
     expect(res.body.data.searchResult[0].items[0].kind).toEqual("deployment")
@@ -77,9 +83,11 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
   }, 20000)
 
   test('Search kind pod and namespace open-cluster-management.', async () => {
-    var query = searchQueryBuilder({ filters: [{ property: 'kind', values: ['pod'] },
-                                               { property: 'namespace', values: ['open-cluster-management'] },
-                                               { property: 'status', values: ['Running'] }] })
+    var query = searchQueryBuilder({
+      filters: [{ property: 'kind', values: ['pod'] },
+      { property: 'namespace', values: ['open-cluster-management'] },
+      { property: 'status', values: ['Running'] }]
+    })
     var res = await sendRequest(query, token)
     var pods = res.body.data.searchResult[0].items
     pods.forEach(element => {
@@ -88,9 +96,11 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
   }, 20000)
 
   test('Search kind pod on specific cluster.', async () => {
-    var query = searchQueryBuilder({ filters: [{ property: 'kind', values: ['pod'] },
-                                               { property: 'cluster', values: ['local-cluster'] },
-                                               { property: 'status', values: ['Running'] }] })
+    var query = searchQueryBuilder({
+      filters: [{ property: 'kind', values: ['pod'] },
+      { property: 'cluster', values: ['local-cluster'] },
+      { property: 'status', values: ['Running'] }]
+    })
     var res = await sendRequest(query, token)
     var pods = res.body.data.searchResult[0].items
     pods.forEach(element => {
@@ -112,11 +122,11 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
     expect(res.body.data.searchResult[0].items[0].name).toEqual('klusterlet-addon-iampolicyctrl')
     expect(res.body.data.searchResult[0].items[0].kind).toEqual("iampolicycontroller")
     expect(res.body.data.searchResult[0].items[0].namespace).toEqual('open-cluster-management-agent-addon')
-  }, 20000) 
+  }, 20000)
 })
 
 describe('RHACM4K-1709: Search - Search using filters', () => {
-  
+
   var filtersRegistry = [
     { filters: [{ property: 'created', values: ['month'] }] },
     { filters: [{ property: 'apigroup', values: ['apps'] }] },
@@ -161,4 +171,135 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
       var res = await sendRequest(query, token)
     }, 20000)
   })
+})
+
+describe('RHACM4K-913: Search - common filter and conditions', () => {
+  beforeAll(async () => {
+    // Get kubeconfig for imported clusters
+    kubeconfigs = getKubeConfig()
+
+    // Get managed cluster
+    if (kubeconfigs[0]) {
+      managedCluster = execSync(`oc --kubeconfig ${kubeconfigs[0]} get klusterlets.operator.open-cluster-management.io -o custom-columns=NAME:.spec.clusterName --no-headers`).toString().trim()
+    } else {
+      console.log('Cannot get managedCluster because kubeconfigs[0] is undefined.')
+    }
+  })
+
+  function execShellCommand(cmd) {
+    return new Promise((resolve, reject) => {
+      exec(cmd, (error, stdout, stderr) => {
+        if (error) {
+          console.warn(error);
+        }
+        resolve(stdout);
+      });
+    });
+  }
+
+  function log({ message = "" }) {
+    console.log(message)
+  }
+
+  test('should have expected count of pods in ocm on hub cluster.', async () => {
+    var query = searchQueryBuilder({
+      filters: [{ property: 'kind', values: ['pod'] },
+      { property: 'namespace', values: ['open-cluster-management'] },
+      { property: 'status', values: ['Running'] },
+      { property: 'cluster', values: ['local-cluster'] }]
+    })
+    const [searchRes, cliRes] = await Promise.all([
+      sendRequest(query, token),
+      execShellCommand('oc get pods -n open-cluster-management --field-selector=status.phase==Running --no-headers | wc -l')
+    ])
+    const pods = searchRes.body.data.searchResult[0].items
+    expect(pods.length.toString()).toEqual(cliRes.toString().trim())
+  }, 20000)
+
+  test('should have expected count of pods in ocm-agent on hub cluster.', async () => {
+    var query = searchQueryBuilder({
+      filters: [{ property: 'kind', values: ['pod'] },
+      { property: 'namespace', values: ['open-cluster-management-agent'] },
+      { property: 'status', values: ['Running'] },
+      { property: 'cluster', values: ['local-cluster'] }]
+    })
+    const [searchRes, cliRes] = await Promise.all([
+      sendRequest(query, token),
+      execShellCommand('oc get pods -n open-cluster-management-agent --field-selector=status.phase==Running --no-headers | wc -l')
+    ])
+    const pods = searchRes.body.data.searchResult[0].items
+    expect(pods.length.toString()).toEqual(cliRes.toString().trim())
+  }, 20000)
+
+  test('should have expected count of pods in ocm-agent on imported cluster.', async () => {
+    if (kubeconfigs[0]) {
+      var query = searchQueryBuilder({
+        filters: [{ property: 'kind', values: ['pod'] },
+        { property: 'namespace', values: ['open-cluster-management-agent'] },
+        { property: 'status', values: ['Running'] },
+        { property: 'cluster', values: [managedCluster] }]
+      })
+      const [searchRes, cliRes] = await Promise.all([
+        sendRequest(query, token),
+        execShellCommand(`oc --kubeconfig ${kubeconfigs[0]} get pods -n open-cluster-management-agent --field-selector=status.phase==Running --no-headers | wc -l`)
+      ])
+      const pods = searchRes.body.data.searchResult[0].items
+      expect(pods.length.toString()).toEqual(cliRes.toString().trim())
+    } else {
+      log({ message: 'Test skipped because kubeconfigs[0] is undefined.' })
+    }
+  }, 20000)
+
+  test('should have expected count of pods in ocm-agent-addon on hub cluster.', async () => {
+    var query = searchQueryBuilder({
+      filters: [{ property: 'kind', values: ['pod'] },
+      { property: 'namespace', values: ['open-cluster-management-agent-addon'] },
+      { property: 'status', values: ['Running'] },
+      { property: 'cluster', values: ['local-cluster'] }]
+    })
+    const [searchRes, cliRes] = await Promise.all([
+      sendRequest(query, token),
+      execShellCommand('oc get pods -n open-cluster-management-agent-addon --field-selector=status.phase==Running --no-headers | wc -l')
+    ])
+    const pods = searchRes.body.data.searchResult[0].items
+    expect(pods.length.toString()).toEqual(cliRes.toString().trim())
+  }, 20000)
+
+  test('should have expected count of pods in ocm-agent-addon on imported cluster.', async () => {
+    if (kubeconfigs[0]) {
+      var query = searchQueryBuilder({
+        filters: [{ property: 'kind', values: ['pod'] },
+        { property: 'namespace', values: ['open-cluster-management-agent-addon'] },
+        { property: 'status', values: ['Running'] },
+        { property: 'cluster', values: [managedCluster] }]
+      })
+      const [searchRes, cliRes] = await Promise.all([
+        sendRequest(query, token),
+        execShellCommand(`oc --kubeconfig ${kubeconfigs[0]} get pods -n open-cluster-management-agent-addon --field-selector=status.phase==Running --no-headers | wc -l`)
+      ])
+      const pods = searchRes.body.data.searchResult[0].items
+      expect(pods.length.toString()).toEqual(cliRes.toString().trim())
+    } else {
+      log({ message: 'Test skipped because kubeconfigs[0] is undefined.' })
+    }
+  }, 20000)
+
+  test('should have expected count of pods in kube-system on imported cluster.', async () => {
+    if (kubeconfigs[0]) {
+      var query = searchQueryBuilder({
+        filters: [{ property: 'kind', values: ['pod'] },
+        { property: 'namespace', values: ['kube-system'] },
+        { property: 'status', values: ['Running'] },
+        { property: 'cluster', values: [managedCluster] }]
+      })
+      const [searchRes, cliRes] = await Promise.all([
+        sendRequest(query, token),
+        execShellCommand(`oc --kubeconfig ${kubeconfigs[0]} get pods -n kube-system --field-selector=status.phase==Running --no-headers | wc -l`)
+      ])
+      const pods = searchRes.body.data.searchResult[0].items
+      expect(pods.length.toString()).toEqual(cliRes.toString().trim())
+    } else {
+      log({ message: 'Test skipped because kubeconfigs[0] is undefined.' })
+    }
+  }, 20000)
 })

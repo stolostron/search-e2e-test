@@ -4,6 +4,7 @@ const config = require('../../config')
 const { sleep } = require('./sleep')
 const { execSync } = require('child_process');
 const request = require('supertest');
+const fs = require("fs");
 
 // Login to the cluster
 const clusterLogin = () => {
@@ -24,6 +25,17 @@ const getSearchApiRoute = async ()  => {
         await sleep(10000)
     }
     return `https://search-api-automation-open-cluster-management.apps.${config.get('options:hub:baseDomain')}`
+}
+
+const getKubeConfig = () => {
+    const kubeconfigs = [];
+    const dir = "./config/import-kubeconfig"
+    fs.readdirSync(dir).forEach(file => {
+      if (file[0] !== ".") {
+        kubeconfigs.push(`${dir}/${file}`)
+      }
+    })
+    return kubeconfigs
 }
 
 function searchQueryBuilder({ keywords = [], filters = [], limit = 1000}) {
@@ -71,6 +83,7 @@ async function deletePod (pod, ns) {
 exports.clusterLogin = clusterLogin
 exports.getToken = getToken
 exports.getSearchApiRoute = getSearchApiRoute
+exports.getKubeConfig = getKubeConfig
 exports.searchQueryBuilder = searchQueryBuilder
 exports.sendRequest = sendRequest
 exports.getPods = getPods
