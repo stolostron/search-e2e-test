@@ -15,7 +15,7 @@ export const resourcePage = {
   },
   whenCreateNamespace: (namespace) => {
     // WORKAROUND: delays are needed because this cypress issue https://github.com/cypress-io/cypress/issues/5480
-    cy.get('.react-monaco-editor-container').click().focused().type('{ctrl}a')
+    cy.get('.react-monaco-editor-container').click().focused().type(Cypress.platform !== 'darwin' ? '{ctrl}a' : '{meta}a')
       .type('{enter}apiVersion: v1{enter}', { delay: typeDelay })
       .type('kind: Namespace{enter}', { delay: typeDelay })
       .type('metadata:{enter}', { delay: typeDelay })
@@ -24,7 +24,7 @@ export const resourcePage = {
   },
   whenCreateDeployment: (namespace, name, image) => {
     // WORKAROUND: delays are needed because this cypress issue https://github.com/cypress-io/cypress/issues/5480
-    cy.get('.react-monaco-editor-container').click().focused().type('{ctrl}a')
+    cy.get('.react-monaco-editor-container').click().focused().type(Cypress.platform !== 'darwin' ? '{ctrl}a' : '{meta}a')
       .type('{enter}apiVersion: apps/v1{enter}', { delay: typeDelay })
       .type('kind: Deployment{enter}', { delay: typeDelay })
       .type('metadata:{enter}', { delay: typeDelay })
