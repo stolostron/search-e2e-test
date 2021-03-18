@@ -21,11 +21,13 @@ clusterModes.forEach((clusterMode) =>   {
   }
 
   describe('Search in ' + clusterMode.label + ' Cluster', function() {
-
     before(function() {
       cy.login()
       clusterMode.valueFn().as('clusterName')
       cy.generateNamespace().as('namespace')
+    })
+
+    beforeEach(() => {
       searchPage.whenGoToSearchPage()
     })
   
@@ -48,7 +50,6 @@ clusterModes.forEach((clusterMode) =>   {
   
     describe('create namespace and deployment resources', function() {
       before(function() {
-        searchPage.whenGoToSearchPage()
         // given namespace
         resourcePage.whenGoToResourcePage()
         resourcePage.whenSelectTargetCluster(this.clusterName)
@@ -61,7 +62,6 @@ clusterModes.forEach((clusterMode) =>   {
       })
   
       beforeEach(function() {
-        searchPage.whenGoToSearchPage()
         searchBar.whenFilterByClusterAndNamespace(this.clusterName, this.namespace)
       })
 
@@ -97,7 +97,6 @@ clusterModes.forEach((clusterMode) =>   {
       it('should delete pod', function() {
         searchBar.whenFilterByKind('pod')
         searchPage.whenDeleteResourceDetailItem('pod', this.namespace + '-deployment')
-        
         searchPage.shouldBeResourceDetailItemCreatedFewSecondsAgo('pod', this.namespace + '-deployment')
       });
   
@@ -113,13 +112,11 @@ clusterModes.forEach((clusterMode) =>   {
       it('should delete deployment', function() {
         searchBar.whenFilterByKind('deployment')
         searchPage.whenDeleteResourceDetailItem('deployment', this.namespace + '-deployment')
-    
         searchPage.shouldFindNoResults()
       });
   
       it('should delete namespace', function() {
         searchPage.whenDeleteNamespace(this.namespace)
-
         searchPage.shouldFindNoResults()
       });
     })
