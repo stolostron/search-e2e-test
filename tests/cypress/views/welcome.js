@@ -175,7 +175,7 @@ export const userMenu = {
     openApps: () => {
         cy.get('.navigation-container #acm-apps-dropdown', {timeout: 20000}).click()
         cy.get('.dropdown-content-header', {timeout: 20000})
-        cy.get('#applications a.dropwdown-content-items', {timeout: 20000}).should('have.attr', 'href')
+        cy.get('#applications a.dropwdown-content-items', {timeout: 20000}).should('have.attr', 'href').and('contain', 'console-openshift-console')
     },
     openSearch: () => {
         cy.get('.navigation-container #acm-search').click()
