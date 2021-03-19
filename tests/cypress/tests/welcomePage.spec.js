@@ -58,18 +58,28 @@ describe('Welcome page', function () {
         leftNav.goToGRC()
     })
 
-
     // Validate navigation from header icons
     it(`[P3][Sev3][${squad}] using header icons - should navigate to Search page`, function () {
         userMenu.openSearch()
     })
 
-    /* FIXME: Skipping these test because it's causing intermittent canaries to fails.
+    it(`[P3][Sev3][${squad}] using header icons - should navigate to Applications page`, function () {
         userMenu.openApps()
-        userMenu.openResources()
-        userMenu.openTerminal()
-        userMenu.openInfo()
-        userMenu.openUser()
-    */
+    })
 
+    it(`[P3][Sev3][${squad}] using header icons - should navigate to Resource page`, function () {
+        userMenu.openResources()
+    })
+
+    it(`[P3][Sev3][${squad}] using header icons - should navigate to Terminal page`, function () {
+        userMenu.openTerminal()
+    })
+
+    it(`[P3][Sev3][${squad}] using header icons - should navigate to Info page`, function () {
+        userMenu.openInfo()
+    })
+
+    it(`[P3][Sev3][${squad}] using header icons - should navigate to User page`, function () {
+        userMenu.openUser()
+    })
 })

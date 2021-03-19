@@ -173,12 +173,9 @@ export const leftNav = {
 
 export const userMenu = {
     openApps: () => {
-        cy.get('.navigation-container #acm-apps-dropdown').click()
-        cy.getCookie('acm-access-token-cookie').should('exist').then((token) => {
-            consolePublic(token.value).then((consoleURL) => {
-                cy.get('#apps-dropdown-content li').should('have.length', 1).first().children().should('have.prop', 'href', consoleURL + '/')
-            })
-        })
+        cy.get('.navigation-container #acm-apps-dropdown', {timeout: 20000}).click()
+        cy.get('.dropdown-content-header', {timeout: 20000})
+        cy.get('#applications a.dropwdown-content-items', {timeout: 20000}).should('have.attr', 'href').and('contain', 'console-openshift-console')
     },
     openSearch: () => {
         cy.get('.navigation-container #acm-search').click()
@@ -189,7 +186,6 @@ export const userMenu = {
         resourcePage.shouldExist()
     },
     openTerminal: () => {
-        cy.get('#acm-kui-dropdown #terminal-dropdown-content li').should('not.be.visible')
         cy.get('.navigation-container #acm-kui-dropdown').click()
         cy.get('#acm-kui-dropdown #terminal-dropdown-content li').should('be.visible').and('have.length', 2).then((c) => {
             cy.wrap(c).get('#new-tab-terminal a').should('have.prop', 'href', Cypress.config().baseUrl + '/kui').and('have.attr', 'target').and('match', /_blank/)
@@ -198,19 +194,16 @@ export const userMenu = {
         })
     },
     openInfo: () => {
-        cy.get('#acm-info-dropdown #info-dropdown-content li').should('not.be.visible')
         cy.get('.navigation-container #acm-info-dropdown').click()
-        cy.get('#acm-info-dropdown #info-dropdown-content li').should('be.visible').and('have.length', 2).then((c) => {
-            cy.getCookie('acm-access-token-cookie').should('exist').then((token, c) => {
-                // TODO: Refine the documentation check. The docs for a certain version might not be available by the time the test is updated.
-                acmVersion(token.value).then((version) => {
-                    let url = 'https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/'
-                    url += version === '2.2.0' ? '2.1/' : version.match(/[0-9]+\.[0-9]+/) + '/'
-                    cy.wrap(c).get('#acm-doc a').should('have.prop', 'href', url)
-                    cy.wrap(c).get('#acm-about').click()
-                    cy.get('.bx--modal-container').should('contain', version).get('.bx--modal-close').click()
-                    cy.get('.bx--modal-container').should('not.exist')
-                })
+        cy.get('#acm-info-dropdown #info-dropdown-content li').should('be.visible').and('have.length', 2)
+        // Since cypress doesn't support multitab testing, we can check to see if the link includes the documentation link.
+        // For now we can exclude the doc version, since the docs might not be available for a certain release.
+        cy.get('#acm-doc a').should('have.attr', 'href').and('contain', 'https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/')
+        cy.getCookie('acm-access-token-cookie').should('exist').then((token, c) => {
+            acmVersion(token.value).then((version) => {
+                cy.get('#acm-about').click().get('.bx--loading', {timeout: 20000}).should('not.exist')
+                cy.get('.version-details').should('exist').get('.version-details__no').should('contain', version)
+                cy.get('.bx--modal-close').click()
             })
         })
     },
