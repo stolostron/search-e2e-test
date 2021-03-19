@@ -18,7 +18,7 @@ describe('Search: Linked page', function () {
         cy.logout()
     })
 
-    it(`[P2][Sev2][${squad}] overview page should has link to search page`, function () {
+    it(`[P2][Sev2][${squad}] overview page should have link to search page`, function () {
         overviewPage.shouldHaveLinkToSearchPage()
     })
 
