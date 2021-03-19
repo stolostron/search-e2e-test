@@ -22,7 +22,7 @@ describe('Search: Linked page', function () {
         overviewPage.shouldHaveLinkToSearchPage()
     })
 
-    it(`[P2][Sev2][${squad}] clusters page should has link to search page`, function () {
+    it(`[P2][Sev2][${squad}] clusters page should have link to search page`, function () {
         clustersPage.shouldHaveLinkToSearchPage()
     })
 })
