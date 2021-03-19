@@ -18,11 +18,11 @@ describe('Search: Linked page', function () {
         cy.logout()
     })
 
-    it(`[${squad}] overview page should has link to search page`, function () {
+    it(`[P2][Sev2][${squad}] overview page should has link to search page`, function () {
         overviewPage.shouldHaveLinkToSearchPage()
     })
 
-    it(`[${squad}] clusters page should has link to search page`, function () {
+    it(`[P2][Sev2][${squad}] clusters page should has link to search page`, function () {
         clustersPage.shouldHaveLinkToSearchPage()
     })
 })
