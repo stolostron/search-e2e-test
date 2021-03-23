@@ -139,7 +139,7 @@ Cypress.Commands.add('logout', () => {
 })
 
 Cypress.Commands.add('generateNamespace', () => {
-  return 'search-' + Date.now();
+  return `search-${Date.now()}`
 })
 
 Cypress.Commands.add('waitUsingSLA', () => {
