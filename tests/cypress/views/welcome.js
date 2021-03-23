@@ -138,7 +138,7 @@ export const leftNav = {
     },
     goToHome: () => {
         leftNav.openMenu()
-        cy.get('#left-nav').contains('Home') //.click() disabling click until welcome page is updated.
+        cy.get('#left-nav').contains('Home') // FIXME: .click() disabling click until welcome page is updated.
         // welcomePage.shouldExist()
     },
     goToOverview: () => {
