@@ -11,6 +11,9 @@ import { welcomePage, leftNav, userMenu } from '../views/welcome'
 describe('Welcome page', function () {
     before(function () {
         cy.login()
+    })
+
+    beforeEach(() => {
         welcomePage.whenGoToWelcomePage()
     })
 
