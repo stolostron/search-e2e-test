@@ -138,8 +138,8 @@ Cypress.Commands.add('logout', () => {
   })
 })
 
-Cypress.Commands.add('generateNamespace', () => {
-  return `search-${Date.now()}`
+Cypress.Commands.add('generateNamespace', (postfix=null) => {
+  return postfix ? `search-${postfix}` : `search-${Date.now()}`
 })
 
 Cypress.Commands.add('waitUsingSLA', () => {
