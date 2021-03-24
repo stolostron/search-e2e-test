@@ -35,15 +35,15 @@ fi
 touch ${RBAC_DIR}/htpasswd
 for access in cluster ns; do
   for role in cluster-admin admin edit view group; do
-    htpasswd -b ${RBAC_DIR}/htpasswd e2e-${role}-${access} ${OPTIONS_HUB_PASSWORD}
+    htpasswd -b ${RBAC_DIR}/htpasswd search-e2e-${role}-${access} ${OPTIONS_HUB_PASSWORD}
   done
 done
-oc create secret generic e2e-users --from-file=htpasswd=${RBAC_DIR}/htpasswd -n openshift-config || true
+oc create secret generic search-e2e-users --from-file=htpasswd=${RBAC_DIR}/htpasswd -n openshift-config || true
 rm ${RBAC_DIR}/htpasswd
 if [[ -z "$(oc -n openshift-config get oauth cluster -o jsonpath='{.spec.identityProviders}')" ]]; then
   oc patch -n openshift-config oauth cluster --type json --patch '[{"op":"add","path":"/spec/identityProviders","value":[]}]'
 fi
 if [ ! $(oc -n openshift-config get oauth cluster -o jsonpath='{.spec.identityProviders[*].name}' | grep -o 'search-e2e-htpasswd') ]; then
-  oc patch -n openshift-config oauth cluster --type json --patch "$(cat ${RBAC_DIR}/e2e-rbac-auth.json)"
+  oc patch -n openshift-config oauth cluster --type json --patch "$(cat ${RBAC_DIR}/search-e2e-rbac-auth.json)"
 fi
 oc apply --validate=false -k ${RBAC_DIR}
