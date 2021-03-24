@@ -1,11 +1,11 @@
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: e2e-cluster-admin-rolebinding
-  namespace: e2e-rbac-test-1
+  name: search-e2e-cluster-admin-rolebinding
+  namespace: search-e2e-rbac-test-1
 subjects:
   - kind: User
-    name: e2e-cluster-admin-ns
+    name: search-e2e-cluster-admin-ns
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -14,11 +14,11 @@ roleRef:
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: e2e-admin-rolebinding-rbactest1
-  namespace: e2e-rbac-test-1
+  name: search-e2e-admin-rolebinding-rbactest1
+  namespace: search-e2e-rbac-test-1
 subjects:
   - kind: User
-    name: e2e-admin-ns
+    name: search-e2e-admin-ns
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -27,11 +27,11 @@ roleRef:
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: e2e-admin-rolebinding-rbactest2
-  namespace: e2e-rbac-test-2
+  name: search-e2e-admin-rolebinding-rbactest2
+  namespace: search-e2e-rbac-test-2
 subjects:
   - kind: User
-    name: e2e-admin-ns
+    name: search-e2e-admin-ns
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -40,11 +40,11 @@ roleRef:
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: e2e-edit-rolebinding
-  namespace: e2e-rbac-test-1
+  name: search-e2e-edit-rolebinding
+  namespace: search-e2e-rbac-test-1
 subjects:
   - kind: User
-    name: e2e-edit-ns
+    name: search-e2e-edit-ns
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -53,11 +53,11 @@ roleRef:
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: e2e-view-rolebinding
-  namespace: e2e-rbac-test-1
+  name: search-e2e-view-rolebinding
+  namespace: search-e2e-rbac-test-1
 subjects:
   - kind: User
-    name: e2e-view-ns
+    name: search-e2e-view-ns
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -66,11 +66,11 @@ roleRef:
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: e2e-group-rolebinding
-  namespace: e2e-rbac-test-1
+  name: search-e2e-group-rolebinding
+  namespace: search-e2e-rbac-test-1
 subjects:
   - kind: Group
-    name: e2e-ns-group
+    name: search-e2e-ns-group
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
