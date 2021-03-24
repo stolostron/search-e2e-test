@@ -102,8 +102,8 @@ export const searchPage = {
   },
   shouldFindApplicationInNS: (appName, ns) => {
     searchBar.whenClearFilters()
-    searchBar.whenEnterTextInSearchBar('kind', 'application')
     searchBar.whenEnterTextInSearchBar('namespace', ns)
+    searchBar.whenEnterTextInSearchBar('kind', 'application')
     searchBar.whenEnterTextInSearchBar('name', appName)
     searchPage.shouldLoadResults()
   },
