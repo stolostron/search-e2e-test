@@ -9,7 +9,7 @@
         "type": "HTPasswd",
         "htpasswd": {
           "fileData": {
-            "name": "e2e-users"
+            "name": "search-e2e-users"
           }
         }
       }
