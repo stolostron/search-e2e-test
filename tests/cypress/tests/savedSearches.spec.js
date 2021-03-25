@@ -13,7 +13,10 @@ const queryDefaultNamespaceDesc = 'this is searching that each cluster should ha
 const queryOcmaNamespaceName = 'open-cluster-management-agent search'
 const queryOcmaNamespaceDesc = 'this is searching that each cluster should have open-cluster-management-agent'
 
-describe('Search: Saved searches', function(){
+const queryOCMaEditedName = `[E2E] default namespace search - ${Date.now()}`
+const queryOcmaEditedDesc = '[Created by Search E2E automation] This is searching that each cluster should have default namespace -2'
+
+describe('RHACM4K-412 - Search: Saved searches', function(){
 
   before(function() {
     cy.login()
@@ -41,5 +44,22 @@ describe('Search: Saved searches', function(){
   it(`[P2][Sev2][${squad}] should be able to find the saved searches`, function() {
     savedSearches.getSavedSearch(queryDefaultNamespaceName)
     savedSearches.getSavedSearch(queryOcmaNamespaceName)
+  })
+
+  it(`[P2][Sev2][${squad}] should be able to edit the saved searches`, function() {
+    savedSearches.editSavedSearch(queryDefaultNamespaceName, queryOCMaEditedName, queryOcmaEditedDesc)
+  })
+
+  it(`[P2][Sev2][${squad}] should be able to find the saved searches`, function() {
+    savedSearches.getSavedSearch(queryOCMaEditedName)
+    savedSearches.getSavedSearch(queryOcmaNamespaceName)
+  })
+
+  it(`[P2][Sev2][${squad}] should be able to revert back the edited saved searches`, function() {
+    savedSearches.editSavedSearch(queryOCMaEditedName, queryDefaultNamespaceName, queryDefaultNamespaceDesc)
+  })
+
+  it(`[P2][Sev2][${squad}] should be able to share the saved searches`, function() {
+    savedSearches.shareSavedSearch(queryDefaultNamespaceName)
   })
 })
