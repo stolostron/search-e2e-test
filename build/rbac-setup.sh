@@ -11,8 +11,8 @@
 #    
 
 set -e
-
-RBAC_DIR=${TRAVIS_BUILD_DIR:-.}/tests/config/rbac_yaml
+DIR="$( find $HOME -type d -name "search-e2e-test" )"
+RBAC_DIR=$DIR/tests/config/rbac_yaml
 if [ ! -d ${RBAC_DIR} ]; then
   echo "Error: Directory ${RBAC_DIR} does not exist. Not creating RBAC resources."
   exit 1
