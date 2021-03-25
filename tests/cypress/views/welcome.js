@@ -139,7 +139,7 @@ export const leftNav = {
     goToHome: () => {
         leftNav.openMenu()
         cy.get('#left-nav').contains('Home')
-        welcomePage.shouldExist()
+        // welcomePage.shouldExist() FIXME: Disabled until welcome page is updated.
     },
     goToOverview: () => {
         leftNav.openMenu()
