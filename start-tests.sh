@@ -78,8 +78,8 @@ echo -e "Setting env to run in: $NODE_ENV"
 echo "Create RBAC users"
 DIR="$( find $HOME -type d -name "search-e2e-test" )"
 
-chmod +x $DIR/rbac-setup.sh
-source $DIR/rbac-setup.sh
+chmod +x $DIR/build/rbac-setup.sh
+source $DIR/build/rbac-setup.sh
 
 section_title "Running Search API tests."
 npm run test:api
