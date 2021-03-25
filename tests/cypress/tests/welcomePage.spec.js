@@ -13,16 +13,14 @@ describe('Welcome page', function () {
         cy.login()
     })
 
-    /* FIXME: Disabling test until welcome page is updated.
     beforeEach(() => {
         welcomePage.whenGoToWelcomePage()
-    }) */
+    })
 
     after(function () {
         cy.logout()
     })
 
-    /* FIXME: Disabling tests until welcome page is updated.
     it(`[P1][Sev1][${squad}] should load`, function () {
         welcomePage.shouldExist()
     })
@@ -30,7 +28,7 @@ describe('Welcome page', function () {
     it(`[P3][Sev3][${squad}] validate links on Welcome page`, function () {
         welcomePage.validateSvcs()
         welcomePage.validateConnect()
-    }) */
+    })
     
     // Validate left navigation
     it(`[P3][Sev3][${squad}] should open left navigation`, function () {
@@ -60,7 +58,6 @@ describe('Welcome page', function () {
         leftNav.goToGRC()
     })
 
-    /* FIXME: Disabling tests until welcome page is updated.
     // Validate navigation from header icons
     it(`[P3][Sev3][${squad}] using header icons - should navigate to Search page`, function () {
         userMenu.openSearch()
@@ -84,5 +81,5 @@ describe('Welcome page', function () {
 
     it(`[P3][Sev3][${squad}] using header icons - should navigate to User page`, function () {
         userMenu.openUser()
-    }) */
+    })
 })
