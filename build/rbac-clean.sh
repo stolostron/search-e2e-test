@@ -6,9 +6,8 @@
 
 # From the grc-ui project directory, invoke as:
 #     ./build/rbac-clean.sh
-
 cd -
-RBAC_DIR=./tests/config/rbac_yaml
+RBAC_DIR=/tests/config/rbac_yaml
 
 if [ ! -d ${RBAC_DIR} ]; then
   echo "Error: Directory ${RBAC_DIR} does not exist."

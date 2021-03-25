@@ -76,7 +76,7 @@ fi
 echo -e "Setting env to run in: $NODE_ENV"
 
 echo "Create RBAC users"
-source ./build/rbac-setup.sh
+source /build/rbac-setup.sh
 
 section_title "Running Search API tests."
 npm run test:api
