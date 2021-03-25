@@ -11,8 +11,8 @@
 #    
 
 set -e
-cd -
-RBAC_DIR=tests/config/rbac_yaml
+
+RBAC_DIR=${TRAVIS_BUILD_DIR:-.}/tests/config/rbac_yaml
 if [ ! -d ${RBAC_DIR} ]; then
   echo "Error: Directory ${RBAC_DIR} does not exist. Not creating RBAC resources."
   exit 1
