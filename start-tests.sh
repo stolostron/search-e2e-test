@@ -77,6 +77,8 @@ echo -e "Setting env to run in: $NODE_ENV"
 
 echo "Create RBAC users"
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+pwd
+echo $DIR
 chmod +x $DIR/rbac-setup.sh
 source $DIR/rbac-setup.sh
 
