@@ -32,7 +32,7 @@ beforeEach(() => {
   Cypress.Cookies.preserveOnce('acm-access-token-cookie', '_oauth_proxy', 'XSRF-TOKEN', '_csrf')
   timeoutID = setTimeout(() => {
     throw Error('Test taking too long! It has been running for 5 minutes.')
-  }, 100 * 5)
+  }, 60000 * 5)
 })
 
 afterEach(() => {
