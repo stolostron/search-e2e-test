@@ -76,7 +76,7 @@ fi
 echo -e "Setting env to run in: $NODE_ENV"
 
 echo "Create RBAC users"
-source ${TRAVIS_BUILD_DIR:-.}/build/rbac-setup.sh
+source ./build/rbac-setup.sh
 
 section_title "Running Search API tests."
 npm run test:api
@@ -98,6 +98,6 @@ npm run test:merge-reports
 ls -R results
 
 echo "Clean up RBAC setup"
-source ${TRAVIS_BUILD_DIR:-.}/build/rbac-clean.sh
+source ./build/rbac-clean.sh
 
 exit $testCode
