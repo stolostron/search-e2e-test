@@ -76,10 +76,10 @@ fi
 echo -e "Setting env to run in: $NODE_ENV"
 
 echo "Create RBAC users"
-DIR="$( find $HOME -type d -name "search-e2e-test" )"
-
-chmod +x $DIR/build/rbac-setup.sh
-source $DIR/build/rbac-setup.sh
+# DIR="$( find $HOME -type d -name "search-e2e-test" )"
+# ./build/rbac-setup.sh path is not working in travis, using absolute path
+chmod +x /home/travis/build/open-cluster-management/search-e2e-test/build/rbac-setup.sh
+source /home/travis/build/open-cluster-management/search-e2e-test/build/rbac-setup.sh
 
 section_title "Running Search API tests."
 npm run test:api
@@ -101,7 +101,7 @@ npm run test:merge-reports
 ls -R results
 
 echo "Clean up RBAC setup"
-chmod +x $DIR/rbac-clean.sh
-source $DIR/rbac-clean.sh
+chmod +x /home/travis/build/open-cluster-management/search-e2e-test/build/rbac-clean.sh
+source /home/travis/build/open-cluster-management/search-e2e-test/build/rbac-clean.sh
 
 exit $testCode

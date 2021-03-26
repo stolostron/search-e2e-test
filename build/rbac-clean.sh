@@ -7,8 +7,9 @@
 # From the grc-ui project directory, invoke as:
 #     ./build/rbac-clean.sh
 
-DIR="$( find $HOME -type d -name "search-e2e-test" )"
-RBAC_DIR=$DIR/tests/config/rbac_yaml
+# DIR="$( find $HOME -type d -name "search-e2e-test" )"
+# using abosolute path, relative path is not working in travis
+RBAC_DIR=/home/travis/build/open-cluster-management/search-e2e-test/tests/config/rbac_yaml
 
 if [ ! -d ${RBAC_DIR} ]; then
   echo "Error: Directory ${RBAC_DIR} does not exist."
