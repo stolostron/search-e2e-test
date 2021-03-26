@@ -133,7 +133,7 @@ export const leftNav = {
         cy.get('#left-nav li').should('be.visible').and('have.length', 5)
     },
     validateMenu: () => {
-        cy.get('.hamburger-btn').click()
+        cy.wait(2000).get('.hamburger-btn').click()
         cy.get('#left-nav li').should('be.visible').and('have.length', 5)
         cy.get('.hamburger-btn').click()
         cy.get('#left-nav').should('not.exist')
