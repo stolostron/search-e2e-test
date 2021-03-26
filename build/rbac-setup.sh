@@ -13,7 +13,7 @@
 set -e
 # DIR="$( find $HOME -type d -name "search-e2e-test" )"
 # using abosolute path, relative path is not working in travis
-RBAC_DIR=/home/travis/build/open-cluster-management/search-e2e-test/tests/config/rbac_yaml
+RBAC_DIR=./tests/config/rbac_yaml
 if [ ! -d ${RBAC_DIR} ]; then
   echo "Error: Directory ${RBAC_DIR} does not exist. Not creating RBAC resources."
   exit 1
