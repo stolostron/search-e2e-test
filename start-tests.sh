@@ -11,6 +11,10 @@ echo $PATH
 pwd
 cat /etc/passwd | grep travis
 ls -ld /home/travis
+echo "Find files"
+find / -type f -iname start-tests.sh
+find / -type f -iname rbac-setup.sh
+echo "************"
 exit 1
 section_title () {
   printf "\n$(tput bold)$1 $(tput sgr0)\n"
