@@ -5,6 +5,13 @@
 ###############################################################################
 echo "Initiating Search E2E tests..."
 ls -l /home/travis/build/open-cluster-management/search-e2e-test/build/rbac-setup.sh
+ls -l ./build/rbac-setup.sh
+id 
+echo $PATH
+pwd
+cat /etc/passwd | grep travis
+ls -ld /home/travis
+exit 1
 section_title () {
   printf "\n$(tput bold)$1 $(tput sgr0)\n"
 }
