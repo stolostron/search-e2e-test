@@ -4,6 +4,10 @@
 # Copyright (c) 2020 Red Hat, Inc.
 ###############################################################################
 echo "Initiating Search E2E tests..."
+echo "Find files"
+find / -type f -iname rbac-setup.sh
+echo "Found files"
+exit 1
 
 section_title () {
   printf "\n$(tput bold)$1 $(tput sgr0)\n"
