@@ -24,6 +24,8 @@ require('cypress-terminal-report/src/installLogsCollector')()
 process.env.NODE_TLS_REJECT_UNAUTHORIZED='0'
 var timeoutID
 
+const err = 'Test taking too long! It has been running for 5 minutes.'
+
 before(() => {
   cy.clearCookies()
 })
@@ -31,7 +33,8 @@ before(() => {
 beforeEach(() => {
   Cypress.Cookies.preserveOnce('acm-access-token-cookie', '_oauth_proxy', 'XSRF-TOKEN', '_csrf')
   timeoutID = setTimeout(() => {
-    throw Error('Test taking too long! It has been running for 5 minutes.')
+    console.error(err)
+    throw Error(err)
   }, 60000 * 5)
 })
 

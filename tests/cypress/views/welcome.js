@@ -126,20 +126,22 @@ export const resourcePage = {
 
 export const leftNav = {
     openMenu: () => {
-        cy.get('.hamburger-btn').click()
+        // Adding a small delay before clicking the left-nav.
+        // It seems that when the page loads up, clicking the button straight away will not open the left-nav.
+        cy.wait(2000).get('.hamburger-btn').click()
         cy.get('.transition-enter-active').should('not.exist').wait(500) // Animation has finished.
         cy.get('#left-nav li').should('be.visible').and('have.length', 5)
     },
     validateMenu: () => {
-        cy.get('.hamburger-btn').click()
+        cy.wait(2000).get('.hamburger-btn').click()
         cy.get('#left-nav li').should('be.visible').and('have.length', 5)
         cy.get('.hamburger-btn').click()
         cy.get('#left-nav').should('not.exist')
     },
     goToHome: () => {
         leftNav.openMenu()
-        cy.get('#left-nav').contains('Home') // FIXME: .click() disabling click until welcome page is updated.
-        // welcomePage.shouldExist()
+        cy.get('#left-nav').contains('Home')
+        // welcomePage.shouldExist() FIXME: Disabled until welcome page is updated.
     },
     goToOverview: () => {
         leftNav.openMenu()
