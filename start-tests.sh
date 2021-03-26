@@ -4,18 +4,7 @@
 # Copyright (c) 2020 Red Hat, Inc.
 ###############################################################################
 echo "Initiating Search E2E tests..."
-ls -l /home/travis/build/open-cluster-management/search-e2e-test/build/rbac-setup.sh
-ls -l ./build/rbac-setup.sh
-id 
-echo $PATH
-pwd
-cat /etc/passwd | grep travis
-ls -ld /home/travis
-echo "Find files"
-find / -type f -iname start-tests.sh
-find / -type f -iname rbac-setup.sh
-echo "************"
-exit 1
+
 section_title () {
   printf "\n$(tput bold)$1 $(tput sgr0)\n"
 }
@@ -87,10 +76,8 @@ fi
 echo -e "Setting env to run in: $NODE_ENV"
 
 echo "Create RBAC users"
-# DIR="$( find $HOME -type d -name "search-e2e-test" )"
-# ./build/rbac-setup.sh path is not working in travis, using absolute path
-chmod +x /home/travis/build/open-cluster-management/search-e2e-test/build/rbac-setup.sh
-/home/travis/build/open-cluster-management/search-e2e-test/build/rbac-setup.sh
+chmod +x ./build/rbac-setup.sh
+source ./build/rbac-setup.sh
 
 section_title "Running Search API tests."
 npm run test:api
@@ -112,7 +99,7 @@ npm run test:merge-reports
 ls -R results
 
 echo "Clean up RBAC setup"
-chmod +x /home/travis/build/open-cluster-management/search-e2e-test/build/rbac-clean.sh
-/home/travis/build/open-cluster-management/search-e2e-test/build/rbac-clean.sh
+chmod +x ./build/rbac-clean.sh
+source ./build/rbac-clean.sh
 
 exit $testCode
