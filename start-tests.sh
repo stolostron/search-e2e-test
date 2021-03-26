@@ -4,7 +4,7 @@
 # Copyright (c) 2020 Red Hat, Inc.
 ###############################################################################
 echo "Initiating Search E2E tests..."
-
+ls -l /home/travis/build/open-cluster-management/search-e2e-test/build/rbac-setup.sh
 section_title () {
   printf "\n$(tput bold)$1 $(tput sgr0)\n"
 }
@@ -79,7 +79,7 @@ echo "Create RBAC users"
 # DIR="$( find $HOME -type d -name "search-e2e-test" )"
 # ./build/rbac-setup.sh path is not working in travis, using absolute path
 chmod +x /home/travis/build/open-cluster-management/search-e2e-test/build/rbac-setup.sh
-source /home/travis/build/open-cluster-management/search-e2e-test/build/rbac-setup.sh
+/home/travis/build/open-cluster-management/search-e2e-test/build/rbac-setup.sh
 
 section_title "Running Search API tests."
 npm run test:api
@@ -102,6 +102,6 @@ ls -R results
 
 echo "Clean up RBAC setup"
 chmod +x /home/travis/build/open-cluster-management/search-e2e-test/build/rbac-clean.sh
-source /home/travis/build/open-cluster-management/search-e2e-test/build/rbac-clean.sh
+/home/travis/build/open-cluster-management/search-e2e-test/build/rbac-clean.sh
 
 exit $testCode
