@@ -126,7 +126,9 @@ export const resourcePage = {
 
 export const leftNav = {
     openMenu: () => {
-        cy.get('.hamburger-btn').click()
+        // Adding a small delay before clicking the left-nav.
+        // It seems that when the page loads up, clicking the button straight away will not open the left-nav.
+        cy.wait(2000).get('.hamburger-btn').click()
         cy.get('.transition-enter-active').should('not.exist').wait(500) // Animation has finished.
         cy.get('#left-nav li').should('be.visible').and('have.length', 5)
     },
