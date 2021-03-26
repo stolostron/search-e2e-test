@@ -4,10 +4,6 @@
 # Copyright (c) 2020 Red Hat, Inc.
 ###############################################################################
 echo "Initiating Search E2E tests..."
-echo "Find files"
-find / -type f -iname rbac-setup.sh
-echo "Found files"
-exit 1
 
 section_title () {
   printf "\n$(tput bold)$1 $(tput sgr0)\n"
@@ -80,8 +76,8 @@ fi
 echo -e "Setting env to run in: $NODE_ENV"
 
 echo "Create RBAC users"
-chmod +x ./build/rbac-setup.sh
-source ./build/rbac-setup.sh
+chmod +x /rbac-setup.sh
+source /rbac-setup.sh
 
 section_title "Running Search API tests."
 npm run test:api
