@@ -74,10 +74,6 @@ clusterModes.forEach((clusterMode) => {
         searchBar.whenFilterByClusterAndNamespace(this.clusterName, this.namespace)
       })
 
-      after(function() {
-        searchPage.whenDeleteNamespace(this.namespace, { ignoreIfDoesNotExist: true })
-      })
-
       it(`[P3][Sev3][${squad}] should have expected count of relationships`, function() {
         searchPage.shouldLoadResults()
         searchPage.whenExpandRelationshipTiles()

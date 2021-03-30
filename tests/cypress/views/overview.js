@@ -7,12 +7,15 @@
 
 export const overviewPage = {
   whenGoToOverviewPage: () => cy.visit('/overview'),
-  whenAddProviderConnectionAction: () => cy.wait(500).get('#add-provider-connection').click(),
+  whenAddProviderConnectionAction: () => {
+    cy.get('#add-provider-connection').should('have.attr', 'href').and('contain', 'add-connection')
+    cy.get('#add-provider-connection').click()
+  },
   shouldLoad: () => {
     cy.get('.pf-c-page').should('contain', 'Overview')
     cy.get('.pf-c-spinner').should('not.exist')
   },
-  shouldLoadProviderConnectionPage: () => cy.get('.pf-c-page').should('contain', 'provider connection'),
+  shouldLoadProviderConnectionPage: () => cy.get('.pf-c-page'), // Checking only for if the page loaded, since the page will either say cluster management or provider connection.
   shouldHaveLinkToSearchPage: () => {
     cy.get('#clusters-summary a').contains(/[0-9]+/).then((c) => {
       let cluster = c.text()

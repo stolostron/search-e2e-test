@@ -25,8 +25,7 @@ describe('Search: Overview page', function () {
     overviewPage.whenAddProviderConnectionAction()
     overviewPage.shouldLoadProviderConnectionPage()
 
-    // TODO: Remove cy.go('back') after issue #10801 fixed. The bug prevents us from getting #acm-user-dropdown for the logout.
-    // Going back to previous page, so we can logout successfully.
+    // Going back since the cluster page uses a different DOM element id for the logout
     cy.go('back')
   })
 })
