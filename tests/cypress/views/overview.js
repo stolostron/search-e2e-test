@@ -12,7 +12,7 @@ export const overviewPage = {
     cy.get('.pf-c-page').should('contain', 'Overview')
     cy.get('.pf-c-spinner').should('not.exist')
   },
-  shouldLoadProviderConnectionPage: () => cy.get('.pf-c-page').should('contain', 'Cluster management'),
+  shouldLoadProviderConnectionPage: () => cy.get('.pf-c-page').should('contain', 'provider connection'),
   shouldHaveLinkToSearchPage: () => {
     cy.get('#clusters-summary a').contains(/[0-9]+/).then((c) => {
       let cluster = c.text()
