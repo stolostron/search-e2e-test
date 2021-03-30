@@ -17,7 +17,7 @@ describe('Search: Overview page', function () {
     overviewPage.shouldLoad()
   })
 
-  it(`[P2][Sev2][${squad}] overview page should have link to search page`, function () {
+  it(`[P2][Sev2][${squad}] should have link to search page`, function () {
     overviewPage.shouldHaveLinkToSearchPage()
   })
 
