@@ -18,14 +18,9 @@ const queryOcmaEditedDesc = '[Created by Search E2E automation] This is searchin
 
 describe('RHACM4K-412 - Search: Saved searches', function(){
 
-  before(function() {
-    cy.login()
-  })
-
   after(function() {
     savedSearches.whenDeleteSavedSearch(queryDefaultNamespaceName)
     savedSearches.whenDeleteSavedSearch(queryOcmaNamespaceName)
-    cy.logout()
   })
 
   it(`[P2][Sev2][${squad}] should find each managed cluster has default namespace`, function() {

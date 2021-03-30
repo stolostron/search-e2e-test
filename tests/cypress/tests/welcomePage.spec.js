@@ -11,7 +11,7 @@ import { overviewPage } from '../views/overview'
 
 describe('Welcome page', function () {
     before(function () {
-        cy.login()
+        // cy.login()
     })
 
     beforeEach(() => {

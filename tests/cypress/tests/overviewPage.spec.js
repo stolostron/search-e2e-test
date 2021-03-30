@@ -9,24 +9,24 @@ import { squad } from '../config'
 import { overviewPage } from '../views/overview'
 
 describe('Search: Overview page', function () {
-    before(function () {
-        cy.login()
-        overviewPage.whenGoToOverviewPage()
-    })
+  beforeEach(() => {
+    overviewPage.whenGoToOverviewPage()
+  })
 
-    after(function () {
-        cy.logout()
-    })
+  it(`[P1][Sev1][${squad}] should load the overview page`, function () {
+    overviewPage.shouldLoad()
+  })
 
-    it(`[P1][Sev1][${squad}] should load`, function () {
-        overviewPage.shouldLoad()
-    })
+  it(`[P2][Sev2][${squad}] overview page should have link to search page`, function () {
+    overviewPage.shouldHaveLinkToSearchPage()
+  })
 
-    // TODO: Skipping this test until link gets updated
-    // it(`[P2][Sev2][${squad}] add cloud connecttion action works`, function () {
-    //     overviewPage.whenAddCloudConnectionAction()
-    //     overviewPage.shouldLoadCloudConnectionPage()
-    //     cy.go('back')
-    // })
+  it(`[P2][Sev2][${squad}] add cloud connection action works`, function () {
+    overviewPage.whenAddProviderConnectionAction()
+    overviewPage.shouldLoadProviderConnectionPage()
 
+    // TODO: Remove cy.go('back') after issue #10801 fixed. The bug prevents us from getting #acm-user-dropdown for the logout.
+    // Going back to previous page, so we can logout successfully.
+    cy.go('back')
+  })
 })
