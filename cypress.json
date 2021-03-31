@@ -1,9 +1,9 @@
 {
   "testFiles": "**/*.spec.js",
   "chromeWebSecurity": false,
-  "defaultCommandTimeout": 10000,
+  "defaultCommandTimeout": 15000,
   "integrationFolder": "tests/cypress/tests",
-  "ignoreTestFiles": [""],
+  "ignoreTestFiles": ["welcomePage.spec.js"],
   "fixturesFolder": "tests/cypress/fixtures",
   "pluginsFile": "tests/cypress/plugins/index.js",
   "pageLoadTimeout": 90000,
