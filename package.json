@@ -6,11 +6,13 @@
     "test": "npm run test:clean-reports && npm run test:headless && npm run test:merge-reports",
     "test:api": "jest --colors",
     "test:clean-reports": "rm -rf ./results",
+    "test:debug": "cross-env NODE_ENV=debug ./start-tests.sh",
     "test:headed": "export LIVE_MODE=true && export BROWSER=chrome && ./start-tests.sh",
-    "test:headless": "set -e NODE_ENV=dev && ./start-tests.sh",
+    "test:headless": "cross-env NODE_ENV=development ./start-tests.sh",
     "test:merge-json": "npx mochawesome-merge results/json/*.json -o results/json/mochawesome-merge-results.json",
     "test:merge-reports": "npm run test:merge-xml && npm run test:merge-json",
-    "test:merge-xml": "npx junit-merge --dir=results -o results/merge-test-results.xml"
+    "test:merge-xml": "npx junit-merge --dir=results -o results/merge-test-results.xml",
+    "test:production": "cross-env NODE_ENV=production ./start-tests.sh"
   },
   "repository": {
     "type": "git",
@@ -36,6 +38,7 @@
   "devDependencies": {
     "@cypress/code-coverage": "^3.8.1",
     "chromedriver": "^87.0.5",
+    "cross-env": "^7.0.3",
     "cypress": "^5.3.0",
     "cypress-multi-reporters": "^1.4.0",
     "cypress-terminal-report": "^2.0.0",
