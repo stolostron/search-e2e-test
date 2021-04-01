@@ -7,23 +7,38 @@
 
 import { squad } from '../config'
 import { welcomePage } from '../views/welcome'
-const rbac_users = ['search-e2e-view-ns', 'search-e2e-edit-ns', 'search-e2e-admin-ns', 'search-e2e-admin-cluster']
+import { overviewPage } from '../views/overview'
+
+const rbac_users = ['search-e2e-admin-cluster', 'search-e2e-admin-ns', 'search-e2e-view-ns', 'search-e2e-edit-ns']
 const password = Cypress.env('OPTIONS_HUB_PASSWORD')
 const IDP = 'search-e2e-htpasswd'
 
-// For Polarion test case IDs RHACM4K-729, RHACM4K-918, RHACM4K-922 and RHACM4K-923
 describe('RBAC users to read the Welcome pages and links', function () {
+    const welcomePagePolarionIDs = ['729', '918', '922', '923']
+    const overviewPagePolarionIDs = ['731', '921', '919', '920']
     afterEach(function () {
         cy.logout()
     })
-    for (const user of rbac_users)
+    for (const [index, user] of rbac_users.entries())
     {
         var roleAccess = user.split('-')
-        it('[P1][Sev1]['+squad+'] As an user with name '+user+' with '+roleAccess[3]+'-role-binding of default '+roleAccess[2]+' role, the user can read the Welcome page.', function () {
+        it('RHACM4K-'+welcomePagePolarionIDs[index]+'[P1][Sev1]['+squad+'] As an user with name '+user+' with '+roleAccess[2]+'-role-binding of default '+roleAccess[1]+' role, the user can read the Welcome page.', function () {
             cy.login(user, password, IDP)
             welcomePage.whenGoToWelcomePage()
             welcomePage.validateSvcs()
             welcomePage.validateConnect()
+        })
+    }
+    for (const [index, user] of rbac_users.entries())
+    {
+        var roleAccess = user.split('-')
+        it('RHACM4K-'+overviewPagePolarionIDs[index]+'[P1][Sev1]['+squad+'] As an user with name '+user+' with '+roleAccess[2]+'-role-binding of default '+roleAccess[1]+' role, the user can read the Overview page.', function () {
+            cy.login(user, password, IDP)
+            overviewPage.whenGoToOverviewPage()
+            overviewPage.whenAddCloudConnectionAction()
+            overviewPage.shouldLoad()
+            overviewPage.shouldLoadCloudConnectionPage()
+            overviewPage.shouldHaveLinkToSearchPage()
         })
     }
 })
