@@ -13,7 +13,7 @@ const rbac_users = ['search-e2e-admin-cluster', 'search-e2e-admin-ns', 'search-e
 const password = Cypress.env('OPTIONS_HUB_PASSWORD')
 const IDP = 'search-e2e-htpasswd'
 
-describe('RBAC users to read the Welcome pages and links', function () {
+describe('RBAC users to read the Welcome and Overview page', function () {
     const welcomePagePolarionIDs = ['729', '918', '922', '923']
     const overviewPagePolarionIDs = ['731', '921', '919', '920']
     afterEach(function () {
