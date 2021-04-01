@@ -36,8 +36,6 @@ describe('RBAC users to read the Welcome and Overview page', function () {
             cy.login(user, password, IDP)
             overviewPage.whenGoToOverviewPage()
             overviewPage.shouldLoad()
-            overviewPage.whenAddCloudConnectionAction()
-            overviewPage.shouldLoadCloudConnectionPage()
             overviewPage.shouldHaveLinkToSearchPage()
         })
     }
