@@ -22,7 +22,7 @@ describe('RBAC users to read the Welcome and Overview page', function () {
     for (const [index, user] of rbac_users.entries())
     {
         var roleAccess = user.split('-')
-        it('RHACM4K-'+welcomePagePolarionIDs[index]+'[P1][Sev1]['+squad+'] As an user with name '+user+' with '+roleAccess[2]+'-role-binding of default '+roleAccess[1]+' role, the user can read the Welcome page.', function () {
+        it('RHACM4K-'+welcomePagePolarionIDs[index]+'[P1][Sev1]['+squad+'] As an user with name '+user+' with '+roleAccess[3]+'-role-binding of default '+roleAccess[2]+' role, the user can read the Welcome page.', function () {
             cy.login(user, password, IDP)
             welcomePage.whenGoToWelcomePage()
             welcomePage.validateSvcs()
@@ -32,7 +32,7 @@ describe('RBAC users to read the Welcome and Overview page', function () {
     for (const [index, user] of rbac_users.entries())
     {
         var roleAccess = user.split('-')
-        it('RHACM4K-'+overviewPagePolarionIDs[index]+'[P1][Sev1]['+squad+'] As an user with name '+user+' with '+roleAccess[2]+'-role-binding of default '+roleAccess[1]+' role, the user can read the Overview page.', function () {
+        it('RHACM4K-'+overviewPagePolarionIDs[index]+'[P1][Sev1]['+squad+'] As an user with name '+user+' with '+roleAccess[3]+'-role-binding of default '+roleAccess[2]+' role, the user can read the Overview page.', function () {
             cy.login(user, password, IDP)
             overviewPage.whenGoToOverviewPage()
             overviewPage.whenAddCloudConnectionAction()
