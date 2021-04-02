@@ -99,7 +99,7 @@ npm run test:merge-reports
 ls -R results
 
 echo "Clean up RBAC setup"
-chmod +x ./build/rbac-clean.sh
-source ./build/rbac-clean.sh
+chmod +x ./rbac-clean.sh
+source ./rbac-clean.sh
 
 exit $testCode
