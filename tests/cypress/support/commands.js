@@ -38,7 +38,7 @@ Cypress.Commands.add('login', (OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OC_IDP) =
   var user = OPTIONS_HUB_USER || Cypress.env('OPTIONS_HUB_USER');
   var password = OPTIONS_HUB_PASSWORD || Cypress.env('OPTIONS_HUB_PASSWORD');
   var idp = OC_IDP || Cypress.env('OC_IDP');
-  cy.visit('/')
+  cy.visit('/overview')
   cy.get('body').then(body => {
     // Check if logged in
     if (body.find('#header').length === 0) {
@@ -49,7 +49,6 @@ Cypress.Commands.add('login', (OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OC_IDP) =
       cy.get('#inputUsername', { timeout: 20000 }).click().focused().type(user)
       cy.get('#inputPassword', { timeout: 20000 }).click().focused().type(password)
       cy.get('button[type="submit"]', { timeout: 20000 }).click()
-      
       cy.get('.app-header', { timeout: 30000 }).should('exist')
     }
   })
@@ -137,8 +136,8 @@ Cypress.Commands.add('logout', () => {
   })
 })
 
-Cypress.Commands.add('generateNamespace', () => {
-  return 'search-' + Date.now();
+Cypress.Commands.add('generateNamespace', (postfix=null) => {
+  return postfix ? `search-${postfix}` : `search-${Date.now()}`
 })
 
 Cypress.Commands.add('waitUsingSLA', () => {

@@ -22,17 +22,12 @@ clusterModes.forEach((clusterMode) => {
 
   describe('Search: Search in ' + clusterMode.label + ' Cluster', function() {
     before(function() {
-      cy.login()
       clusterMode.valueFn().as('clusterName')
       cy.generateNamespace().as('namespace')
     })
 
     beforeEach(function() {
       searchPage.whenGoToSearchPage()
-    })
-
-    after(function() {
-      cy.logout()
     })
 
     it(`[P1][Sev1][${squad}] should load the search page`, function() {
@@ -77,10 +72,6 @@ clusterModes.forEach((clusterMode) => {
     describe('search resources', function() {
       beforeEach(function() {
         searchBar.whenFilterByClusterAndNamespace(this.clusterName, this.namespace)
-      })
-
-      after(function() {
-        searchPage.whenDeleteNamespace(this.namespace, { ignoreIfDoesNotExist: true })
       })
 
       it(`[P3][Sev3][${squad}] should have expected count of relationships`, function() {

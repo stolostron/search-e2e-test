@@ -61,7 +61,6 @@ export const searchPage = {
   shouldLoad:() => {
     cy.get('.react-tags', {timeout: 20000}).should('exist')
     cy.get('.react-tags__search-input', {timeout: 20000}).should('exist')
-    // cy.get('.saved-search-query-header', { timeout: 20000}).should('exist')
   },
 
   shouldFindNoResults: () => {
@@ -103,8 +102,8 @@ export const searchPage = {
   },
   shouldFindApplicationInNS: (appName, ns) => {
     searchBar.whenClearFilters()
-    searchBar.whenEnterTextInSearchBar('kind', 'application')
     searchBar.whenEnterTextInSearchBar('namespace', ns)
+    searchBar.whenEnterTextInSearchBar('kind', 'application')
     searchBar.whenEnterTextInSearchBar('name', appName)
     searchPage.shouldLoadResults()
   },
