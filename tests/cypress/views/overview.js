@@ -5,7 +5,6 @@
 
 /// <reference types="cypress" />
 
-
 export const overviewPage = {
     whenGoToOverviewPage: () => cy.visit('/overview'),
     whenAddProviderConnectionAction: () => {
@@ -22,9 +21,9 @@ export const overviewPage = {
         let cluster = c.text()
         cy.wrap(c).click().then((p) => {
           cy.wrap(p).get('.react-tags__selected').should('have.length', 1).invoke('text').should('eq', 'kind:cluster')
-          if(cluster!=="0")
+          if(cluster!==0)
           {
-            cy.wrap(p).get('.pf-c-expandable-section__toggle-text').invoke('text').should('equal', 'Cluster ('+cluster+')')
+              cy.wrap(p).get('.pf-c-expandable-section__toggle-text').invoke('text').should('equal', 'Cluster ('+cluster+')')
           }
         })
       })
@@ -40,4 +39,5 @@ export const overviewPage = {
         })
       })
     },
-}
+  }
+  
