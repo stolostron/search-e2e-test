@@ -133,6 +133,9 @@ Cypress.Commands.add('logout', () => {
     oauthIssuer(token.value).then((issuer) => {
       cy.get('#acm-user-dropdown', {timeout: 20000}).click().then(() => cy.get('#acm-logout').click().then(() => cy.url().should('include', issuer)))
     })
+    // Clearing cookies for rbac users
+    cy.location('pathname').should('match', new RegExp('/oauth/authorize(\\?.*)?$'))
+      .clearCookies()
   })
 })
 
