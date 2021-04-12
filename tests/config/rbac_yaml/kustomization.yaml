@@ -1,0 +1,5 @@
+resources:
+- search-e2e-rbac-namespace.yaml
+- search-e2e-rbac-group.yaml
+- search-e2e-rbac-clusterrolebinding.yaml
+- search-e2e-rbac-rolebinding.yaml

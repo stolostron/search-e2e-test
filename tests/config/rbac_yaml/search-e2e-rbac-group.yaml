@@ -1,0 +1,13 @@
+apiVersion: user.openshift.io/v1
+kind: Group
+metadata:
+  name: search-e2e-cluster-group
+users:
+  - search-e2e-group-cluster
+---
+apiVersion: user.openshift.io/v1
+kind: Group
+metadata:
+  name: search-e2e-ns-group
+users:
+  - search-e2e-group-ns
