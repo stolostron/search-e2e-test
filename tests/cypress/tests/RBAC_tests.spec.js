@@ -11,11 +11,14 @@ import { overviewPage } from '../views/overview'
 const rbac_users = ['search-e2e-admin-cluster', 'search-e2e-admin-ns', 'search-e2e-view-ns', 'search-e2e-edit-ns']
 const password = Cypress.env('OPTIONS_HUB_PASSWORD')
 const IDP = 'search-e2e-htpasswd'
+var skip = false
 
 describe('RBAC users to read the Overview page', function () {
     const overviewPagePolarionIDs = ['731', '921', '919', '920']
     afterEach(function () {
-        cy.logout()
+        if (!skip) { // Adding a skip, since by default we are logging out at the end.
+            cy.logout()
+        }
     })
     for (const [index, user] of rbac_users.entries())
     {
@@ -26,5 +29,9 @@ describe('RBAC users to read the Overview page', function () {
             overviewPage.shouldLoad()
             overviewPage.shouldHaveLinkToSearchPage()
         })
+
+        if (index === rbac_users.length - 1) {
+            skip = true
+        }
     }
 })
