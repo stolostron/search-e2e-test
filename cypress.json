@@ -1,9 +1,9 @@
 {
-  "testFiles": "**/*.spec.js",
+  "testFiles": "**/**/*.spec.js",
   "chromeWebSecurity": false,
-  "defaultCommandTimeout": 15000,
+  "defaultCommandTimeout": 20000,
   "integrationFolder": "tests/cypress/tests",
-  "ignoreTestFiles": ["welcomePage.spec.js"],
+  "ignoreTestFiles": [],
   "fixturesFolder": "tests/cypress/fixtures",
   "pluginsFile": "tests/cypress/plugins/index.js",
   "pageLoadTimeout": 90000,
@@ -33,5 +33,6 @@
   },
   "retries": 2,
   "viewportHeight": 1050,
-  "viewportWidth": 1680
+  "viewportWidth": 1680,
+  "projectId": "7mmkvm"
 }

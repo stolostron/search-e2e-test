@@ -26,7 +26,7 @@ var timeoutID
 
 const err = 'Test taking too long! It has been running for 5 minutes.'
 
-before(() => {
+before(function() {
   cy.clearCookies()
   cy.login()
 })
@@ -40,7 +40,7 @@ beforeEach(() => {
 })
 
 after(() => {
-  cy.logout()
+  // cy.logout()
 })
 
 afterEach(() => {

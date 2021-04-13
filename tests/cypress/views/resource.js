@@ -50,7 +50,7 @@ export const resourcePage = {
     cy.get('.bx--btn--primary', {timeout: 30000}).click();
 
     if (previouslyCreated) { // Test both scenarios if resource already exist or not.
-      cy.get('.bx--inline-notification__subtitle').should('exist').contains('already exist')
+      cy.get('.bx--inline-notification__subtitle').contains('already exist')
     } else {
       cy.get('.bx--inline-notification__subtitle').should('not.exist')
       cy.get('.bx--inline-notification', { timeout: 30000 }).should('not.exist');

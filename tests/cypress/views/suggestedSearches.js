@@ -17,7 +17,7 @@ export const savedSearches = {
   },
   whenRelatedItemsExist:()  => {
     cy.get('.pf-l-gallery', {timeout: 20000}).get('.pf-c-skeleton', {timeout: 20000}).should('not.exist')
-    cy.get('.pf-l-gallery', {timeout: 20000}).children().should('exist').and('have.length.above', 1)
+    cy.get('.pf-l-gallery', {timeout: 20000}).children().and('have.length.above', 1)
   },
   whenGetRelatedItemDetails:(resource) => {
     return cy.contains('.search--resource-table', resource, {timeout: 20000})

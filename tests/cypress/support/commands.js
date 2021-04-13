@@ -34,6 +34,10 @@ import { getOpt } from '../scripts/utils'
 import 'cypress-wait-until'
 import { oauthIssuer } from '../views/welcome'
 
+export const generateNamespace = (postfix=null) => {
+  return postfix ? `search-${postfix}` : `search-${Date.now()}`
+}
+
 Cypress.Commands.add('login', (OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OC_IDP) => {
   var user = OPTIONS_HUB_USER || Cypress.env('OPTIONS_HUB_USER');
   var password = OPTIONS_HUB_PASSWORD || Cypress.env('OPTIONS_HUB_PASSWORD');
@@ -46,10 +50,10 @@ Cypress.Commands.add('login', (OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OC_IDP) =
       // Check if identity providers are configured
       if (body.find('form').length === 0)
         cy.contains(idp).click()
-      cy.get('#inputUsername', { timeout: 20000 }).click().focused().type(user)
-      cy.get('#inputPassword', { timeout: 20000 }).click().focused().type(password)
-      cy.get('button[type="submit"]', { timeout: 20000 }).click()
-      cy.get('.app-header', { timeout: 30000 }).should('exist')
+      cy.get('#inputUsername').click().focused().type(user)
+      cy.get('#inputPassword').click().focused().type(password)
+      cy.get('button[type="submit"]').click()
+      cy.get('.app-header')
     }
   })
 })
@@ -137,10 +141,6 @@ Cypress.Commands.add('logout', () => {
     cy.location('pathname').should('match', new RegExp('/oauth/authorize(\\?.*)?$'))
       .clearCookies()
   })
-})
-
-Cypress.Commands.add('generateNamespace', (postfix=null) => {
-  return postfix ? `search-${postfix}` : `search-${Date.now()}`
 })
 
 Cypress.Commands.add('waitUsingSLA', () => {
