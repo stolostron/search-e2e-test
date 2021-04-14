@@ -17,6 +17,9 @@ const queryOCMaEditedName = `[E2E] default namespace search - ${Date.now()}`
 const queryOcmaEditedDesc = '[Created by Search E2E automation] This is searching that each cluster should have default namespace -2'
 
 describe('RHACM4K-412 - Search: Saved searches', function(){
+  before(function() {
+    cy.login() // Every individual file requires for us to login during the test execution.
+  })
 
   after(function() {
     savedSearches.whenDeleteSavedSearch(queryDefaultNamespaceName)

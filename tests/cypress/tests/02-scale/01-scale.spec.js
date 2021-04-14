@@ -8,45 +8,41 @@
 import { squad } from '../../config'
 import { deploymentDetailPage } from '../../views/deploymentDetailPage'
 import { searchPage, searchBar } from '../../views/search'
+import { clusterModes, getNamespace } from '../../scripts/cliHelper'
 
-const clusterModes = [{ label: 'Local', valueFn: () => cy.wrap('local-cluster'), skip: false }]//,
-                      // { label: 'Managed', valueFn: () => cliHelper.getTargetManagedCluster(), skip: false }];
 
 clusterModes.forEach((clusterMode) => {
   if (clusterMode.skip) {
     return;
   }
 
-  describe(`Search: ${clusterMode.label} Cluster - Modify Resource`, function() {
+  describe(`Search: ${clusterMode.label} Cluster - Scale Resource`, function() {
     before(function() {
+      cy.login() // Every individual file requires for us to login during the test execution.
       clusterMode.valueFn().as('clusterName')
-      cy.generateNamespace().as('namespace')
     })
 
     beforeEach(function() {
       searchPage.whenGoToSearchPage()
-    })
-
-    beforeEach(function() {
-      searchBar.whenFilterByClusterAndNamespace(this.clusterName, this.namespace)
+      searchBar.whenFilterByClusterAndNamespace(this.clusterName, getNamespace(clusterMode.label))
     })
 
     it(`[P2][Sev2][${squad}] should delete pod`, function() {
       searchBar.whenFilterByKind('pod')
-      searchPage.whenDeleteResourceDetailItem('pod', this.namespace + '-deployment')
-      searchPage.shouldBeResourceDetailItemCreatedFewSecondsAgo('pod', this.namespace + '-deployment')
+      searchPage.whenDeleteResourceDetailItem('pod', getNamespace(clusterMode.label) + '-deployment')
+      searchPage.shouldBeResourceDetailItemCreatedFewSecondsAgo('pod', getNamespace(clusterMode.label) + '-deployment')
     });
 
     it(`[P3][Sev3][${squad}] should scale deployment`, function() {
       searchBar.whenFilterByKind('deployment')
-      searchPage.whenGoToResourceDetailItemPage('deployment', this.namespace + '-deployment')
+      searchPage.whenGoToResourceDetailItemPage('deployment', getNamespace(clusterMode.label) + '-deployment')
       deploymentDetailPage.whenScaleReplicasTo(2)
       cy.waitUsingSLA() // WORKAROUND to wait for resource to get indexed. Better solution is to retry instead of a hard wait.
     })
 
     it(`[P3][Sev3][${squad}] should verify that the deployment scaled`, function() {
       searchBar.whenFilterByKind('deployment')
-      searchBar.whenFilterByName(this.namespace + '-deployment')
+      searchBar.whenFilterByName(getNamespace(clusterMode.label) + '-deployment')
       searchPage.shouldFindRelationshipTile('pod', '2')
     })
   })

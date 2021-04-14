@@ -9,6 +9,10 @@ import { squad } from '../../config/index'
 import { searchPage } from '../../views/search'
 
 describe('Search: Search Page', () => {
+  before(function() {
+    cy.login() // Every individual file requires for us to login during the test execution.
+  })
+  
   beforeEach(function() {
     searchPage.whenGoToSearchPage()
   })

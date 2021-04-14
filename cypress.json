@@ -1,7 +1,7 @@
 {
   "testFiles": "**/**/*.spec.js",
   "chromeWebSecurity": false,
-  "defaultCommandTimeout": 20000,
+  "defaultCommandTimeout": 15000,
   "integrationFolder": "tests/cypress/tests",
   "ignoreTestFiles": [],
   "fixturesFolder": "tests/cypress/fixtures",
@@ -11,7 +11,7 @@
   "screenshotsFolder" : "results/screenshots",
   "supportFile": "tests/cypress/support/index.js",
   "videosFolder": "results/videos",
-  "videoUploadOnPasses": false,
+  "videoUploadOnPasses": true,
   "watchForFileChanges": true,
   "nodeVersion": "system",
   "env": {

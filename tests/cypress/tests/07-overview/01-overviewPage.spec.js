@@ -9,6 +9,10 @@ import { squad } from '../../config'
 import { overviewPage } from '../../views/overview'
 
 describe('Search: Overview page', function () {
+  before(function() {
+    cy.login() // Every individual file requires for us to login during the test execution.
+  })
+
   beforeEach(() => {
     overviewPage.whenGoToOverviewPage()
   })

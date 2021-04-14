@@ -8,7 +8,7 @@
 import { squad } from '../../config'
 import { resourcePage } from '../../views/resource'
 import { searchPage } from '../../views/search'
-import { clusterModes } from '../../scripts/cliHelper'
+import { clusterModes, getNamespace } from '../../scripts/cliHelper'
 
 clusterModes.forEach((clusterMode) => {
   if (clusterMode.skip) {
@@ -16,6 +16,11 @@ clusterModes.forEach((clusterMode) => {
   }
 
   describe(`Search: ${clusterMode.label} Cluster - Create Deployment`, function() {
+    before(function() {
+      cy.login() // Every individual file requires for us to login during the test execution.
+      clusterMode.valueFn().as('clusterName')
+    })
+
     beforeEach(function() {
       searchPage.whenGoToSearchPage()
     })
@@ -23,16 +28,14 @@ clusterModes.forEach((clusterMode) => {
     it(`[P1][Sev1][${squad}] should create deployment from create resource UI`, function() {
       resourcePage.whenGoToResourcePage()
       resourcePage.whenSelectTargetCluster(this.clusterName)
-      resourcePage.whenCreateDeployment(this.namespace, this.namespace + '-deployment', 'openshift/hello-openshift')
+      resourcePage.whenCreateDeployment(getNamespace(clusterMode.label), getNamespace(clusterMode.label) + '-deployment', 'openshift/hello-openshift')
     })
 
     it(`[P1][Sev1][${squad}] should verify that deployment resource exist`, function() {
       cy.waitUsingSLA()
       resourcePage.whenGoToResourcePage()
       resourcePage.whenSelectTargetCluster(this.clusterName)
-      resourcePage.whenCreateDeployment(this.namespace, this.namespace + '-deployment', 'openshift/hello-openshift', true)
-      cy.logout() // WORKAROUND, we shouldn't need to logout to see new resources. Potential product bug to investigate.
-      cy.login()
+      resourcePage.whenCreateDeployment(getNamespace(clusterMode.label), getNamespace(clusterMode.label) + '-deployment', 'openshift/hello-openshift', true)
     })
   })
 });

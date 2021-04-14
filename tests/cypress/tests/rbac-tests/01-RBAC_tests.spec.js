@@ -15,6 +15,10 @@ var skip = false
 
 describe('RBAC users to read the Overview page', function () {
     const overviewPagePolarionIDs = ['731', '921', '919', '920']
+    before(function() {
+        cy.login() // Every individual file requires for us to login during the test execution.
+    })
+
     afterEach(function () {
         if (!skip) { // Adding a skip, since by default we are logging out at the end.
             cy.logout()

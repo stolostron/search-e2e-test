@@ -2,9 +2,8 @@
 
 const squad = require('../../config').get('squadName')
 
-describe('Search API: Validate autocomplete', () => {
-
-    test(`[P3][Sev3][${squad}][PLACEHOLDER] This test not yet implemented.`, (done) => {
-        done()
-    })
+describe.skip('Search API: Validate autocomplete', () => {
+  test(`[P3][Sev3][${squad}][PLACEHOLDER] This test not yet implemented.`, (done) => {
+    done()
+  })
 })

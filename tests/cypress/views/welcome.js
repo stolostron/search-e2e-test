@@ -7,8 +7,7 @@
 
 import { clustersPage } from '../views/clusters'
 
-var apiUrl =
-    Cypress.config().baseUrl.replace("multicloud-console.apps", "api") + ":6443";
+var apiUrl = Cypress.config().baseUrl.replace("multicloud-console.apps", "api") + ":6443";
 
 const consolePublic = (token) => {
     return cy.request({

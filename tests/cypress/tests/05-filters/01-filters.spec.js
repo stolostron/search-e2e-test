@@ -32,6 +32,7 @@ filtersRegistry.createFilter('status', { strategies: [ simple, multipleValues(2)
 
 describe('Search: Search using filters', function() {
   before(function() {
+    cy.login() // Every individual file requires for us to login during the test execution.
     searchPage.whenGoToSearchPage()
   })
   

@@ -13,5 +13,6 @@ module.exports = {
             }
         ]
     ],
-    testResultsProcessor: "jest-junit"
+    testResultsProcessor: "jest-junit",
+    testPathIgnorePatterns: ["/api/autocomplete.test.js"]
 };

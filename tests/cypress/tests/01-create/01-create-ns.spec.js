@@ -5,18 +5,19 @@
 
 /// <reference types="cypress" />
 
-import { squad, namespace } from '../../config'
+import { squad } from '../../config'
 import { resourcePage } from '../../views/resource'
-import { searchPage, searchBar } from '../../views/search'
-import { clusterModes } from '../../scripts/cliHelper'
+import { searchPage } from '../../views/search'
+import { clusterModes, getNamespace } from '../../scripts/cliHelper'
 
 clusterModes.forEach((clusterMode) => {
   if (clusterMode.skip) {
     return;
   }
 
-  describe(`Search: ${clusterMode.label} Cluster - Create NS`, function() {
+  describe(`Search: ${clusterMode.label} Cluster - Create namespace`, function() {
     before(function() {
+      cy.login() // Every individual file requires for us to login during the test execution.
       clusterMode.valueFn().as('clusterName')
     })
 
@@ -24,21 +25,16 @@ clusterModes.forEach((clusterMode) => {
       searchPage.whenGoToSearchPage()
     })
 
-    it(`[P1][Sev1][${squad}] should not see any cluster and namespace`, function() {
-      searchBar.whenFilterByClusterAndNamespace(this.clusterName, namespace)
-      searchPage.shouldFindNoResults()
-    })
-
     it(`[P1][Sev1][${squad}] should create namespace from create resource UI`, function() {
       resourcePage.whenGoToResourcePage()
       resourcePage.whenSelectTargetCluster(this.clusterName)
-      resourcePage.whenCreateNamespace(namespace)
+      resourcePage.whenCreateNamespace(getNamespace(clusterMode.label))
     })
 
     it(`[P1][Sev1][${squad}] should verify that namespace already exist`, function() {
       resourcePage.whenGoToResourcePage()
       resourcePage.whenSelectTargetCluster(this.clusterName)
-      resourcePage.whenCreateNamespace(namespace, true)
+      resourcePage.whenCreateNamespace(getNamespace(clusterMode.label), true)
     })
   })
 });

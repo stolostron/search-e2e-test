@@ -10,6 +10,9 @@ import { searchPage } from '../../views/search'
 import { savedSearches, searchBar } from '../../views/suggestedSearches'
 
 describe('Search: Verify the suggested search templates', function() {
+  before(function() {
+    cy.login() // Every individual file requires for us to login during the test execution.
+  })
 
   beforeEach(function() {
     searchPage.whenGoToSearchPage()

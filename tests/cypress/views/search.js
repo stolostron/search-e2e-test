@@ -131,11 +131,11 @@ export const searchBar = {
     cy.get('.react-tags__search-input').click()
     searchBar.whenSuggestionsAreAvailable(property, ignoreIfDoesNotExist)
 
-    cy.get('.react-tags__search-input').type(' ').wait(100)
+    cy.get('.react-tags__search-input').type(' ')
 
     if (value && value !== null) {
       searchBar.whenSuggestionsAreAvailable(value, ignoreIfDoesNotExist)
-      cy.get('.react-tags__search-input').type(' ').wait(100)
+      cy.get('.react-tags__search-input').type(' ')
     }
   },
   whenFilterByCluster:(cluster) => {
@@ -153,7 +153,7 @@ export const searchBar = {
   },
   whenSelectFirstSuggestedValue:() => {
     searchBar.shouldSuggestValues()
-    cy.get('.react-tags__suggestions li[role="option"]', { timeout: 10000 }).eq(1).click()
+    cy.get('.react-tags__suggestions li[role="option"]').eq(1).click()
   },
   shouldSuggestValues:() => {
     cy.waitUntilNotContains('.react-tags__suggestions', SEARCH_MESSAGES_LOADING_SUGGESTIONS, { timeout: 60000, interval: 1000 })

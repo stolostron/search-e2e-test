@@ -19,6 +19,7 @@
 // ***********************************************************
 
 import './commands'
+import { generateNamespace } from '../scripts/cliHelper'
 require('cypress-terminal-report/src/installLogsCollector')()
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED='0'
@@ -28,7 +29,11 @@ const err = 'Test taking too long! It has been running for 5 minutes.'
 
 before(function() {
   cy.clearCookies()
-  cy.login()
+
+  if (!Cypress.env('LOCAL_NS') || !Cypress.env('MANAGED_NS')) {
+    Cypress.env('LOCAL_NS', generateNamespace())
+    Cypress.env('MANAGED_NS', generateNamespace(`man-${Date.now()}`))
+  }
 })
 
 beforeEach(() => {
@@ -37,10 +42,6 @@ beforeEach(() => {
     console.error(err)
     throw Error(err)
   }, 60000 * 5)
-})
-
-after(() => {
-  // cy.logout()
 })
 
 afterEach(() => {
