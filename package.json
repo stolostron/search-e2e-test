@@ -37,11 +37,11 @@
   },
   "devDependencies": {
     "@cypress/code-coverage": "^3.9.4",
-    "chromedriver": "^87.0.7",
+    "chromedriver": "^90.0.0",
     "cross-env": "^7.0.3",
     "cypress": "^7.1.0",
     "cypress-multi-reporters": "^1.5.0",
-    "cypress-terminal-report": "^2.4.0",
+    "cypress-terminal-report": "^3.0.3",
     "cypress-wait-until": "^1.7.1",
     "eslint-plugin-cypress": "^2.11.2",
     "geckodriver": "^1.22.3",
