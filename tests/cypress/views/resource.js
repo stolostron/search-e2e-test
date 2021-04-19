@@ -9,9 +9,9 @@ import { searchBar } from "./search";
 const typeDelay = 1
 
 export const resourcePage = {
-  whenGoToResourcePage: () => cy.get('#acm-create-resource', { timeout: 20000 }).click(),
+  whenGoToResourcePage: () => cy.get('#acm-create-resource').click(),
   whenSelectTargetCluster: (clusterName) => {
-    cy.get('#create-resource-select', { timeout: 20000 }).click()
+    cy.get('#create-resource-select').click()
     cy.get('.bx--checkbox-wrapper input[name="' + clusterName + '"]').parent().click()
   },
   whenCreateNamespace: (namespace, previouslyCreated=false) => {

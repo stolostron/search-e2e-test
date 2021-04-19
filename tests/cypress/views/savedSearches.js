@@ -42,10 +42,10 @@ export const savedSearches = {
     for (var key in filterOptions){
       searchBar.whenEnterTextInSearchBar(key, filterOptions[key])
     }
-    cy.get('.pf-c-button.pf-m-primary',{timeout: 20000}).contains('Save search').focus().click()
-    cy.get('#add-query-name', {timeout: 20000}).type(queryName)
-    cy.get('#add-query-desc', {timeout: 20000}).type(queryDesc)
-    cy.get('.pf-c-modal-box__footer', {timeout: 20000}).contains('Save').focus().click()
+    cy.get('.pf-c-button.pf-m-primary').contains('Save search').focus().click()
+    cy.get('#add-query-name').type(queryName)
+    cy.get('#add-query-desc').type(queryDesc)
+    cy.get('.pf-c-modal-box__footer').contains('Save').focus().click()
   },
 
   editSavedSearch: (queryName, editedName, editedDesc) => {
@@ -70,15 +70,15 @@ export const savedSearches = {
 
   getSavedSearch: (queryName) => {
     searchPage.whenGoToSearchPage()
-    cy.get('.pf-c-title.pf-m-md', {timeout: 20000}).contains('Saved searches')
-    cy.get('button.pf-c-dropdown__toggle', {timeout: 20000}).contains('Saved searches').click({force: true})
-    cy.get('ul.pf-c-dropdown__menu.pf-m-align-right', {timeout: 20000}).contains(queryName).click()
+    cy.get('.pf-c-title.pf-m-md').contains('Saved searches')
+    cy.get('button.pf-c-dropdown__toggle').contains('Saved searches').click({force: true})
+    cy.get('ul.pf-c-dropdown__menu.pf-m-align-right').contains(queryName).click()
   },
 
   whenDeleteSavedSearch: (queryName) => {
     searchPage.whenGoToSearchPage()
-    cy.get('.pf-c-title.pf-m-md', {timeout: 20000}).contains('Saved searches')
-    cy.get('.pf-c-card__header', {timeout: 20000}).contains(queryName).parent().siblings().find('button').click()
+    cy.get('.pf-c-title.pf-m-md').contains('Saved searches')
+    cy.get('.pf-c-card__header').contains(queryName).parent().siblings().find('button').click()
     cy.get('.pf-c-dropdown__menu.pf-m-align-right').contains('Delete').click()
     cy.get('.pf-c-button.pf-m-danger').contains('Delete').click().reload()
     cy.get('.pf-c-card__title').contains(queryName).should('not.exist')

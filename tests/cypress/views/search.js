@@ -19,7 +19,7 @@ export const searchPage = {
   whenExpandRelationshipTiles:() => {
     cy.get('.pf-c-skeleton', {timeout: 2000}).should('not.exist')
     cy.get('.pf-l-gallery', {timeout: 2000}).children().should('have.length.above', 1).then(() => {
-      cy.get('button.pf-c-button.pf-m-secondary', { timeout: 20000 }).focus().click()
+      cy.get('button.pf-c-button.pf-m-secondary').focus().click()
     })
   },
   whenGetResourceTableRow:(resource, name) => {
