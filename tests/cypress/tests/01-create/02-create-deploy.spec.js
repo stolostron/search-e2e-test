@@ -32,7 +32,6 @@ clusterModes.forEach((clusterMode) => {
     })
 
     it(`[P1][Sev1][${squad}] should verify that deployment resource exist`, function() {
-      cy.waitUsingSLA()
       resourcePage.whenGoToResourcePage()
       resourcePage.whenSelectTargetCluster(this.clusterName)
       resourcePage.whenCreateDeployment(getNamespace(clusterMode.label), getNamespace(clusterMode.label) + '-deployment', 'openshift/hello-openshift', true)
