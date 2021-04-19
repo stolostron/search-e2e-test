@@ -27,6 +27,7 @@ var timeoutID
 const err = 'Test taking too long! It has been running for 5 minutes.'
 
 before(() => {
+  cy.log('Executing command... oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n open-cluster-management')
   // This is needed for search to deploy RedisGraph upstream. Without this search won't be operational.
   cy.exec('oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n open-cluster-management')
   cy.clearCookies()
