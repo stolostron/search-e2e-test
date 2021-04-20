@@ -22,25 +22,30 @@ clusterModes.forEach((clusterMode) => {
 
     beforeEach(function() {
       searchPage.whenGoToSearchPage()
-      searchBar.whenFilterByClusterAndNamespace(this.clusterName, getNamespace(clusterMode.label))
     })
 
     it(`[P2][Sev2][${squad}] should delete deployment`, function() {
+      searchBar.whenFilterByNameSpace(getNamespace(clusterMode.label))
       searchBar.whenFilterByKind('deployment')
       searchPage.whenDeleteResourceDetailItem('deployment', getNamespace(clusterMode.label) + '-deployment')
     });
 
     it(`[P2][Sev2][${squad}] should validate deployment was deleted`, function() {
-      searchBar.whenFilterByKind('deployment', true)
+      searchBar.whenFilterByNameSpace(getNamespace(clusterMode.label))
+      searchBar.whenFilterByKind('deployment')
       searchBar.whenFilterByName(getNamespace(clusterMode.label) + '-deployment', true)
       searchPage.shouldFindNoResults()
     });
 
     it(`[P2][Sev2][${squad}] should delete namespace`, function() {
+      searchBar.whenFilterByKind('namespace')
+      searchBar.whenFilterByName(getNamespace(clusterMode.label))
       searchPage.whenDeleteNamespace(getNamespace(clusterMode.label))
+      cy.wait(5000)
     });
 
     it(`[P2][Sev2][${squad}] should validate namespace was deleted`, function() {
+      searchBar.whenFilterByNameSpace(getNamespace(clusterMode.label), true)
       searchPage.shouldFindNoResults()
     });
   })

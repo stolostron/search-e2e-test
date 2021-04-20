@@ -49,7 +49,9 @@ export const searchPage = {
   },
 
   shouldPageBeReady:() => cy.waitUntilAttrIs('.react-tags__search-input', 'placeholder', SEARCH_MESSAGES_INPUT_PLACE_HOLDER),
-
+  shouldCollapseResourceTables: () => {
+    cy.get('.pf-c-expandable-section__toggle-text').click({ multiple: true })
+  },
   whenReloadUntilFindResults: (options) => {
     cy.reloadUntil(async() => {
       cy.get('.pf-c-table')
@@ -150,6 +152,9 @@ export const searchBar = {
   },
   whenFilterByName:(name, ignoreIfDoesNotExist=false) => {
     searchBar.whenEnterTextInSearchBar('name', name, ignoreIfDoesNotExist)
+  },
+  whenFilterByNameSpace:(namespace, ignoreIfDoesNotExist=false) => {
+    searchBar.whenEnterTextInSearchBar('namespace', namespace, ignoreIfDoesNotExist)
   },
   whenSelectFirstSuggestedValue:() => {
     searchBar.shouldSuggestValues()
