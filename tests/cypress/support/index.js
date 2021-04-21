@@ -28,13 +28,13 @@ const err = 'Test taking too long! It has been running for 5 minutes.'
 
 before(() => {
   cy.log('Executing command... oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n open-cluster-management')
-  console.log('Executing command... oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n open-cluster-management')
+  cy.task('log', 'Executing command... oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n open-cluster-management')
   // This is needed for search to deploy RedisGraph upstream. Without this search won't be operational.
   cy.exec('oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n open-cluster-management')
   // Wait until Redisgraph is running.
-  cy.exec('oc get pod -n open-cluster-management | grep search-redisgraph-1').then(result => {
+  cy.exec('oc get pod -n open-cluster-management | grep search-redisgraph-1', {failOnNonZeroExit: false}).then(result => {
     if (!result.stdout.includes('Running')){
-      console.log('Redisgraph pod not running. Waiting 60 seconds.')
+      cy.task('log', 'Redisgraph pod not running. Waiting 60 seconds.')
       return cy.wait(60*1000)
     }
   })
