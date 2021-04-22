@@ -29,7 +29,7 @@ nconf.env({ lowerCase: true, separator: '_' })
         CLUSTER_VIEWER_USR: 'user-viewer',
         CLUSTER_VIEWER_PWD: 'pass-viewer',
         contextPath: '/multicloud',
-        squadName: 'search'
+        squadName: 'observability-usa'
     })
 
 // Hack to deal with camelCase when using env OPTIONS_HUB_BASEDOMAIN
