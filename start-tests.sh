@@ -73,33 +73,77 @@ if [ -z "$NODE_ENV" ]; then
   export NODE_ENV="production" || set NODE_ENV="production"
 fi
 
-echo -e "Setting env to run in: $NODE_ENV"
+if [ -z "$SKIP_API_TEST" ]; then
+  echo -e "\nSKIP_API_TEST not exported; setting to false (set SKIP_API_TEST to true, if you wish to skip the API tests)"
+  export SKIP_API_TEST=false
+fi
+
+if [ -z "$SKIP_UI_TEST" ]; then
+  echo -e "SKIP_UI_TEST not exported; setting to false (set SKIP_UI_TEST to true, if you wish to skip the UI tests)\n"
+  export SKIP_UI_TEST=false
+fi
+
+echo -e "Setting env to run in: $NODE_ENV\n"
 
 echo "Create RBAC users"
-chmod +x /rbac-setup.sh
-source /rbac-setup.sh
+if [ -f /rbac-setup.sh ]; then
+  chmod +x /rbac-setup.sh
+  source /rbac-setup.sh
+else # DEV
+  chmod +x build/rbac-setup.sh
+  source build/rbac-setup.sh
+fi
 
-section_title "Running Search API tests."
-npm run test:api
+if [ "$SKIP_API_TEST" == false ]; then 
+  section_title "Running Search API tests."
+  npm run test:api
+else
+  echo -e "\nSKIP_API_TEST was set to true. Skipping API tests\n"
+fi
 
-section_title "Running Search UI tests."
-if [ "$NODE_ENV" == "development" ]; then
-  npx cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV
-elif [ "$NODE_ENV" == "debug" ]; then
-  npx cypress open --browser $BROWSER --config numTestsKeptInMemory=0 --env NODE_ENV=$NODE_ENV
-else 
-  cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV
+if [ -z "$RECORD" ]; then
+  echo -e "RECORD not exported; setting to false (set RECORD to true, if you wish to view results within dashboard)\n"
+  export RECORD=false
+fi
+
+if [ "$SKIP_UI_TEST" == false ]; then
+  echo -e "Setting namespaces for Search UI test\n"
+  export LOCAL_NS=search-$(date +%s)
+  export MANAGED_NS=search-man-$(date +%s)
+  echo -e "Local Namespace: $LOCAL_NS\nManaged Namespace: $MANAGED_NS"
+
+  if [ "$RECORD" == true ]; then
+    echo "Preparing to run test within record mode. (Results will be displayed within dashboard)"
+    cypress run --record --key $RECORD_KEY --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,LOCAL_NS=$LOCAL_NS,MANAGED_NS=$MANAGED_NS
+  fi
+
+  section_title "Running Search UI tests."
+  if [ "$NODE_ENV" == "development" ]; then
+    cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,LOCAL_NS=$LOCAL_NS,MANAGED_NS=$MANAGED_NS
+  elif [ "$NODE_ENV" == "debug" ]; then
+    cypress open --browser $BROWSER --config numTestsKeptInMemory=0 --env NODE_ENV=$NODE_ENV,LOCAL_NS=$LOCAL_NS,MANAGED_NS=$MANAGED_NS
+  else 
+    cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,LOCAL_NS=$LOCAL_NS,MANAGED_NS=$MANAGED_NS
+  fi
+else
+  echo -e "SKIP_UI_TEST was set to true. Skipping UI tests\n"
 fi
 
 testCode=$?
 
-section_title "Merging XML and JSON reports..."
-npm run test:merge-reports
-
-ls -R results
+if [[ "$SKIP_UI_TEST" == false && "$SKIP_API_TEST" == false ]]; then
+  section_title "Merging XML and JSON reports..."
+  npm run test:merge-report
+  ls -R results
+fi
 
 echo "Clean up RBAC setup"
-chmod +x ./rbac-clean.sh
-source ./rbac-clean.sh
+if [ -f /rbac-clean.sh ]; then
+  chmod +x /rbac-clean.sh
+  source /rbac-clean.sh
+else # DEV
+  chmod +x build/rbac-clean.sh
+  source build/rbac-clean.sh
+fi
 
 exit $testCode

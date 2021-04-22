@@ -33,5 +33,6 @@
   },
   "retries": 2,
   "viewportHeight": 1050,
-  "viewportWidth": 1680
+  "viewportWidth": 1680,
+  "projectId": ""
 }
