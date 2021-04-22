@@ -66,7 +66,7 @@ testCode=0
 echo "Checking RedisGraph deployment."
 oc get pod -n open-cluster-management | grep search-redisgraph-0 | grep Running
 if [ "$?" == "1" ]; then
-  echo "Deploying RedisGraph and waiting 60 seconds for search-redisgraph-0 pod."
+  echo "RedisGraph not found, deploying and waiting 60 seconds for the search-redisgraph-0 pod."
   oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n open-cluster-management
   sleep 60
 else
