@@ -63,6 +63,16 @@ oc login --server=https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443 -u $CYPRESS
 
 testCode=0
 
+echo "Checking RedisGraph deployment."
+oc get pod -n open-cluster-management | grep search-redisgraph-0 | grep Running
+if [[ "$?" == "1"]]; then
+  echo "Deploying RedisGraph and waiting 60 seconds for search-redisgraph-0 pod."
+  oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n open-cluster-management
+  sleep 60
+else
+  echo "RedisGraph is enabled and pod search-redisgraph-0 is running."
+fi
+
 # We are caching the cypress binary for containerization, therefore it does not need npx. However, locally we need it.
 HEADLESS="--headless"
 if [[ "$LIVE_MODE" == true ]]; then
