@@ -74,10 +74,12 @@ if [ -z "$NODE_ENV" ]; then
 fi
 
 if [ -z "$SKIP_API_TEST" ]; then
+  echo -e "\nSKIP_API_TEST not exported; setting to false (set SKIP_API_TEST to true, if you wish to skip the API tests)"
   export SKIP_API_TEST=false
 fi
 
 if [ -z "$SKIP_UI_TEST" ]; then
+  echo -e "SKIP_UI_TEST not exported; setting to false (set SKIP_UI_TEST to true, if you wish to skip the UI tests)\n"
   export SKIP_UI_TEST=false
 fi
 
