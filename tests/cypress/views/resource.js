@@ -9,9 +9,9 @@ import { searchBar } from "./search";
 const typeDelay = 1
 
 export const resourcePage = {
-  whenGoToResourcePage: () => cy.get('#acm-create-resource', { timeout: 20000 }).click(),
+  whenGoToResourcePage: () => cy.get('#acm-create-resource').click(),
   whenSelectTargetCluster: (clusterName) => {
-    cy.get('#create-resource-select', { timeout: 20000 }).click()
+    cy.get('#create-resource-select').click()
     cy.get('.bx--checkbox-wrapper input[name="' + clusterName + '"]').parent().click()
   },
   whenCreateNamespace: (namespace, previouslyCreated=false) => {
@@ -50,7 +50,7 @@ export const resourcePage = {
     cy.get('.bx--btn--primary', {timeout: 30000}).click();
 
     if (previouslyCreated) { // Test both scenarios if resource already exist or not.
-      cy.get('.bx--inline-notification__subtitle').should('exist').contains('already exist')
+      cy.get('.bx--inline-notification__subtitle').contains('already exist')
     } else {
       cy.get('.bx--inline-notification__subtitle').should('not.exist')
       cy.get('.bx--inline-notification', { timeout: 30000 }).should('not.exist');

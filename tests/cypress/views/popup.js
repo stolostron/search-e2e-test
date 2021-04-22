@@ -13,5 +13,5 @@ export const popupModal = {
     popupModal.shouldNotExist()
   },
   shouldNotExist:() => cy.get('button.pf-m-danger', { timeout: 30000 }).should('not.exist'),
-  shouldExist:() => cy.get('button.pf-m-danger', { timeout: 30000 }).should('exist')
+  shouldExist:() => cy.get('button.pf-m-danger', { timeout: 30000 })
 }

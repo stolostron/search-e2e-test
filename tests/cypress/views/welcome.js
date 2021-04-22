@@ -175,9 +175,9 @@ export const leftNav = {
 
 export const userMenu = {
     openApps: () => {
-        cy.get('.navigation-container #acm-apps-dropdown', {timeout: 20000}).click()
-        cy.get('.dropdown-content-header', {timeout: 20000})
-        cy.get('#applications a.dropwdown-content-items', {timeout: 20000}).should('have.attr', 'href').and('contain', 'console-openshift-console')
+        cy.get('.navigation-container #acm-apps-dropdown').click()
+        cy.get('.dropdown-content-header')
+        cy.get('#applications a.dropwdown-content-items').should('have.attr', 'href').and('contain', 'console-openshift-console')
     },
     openSearch: () => {
         cy.get('.navigation-container #acm-search').click()
@@ -203,8 +203,8 @@ export const userMenu = {
         cy.get('#acm-doc a').should('have.attr', 'href').and('contain', 'https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/')
         cy.getCookie('acm-access-token-cookie').should('exist').then((token, c) => {
             acmVersion(token.value).then((version) => {
-                cy.get('#acm-about').click().get('.bx--loading', {timeout: 20000}).should('not.exist')
-                cy.get('.version-details').should('exist').get('.version-details__no').should('contain', version)
+                cy.get('#acm-about').click().get('.bx--loading').should('not.exist')
+                cy.get('.version-details').get('.version-details__no').should('contain', version)
                 cy.get('.bx--modal-close').click()
             })
         })
