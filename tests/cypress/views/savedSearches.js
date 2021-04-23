@@ -12,7 +12,6 @@ export const savedSearches = {
 
     //get managed clusters count
     searchPage.whenGoToSearchPage()
-    searchBar.whenFocusSearchBar()
     searchBar.whenEnterTextInSearchBar('kind', 'cluster')
     searchBar.whenEnterTextInSearchBar('ManagedClusterJoined', 'True')
 

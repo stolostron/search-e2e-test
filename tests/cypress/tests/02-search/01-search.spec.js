@@ -6,7 +6,7 @@
 /// <reference types="cypress" />
 
 import { squad } from '../../config'
-import { clusterModes } from '../../scripts/cliHelper'
+import { cliHelper, clusterModes } from '../../scripts/cliHelper'
 import { podDetailPage } from '../../views/podDetailPage'
 import { searchPage, searchBar } from '../../views/search'
 
@@ -18,15 +18,24 @@ clusterModes.forEach((clusterMode) => {
   describe('Search: Search in ' + clusterMode.label + ' Cluster', function() {
     before(function() {
       clusterMode.valueFn().as('clusterName')
-      cy.getNamespace(clusterMode.label).as('namespace')
+      cy.generateNamespace().as('namespace')
+
+      if (clusterMode.label === 'Managed') {
+        cliHelper.loginToCluster(clusterMode.label)
+      }
     })
 
     beforeEach(function() {
       searchPage.whenGoToSearchPage()
     })
 
+    after(function() {
+      cliHelper.deleteNamespace(this.namespace)
+    })
+
     describe('search resources', function() {
       it(`[P3][Sev3][${squad}] should have expected count of relationships`, function() {
+        cliHelper.createNamespaceAndDeployment(this.namespace)
         searchBar.whenFilterByNamespace(this.namespace)
         searchPage.shouldLoadResults()
         searchPage.whenExpandRelationshipTiles()

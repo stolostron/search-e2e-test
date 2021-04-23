@@ -131,12 +131,11 @@ export const searchBar = {
     cy.get('.react-tags__search-input').click()
     searchBar.whenSuggestionsAreAvailable(property, ignoreIfDoesNotExist)
 
-    cy.get('.react-tags')
-    cy.get('.react-tags__search-input').type(' ').wait(100)
+    cy.get('.react-tags__search-input').type(' ')
 
     if (value && value !== null) {
       searchBar.whenSuggestionsAreAvailable(value, ignoreIfDoesNotExist)
-      cy.get('.react-tags__search-input').type(' ').wait(100)
+      cy.get('.react-tags__search-input').type(' ')
     }
   },
   whenFilterByCluster:(cluster) => {
@@ -151,6 +150,9 @@ export const searchBar = {
   },
   whenFilterByName:(name, ignoreIfDoesNotExist=false) => {
     searchBar.whenEnterTextInSearchBar('name', name, ignoreIfDoesNotExist)
+  },
+  whenFilterByNamespace:(name, ignoreIfDoesNotExist=false) => {
+    searchBar.whenEnterTextInSearchBar('namespace', name, ignoreIfDoesNotExist)
   },
   whenSelectFirstSuggestedValue:() => {
     searchBar.shouldSuggestValues()

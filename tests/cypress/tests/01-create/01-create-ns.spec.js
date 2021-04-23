@@ -6,7 +6,7 @@
 /// <reference types="cypress" />
 
 import { squad } from '../../config'
-import { clusterModes } from '../../scripts/cliHelper'
+import { cliHelper, clusterModes } from '../../scripts/cliHelper'
 import { resourcePage } from '../../views/resource'
 import { searchPage } from '../../views/search'
 
@@ -18,11 +18,19 @@ clusterModes.forEach((clusterMode) => {
   describe('Search: Search in ' + clusterMode.label + ' Cluster', function() {
     before(function() {
       clusterMode.valueFn().as('clusterName')
-      cy.getNamespace(clusterMode.label).as('namespace')
+      cy.generateNamespace().as('namespace')
+
+      if (clusterMode.label === 'Managed') {
+        cliHelper.loginToCluster(clusterMode.label)
+      }
     })
 
     beforeEach(function() {
       searchPage.whenGoToSearchPage()
+    })
+
+    after(function() {
+      cliHelper.deleteNamespace(this.namespace)
     })
 
     it(`[P1][Sev1][${squad}] should create namespace from create resource UI`, function() {

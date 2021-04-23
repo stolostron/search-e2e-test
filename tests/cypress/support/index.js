@@ -39,10 +39,6 @@ beforeEach(() => {
   }, 60000 * 5)
 })
 
-after(() => {
-  cy.logout()
-})
-
 afterEach(() => {
   clearTimeout(timeoutID)
 })

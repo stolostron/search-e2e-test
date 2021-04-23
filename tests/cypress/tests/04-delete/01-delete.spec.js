@@ -6,7 +6,7 @@
 /// <reference types="cypress" />
 
 import { squad } from '../../config'
-import { clusterModes } from '../../scripts/cliHelper'
+import { clusterModes, cliHelper } from '../../scripts/cliHelper'
 import { searchPage, searchBar } from '../../views/search'
 
 clusterModes.forEach((clusterMode) => {
@@ -17,7 +17,11 @@ clusterModes.forEach((clusterMode) => {
   describe('Search: Search in ' + clusterMode.label + ' Cluster', function() {
     before(function() {
       clusterMode.valueFn().as('clusterName')
-      cy.getNamespace(clusterMode.label).as('namespace')
+      cy.generateNamespace().as('namespace')
+
+      if (clusterMode.label === 'Managed') {
+        cliHelper.loginToCluster(clusterMode.label)
+      }
     })
 
     beforeEach(function() {
@@ -26,6 +30,7 @@ clusterModes.forEach((clusterMode) => {
 
     describe('search resources', function() {
       it(`[P2][Sev2][${squad}] should delete deployment`, function() {
+        cliHelper.createNamespaceAndDeployment(this.namespace)
         searchBar.whenFilterByNamespace(this.namespace)
         searchBar.whenFilterByKind('deployment')
         searchPage.whenDeleteResourceDetailItem('deployment', this.namespace + '-deployment')
@@ -43,7 +48,8 @@ clusterModes.forEach((clusterMode) => {
       });
 
       it(`[P2][Sev2][${squad}] should validate namespace was deleted`, function() {
-        searchBar.whenFilterByNamespace(this.namespace, true)
+        searchBar.whenFilterByKind('namespace')
+        searchBar.whenFilterByName(this.namespace, true)
         searchPage.shouldFindNoResults()
       });
     })

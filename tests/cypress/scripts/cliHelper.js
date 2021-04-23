@@ -3,8 +3,8 @@
  * Copyright (c) 2021 Red Hat, Inc.
  ****************************************************************************** */
 
- export const clusterModes = [{ label: 'Local', valueFn: () => cy.wrap('local-cluster'), skip: false },
- { label: 'Managed', valueFn: () => cliHelper.getTargetManagedCluster(), skip: false }];
+export const clusterModes = [{ label: 'Local', valueFn: () => cy.wrap('local-cluster'), skip: false },
+ { label: 'Managed', valueFn: () => cliHelper.getTargetManagedCluster(), skip: true }];
 
 export const cliHelper = {
     getTargetManagedCluster: () => {
@@ -26,16 +26,34 @@ export const cliHelper = {
         return cy.wrap(targetCluster)
       })
     },
+    createNamespaceAndDeployment: (namespace) => {
+      cliHelper.createNamespace(namespace)
+      cliHelper.createResource('deployment', namespace + '-deployment', namespace, 'openshift/hello-openshift')
+      cy.logout()
+      cy.login()
+    },
     createNamespace: (name) => {
       cy.exec(`oc create namespace ${name}`)
     },
     deleteNamespace: (name) => {
       cy.exec(`oc delete namespace ${name}`)
     },
-    createApplication: (appName, namespace) => {
-      cy.readFile('tests/cypress/templates/application.yaml').then((cfg) => {
-        let b64Cfg = btoa(cfg.replaceAll('APPNAME', appName).replaceAll('NAMESPACE', namespace))
+    createResource: (kind, name, namespace, image) => {
+      cy.readFile(`tests/cypress/templates/${kind}.yaml`).then((cfg) => {
+        let b64Cfg = btoa(cfg.replaceAll('APPNAME', name).replaceAll('NAMESPACE', namespace)).replace('IMAGE', image)
         cy.exec(`echo ${b64Cfg} | base64 -d | oc apply -f -`)
       })
+    },
+    deleteResource: (kind, name, namespace) => {
+      cy.exec(`oc delete ${kind} ${name} -n ${namespace}`)
+    },
+    loginToCluster: (mode) => {
+      const options = {
+        BASEDOMAIN: mode === 'Local' ? 'OPTIONS_HUB_BASEDOMAIN' : 'OPTIONS_MANAGED_BASEDOMAIN',
+        USER: mode === 'Local' ? 'OPTIONS_HUB_USER' : 'OPTIONS_MANAGED_USER',
+        PASSWORD: mode === 'Local' ? 'OPTIONS_HUB_PASSWORD' : 'OPTIONS_MANAGED_PASSWORD',
+      }
+
+      cy.exec(`oc login --server=https://api.${Cypress.env(options.BASEDOMAIN)}:6443 -u ${Cypress.env(options.USER)} -p ${Cypress.env(options.PASSWORD)} --insecure-skip-tls-verify`)
     }
   }
