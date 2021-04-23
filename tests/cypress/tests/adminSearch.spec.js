@@ -19,15 +19,23 @@ clusterModes.forEach((clusterMode) => {
   if (clusterMode.skip) {
     return;
   }
+  const start = Date.now()
 
   describe('Search: Search in ' + clusterMode.label + ' Cluster', function() {
     before(function() {
       clusterMode.valueFn().as('clusterName')
       cy.generateNamespace().as('namespace')
+      cy.task('log', `before() took ${(Date.now() - start)/1000} seconds`)
     })
 
+    let testStart = Date.now()
     beforeEach(function() {
+      testStart = Date.now()
       searchPage.whenGoToSearchPage()
+    })
+
+    afterEach(function(){
+      cy.task('log', `test took ${(Date.now() - testStart)/1000} seconds`)
     })
 
     it(`[P1][Sev1][${squad}] should load the search page`, function() {
