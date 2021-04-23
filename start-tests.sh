@@ -71,7 +71,7 @@ if [ "$?" == "1" ]; then
 
   # I'd prefer to do this from the operator but here is easier.
   echo "Restarting the search-collector"
-  COLLECTOR_NAME=$(oc get service -n open-cluster-management |grep search-collector | awk '{print $1;}')
+  COLLECTOR_NAME=$(oc get pod -n open-cluster-management |grep search-collector | awk '{print $1;}')
   oc delete pod $COLLECTOR_NAME -n open-cluster-management
 
   sleep 60
