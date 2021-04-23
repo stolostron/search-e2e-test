@@ -15,9 +15,9 @@ const SEARCH_MESSAGES_LOADING_SUGGESTIONS = 'Loading...'
 
 export const searchPage = {
   whenGoToSearchPage:() => {
-    cy.url().then(url => {
-      cy.task('log', `URL ${url}`)
-      if (url == '/search') {
+    cy.location().then(location => {
+      cy.task('log', `pathname ${location.pathname}`)
+      if (location.pathname == '/search') {
         // clear-all-search-tags-button
         cy.task('log', '>> Already on the search page. Clearing search bar.')
         cy.get('.clear-button').click()
