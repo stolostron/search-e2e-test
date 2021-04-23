@@ -26,6 +26,7 @@ clusterModes.forEach((clusterMode) => {
       clusterMode.valueFn().as('clusterName')
       cy.generateNamespace().as('namespace')
       cy.task('log', `before() took ${(Date.now() - start)/1000} seconds`)
+      cy.task('log', `before() took ${this.currentTest.duration/1000} seconds`)
     })
 
     beforeEach(function() {
