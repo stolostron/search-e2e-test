@@ -7,7 +7,7 @@
   "fixturesFolder": "tests/cypress/fixtures",
   "pluginsFile": "tests/cypress/plugins/index.js",
   "pageLoadTimeout": 90000,
-  "numTestsKeptInMemory": 10,
+  "numTestsKeptInMemory": 5,
   "screenshotsFolder" : "results/screenshots",
   "supportFile": "tests/cypress/support/index.js",
   "videosFolder": "results/videos",
