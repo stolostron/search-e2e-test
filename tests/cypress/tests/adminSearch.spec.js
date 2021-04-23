@@ -36,6 +36,7 @@ clusterModes.forEach((clusterMode) => {
 
     afterEach(function(){
       cy.task('log', `${(Date.now() - testStart)/1000} seconds - ${Cypress.mocha.getRunner().suite.ctx.currentTest.title}`)
+      cy.task('log', `Current test info - ${JSON.stringify(Cypress.mocha.getRunner().suite.ctx.currentTest)}`)
     })
 
     it(`[P1][Sev1][${squad}] should load the search page`, function() {
