@@ -29,7 +29,6 @@ const err = 'Test taking too long! It has been running for 5 minutes.'
 before(() => {
   // This is needed for search to deploy RedisGraph upstream. Without this search won't be operational.
   cy.exec('oc get pod -n open-cluster-management | grep search-redisgraph-0 | grep Running', {failOnNonZeroExit: false}).then(result => {
-    cy.task('log', `Result for oc get po ... ${JSON.stringify(result)}`)
     if (result.code == 0){
       cy.task('log', 'Redisgraph pod is running.')
     } else {
