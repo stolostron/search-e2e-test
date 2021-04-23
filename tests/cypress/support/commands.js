@@ -139,6 +139,10 @@ Cypress.Commands.add('logout', () => {
   })
 })
 
+Cypress.Commands.add('getNamespace', (mode) => {
+  return Cypress.env(mode === 'Local' ? 'LOCAL_NS' : 'MANAGED_NS')
+})
+
 Cypress.Commands.add('generateNamespace', (postfix=null) => {
   return postfix ? `search-${postfix}` : `search-${Date.now()}`
 })

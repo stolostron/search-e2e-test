@@ -3,6 +3,9 @@
  * Copyright (c) 2021 Red Hat, Inc.
  ****************************************************************************** */
 
+ export const clusterModes = [{ label: 'Local', valueFn: () => cy.wrap('local-cluster'), skip: false },
+ { label: 'Managed', valueFn: () => cliHelper.getTargetManagedCluster(), skip: false }];
+
 export const cliHelper = {
     getTargetManagedCluster: () => {
       return cy.exec('oc get managedclusters -o custom-columns=NAME:.metadata.name').then(result => {
