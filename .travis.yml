@@ -13,7 +13,6 @@ cache:
     - ~/.cache
 
 services:
-  - xvfb
   - docker
 
 env:
