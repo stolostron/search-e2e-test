@@ -38,7 +38,6 @@ before(() => {
     }
   })
 
-  cy.task('log', 'continuing with before. clearCookies()')
   cy.clearCookies()
   cy.login()
 })
