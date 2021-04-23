@@ -28,21 +28,18 @@ clusterModes.forEach((clusterMode) => {
       cy.task('log', `before() took ${(Date.now() - start)/1000} seconds`)
     })
 
-    let testStart = Date.now()
     beforeEach(function() {
-      testStart = Date.now()
       searchPage.whenGoToSearchPage()
     })
 
     afterEach(function(){
       cy.task('log', `${this.currentTest.duration/1000} seconds - ${this.currentTest.title}`)
-      // cy.task('log', `${(Date.now() - testStart)/1000} seconds - ${this.currentTest.title}`)
-      // cy.task('log', `Current test info - ${JSON.stringify(Cypress.mocha.getRunner().suite.ctx.currentTest)}`)
+      
       cy.task('log', `Current test info - ${Object.keys(this.currentTest)}`)
-      cy.task('log', `  Title: ${this.currentTest.title}`)
+      // cy.task('log', `  Title: ${this.currentTest.title}`)
       cy.task('log', `  timedOut: ${this.currentTest.timedOut}`)
       cy.task('log', `  _retries: ${this.currentTest._retries}`)
-      cy.task('log', `  retries: ${this.currentTest.retries}`)
+      // cy.task('log', `  retries: ${this.currentTest.retries}`)
       cy.task('log', `  _currentRetries: ${this.currentTest._currentRetries}`)
       cy.task('log', `  duration: ${this.currentTest.duration}`)
       cy.task('log', `  timer: ${this.currentTest.timer}`)
