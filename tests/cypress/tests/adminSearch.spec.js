@@ -32,10 +32,10 @@ clusterModes.forEach((clusterMode) => {
     beforeEach(function() {
       testStart = Date.now()
       searchPage.whenGoToSearchPage()
-      cy.task('log', `beforeEach() took ${(Date.now() - testStart)/1000} seconds`)
     })
 
-    afterEach(function(){
+    afterEach(function(t){
+      cy.task('log', `test meta ${JSON.stringify(t)}`)
       cy.task('log', `test took ${(Date.now() - testStart)/1000} seconds`)
     })
 
