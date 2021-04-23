@@ -16,13 +16,10 @@ const SEARCH_MESSAGES_LOADING_SUGGESTIONS = 'Loading...'
 export const searchPage = {
   whenGoToSearchPage:() => {
     cy.location().then(location => {
-      cy.task('log', `pathname ${location.pathname}`)
       if (location.pathname == '/search') {
-        // clear-all-search-tags-button
-        cy.task('log', '>> Already on the search page. Clearing search bar.')
+        // Already on the search page. Clearing search bar.
         cy.get('.clear-button').click()
       } else {
-        cy.task('log', `>> Visiting /search`)
         cy.visit('/search', {retryOnStatusCodeFailure: true})
       }
     })
