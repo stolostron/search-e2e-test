@@ -35,13 +35,21 @@ clusterModes.forEach((clusterMode) => {
     })
 
     afterEach(function(){
-      cy.task('log', `${(Date.now() - testStart)/1000} seconds - ${Cypress.mocha.getRunner().suite.ctx.currentTest.title}`)
+      cy.task('log', `${(Date.now() - testStart)/1000} seconds - ${this.currentTest.title}`)
       // cy.task('log', `Current test info - ${JSON.stringify(Cypress.mocha.getRunner().suite.ctx.currentTest)}`)
       cy.task('log', `Current test info - ${Object.keys(this.currentTest)}`)
-      Object.keys(this.currentTest).forEach(k => {
-        cy.task('log', `key: ${k}  value: ${Object.keys(this.currentTest[k] || {})}`)
-      })
-      if (this.currentTest.state === 'failed') {
+      cy.task('log', `  Title: ${this.currentTest.title}`)
+      cy.task('log', `  timedOut: ${this.currentTest.timedOut}`)
+      cy.task('log', `  _retries: ${this.currentTest._retries}`)
+      cy.task('log', `  retries: ${this.currentTest.retries}`)
+      cy.task('log', `  _currentRetries: ${this.currentTest._currentRetries}`)
+      cy.task('log', `  duration: ${this.currentTest.duration}`)
+      cy.task('log', `  timer: ${this.currentTest.timer}`)
+      cy.task('log', `  state: ${this.currentTest.state}`)
+      cy.task('log', `  id: ${this.currentTest.id}`)
+
+
+      if (this.currentTest.state === 'failed' && this.currentTest.retries >= 1) {
         cy.task('log', 'Stopping execution after failed test.')
         Cypress.runner.stop()
       }
