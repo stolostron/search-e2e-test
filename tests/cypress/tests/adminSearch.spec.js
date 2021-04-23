@@ -45,9 +45,10 @@ clusterModes.forEach((clusterMode) => {
       // cy.task('log', `  timer: ${this.currentTest.timer}`)
       // cy.task('log', `  state: ${this.currentTest.state}`)
       // cy.task('log', `  id: ${this.currentTest.id}`)
+      cy.task('log', `Retries ${cy.state('test').currentRetry()}`)
 
 
-      if (this.currentTest.state === 'failed' /*&& this.currentTest.retries >= 1*/) {
+      if (this.currentTest.state === 'failed' && cy.state('test').currentRetry() >= 1) {
         cy.task('log', 'Stopping execution after failed test.')
         Cypress.runner.stop()
       }
