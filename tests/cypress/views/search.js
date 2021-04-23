@@ -14,7 +14,19 @@ const SEARCH_MESSAGES_FEW_SECONDS_AGO = 'a few seconds ago'
 const SEARCH_MESSAGES_LOADING_SUGGESTIONS = 'Loading...'
 
 export const searchPage = {
-  whenGoToSearchPage:() => cy.visit('/search', {retryOnStatusCodeFailure: true}),
+  whenGoToSearchPage:() => {
+    cy.url().then(url => {
+      cy.task('log', `URL ${url}`)
+      if (url == '/search') {
+        // clear-all-search-tags-button
+        cy.task('log', '>> Already on the search page. Clearing search bar.')
+        cy.get('.clear-button').click()
+      } else {
+        cy.task('log', `>> Visiting /search`)
+        cy.visit('/search', {retryOnStatusCodeFailure: true})
+      }
+    })
+  },
   
   whenExpandRelationshipTiles:() => {
     cy.get('.pf-c-skeleton', {timeout: 2000}).should('not.exist')
