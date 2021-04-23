@@ -68,6 +68,12 @@ oc get pod -n open-cluster-management | grep search-redisgraph-0 | grep Running
 if [ "$?" == "1" ]; then
   echo "RedisGraph not found, deploying and waiting 60 seconds for the search-redisgraph-0 pod."
   oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n open-cluster-management
+
+  # I'd prefer to do this from the operator but here is easier.
+  echo "Restarting the search-collector"
+  COLLECTOR_NAME=$(oc get service -n open-cluster-management |grep search-collector | awk '{print $1;}')
+  oc delete pod $COLLECTOR_NAME -n open-cluster-management
+
   sleep 60
 else
   echo "RedisGraph is enabled and pod search-redisgraph-0 is running."
