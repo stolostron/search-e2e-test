@@ -39,7 +39,7 @@ clusterModes.forEach((clusterMode) => {
       // cy.task('log', `Current test info - ${JSON.stringify(Cypress.mocha.getRunner().suite.ctx.currentTest)}`)
       cy.task('log', `Current test info - ${Object.keys(this.currentTest)}`)
       Object.keys(this.currentTest).forEach(k => {
-        cy.task('log', `key: ${k}  value: ${Object.keys(this.currentTest[k])}`)
+        cy.task('log', `key: ${k}  value: ${Object.keys(this.currentTest[k] || {})}`)
       })
       if (this.currentTest.state === 'failed') {
         cy.task('log', 'Stopping execution after failed test.')
