@@ -5,9 +5,9 @@
 
 /// <reference types="cypress" />
 
-import { squad } from '../config'
-import { searchPage } from '../views/search'
-import { savedSearches, searchBar } from '../views/suggestedSearches'
+import { squad } from '../../config'
+import { searchPage } from '../../views/search'
+import { savedSearches, searchBar } from '../../views/suggestedSearches'
 
 describe('Search: Verify the suggested search templates', function() {
 

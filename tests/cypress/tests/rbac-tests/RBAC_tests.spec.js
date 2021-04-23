@@ -5,8 +5,8 @@
 
 /// <reference types="cypress" />
 
-import { squad } from '../config'
-import { overviewPage } from '../views/overview'
+import { squad } from '../../config'
+import { overviewPage } from '../../views/overview'
 
 const rbac_users = ['search-e2e-admin-cluster', 'search-e2e-admin-ns', 'search-e2e-view-ns', 'search-e2e-edit-ns']
 const password = Cypress.env('OPTIONS_HUB_PASSWORD')
