@@ -131,7 +131,7 @@ Cypress.Commands.add('forEach', (selector, action, options) => {
 Cypress.Commands.add('logout', () => {
   cy.getCookie('acm-access-token-cookie').should('exist').then((token) => {
     oauthIssuer(token.value).then((issuer) => {
-      cy.get('#acm-user-dropdown').click().then(() => cy.get('#acm-logout').click().then(() => cy.url().should('include', issuer)))
+      cy.get('[data-test=user-dropdown]').click().then(() => cy.get('#logout').click().then(() => cy.url().should('include', issuer)))
     })
     // Clearing cookies for rbac users
     cy.location('pathname').should('match', new RegExp('/oauth/authorize(\\?.*)?$'))
