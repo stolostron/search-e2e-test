@@ -49,7 +49,7 @@ Cypress.Commands.add('login', (OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OC_IDP) =
       cy.get('#inputUsername').click().focused().type(user)
       cy.get('#inputPassword').click().focused().type(password)
       cy.get('button[type="submit"]').click()
-      cy.get('.app-header', { timeout: 30000 })
+      cy.get('.pf-c-page__header', { timeout: 30000 })
     }
   })
 })
