@@ -6,6 +6,7 @@
 /// <reference types="cypress" />
 import { savedSearches } from '../views/savedSearches'
 import { squad } from '../config'
+import { searchPage } from '../views/search'
 
 const queryDefaultNamespaceName = 'default namespace search'
 const queryDefaultNamespaceDesc = 'this is searching that each cluster should have default namespace'
@@ -16,8 +17,7 @@ const queryOcmaNamespaceDesc = 'this is searching that each cluster should have 
 const queryOCMaEditedName = `[E2E] default namespace search - ${Date.now()}`
 const queryOcmaEditedDesc = '[Created by Search E2E automation] This is searching that each cluster should have default namespace -2'
 
-describe('RHACM4K-412 - Search: Saved searches', function(){
-
+describe('RHACM4K-412 - Search: Saved searches', function() {
   after(function() {
     savedSearches.whenDeleteSavedSearch(queryDefaultNamespaceName)
     savedSearches.whenDeleteSavedSearch(queryOcmaNamespaceName)

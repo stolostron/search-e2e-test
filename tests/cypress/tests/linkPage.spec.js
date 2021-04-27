@@ -9,6 +9,10 @@ import { squad } from '../config'
 import { clustersPage } from '../views/clusters'
 
 describe('Search: Linked page', function () {
+  before(function() {
+    cy.login()
+  })
+
   it(`[P2][Sev2][${squad}] clusters page should have link to search page`, function () {
     clustersPage.shouldHaveLinkToSearchPage()
   })

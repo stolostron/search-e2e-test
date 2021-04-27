@@ -28,7 +28,6 @@ const err = 'Test taking too long! It has been running for 5 minutes.'
 
 before(() => {
   cy.clearCookies()
-  cy.login()
 })
 
 beforeEach(() => {
@@ -37,10 +36,6 @@ beforeEach(() => {
     console.error(err)
     throw Error(err)
   }, 60000 * 5)
-})
-
-after(() => {
-  cy.logout()
 })
 
 afterEach(() => {

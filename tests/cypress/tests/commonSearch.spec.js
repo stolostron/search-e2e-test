@@ -14,6 +14,7 @@ const appName = `auto-test-app-${postfix}`
 
 describe('RHACM4K-913: Search - common filter and conditions', function () {
   before(function () {
+    cy.login()
     cy.generateNamespace(postfix).as('namespace')
   })
 
