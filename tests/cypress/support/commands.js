@@ -38,7 +38,7 @@ Cypress.Commands.add('login', (OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OC_IDP) =
   var user = OPTIONS_HUB_USER || Cypress.env('OPTIONS_HUB_USER');
   var password = OPTIONS_HUB_PASSWORD || Cypress.env('OPTIONS_HUB_PASSWORD');
   var idp = OC_IDP || Cypress.env('OC_IDP');
-  cy.visit('/overview')
+  cy.visit('/search')
   cy.get('body').then(body => {
     // Check if logged in
     if (body.find('#header').length === 0) {
@@ -131,7 +131,7 @@ Cypress.Commands.add('forEach', (selector, action, options) => {
 Cypress.Commands.add('logout', () => {
   cy.getCookie('acm-access-token-cookie').should('exist').then((token) => {
     oauthIssuer(token.value).then((issuer) => {
-      cy.get('#acm-user-dropdown').click().then(() => cy.get('#acm-logout').click().then(() => cy.url().should('include', issuer)))
+      cy.get('[data-test=user-dropdown]').click().then(() => cy.get('#logout').click().then(() => cy.url().should('include', issuer)))
     })
     // Clearing cookies for rbac users
     cy.location('pathname').should('match', new RegExp('/oauth/authorize(\\?.*)?$'))

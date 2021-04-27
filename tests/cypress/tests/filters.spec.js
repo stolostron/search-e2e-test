@@ -32,6 +32,7 @@ filtersRegistry.createFilter('status', { strategies: [ simple, multipleValues(2)
 
 describe('Search: Search using filters', function() {
   before(function() {
+    cy.login()
     searchPage.whenGoToSearchPage()
   })
   

@@ -50,7 +50,7 @@ export const savedSearches = {
 
   editSavedSearch: (queryName, editedName, editedDesc) => {
     searchPage.whenGoToSearchPage()
-    cy.get('.pf-c-title.pf-m-md').contains('Saved searches')
+    cy.get('h4.pf-c-title.pf-m-md').contains('Saved searches')
     cy.get('.pf-c-card__header').contains(queryName).parent().siblings().find('button').click()
     cy.get('.pf-c-dropdown__menu.pf-m-align-right').contains('Edit').click()
     cy.get('#add-query-name').clear().type(editedName)
@@ -60,7 +60,7 @@ export const savedSearches = {
 
   shareSavedSearch: (queryName) => {
     searchPage.whenGoToSearchPage()
-    cy.get('.pf-c-title.pf-m-md').contains('Saved searches')
+    cy.get('h4.pf-c-title.pf-m-md').contains('Saved searches')
     cy.get('.pf-c-card__header').contains(queryName).parent().siblings().find('button').click()
     cy.get('.pf-c-dropdown__menu.pf-m-align-right').contains('Share').click()
     cy.get(".pf-c-code-editor__code").find('pre').invoke('text').then((urlText) => {
@@ -70,14 +70,14 @@ export const savedSearches = {
 
   getSavedSearch: (queryName) => {
     searchPage.whenGoToSearchPage()
-    cy.get('.pf-c-title.pf-m-md').contains('Saved searches')
+    cy.get('h4.pf-c-title.pf-m-md').contains('Saved searches')
     cy.get('button.pf-c-dropdown__toggle').contains('Saved searches').click({force: true})
     cy.get('ul.pf-c-dropdown__menu.pf-m-align-right').contains(queryName).click()
   },
 
   whenDeleteSavedSearch: (queryName) => {
     searchPage.whenGoToSearchPage()
-    cy.get('.pf-c-title.pf-m-md').contains('Saved searches')
+    cy.get('h4.pf-c-title.pf-m-md').contains('Saved searches')
     cy.get('.pf-c-card__header').contains(queryName).parent().siblings().find('button').click()
     cy.get('.pf-c-dropdown__menu.pf-m-align-right').contains('Delete').click()
     cy.get('.pf-c-button.pf-m-danger').contains('Delete').click().reload()
