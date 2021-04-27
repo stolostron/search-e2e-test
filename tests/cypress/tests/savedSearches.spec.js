@@ -6,7 +6,6 @@
 /// <reference types="cypress" />
 import { savedSearches } from '../views/savedSearches'
 import { squad } from '../config'
-import { searchPage } from '../views/search'
 
 const queryDefaultNamespaceName = 'default namespace search'
 const queryDefaultNamespaceDesc = 'this is searching that each cluster should have default namespace'
