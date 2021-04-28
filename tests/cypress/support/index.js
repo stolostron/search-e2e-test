@@ -32,12 +32,11 @@ before(() => {
         if (result.code == "true"){
           cy.task('log', 'Redisgraph deployment is enabled.')
         } else {
-          cy.task('log', 'Redisgraph deployment disabled, enabling and waiting 60 seconds for the search-redisgraph-0 pod.')
+          cy.task('log', 'Redisgraph deployment disabled, enabling and waiting 10 seconds for the search-redisgraph-0 pod.')
           cy.exec('oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n open-cluster-management')
           return cy.wait(10*1000)
       }
     })
-  cy.task('log', 'continuing with before. clearCookies()')
   cy.clearCookies()
 })
 
