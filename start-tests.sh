@@ -64,7 +64,7 @@ oc login --server=https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443 -u $CYPRESS
 testCode=0
 
 echo "Checking RedisGraph deployment."
-rgstatus=`oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}"`
+rgstatus=`oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}" -n open-cluster-management`
 if [ "$rgstatus" == "true" ]; then
   echo "RedisGraph deployment is enabled."
 else

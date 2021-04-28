@@ -28,7 +28,7 @@ const err = 'Test taking too long! It has been running for 5 minutes.'
 
 before(() => {
   // This is needed for search to deploy RedisGraph upstream. Without this search won't be operational.
-  cy.exec('oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}"', {failOnNonZeroExit: false}).then(result => {
+  cy.exec('oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}" -n open-cluster-management', {failOnNonZeroExit: false}).then(result => {
         if (result.code == "true"){
           cy.task('log', 'Redisgraph deployment is enabled.')
         } else {
