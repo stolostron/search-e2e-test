@@ -28,18 +28,17 @@ const err = 'Test taking too long! It has been running for 5 minutes.'
 
 before(() => {
   // This is needed for search to deploy RedisGraph upstream. Without this search won't be operational.
-  cy.exec('oc get pod -n open-cluster-management | grep search-redisgraph-0 | grep Running', {failOnNonZeroExit: false}).then(result => {
-    if (result.code == 0){
-      cy.task('log', 'Redisgraph pod is running.')
-    } else {
-      cy.task('log', 'RedisGraph not found, deploying and waiting 60 seconds for the search-redisgraph-0 pod.')
-      cy.exec('oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n open-cluster-management')
-      return cy.wait(10*1000)
-    }
-  })
-
+  cy.exec('oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}" -n open-cluster-management', {failOnNonZeroExit: false}).then(result => {
+        if (result.code == "true"){
+          cy.task('log', 'Redisgraph deployment is enabled.')
+        } else {
+          cy.task('log', 'Redisgraph deployment disabled, enabling and waiting 60 seconds for the search-redisgraph-0 pod.')
+          cy.exec('oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n open-cluster-management')
+          return cy.wait(10*1000)
+      }
+    })
+  cy.task('log', 'continuing with before. clearCookies()')
   cy.clearCookies()
-  cy.login()
 })
 
 beforeEach(() => {
@@ -48,10 +47,6 @@ beforeEach(() => {
     console.error(err)
     throw Error(err)
   }, 60000 * 5)
-})
-
-after(() => {
-  cy.logout()
 })
 
 afterEach(() => {
