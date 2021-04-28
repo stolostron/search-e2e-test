@@ -3,7 +3,7 @@
   "chromeWebSecurity": false,
   "defaultCommandTimeout": 15000,
   "integrationFolder": "tests/cypress/tests",
-  "ignoreTestFiles": ["welcomePage.spec.js", "adminSearch.spec.js"],
+  "ignoreTestFiles": ["adminSearch.spec.js"],
   "fixturesFolder": "tests/cypress/fixtures",
   "pluginsFile": "tests/cypress/plugins/index.js",
   "pageLoadTimeout": 90000,
