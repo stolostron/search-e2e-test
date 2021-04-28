@@ -39,7 +39,6 @@ before(() => {
     })
   cy.task('log', 'continuing with before. clearCookies()')
   cy.clearCookies()
-  cy.login()
 })
 
 beforeEach(() => {
@@ -48,10 +47,6 @@ beforeEach(() => {
     console.error(err)
     throw Error(err)
   }, 60000 * 5)
-})
-
-after(() => {
-  cy.logout()
 })
 
 afterEach(() => {
