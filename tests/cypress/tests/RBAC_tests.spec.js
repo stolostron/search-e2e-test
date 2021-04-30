@@ -15,10 +15,6 @@ const IDP = 'search-e2e-htpasswd'
 describe('RBAC users to read the Overview page', function () {
     const overviewPagePolarionIDs = ['731', '921', '919', '920']
 
-    afterEach(function () {
-        cy.logout()
-    })
-
     rbac_users.forEach((user, index) => {
         var roleAccess = user.split('-')
         it('RHACM4K-'+overviewPagePolarionIDs[index]+'[P1][Sev1]['+squad+'] As an user with name '+user+' with '+roleAccess[3]+'-role-binding of default '+roleAccess[2]+' role, the user can read the Overview page.', function () {
@@ -26,6 +22,7 @@ describe('RBAC users to read the Overview page', function () {
             overviewPage.whenGoToOverviewPage()
             overviewPage.shouldLoad()
             overviewPage.shouldHaveLinkToSearchPage()
+            cy.logout()
         })
     })
 })
