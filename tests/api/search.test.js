@@ -1,5 +1,6 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
+const squad = require('../../config').get('squadName')
 const { getSearchApiRoute, getToken, getKubeConfig, searchQueryBuilder, sendRequest, getPods, deletePod } = require('../common-lib/clusterAccess')
 const { exec, execSync } = require('child_process');
 
@@ -20,7 +21,7 @@ describe('RHACM4K-1695: Search - verify managed cluster info in the search page'
   afterAll(() => {
   })
 
-  test('Search - verify managed cluster info in the search page.', async () => {
+  test(`[P1][Sev1][${squad}] Search - verify managed cluster info in the search page.`, async () => {
     var query = searchQueryBuilder({ filters: [{ property: 'ManagedClusterJoined', values: ['True'] }] })
     var res = await sendRequest(query, token)
     expect(res.body.data.searchResult[0].items[0].ManagedClusterJoined).toEqual("True")
@@ -53,7 +54,7 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
   const app = 'console'
   const namespace = 'openshift-console'
 
-  test('Verify a deleted pod is recreated.', async () => {
+  test(`[P2][Sev2][${squad}] Verify a deleted pod is recreated.`, async () => {
     var query = searchQueryBuilder({
       filters: [{ property: 'kind', values: ['deployment'] },
       { property: 'name', values: [app] },
@@ -70,7 +71,7 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
     })
   }, 20000)
 
-  test('Search kind application on specific namespace.', async () => {
+  test(`[P2][Sev2][${squad}] Search kind application on specific namespace.`, async () => {
     var query = searchQueryBuilder({
       filters: [{ property: 'kind', values: ['deployment'] },
       { property: 'name', values: [app] },
@@ -82,7 +83,7 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
     expect(res.body.data.searchResult[0].items[0].namespace).toEqual(namespace)
   }, 20000)
 
-  test('Search kind pod and namespace open-cluster-management.', async () => {
+  test(`[P2][Sev2][${squad}] Search kind pod and namespace open-cluster-management.`, async () => {
     var query = searchQueryBuilder({
       filters: [{ property: 'kind', values: ['pod'] },
       { property: 'namespace', values: ['open-cluster-management'] },
@@ -95,7 +96,7 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
     })
   }, 20000)
 
-  test('Search kind pod on specific cluster.', async () => {
+  test(`[P2][Sev2][${squad}] Search kind pod on specific cluster.`, async () => {
     var query = searchQueryBuilder({
       filters: [{ property: 'kind', values: ['pod'] },
       { property: 'cluster', values: ['local-cluster'] },
@@ -108,7 +109,7 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
     })
   }, 20000)
 
-  test('Search kind:certpolicycontroller.', async () => {
+  test(`[P2][Sev2][${squad}] Search kind:certpolicycontroller.`, async () => {
     var query = searchQueryBuilder({ filters: [{ property: 'kind', values: ['certpolicycontroller'] }] })
     var res = await sendRequest(query, token)
     expect(res.body.data.searchResult[0].items[0].name).toEqual('klusterlet-addon-certpolicyctrl')
@@ -116,7 +117,7 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
     expect(res.body.data.searchResult[0].items[0].namespace).toEqual('open-cluster-management-agent-addon')
   }, 20000)
 
-  test('Search kind:iampolicycontroller.', async () => {
+  test(`[P2][Sev2][${squad}] Search kind:iampolicycontroller.`, async () => {
     var query = searchQueryBuilder({ filters: [{ property: 'kind', values: ['iampolicycontroller'] }] })
     var res = await sendRequest(query, token)
     expect(res.body.data.searchResult[0].items[0].name).toEqual('klusterlet-addon-iampolicyctrl')
@@ -166,7 +167,7 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
   ]
 
   filtersRegistry.forEach(value => {
-    test(`should filter by ${value.filters[0].property}`, async () => {
+    test(`[P2][Sev2][${squad}] should filter by ${value.filters[0].property}`, async () => {
       var query = searchQueryBuilder(value)
       var res = await sendRequest(query, token)
     }, 20000)
@@ -201,7 +202,7 @@ describe('RHACM4K-913: Search - common filter and conditions', () => {
     console.log(message)
   }
 
-  test('should have expected count of pods in ocm on hub cluster.', async () => {
+  test(`[P3][Sev3][${squad}] should have expected count of pods in ocm on hub cluster.`, async () => {
     var query = searchQueryBuilder({
       filters: [{ property: 'kind', values: ['pod'] },
       { property: 'namespace', values: ['open-cluster-management'] },
@@ -216,7 +217,7 @@ describe('RHACM4K-913: Search - common filter and conditions', () => {
     expect(pods.length.toString()).toEqual(cliRes.toString().trim())
   }, 20000)
 
-  test('should have expected count of pods in ocm-agent on hub cluster.', async () => {
+  test(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent on hub cluster.`, async () => {
     var query = searchQueryBuilder({
       filters: [{ property: 'kind', values: ['pod'] },
       { property: 'namespace', values: ['open-cluster-management-agent'] },
@@ -231,7 +232,7 @@ describe('RHACM4K-913: Search - common filter and conditions', () => {
     expect(pods.length.toString()).toEqual(cliRes.toString().trim())
   }, 20000)
 
-  test('should have expected count of pods in ocm-agent on imported cluster.', async () => {
+  test(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent on imported cluster.`, async () => {
     if (kubeconfigs[0]) {
       var query = searchQueryBuilder({
         filters: [{ property: 'kind', values: ['pod'] },
@@ -250,7 +251,7 @@ describe('RHACM4K-913: Search - common filter and conditions', () => {
     }
   }, 20000)
 
-  test('should have expected count of pods in ocm-agent-addon on hub cluster.', async () => {
+  test(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent-addon on hub cluster.`, async () => {
     var query = searchQueryBuilder({
       filters: [{ property: 'kind', values: ['pod'] },
       { property: 'namespace', values: ['open-cluster-management-agent-addon'] },
@@ -265,7 +266,7 @@ describe('RHACM4K-913: Search - common filter and conditions', () => {
     expect(pods.length.toString()).toEqual(cliRes.toString().trim())
   }, 20000)
 
-  test('should have expected count of pods in ocm-agent-addon on imported cluster.', async () => {
+  test(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent-addon on imported cluster.`, async () => {
     if (kubeconfigs[0]) {
       var query = searchQueryBuilder({
         filters: [{ property: 'kind', values: ['pod'] },
@@ -284,7 +285,7 @@ describe('RHACM4K-913: Search - common filter and conditions', () => {
     }
   }, 20000)
 
-  test('should have expected count of pods in kube-system on imported cluster.', async () => {
+  test(`[P3][Sev3][${squad}] should have expected count of pods in kube-system on imported cluster.`, async () => {
     if (kubeconfigs[0]) {
       var query = searchQueryBuilder({
         filters: [{ property: 'kind', values: ['pod'] },
