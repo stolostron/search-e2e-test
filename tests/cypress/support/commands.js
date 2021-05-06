@@ -129,14 +129,18 @@ Cypress.Commands.add('forEach', (selector, action, options) => {
 })
 
 Cypress.Commands.add('logout', () => {
-  cy.getCookie('acm-access-token-cookie').should('exist').then((token) => {
-    oauthIssuer(token.value).then((issuer) => {
-      cy.get('.pf-c-app-launcher.pf-m-align-right.co-app-launcher.co-user-menu').click()
-      cy.get('.pf-c-app-launcher__menu.pf-m-align-right').then(() => cy.get('#logout').click().then(() => cy.url().should('include', issuer)))
-    })
-    // Clearing cookies for rbac users
-    cy.location('pathname').should('match', new RegExp('/oauth/authorize(\\?.*)?$'))
-      .clearCookies()
+  cy.log('Attempt to logout existing user')
+  cy.get('.pf-c-app-launcher.pf-m-align-right.co-app-launcher.co-user-menu').then($btn => {
+    //logout when test starts since we need to use the app idp user
+    cy.log('Logging out existing user')
+      .get($btn).click()
+    if (Cypress.config().baseUrl.includes('localhost')) {
+      cy.contains('Logout').click().clearCookies()
+    } else {
+      cy.contains('Logout').click()
+      cy.location('pathname').should('match', new RegExp('/oauth/authorize(\\?.*)?$'))
+        .clearCookies()
+    }
   })
 })
 
