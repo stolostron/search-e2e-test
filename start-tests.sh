@@ -143,7 +143,7 @@ testCode=$?
 
 if [[ "$SKIP_UI_TEST" == false && "$SKIP_API_TEST" == false ]]; then
   section_title "Merging XML and JSON reports..."
-  npm run test:merge-report
+  npm run test:merge-reports
   ls -R results
 fi
 
