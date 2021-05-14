@@ -10,6 +10,9 @@ import { searchPage } from '../views/search'
 import { savedSearches, searchBar } from '../views/suggestedSearches'
 
 describe('Search: Verify the suggested search templates', function() {
+  before(function() {
+    cy.login()
+  })
 
   beforeEach(function() {
     searchPage.whenGoToSearchPage()

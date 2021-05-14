@@ -23,6 +23,7 @@ clusterModes.forEach((clusterMode) => {
 
   describe('Search: Search in ' + clusterMode.label + ' Cluster', function() {
     before(function() {
+      cy.login()
       clusterMode.valueFn().as('clusterName')
       cy.generateNamespace().as('namespace')
       cy.task('log', `before() took ${(Date.now() - start)/1000} seconds`)

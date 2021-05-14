@@ -7,7 +7,7 @@
 
 export const clustersPage = {
   shouldExist: () => {
-    cy.get('.pf-c-title').should('contain', 'Cluster management')
+    cy.get('.pf-c-title').should('contain', 'Cluster')
   },
   shouldHaveLinkToSearchPage: () => {
     cy.visit('/multicloud/clusters')

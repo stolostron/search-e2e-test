@@ -27,8 +27,17 @@ var timeoutID
 const err = 'Test taking too long! It has been running for 5 minutes.'
 
 before(() => {
+  // This is needed for search to deploy RedisGraph upstream. Without this search won't be operational.
+  cy.exec('oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}" -n open-cluster-management', {failOnNonZeroExit: false}).then(result => {
+    if (result.stdout == "true"){
+      cy.task('log', 'Redisgraph deployment is enabled.')
+    } else {
+      cy.task('log', 'Redisgraph deployment disabled, enabling and waiting 10 seconds for the search-redisgraph-0 pod.')
+      cy.exec('oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n open-cluster-management')
+      return cy.wait(10*1000)
+    }
+  })
   cy.clearCookies()
-  cy.login()
 })
 
 beforeEach(() => {
@@ -37,10 +46,6 @@ beforeEach(() => {
     Cypress.task('log', err)
     throw Error(err)
   }, 60000 * 5)
-})
-
-after(() => {
-  cy.logout()
 })
 
 afterEach(() => {
