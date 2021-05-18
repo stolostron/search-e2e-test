@@ -24,15 +24,28 @@ export const cliHelper = {
       })
     },
     createNamespace: (name) => {
-      cy.exec(`oc create namespace ${name}`)
+      cy.exec(`oc create namespace ${name}`).then(() => {
+        cy.log(`Successfully created namespace (${name})`)
+      })
     },
-    deleteNamespace: (name) => {
-      cy.exec(`oc delete namespace ${name}`)
+    createDeployment: (name, namespace, image) => {
+      cy.exec(`oc create deployment ${name} --image=${image} -n ${namespace}`).then(() => {
+        cy.log(`Successfully created deployment (${name})`)
+      })
     },
     createApplication: (appName, namespace) => {
       cy.readFile('tests/cypress/templates/application.yaml').then((cfg) => {
         let b64Cfg = btoa(cfg.replaceAll('APPNAME', appName).replaceAll('NAMESPACE', namespace))
         cy.exec(`echo ${b64Cfg} | base64 -d | oc apply -f -`)
+        cy.log(`Successfully created application (${appName})`)
       })
+    },
+    deleteNamespace: (name) => {
+      cy.exec(`oc delete namespace ${name}`).then(() => {
+        cy.log(`Successfully deleted namespace (${name})`)
+      })
+    },
+    login: (domain, user, passw) => {
+      cy.exec(`oc login --server=https://api.${domain}:6443 -u ${user} -p ${passw} --insecure-skip-tls-verify`)
     }
   }

@@ -5,8 +5,8 @@
 
 /// <reference types="cypress" />
 
-import { squad } from '../config'
-import { overviewPage } from '../views/overview'
+import { squad } from '../../config'
+import { overviewPage } from '../../views/overview'
 
 describe('Search: Overview page', function () {
   before(function() {

@@ -27,7 +27,7 @@ export const searchPage = {
   },
   whenDeleteResourceDetailItem:(resource, name) => {
     searchPage.whenGetResourceTableRow(resource, name).find('.pf-c-dropdown__toggle', {timeout: 2000}).click({ force: true })
-    cy.get('button.pf-c-dropdown__menu-item', {timeout: 2000}).should('contain', `Delete ${resource}`).click({ timeout: 10000 }).wait(1000)
+    cy.get('button.pf-c-dropdown__menu-item', {timeout: 2000}).should('contain', `Delete ${resource}`).click().wait(1000)
     popupModal.whenAccept()
   },
   whenGoToResourceDetailItemPage: (resource, name) => {
@@ -121,13 +121,13 @@ export const searchBar = {
   whenClearFilters:() => {
     cy.get('#clear-all-search-tags-button').click({force: true})
   },
-  whenSuggestionsAreAvailable: (value, ignoreIfDoesNotExist=false) => {
+  whenSuggestionsAreAvailable: (value, ignoreIfDoesNotExist) => {
     if(!ignoreIfDoesNotExist) {
       cy.get('.react-tags__suggestions ul#ReactTags').children().should('have.length.above', 1)
     }
     cy.get('.react-tags__search-input').click().type(value)
   },
-  whenEnterTextInSearchBar:(property, value, ignoreIfDoesNotExist=false) => {
+  whenEnterTextInSearchBar:(property, value, ignoreIfDoesNotExist) => {
     cy.get('.react-tags__search-input').click()
     searchBar.whenSuggestionsAreAvailable(property, ignoreIfDoesNotExist)
 
@@ -138,25 +138,28 @@ export const searchBar = {
       cy.get('.react-tags__search-input').type(' ')
     }
   },
-  whenFilterByCluster:(cluster) => {
-    searchBar.whenEnterTextInSearchBar('cluster', cluster)
+  whenFilterByCluster:(cluster, ignoreIfDoesNotExist) => {
+    searchBar.whenEnterTextInSearchBar('cluster', cluster, ignoreIfDoesNotExist)
   },
-  whenFilterByClusterAndNamespace:(cluster, namespace) => {
-    searchBar.whenFilterByCluster(cluster)
-    searchBar.whenEnterTextInSearchBar('namespace', namespace)
+  whenFilterByClusterAndNamespace:(cluster, namespace, ignoreIfDoesNotExist) => {
+    searchBar.whenFilterByCluster(cluster, ignoreIfDoesNotExist)
+    searchBar.whenEnterTextInSearchBar('namespace', namespace, ignoreIfDoesNotExist)
   },
-  whenFilterByKind:(kind, ignoreIfDoesNotExist=false) => {
+  whenFilterByKind:(kind, ignoreIfDoesNotExist) => {
     searchBar.whenEnterTextInSearchBar('kind', kind, ignoreIfDoesNotExist)
   },
-  whenFilterByName:(name, ignoreIfDoesNotExist=false) => {
+  whenFilterByName:(name, ignoreIfDoesNotExist) => {
     searchBar.whenEnterTextInSearchBar('name', name, ignoreIfDoesNotExist)
+  },
+  whenFilterByNamespace:(namespace, ignoreIfDoesNotExist) => {
+    searchBar.whenEnterTextInSearchBar('namespace', namespace, ignoreIfDoesNotExist)
   },
   whenSelectFirstSuggestedValue:() => {
     searchBar.shouldSuggestValues()
 
-    cy.get('.react-tags__suggestions li[role="option"]', { timeout: 10000 }).eq(1).click()
+    cy.get('.react-tags__suggestions li[role="option"]').eq(1).click()
   },
   shouldSuggestValues:() => {
-    cy.waitUntilNotContains('.react-tags__suggestions', SEARCH_MESSAGES_LOADING_SUGGESTIONS, { timeout: 60000, interval: 1000 })
+    cy.waitUntilNotContains('.react-tags__suggestions', SEARCH_MESSAGES_LOADING_SUGGESTIONS, { timeout: 60000, interval: 100 })
   }
 }

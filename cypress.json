@@ -3,7 +3,7 @@
   "chromeWebSecurity": false,
   "defaultCommandTimeout": 15000,
   "integrationFolder": "tests/cypress/tests",
-  "ignoreTestFiles": ["adminSearch.spec.js"],
+  "ignoreTestFiles": [],
   "fixturesFolder": "tests/cypress/fixtures",
   "pluginsFile": "tests/cypress/plugins/index.js",
   "pageLoadTimeout": 90000,
@@ -11,7 +11,7 @@
   "screenshotsFolder" : "results/screenshots",
   "supportFile": "tests/cypress/support/index.js",
   "videosFolder": "results/videos",
-  "videoUploadOnPasses": false,
+  "videoUploadOnPasses": true,
   "watchForFileChanges": true,
   "nodeVersion": "system",
   "env": {

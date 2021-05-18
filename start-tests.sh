@@ -117,11 +117,6 @@ if [ -z "$RECORD" ]; then
 fi
 
 if [ "$SKIP_UI_TEST" == false ]; then
-  echo -e "Setting namespaces for Search UI test\n"
-  export LOCAL_NS=search-$(date +%s)
-  export MANAGED_NS=search-man-$(date +%s)
-  echo -e "Local Namespace: $LOCAL_NS\nManaged Namespace: $MANAGED_NS"
-
   if [ "$RECORD" == true ]; then
     echo "Preparing to run test within record mode. (Results will be displayed within dashboard)"
     cypress run --record --key $RECORD_KEY --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,LOCAL_NS=$LOCAL_NS,MANAGED_NS=$MANAGED_NS
