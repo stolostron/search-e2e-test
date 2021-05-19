@@ -15,6 +15,7 @@ const clusterModes = [{ label: 'Local', valueFn: () => cy.wrap('local-cluster'),
 
 clusterModes.forEach((clusterMode) => {
   if (clusterMode.skip) {
+    cy.task('log', `WARNING: Skipping tests for ${clusterMode.label} cluster`);
     return;
   }
 
