@@ -11,7 +11,7 @@
   "screenshotsFolder" : "results/screenshots",
   "supportFile": "tests/cypress/support/index.js",
   "videosFolder": "results/videos",
-  "videoUploadOnPasses": true,
+  "videoUploadOnPasses": false,
   "watchForFileChanges": true,
   "nodeVersion": "system",
   "env": {
