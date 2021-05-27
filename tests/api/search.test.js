@@ -23,7 +23,7 @@ describe('RHACM4K-1695: Search - verify managed cluster info in the search page'
 
   test(`[P1][Sev1][${squad}] Search - verify managed cluster info in the search page.`, async () => {
     var query = searchQueryBuilder({ filters: [
-      { property: 'cluster', values: ['!local-cluster'] },
+      { property: 'name', values: ['!local-cluster'] },
       { property: 'ManagedClusterJoined', values: ['True'] }]
     })
     var res = await sendRequest(query, token)
