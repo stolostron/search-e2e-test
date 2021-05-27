@@ -28,18 +28,7 @@ describe('RHACM4K-1695: Search - verify managed cluster info in the search page'
     })
     var res = await sendRequest(query, token)
     expect(res.body.data.searchResult[0].items[0].ManagedClusterJoined).toEqual("True")
-    // DISABLING this test because it isn't guaranteed that local-cluster is first.
-    //
     // expect(res.body.data.searchResult[0].items[0].status).toEqual("OK")
-
-    // query = searchQueryBuilder({ filters: [{ property: 'kind', values: ['cluster'] }] })
-    // res = await sendRequest(query, token)
-    // expect(res.body.data.searchResult[0].items[0].kind).toEqual("cluster")
-    // expect(res.body.data.searchResult[0].items[0].name).toEqual("local-cluster")
-
-    query = searchQueryBuilder({ filters: [{ property: 'kind', values: ['pod'] }] })
-    res = await sendRequest(query, token)
-    expect(res.body.data.searchResult[0].items[0].kind).toEqual("pod")
 
     query = searchQueryBuilder({
       filters: [{ property: 'cluster', values: ['!local-cluster'] },
