@@ -27,17 +27,17 @@ describe('RHACM4K-1695: Search - verify managed cluster info in the search page'
     expect(res.body.data.searchResult[0].items[0].ManagedClusterJoined).toEqual("True")
     expect(res.body.data.searchResult[0].items[0].status).toEqual("OK")
 
-    query = searchQueryBuilder({ filters: [{ property: 'kind', values: ['cluster'] }] })
-    res = await sendRequest(query, token)
-    expect(res.body.data.searchResult[0].items[0].kind).toEqual("cluster")
-    expect(res.body.data.searchResult[0].items[0].name).toEqual("local-cluster")
+    // query = searchQueryBuilder({ filters: [{ property: 'kind', values: ['cluster'] }] })
+    // res = await sendRequest(query, token)
+    // expect(res.body.data.searchResult[0].items[0].kind).toEqual("cluster")
+    // expect(res.body.data.searchResult[0].items[0].name).toEqual("local-cluster")
 
     query = searchQueryBuilder({ filters: [{ property: 'kind', values: ['pod'] }] })
     res = await sendRequest(query, token)
     expect(res.body.data.searchResult[0].items[0].kind).toEqual("pod")
 
     query = searchQueryBuilder({
-      filters: [{ property: 'cluster', values: ['local-cluster'] },
+      filters: [{ property: 'cluster', values: ['!local-cluster'] },
       { property: 'kind', values: ['pod'] },
       { property: 'namespace', values: ['open-cluster-management-agent'] }]
     })
