@@ -64,12 +64,13 @@ oc login --server=https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443 -u $CYPRESS
 testCode=0
 
 echo "Checking RedisGraph deployment."
-rgstatus=`oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}" -n open-cluster-management`
+installNamespace=`oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`
+rgstatus=`oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}" -n ${installNamespace}`
 if [ "$rgstatus" == "true" ]; then
   echo "RedisGraph deployment is enabled."
 else
   echo "RedisGraph deployment disabled, enabling and waiting 60 seconds for the search-redisgraph-0 pod."
-  oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n open-cluster-management
+  oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n $installNamespace
   sleep 60
 fi
 
@@ -117,23 +118,18 @@ if [ -z "$RECORD" ]; then
 fi
 
 if [ "$SKIP_UI_TEST" == false ]; then
-  echo -e "Setting namespaces for Search UI test\n"
-  export LOCAL_NS=search-$(date +%s)
-  export MANAGED_NS=search-man-$(date +%s)
-  echo -e "Local Namespace: $LOCAL_NS\nManaged Namespace: $MANAGED_NS"
-
   if [ "$RECORD" == true ]; then
     echo "Preparing to run test within record mode. (Results will be displayed within dashboard)"
-    cypress run --record --key $RECORD_KEY --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,LOCAL_NS=$LOCAL_NS,MANAGED_NS=$MANAGED_NS
+    cypress run --record --key $RECORD_KEY --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV
   fi
 
   section_title "Running Search UI tests."
   if [ "$NODE_ENV" == "development" ]; then
-    cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,LOCAL_NS=$LOCAL_NS,MANAGED_NS=$MANAGED_NS
+    cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV
   elif [ "$NODE_ENV" == "debug" ]; then
-    cypress open --browser $BROWSER --config numTestsKeptInMemory=0 --env NODE_ENV=$NODE_ENV,LOCAL_NS=$LOCAL_NS,MANAGED_NS=$MANAGED_NS
+    cypress open --browser $BROWSER --config numTestsKeptInMemory=0 --env NODE_ENV=$NODE_ENV
   else 
-    cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,LOCAL_NS=$LOCAL_NS,MANAGED_NS=$MANAGED_NS
+    cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV
   fi
 else
   echo -e "SKIP_UI_TEST was set to true. Skipping UI tests\n"
