@@ -108,7 +108,7 @@ fi
 
 if [ "$SKIP_API_TEST" == false ]; then 
   section_title "Running Search API tests."
-  npm run test:api || exit 1
+  npm run test:api
 else
   echo -e "\nSKIP_API_TEST was set to true. Skipping API tests\n"
 fi
