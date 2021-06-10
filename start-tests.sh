@@ -20,6 +20,7 @@ USER_OPTIONS_FILE=./options.yaml
 
 if [ -f $OPTIONS_FILE ]; then
   echo "Using test config from: $OPTIONS_FILE"
+  export CYPRESS_OC_IDP=`yq e '.options.identityProvider' $OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_USER=`yq e '.options.hub.user' $OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $OPTIONS_FILE`
@@ -28,6 +29,7 @@ if [ -f $OPTIONS_FILE ]; then
   export OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $OPTIONS_FILE`
 elif [ -f $USER_OPTIONS_FILE ]; then
   echo "Using test config from: $USER_OPTIONS_FILE"
+  export CYPRESS_OC_IDP=`yq e '.options.identityProvider' $USER_OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $USER_OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_USER=`yq e '.options.hub.user' $USER_OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $USER_OPTIONS_FILE`
@@ -43,7 +45,14 @@ export CYPRESS_BASE_URL=https://multicloud-console.apps.$CYPRESS_OPTIONS_HUB_BAS
 echo -e "Running tests with the following environment:\n"
 echo -e "\tCYPRESS_OPTIONS_HUB_BASEDOMAIN : $CYPRESS_OPTIONS_HUB_BASEDOMAIN"
 echo -e "\tCYPRESS_OPTIONS_HUB_BASE_URL   : $CYPRESS_BASE_URL"
-echo -e "\tCYPRESS_OPTIONS_HUB_USER       : $CYPRESS_OPTIONS_HUB_USER\n"
+echo -e "\tCYPRESS_OPTIONS_HUB_USER       : $CYPRESS_OPTIONS_HUB_USER"
+echo -e "\tCYPRESS_OC_IDP                 : $CYPRESS_OC_IDP\n"
+
+# Check to see if CYPRESS_OC_IDP is null.
+if [ "$CYPRESS_OC_IDP" == "null" ]; then
+  echo -e "CYPRESS_OC_IDP is null; setting to 'kube:admin'\n"
+  export CYPRESS_OC_IDP=kube:admin
+fi
 
 if [[ -z $OPTIONS_MANAGED_BASEDOMAIN || -z $OPTIONS_MANAGED_USER || -z $OPTIONS_MANAGED_PASSWORD ]]; then
    echo 'One or more variables are undefined. Copying kubeconfigs...'
@@ -68,9 +77,9 @@ echo "Checking RedisGraph deployment."
 installNamespace=`oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`
 rgstatus=`oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}" -n ${installNamespace}`
 if [ "$rgstatus" == "true" ]; then
-  echo "RedisGraph deployment is enabled."
+  echo -e "RedisGraph deployment is enabled.\n"
 else
-  echo "RedisGraph deployment disabled, enabling and waiting 60 seconds for the search-redisgraph-0 pod."
+  echo -e "RedisGraph deployment disabled, enabling and waiting 60 seconds for the search-redisgraph-0 pod.\n"
   oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n $installNamespace
   sleep 60
 fi
@@ -86,7 +95,7 @@ if [ -z "$NODE_ENV" ]; then
 fi
 
 if [ -z "$SKIP_API_TEST" ]; then
-  echo -e "\nSKIP_API_TEST not exported; setting to false (set SKIP_API_TEST to true, if you wish to skip the API tests)"
+  echo -e "SKIP_API_TEST not exported; setting to false (set SKIP_API_TEST to true, if you wish to skip the API tests)"
   export SKIP_API_TEST=false
 fi
 
@@ -110,11 +119,11 @@ if [ "$SKIP_API_TEST" == false ]; then
   section_title "Running Search API tests."
   npm run test:api
 else
-  echo -e "\nSKIP_API_TEST was set to true. Skipping API tests\n"
+  echo -e "\nSKIP_API_TEST was set to true. Skipping API tests"
 fi
 
 if [ -z "$RECORD" ]; then
-  echo -e "RECORD not exported; setting to false (set RECORD to true, if you wish to view results within dashboard)\n"
+  echo -e "RECORD not exported; setting to false (set RECORD to true, if you wish to view results within dashboard)"
   export RECORD=false
 fi
 
