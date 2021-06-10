@@ -17,6 +17,7 @@ fi
 # Load test config mounted at /resources/options.yaml
 OPTIONS_FILE=/resources/options.yaml
 USER_OPTIONS_FILE=./options.yaml
+
 if [ -f $OPTIONS_FILE ]; then
   echo "Using test config from: $OPTIONS_FILE"
   export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $OPTIONS_FILE`
@@ -42,7 +43,7 @@ export CYPRESS_BASE_URL=https://multicloud-console.apps.$CYPRESS_OPTIONS_HUB_BAS
 echo -e "Running tests with the following environment:\n"
 echo -e "\tCYPRESS_OPTIONS_HUB_BASEDOMAIN : $CYPRESS_OPTIONS_HUB_BASEDOMAIN"
 echo -e "\tCYPRESS_OPTIONS_HUB_BASE_URL   : $CYPRESS_BASE_URL"
-echo -e "\tCYPRESS_OPTIONS_HUB_USER       : $CYPRESS_OPTIONS_HUB_USER"
+echo -e "\tCYPRESS_OPTIONS_HUB_USER       : $CYPRESS_OPTIONS_HUB_USER\n"
 
 if [[ -z $OPTIONS_MANAGED_BASEDOMAIN || -z $OPTIONS_MANAGED_USER || -z $OPTIONS_MANAGED_PASSWORD ]]; then
    echo 'One or more variables are undefined. Copying kubeconfigs...'
@@ -107,7 +108,7 @@ fi
 
 if [ "$SKIP_API_TEST" == false ]; then 
   section_title "Running Search API tests."
-  npm run test:api
+  npm run test:api || exit 1
 else
   echo -e "\nSKIP_API_TEST was set to true. Skipping API tests\n"
 fi
