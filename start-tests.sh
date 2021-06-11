@@ -49,8 +49,8 @@ echo -e "\tCYPRESS_OPTIONS_HUB_USER       : $CYPRESS_OPTIONS_HUB_USER"
 echo -e "\tCYPRESS_OC_IDP                 : $CYPRESS_OC_IDP\n"
 
 # Check to see if CYPRESS_OC_IDP is null.
-if [ "$CYPRESS_OC_IDP" == "null" ]; then
-  echo -e "CYPRESS_OC_IDP is null; setting to 'kube:admin'\n"
+if [[ -z $CYPRESS_OC_IDP || "$CYPRESS_OC_IDP" == "null" ]]; then
+  echo -e "CYPRESS_OC_IDP is (null or not set); setting to 'kube:admin'\n"
   export CYPRESS_OC_IDP=kube:admin
 fi
 
