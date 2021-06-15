@@ -17,8 +17,10 @@ fi
 # Load test config mounted at /resources/options.yaml
 OPTIONS_FILE=/resources/options.yaml
 USER_OPTIONS_FILE=./options.yaml
+
 if [ -f $OPTIONS_FILE ]; then
   echo "Using test config from: $OPTIONS_FILE"
+  export CYPRESS_OC_IDP=`yq e '.options.identityProvider' $OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_USER=`yq e '.options.hub.user' $OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $OPTIONS_FILE`
@@ -27,6 +29,7 @@ if [ -f $OPTIONS_FILE ]; then
   export OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $OPTIONS_FILE`
 elif [ -f $USER_OPTIONS_FILE ]; then
   echo "Using test config from: $USER_OPTIONS_FILE"
+  export CYPRESS_OC_IDP=`yq e '.options.identityProvider' $USER_OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $USER_OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_USER=`yq e '.options.hub.user' $USER_OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $USER_OPTIONS_FILE`
@@ -43,6 +46,13 @@ echo -e "Running tests with the following environment:\n"
 echo -e "\tCYPRESS_OPTIONS_HUB_BASEDOMAIN : $CYPRESS_OPTIONS_HUB_BASEDOMAIN"
 echo -e "\tCYPRESS_OPTIONS_HUB_BASE_URL   : $CYPRESS_BASE_URL"
 echo -e "\tCYPRESS_OPTIONS_HUB_USER       : $CYPRESS_OPTIONS_HUB_USER"
+echo -e "\tCYPRESS_OC_IDP                 : $CYPRESS_OC_IDP\n"
+
+# Check to see if CYPRESS_OC_IDP is null.
+if [[ -z $CYPRESS_OC_IDP || "$CYPRESS_OC_IDP" == "null" ]]; then
+  echo -e "CYPRESS_OC_IDP is (null or not set); setting to 'kube:admin'\n"
+  export CYPRESS_OC_IDP=kube:admin
+fi
 
 if [[ -z $OPTIONS_MANAGED_BASEDOMAIN || -z $OPTIONS_MANAGED_USER || -z $OPTIONS_MANAGED_PASSWORD ]]; then
    echo 'One or more variables are undefined. Copying kubeconfigs...'
@@ -64,12 +74,13 @@ oc login --server=https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443 -u $CYPRESS
 testCode=0
 
 echo "Checking RedisGraph deployment."
-rgstatus=`oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}" -n open-cluster-management`
+installNamespace=`oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`
+rgstatus=`oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}" -n ${installNamespace}`
 if [ "$rgstatus" == "true" ]; then
-  echo "RedisGraph deployment is enabled."
+  echo -e "RedisGraph deployment is enabled.\n"
 else
-  echo "RedisGraph deployment disabled, enabling and waiting 60 seconds for the search-redisgraph-0 pod."
-  oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n open-cluster-management
+  echo -e "RedisGraph deployment disabled, enabling and waiting 60 seconds for the search-redisgraph-0 pod.\n"
+  oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n $installNamespace
   sleep 60
 fi
 
@@ -84,7 +95,7 @@ if [ -z "$NODE_ENV" ]; then
 fi
 
 if [ -z "$SKIP_API_TEST" ]; then
-  echo -e "\nSKIP_API_TEST not exported; setting to false (set SKIP_API_TEST to true, if you wish to skip the API tests)"
+  echo -e "SKIP_API_TEST not exported; setting to false (set SKIP_API_TEST to true, if you wish to skip the API tests)"
   export SKIP_API_TEST=false
 fi
 
@@ -108,32 +119,27 @@ if [ "$SKIP_API_TEST" == false ]; then
   section_title "Running Search API tests."
   npm run test:api
 else
-  echo -e "\nSKIP_API_TEST was set to true. Skipping API tests\n"
+  echo -e "\nSKIP_API_TEST was set to true. Skipping API tests"
 fi
 
 if [ -z "$RECORD" ]; then
-  echo -e "RECORD not exported; setting to false (set RECORD to true, if you wish to view results within dashboard)\n"
+  echo -e "RECORD not exported; setting to false (set RECORD to true, if you wish to view results within dashboard)"
   export RECORD=false
 fi
 
 if [ "$SKIP_UI_TEST" == false ]; then
-  echo -e "Setting namespaces for Search UI test\n"
-  export LOCAL_NS=search-$(date +%s)
-  export MANAGED_NS=search-man-$(date +%s)
-  echo -e "Local Namespace: $LOCAL_NS\nManaged Namespace: $MANAGED_NS"
-
   if [ "$RECORD" == true ]; then
     echo "Preparing to run test within record mode. (Results will be displayed within dashboard)"
-    cypress run --record --key $RECORD_KEY --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,LOCAL_NS=$LOCAL_NS,MANAGED_NS=$MANAGED_NS
+    cypress run --record --key $RECORD_KEY --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV
   fi
 
   section_title "Running Search UI tests."
   if [ "$NODE_ENV" == "development" ]; then
-    cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,LOCAL_NS=$LOCAL_NS,MANAGED_NS=$MANAGED_NS
+    cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV
   elif [ "$NODE_ENV" == "debug" ]; then
-    cypress open --browser $BROWSER --config numTestsKeptInMemory=0 --env NODE_ENV=$NODE_ENV,LOCAL_NS=$LOCAL_NS,MANAGED_NS=$MANAGED_NS
+    cypress open --browser $BROWSER --config numTestsKeptInMemory=0 --env NODE_ENV=$NODE_ENV
   else 
-    cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,LOCAL_NS=$LOCAL_NS,MANAGED_NS=$MANAGED_NS
+    cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV
   fi
 else
   echo -e "SKIP_UI_TEST was set to true. Skipping UI tests\n"
