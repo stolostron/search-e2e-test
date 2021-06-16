@@ -23,7 +23,7 @@ export const overviewPage = {
         cy.wrap(p).get('.react-tags__selected').should('have.length', 1).invoke('text').should('eq', 'kind:cluster')
         if(cluster!=="0")
         {
-          cy.wrap(p).get('.pf-c-expandable-section__toggle-text').invoke('text').should('equal', 'Cluster ('+cluster+')')
+          cy.wrap(p).get('.pf-c-expandable-section__toggle-text').invoke('text').should('contain', 'Cluster')
         }
       })
     })
@@ -34,7 +34,7 @@ export const overviewPage = {
         cy.wrap(p).get('.react-tags__selected').should('have.length', 1).invoke('text').should('eq', 'kind:pod')
         if(pod!=="0")
         {
-          cy.wrap(p).get('.pf-c-expandable-section__toggle-text').invoke('text').should('equal', 'Pod ('+pod+')')
+          cy.wrap(p).get('.pf-c-expandable-section__toggle-text').invoke('text').should('contain', 'Pod')
         }
       })
     })

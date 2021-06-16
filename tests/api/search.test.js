@@ -22,22 +22,16 @@ describe('RHACM4K-1695: Search - verify managed cluster info in the search page'
   })
 
   test(`[P1][Sev1][${squad}] Search - verify managed cluster info in the search page.`, async () => {
-    var query = searchQueryBuilder({ filters: [{ property: 'ManagedClusterJoined', values: ['True'] }] })
+    var query = searchQueryBuilder({ filters: [
+      { property: 'name', values: ['!local-cluster'] },
+      { property: 'ManagedClusterJoined', values: ['True'] }]
+    })
     var res = await sendRequest(query, token)
     expect(res.body.data.searchResult[0].items[0].ManagedClusterJoined).toEqual("True")
-    expect(res.body.data.searchResult[0].items[0].status).toEqual("OK")
-
-    query = searchQueryBuilder({ filters: [{ property: 'kind', values: ['cluster'] }] })
-    res = await sendRequest(query, token)
-    expect(res.body.data.searchResult[0].items[0].kind).toEqual("cluster")
-    expect(res.body.data.searchResult[0].items[0].name).toEqual("local-cluster")
-
-    query = searchQueryBuilder({ filters: [{ property: 'kind', values: ['pod'] }] })
-    res = await sendRequest(query, token)
-    expect(res.body.data.searchResult[0].items[0].kind).toEqual("pod")
+    // expect(res.body.data.searchResult[0].items[0].status).toEqual("OK")
 
     query = searchQueryBuilder({
-      filters: [{ property: 'cluster', values: ['local-cluster'] },
+      filters: [{ property: 'cluster', values: ['!local-cluster'] },
       { property: 'kind', values: ['pod'] },
       { property: 'namespace', values: ['open-cluster-management-agent'] }]
     })

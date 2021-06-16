@@ -1,4 +1,5 @@
 options:
+  identityProvider: OC_IDP
   hub:
     baseDomain: BASE_DOMAIN
     user: BASE_USER
