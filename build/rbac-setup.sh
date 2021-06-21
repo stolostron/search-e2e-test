@@ -19,10 +19,12 @@ if [ ! -d ${RBAC_DIR} ]; then
   exit 1
 fi
 
-if [ -z ${OPTIONS_HUB_PASSWORD} ]; then
-  echo "Error: RBAC password not set in variable OPTIONS_HUB_PASSWORD."
+if [[ -z $OPTIONS_HUB_PASSWORD && -z $CYPRESS_OPTIONS_HUB_PASSWORD ]]; then
+  echo "Error: RBAC password not set in variable OPTIONS_HUB_PASSWORD or CYPRESS_OPTIONS_HUB_PASSWORD. The variables can be set within the options.yaml file or exported as an environment variable."
   exit 1
 fi
+
+passwd="{$OPTIONS_HUB_PASSWORD:-$CYPRESS_OPTIONS_HUB_PASSWORD}"
 
 if ! which htpasswd &>/dev/null; then
   if which apt-get &>/dev/null; then
@@ -37,7 +39,7 @@ fi
 touch ${RBAC_DIR}/htpasswd
 for access in cluster ns; do
   for role in cluster-admin admin edit view group; do
-    htpasswd -b ${RBAC_DIR}/htpasswd search-e2e-${role}-${access} ${OPTIONS_HUB_PASSWORD}
+    htpasswd -b ${RBAC_DIR}/htpasswd search-e2e-${role}-${access} ${passwd}
   done
 done
 oc create secret generic search-e2e-users --from-file=htpasswd=${RBAC_DIR}/htpasswd -n openshift-config || true
