@@ -135,13 +135,12 @@ Control the behavior of this service with these environment variables.
 | Name                   | Required | Default Value   | Descripition                                                                 |
 |------------------------|----------|-----------------|------------------------------------------------------------------------------|
 | BROWSER                | no       | chrome          | Run Cypress in the browser with the given name (***chrome, firefox***)       |
+| CYPRESS_BASE_URL       | no       | chrome          | Base url of the target cluster (***This is only required when the user test the E2E tests with the following command: `npx cypress open`***)       |
 | LIVE_MODE              | no       | false           | Display the E2E tests being executed in the browser                          |
-| LOCAL_NS               | no       |                 | The name of the local namespace that will be used when running the UI tests (***unique namespace will be generated if not exported***) |
-| MANAGED_NS             | no       |                 | The name of the managed namespace that will be used when running the UI tests (***unique namespace will be generated if not exported***) |
 | NODE_ENV               | no       | development     | The environment to run the test (***debug, development, production***)       |
-| OPTIONS_HUB_BASEDOMAIN | no       |                 | Base domain of the targeted cluster                                          |
-| OPTIONS_HUB_USER       | no       |                 | Base user of the targeted cluster                                            |
-| OPTIONS_HUB_PASSWORD   | no       |                 | Base password of the target cluster                                          |
+| OPTIONS_HUB_BASEDOMAIN | yes      |                 | Base domain of the target cluster (***Variable can also be exported as CYPRESS_OPTIONS_HUB_BASEDOMAIN***) |
+| OPTIONS_HUB_PASSWORD   | yes      |                 | Base password of the target cluster (***Variable can also be exported as CYPRESS_OPTIONS_HUB_PASSWORD***) |
+| OPTIONS_HUB_USER       | yes      |                 | Base user of the targeted cluster (***Variable can also be exported as CYPRESS_OPTIONS_HUB_USER***) |
 | RECORD                 | no       | false           | When set to true, Cypress tests will be recorded in the Cypress dashboard    |
 | RECORD_KEY             | no       |                 | Record key that is provided when the dashboard is set up (***This is only required when the `RECORD` variable is set to true***)|
 | SKIP_API_TEST          | no       | false           | Skip the API tests when running all tests                                    |

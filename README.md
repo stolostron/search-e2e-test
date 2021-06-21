@@ -5,25 +5,22 @@
 End-to-end tests for the Open Cluster Management search component. The tests consist of the following user scenarios:
 
 - [API tests](./tests/api/README.md)
-- [UI tests](./tests/cypress/README.md) 
-
+- [UI tests](./tests/cypress/README.md)
 
 ## Running the tests locally
 
   > Pre-requisites:
-  >  - nodeJS
-  >  - OpenShift CLI
-  >  - yq command - [link](https://snapcraft.io/install/yq/fedora) for Fedora
-  >  - a browser - either chrome or firefox
+  >
+  > - nodeJS
+  > - OpenShift CLI
+  > - yq command - [link](https://snapcraft.io/install/yq/fedora) for Fedora
+  > - a browser - either chrome or firefox
 
 1. Copy the `options.yaml.template` file into `./options.yaml` and update with your target cluster access info.
 2. Run `npm install`
 3. Run `npm run test` OR `npm run test:headed`
 
-<a href="docs/readme/images/cypress-test-headless.gif">
-  <img alt="" src="docs/readme/images/cypress-test-headless.gif"></img>
-</a>
-
+![Cypress Test](docs/readme/images/cypress-test-headless.gif)
 
 ## Running the tests using Docker image
 
@@ -39,11 +36,13 @@ End-to-end tests for the Open Cluster Management search component. The tests con
 | `npm run test`                         | Run Cypress tests                                                                              |
 | `npm run test:api`                     | Run Search API tests (jest)                                                                    |
 | `npm run test:clean-reports`           | Remove reports within the results directory                                                    |
+| `npm run test:debug`                   | Remove reports within the results directory                                                    |
 | `npm run test:headed`                  | Run Cypress tests and display test being executed within the browser (Default browser: chrome) |
 | `npm run test:headless`                | Run Cypress tests while hiding the browser                                                     |
 | `npm run test:merge-json`              | Merge JSON report files within the results/json directory                                      |
 | `npm run test:merge-reports`           | Merge reports within the results directory                                                     |
 | `npm run test:merge-xml`               | Merge XML report files within the results/xml directory                                        |
+| `npm run test:production`              | Run Cypress tests in the production environment                                                |
 
 ## Links
 
