@@ -3,4 +3,4 @@
  * Copyright (c) 2021 Red Hat, Inc.
  ****************************************************************************** */
 
- exports.squad = "search"
+ exports.squad = "observability-usa"
