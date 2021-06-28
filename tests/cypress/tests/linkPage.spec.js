@@ -8,7 +8,7 @@
 import { squad } from '../config'
 import { clustersPage } from '../views/clusters'
 
-describe('Search: Linked page', function () {
+describe('RHACM4K-413: Search: Linked page', function () {
   before(function() {
     cy.login()
   })

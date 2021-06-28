@@ -9,7 +9,7 @@ import { squad } from '../config'
 import { searchPage } from '../views/search'
 import { savedSearches, searchBar } from '../views/suggestedSearches'
 
-describe('Search: Verify the suggested search templates', function() {
+describe('RHACM4K-411: Search: Verify the suggested search templates', function() {
   before(function() {
     cy.login()
   })
