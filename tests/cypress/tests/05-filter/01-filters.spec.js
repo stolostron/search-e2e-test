@@ -30,7 +30,7 @@ const kindFilter = filtersRegistry.createFilter('kind', { strategies: [ multiple
 filtersRegistry.createFilter('role', { values: [useText('master'), useText('worker')], strategies: [ multipleValues(2) ] })
 filtersRegistry.createFilter('status', { strategies: [ simple, multipleValues(2) ]} )
 
-describe('Search: Search using filters', function() {
+describe('RHACM4K-537: Search: Search using filters', function() {
   before(function() {
     cy.login()
     searchPage.whenGoToSearchPage()
