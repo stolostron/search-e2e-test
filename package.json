@@ -36,21 +36,21 @@
     "xml2json": "^0.12.0"
   },
   "devDependencies": {
-    "@cypress/code-coverage": "^3.9.6",
+    "@cypress/code-coverage": "^3.9.7",
     "chromedriver": "^91.0.1",
     "cross-env": "^7.0.3",
-    "cypress": "^7.5.0",
+    "cypress": "^7.6.0",
     "cypress-multi-reporters": "^1.5.0",
     "cypress-terminal-report": "^3.2.2",
     "cypress-wait-until": "^1.7.1",
     "eslint-plugin-cypress": "^2.11.3",
     "geckodriver": "^2.0.0",
     "junit-report-merger": "^2.2.2",
-    "mocha": "^9.0.0",
+    "mocha": "^9.0.1",
     "mocha-junit-reporter": "^2.0.0",
     "mochawesome": "^6.2.2",
     "mochawesome-merge": "^4.2.0",
     "querystring": "^0.2.1",
-    "selenium-standalone": "^6.23.0"
+    "selenium-standalone": "^7.1.0"
   }
 }

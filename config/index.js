@@ -32,35 +32,29 @@ nconf.env({ lowerCase: true, separator: '_' })
         squadName: 'observability-usa'
     })
 
-// Hack to deal with camelCase when using env OPTIONS_HUB_BASEDOMAIN
+// Hack to deal with camelCase when using env OPTIONS_HUB_BASEDOMAIN OPTIONS_HUB_USER OPTIONS_HUB_PASSWORD
 try {
-    nconf.required(['options:hub:baseDomain'])
+    nconf.required(['options:hub:baseDomain', 'options:hub:user', 'options:hub:password'])
 } catch {
-    if (process.env.OPTIONS_HUB_BASEDOMAIN) {
-        nconf.set('options:hub:baseDomain', process.env.OPTIONS_HUB_BASEDOMAIN)
+    if (process.env.OPTIONS_HUB_BASEDOMAIN || process.env.CYPRESS_OPTIONS_HUB_BASEDOMAIN) {
+        nconf.set('options:hub:baseDomain', process.env.OPTIONS_HUB_BASEDOMAIN || process.env.CYPRESS_OPTIONS_HUB_BASEDOMAIN)
+    }
+
+    if (process.env.OPTIONS_HUB_USER || process.env.CYPRESS_OPTIONS_HUB_USER) {
+        nconf.set('options:hub:user', process.env.OPTIONS_HUB_USER || process.env.CYPRESS_OPTIONS_HUB_USER)
+    }
+
+    if (process.env.OPTIONS_HUB_PASSWORD || process.env.CYPRESS_OPTIONS_HUB_PASSWORD) {
+        nconf.set('options:hub:password', process.env.OPTIONS_HUB_PASSWORD || process.env.CYPRESS_OPTIONS_HUB_PASSWORD)
     }
 }
 
-nconf.required(['options:hub:baseDomain', 'options:hub:user', 'options:hub:password'])
-
-if (nconf.get('options:hub:baseDomain') === ''
-    || nconf.get('options:hub:user') === ''
-    || nconf.get('options:hub:password') === '') {
-    
+if (!nconf.get('options:hub:baseDomain') || !nconf.get('options:hub:user') || !nconf.get('options:hub:password')) {
     throw new Error(`Missing environment variables.
     The following are required to run this tests:
     - OPTIONS_HUB_BASEDOMAIN or options.hub.baseDomain in options.yaml.
     - OPTIONS_HUB_USER or options.hub.user in options.yaml.
     - OPTIONS_HUB_PASSWORD or options.hub.password in options.yaml.`)
   }
-
-/*
-console.log('Test environment')
-console.log('========================================')
-console.log('baseDomain : ', nconf.get('options:hub:baseDomain'))
-console.log('user       : ', nconf.get('options:hub:user'))
-// console.log('password   : ', nconf.get('options:hub:password'))
-console.log('========================================\n')
-*/
 
 module.exports = nconf

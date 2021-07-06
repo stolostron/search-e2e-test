@@ -7,8 +7,8 @@
 
 export const popupModal = {
   whenAccept:() => {
-    popupModal.shouldExist().click({ timeout: 15000 })
-    cy.get('.pf-c-alert pf-m-inline pf-m-danger', { timeout: 10000 }).should('not.exist')
+    popupModal.shouldExist().click()
+    cy.get('.pf-c-alert pf-m-inline pf-m-danger').should('not.exist')
     popupModal.shouldNotExist()
   },
   shouldNotExist:() => cy.get('button.pf-m-danger', { timeout: 30000 }).should('not.exist'),
