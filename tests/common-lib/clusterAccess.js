@@ -77,4 +77,3 @@ exports.searchQueryBuilder = searchQueryBuilder
 exports.sendRequest = sendRequest
 exports.getPods = getPods
 exports.deletePod = deletePod
-exports.getInstalledNamespace = getInstalledNamespace
