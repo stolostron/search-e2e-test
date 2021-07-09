@@ -1,6 +1,6 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
-const { getSearchApiRoute, getToken, searchQueryBuilder, sendRequest, getPods, deletePod, getInstalledNamespace } = require('../common-lib/clusterAccess')
+const { getSearchApiRoute, getToken, searchQueryBuilder, sendRequest, getPods, deletePod } = require('../common-lib/clusterAccess')
 const { execSync } = require('child_process');
 
 describe('RHACM4K-1695: Search - verify managed cluster info in the search page', () => {
@@ -75,9 +75,9 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
     expect(res.body.data.searchResult[0].items[0].namespace).toEqual(namespace)
   }, 20000)
 
-  test(`Search kind pod and namespace on installed ACM namespace.`, async () => {
+  test(`Search kind pod and namespace open-cluster-management.`, async () => {
     var query = searchQueryBuilder({ filters: [{ property: 'kind', values: ['pod'] },
-                                               { property: 'namespace', values: [installNamespace] },
+                                               { property: 'namespace', values: ['open-cluster-management'] },
                                                { property: 'status', values: ['Running'] }] })
     var res = await sendRequest(query, token)
     var pods = res.body.data.searchResult[0].items
