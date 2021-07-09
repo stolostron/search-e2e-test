@@ -16,15 +16,11 @@ const getToken = () => {
     return execSync('oc whoami -t').toString().replace('\n', '')
 }
 
-// Get the namespace that ACM is installed in.
-const getInstalledNamespace = () => {
-    return execSync(`oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`).toString()
-}
-
 // Check if the route to Search API exist and create a new route if needed.
 const getSearchApiRoute = async ()  => {
-    const namespace = getInstalledNamespace()
+    const namespace = execSync(`oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`).toString()
     const routes = execSync(`oc get routes -n ${namespace}`).toString()
+
     if (routes.indexOf('search-api-automation') == -1){
         execSync(`oc create route passthrough search-api-automation --service=search-search-api --insecure-policy=Redirect -n ${namespace}`)
         await sleep(10000)

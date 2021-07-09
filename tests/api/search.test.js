@@ -5,9 +5,6 @@ const { execSync } = require('child_process');
 
 describe('RHACM4K-1695: Search - verify managed cluster info in the search page', () => {
   beforeAll(async () => {
-    // Get install namespace for ACM
-    installNamespace = getInstalledNamespace()
-
     // Log in and get access token
     token = getToken()
 

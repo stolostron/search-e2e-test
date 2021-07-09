@@ -17,6 +17,7 @@ fi
 # Load test config mounted at /resources/options.yaml
 OPTIONS_FILE=/resources/options.yaml
 USER_OPTIONS_FILE=./options.yaml
+
 if [ -f $OPTIONS_FILE ]; then
   echo "Using test config from: $OPTIONS_FILE"
   export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $OPTIONS_FILE`
@@ -59,25 +60,44 @@ if [ -z "$NODE_ENV" ]; then
   export NODE_ENV="production" || set NODE_ENV="production"
 fi
 
+if [ -z "$SKIP_API_TEST" ]; then
+  echo -e "SKIP_API_TEST not exported; setting to false (set SKIP_API_TEST to true, if you wish to skip the API tests)"
+  export SKIP_API_TEST=false
+fi
+
+if [ -z "$SKIP_UI_TEST" ]; then
+  echo -e "SKIP_UI_TEST not exported; setting to false (set SKIP_UI_TEST to true, if you wish to skip the UI tests)\n"
+  export SKIP_UI_TEST=false
+fi
+
 echo -e "Setting env to run in: $NODE_ENV"
 
-section_title "Running Search API tests."
-npm run test:api
+if [ "$SKIP_API_TEST" == false ]; then
+  section_title "Running Search API tests."
+  npm run test:api
+else
+  echo -e "\nSKIP_API_TEST was set to true. Skipping API tests"
+fi
 
-section_title "Running Search UI tests."
-if [ "$NODE_ENV" == "development" ]; then
-  npx cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV
-elif [ "$NODE_ENV" == "debug" ]; then
-  npx cypress open --browser $BROWSER --config numTestsKeptInMemory=0 --env NODE_ENV=$NODE_ENV
-else 
-  cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV
+if [ "$SKIP_UI_TEST" == false ]; then
+  section_title "Running Search UI tests."
+  if [ "$NODE_ENV" == "development" ]; then
+    npx cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV
+  elif [ "$NODE_ENV" == "debug" ]; then
+    npx cypress open --browser $BROWSER --config numTestsKeptInMemory=0 --env NODE_ENV=$NODE_ENV
+  else
+    cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV
+  fi
+else
+  echo -e "SKIP_UI_TEST was set to true. Skipping UI tests\n"
 fi
 
 testCode=$?
 
-section_title "Merging XML and JSON reports..."
-npm run test:merge-reports
-
-ls -R results
+if [[ "$SKIP_UI_TEST" == false && "$SKIP_API_TEST" == false ]]; then
+  section_title "Merging XML and JSON reports..."
+  npm run test:merge-reports
+  ls -R results
+fi
 
 exit $testCode
