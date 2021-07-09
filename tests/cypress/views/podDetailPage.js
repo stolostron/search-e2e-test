@@ -7,7 +7,7 @@
 
 export const podDetailPage = {
   whenClickOnLogsTab:() => {
-    cy.wait(1000) // Adding a small delay to allow tab switch to occur.
+    cy.wait(3000) // Adding a small delay to allow tab switch to occur.
     cy.get('.pf-c-nav__link').filter(':contains("Logs")').click({ timeout: 10000 })
   },
   shouldSeeLogs:(expected) => {

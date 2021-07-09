@@ -35,7 +35,6 @@ clusterModes.forEach((clusterMode) => {
 
     after(function() {
       cliHelper.deleteNamespace(this.namespace)
-      // cy.logout()
     })
 
     it(`[P1][Sev1][${squad}] should load the search page`, function() {

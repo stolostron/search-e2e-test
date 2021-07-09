@@ -39,4 +39,7 @@ export const overviewPage = {
       })
     })
   },
+  shouldHaveLinkToResourceCreationPage: () => {
+    cy.get(`[aria-label="create-button"]`).invoke('attr', 'href')
+  }
 }

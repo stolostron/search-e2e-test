@@ -36,7 +36,6 @@ clusterModes.forEach((clusterMode) => {
 
     after(function() {
       cliHelper.deleteNamespace(this.namespace)
-      // cy.logout()
     })
 
     describe('search resources', function() {
