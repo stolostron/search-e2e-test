@@ -25,6 +25,11 @@ describe('Search: Overview page', function () {
     overviewPage.shouldHaveLinkToSearchPage()
   })
 
+  it(`[P2][Sev2][${squad}] should have link to resource creation page`, function () {
+    overviewPage.shouldLoad()
+    overviewPage.shouldHaveLinkToResourceCreationPage()
+  })
+
   it(`[P2][Sev2][${squad}] add cloud connection action works`, function () {
     overviewPage.whenAddProviderConnectionAction()
     overviewPage.shouldLoadProviderConnectionPage()

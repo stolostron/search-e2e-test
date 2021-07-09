@@ -33,10 +33,6 @@ clusterModes.forEach((clusterMode) => {
       searchPage.whenGoToSearchPage()
     })
 
-    after(function() {
-      // cy.logout()
-    })
-
     describe('search resources', function() {
       beforeEach(function() {
         searchBar.whenFilterByNamespace(this.namespace, true)
