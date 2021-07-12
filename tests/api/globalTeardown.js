@@ -3,5 +3,6 @@
 const { execSync } = require('child_process');
 
 module.exports = () => {
-    execSync(`oc delete route search-api-automation -n open-cluster-management`)
+    const namespace = execSync(`oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`).toString()
+    execSync(`oc delete route search-api-automation -n ${namespace}`)
 };

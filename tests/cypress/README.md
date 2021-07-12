@@ -6,11 +6,12 @@ The Cypress tests for search within [Console-UI](https://github.com/open-cluster
 
 ## How to run Cypress tests
 
-#### Prerequisites:
+### Prerequisites
+
 - Install NodeJS (v12) (npm will be installed with Node)
 - From the root console-ui directory, run `npm install`
 
-#### Live Cluster:
+#### Live Cluster
 
 1. Export the following environment variables:
     - OPTIONS_HUB_BASEDOMAIN (e.g. `<cluster>.dev07.open-cluster-management.com`)
@@ -21,7 +22,7 @@ The Cypress tests for search within [Console-UI](https://github.com/open-cluster
 
 #### Local Environment
 
-1.  Follow steps in [Console-UI](https://github.com/open-cluster-management/console-ui) to get the application running locally.
-2.  Follow the steps in [Console-API](https://github.com/open-cluster-management/console-api) to get the application running locally.
+1. Follow steps in [Console-UI](https://github.com/open-cluster-management/console-ui) to get the application running locally.
+2. Follow the steps in [Console-API](https://github.com/open-cluster-management/console-api) to get the application running locally.
 3. `oc login` to your hub cluster.
 4. From the root console-ui directory, run `npx cypress open`

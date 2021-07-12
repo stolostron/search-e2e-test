@@ -4,7 +4,6 @@ const { getSearchApiRoute, getToken, searchQueryBuilder, sendRequest, getPods, d
 const { execSync } = require('child_process');
 
 describe('RHACM4K-1695: Search - verify managed cluster info in the search page', () => {
-
   beforeAll(async () => {
     // Log in and get access token
     token = getToken()
@@ -76,7 +75,7 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
     expect(res.body.data.searchResult[0].items[0].namespace).toEqual(namespace)
   }, 20000)
 
-  test('Search kind pod and namespace open-cluster-management.', async () => {
+  test(`Search kind pod and namespace open-cluster-management.`, async () => {
     var query = searchQueryBuilder({ filters: [{ property: 'kind', values: ['pod'] },
                                                { property: 'namespace', values: ['open-cluster-management'] },
                                                { property: 'status', values: ['Running'] }] })

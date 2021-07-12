@@ -18,12 +18,14 @@ const getToken = () => {
 
 // Check if the route to Search API exist and create a new route if needed.
 const getSearchApiRoute = async ()  => {
-    const routes = execSync(`oc get routes -n open-cluster-management`).toString()
+    const namespace = execSync(`oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`).toString()
+    const routes = execSync(`oc get routes -n ${namespace}`).toString()
+
     if (routes.indexOf('search-api-automation') == -1){
-        execSync(`oc create route passthrough search-api-automation --service=search-search-api --insecure-policy=Redirect -n open-cluster-management`)
+        execSync(`oc create route passthrough search-api-automation --service=search-search-api --insecure-policy=Redirect -n ${namespace}`)
         await sleep(10000)
     }
-    return `https://search-api-automation-open-cluster-management.apps.${config.get('options:hub:baseDomain')}`
+    return `https://search-api-automation-${namespace}.apps.${config.get('options:hub:baseDomain')}`
 }
 
 function searchQueryBuilder({ keywords = [], filters = [], limit = 1000}) {
