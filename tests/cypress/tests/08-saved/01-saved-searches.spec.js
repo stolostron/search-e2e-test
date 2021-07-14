@@ -21,11 +21,6 @@ describe('RHACM4K-412 - Search: Saved searches', function() {
     cy.login()
   })
 
-  after(function() {
-    savedSearches.whenDeleteSavedSearch(queryDefaultNamespaceName)
-    savedSearches.whenDeleteSavedSearch(queryOcmaNamespaceName)
-  })
-
   it(`[P2][Sev2][${squad}] should find each managed cluster has default namespace`, function() {
     savedSearches.validateClusterNamespace({'namespace': 'default'}, '')
   })
@@ -59,5 +54,13 @@ describe('RHACM4K-412 - Search: Saved searches', function() {
 
   it(`[P2][Sev2][${squad}] should be able to share the saved searches`, function() {
     savedSearches.shareSavedSearch(queryDefaultNamespaceName)
+  })
+
+  it(`[P2][Sev2][${squad}] should be able to delete the saved searches ${queryDefaultNamespaceName}`, function() {
+    savedSearches.whenDeleteSavedSearch(queryDefaultNamespaceName)
+  })
+
+  it(`[P2][Sev2][${squad}] should be able to delete the saved search ${queryOcmaNamespaceName}`, function() {
+    savedSearches.whenDeleteSavedSearch(queryOcmaNamespaceName)
   })
 })
