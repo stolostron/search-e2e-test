@@ -8,7 +8,7 @@
 export const overviewPage = {
   whenGoToOverviewPage: () => cy.visit('/overview'),
   whenAddProviderConnectionAction: () => {
-    cy.get('#add-provider-connection').should('have.attr', 'href').and('contain', 'add-connection')
+    cy.get('#add-provider-connection').should('have.attr', 'href').and('contain', 'credentials')
     cy.get('#add-provider-connection').click()
   },
   shouldLoad: () => {
