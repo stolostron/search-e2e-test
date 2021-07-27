@@ -7,6 +7,9 @@
 
 export const overviewPage = {
   whenGoToOverviewPage: () => cy.visit('/overview'),
+  whenGotoSearchPage: () => {
+    cy.get(`[aria-label="search-button"]`).click()
+  },
   whenAddProviderConnectionAction: () => {
     cy.get('#add-provider-connection').should('have.attr', 'href').and('contain', 'credentials')
     cy.get('#add-provider-connection').click()
@@ -38,6 +41,22 @@ export const overviewPage = {
         }
       })
     })
+  },
+  shouldHaveLinkToTargetedPage: (page, noClick, path) => {
+    overviewPage.shouldLoad()
+    cy.get('.pf-c-nav__list').contains(page)
+
+    if (noClick) {
+      cy.get('li.pf-c-nav__item').contains(page).should('have.attr', 'href').and('contain', path)
+    } else {
+      cy.get('li.pf-c-nav__item').contains(page).click()
+
+      if (page === 'Welcome') {
+        cy.get('.welcome--introduction').should('contain', 'Welcome')
+      } else {
+        cy.get('h1.pf-c-title').contains(page)
+      }
+    }
   },
   shouldHaveLinkToResourceCreationPage: () => {
     cy.get(`[aria-label="create-button"]`).invoke('attr', 'href')

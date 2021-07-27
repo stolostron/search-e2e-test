@@ -61,8 +61,36 @@ export const searchPage = {
   shouldLoad:() => {
     cy.get('.react-tags')
     cy.get('.react-tags__search-input')
+    cy.get('div.pc-f-skeleton').should('not.exist')
   },
+  whenToClickHelpIcon: () => {
+    cy.get('[data-test="about-dropdown"]').click()
+  },
+  whenToClickTabInHelpIcon: (tab) => {
+    cy.get('.pf-c-app-launcher__menu.pf-m-align-right')
 
+    if (tab === 'About') {
+      cy.get('button.pf-c-app-launcher__menu-item').should('contain', tab).click()
+      cy.get('.pf-c-about-modal-box')
+
+      cy.get('.pf-c-about-modal-box__body')
+      cy.get('.pf-c-spinner.pf-m-md').should('not.exist')
+
+      cy.get('.version-details__no').invoke('text').then((text) => {
+        if (text != Cypress.env('ACM_VERSION')) {
+          cy.log('Modal Version needs to be updated from 2.3.0 to 2.4.0')
+        } else {
+          cy.get('.version-details__no').should('contain', Cypress.env('ACM_VERSION'))
+        }
+      })
+
+      cy.get('.pf-c-about-modal-box__close')
+      cy.get(`[aria-label="Close Dialog"]`).click()
+
+    } else {
+      cy.get('li a.pf-c-app-launcher__menu-item').should('contain', tab).and('have.attr', 'href').should('contain', 'documentation')
+    }
+  },
   shouldFindNoResults: () => {
     cy.get('.pf-c-alert__title', { timeout: 30000 }).should('contain', SEARCH_MESSAGES_NO_RESULTS)
   },

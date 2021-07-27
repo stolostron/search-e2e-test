@@ -8,6 +8,9 @@
 import { searchPage, searchBar } from './search'
 
 export const savedSearches = {
+  whenGotoSearchPage: () => {
+    cy.get(`[aria-label="search-button"]`).click()
+  },
   validateClusterNamespace: (filterOptions, extraCluster) => {
 
     //get managed clusters count

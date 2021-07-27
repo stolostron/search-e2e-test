@@ -18,7 +18,7 @@ clusterModes.forEach((clusterMode) => {
     return;
   }
 
-  describe('Search: Search in ' + clusterMode.label + ' Cluster', function() {
+  describe('RHACM4K-1574: Search: Search in ' + clusterMode.label + ' Cluster', function() {
     before(function() {
       clusterMode.valueFn().as('clusterName')
       cy.generateNamespace().as('namespace')
@@ -51,7 +51,7 @@ clusterModes.forEach((clusterMode) => {
         searchPage.shouldBeResourceDetailItemCreatedFewSecondsAgo('pod', this.namespace + '-deployment')
       });
 
-      it(`[P3][Sev3][${squad}] should scale deployment`, function() {
+      it(`[P3][Sev3][${squad}] should edit yaml and scale deployment`, function() {
         searchBar.whenFilterByKind('deployment')
         searchPage.whenGoToResourceDetailItemPage('deployment', this.namespace + '-deployment')
         deploymentDetailPage.whenScaleReplicasTo(2)
