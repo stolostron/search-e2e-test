@@ -73,6 +73,15 @@ oc login --server=https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443 -u $CYPRESS
 
 testCode=0
 
+if [[ "https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443" =~ "openshiftapps.com" ]]; then
+  echo "ROSA cluster detected - excluding @rbac tests"
+  if [[ -z "$CYPRESS_TAGS_EXCLUDE" ]]; then
+    export CYPRESS_TAGS_EXCLUDE="@rbac"
+  else
+    export CYPRESS_TAGS_EXCLUDE="@rbac $CYPRESS_TAGS_EXCLUDE"
+  fi
+fi
+
 echo "Checking RedisGraph deployment."
 installNamespace=`oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`
 rgstatus=`oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}" -n ${installNamespace}`
@@ -115,6 +124,12 @@ else # DEV
   source build/rbac-setup.sh
 fi
 
+if [[ -z $CYPRESS_TAGS_EXCLUDE ]]; then
+  echo -e "\nCYPRESS_TAGS_EXCLUDE not exported; running all test (set CYPRESS_TAGS_EXCLUDE to include a test tags i.e @critical, if you wish to exclude a test from the execution)"
+else
+  echo -e "\nExcluding tests that contain the following tags: \033[0;33m$CYPRESS_TAGS_EXCLUDE\033[0m"
+fi
+
 if [ "$SKIP_API_TEST" == false ]; then 
   section_title "Running Search API tests."
   npm run test:api
@@ -130,16 +145,16 @@ fi
 if [ "$SKIP_UI_TEST" == false ]; then
   if [ "$RECORD" == true ]; then
     echo "Preparing to run test within record mode. (Results will be displayed within dashboard)"
-    cypress run --record --key $RECORD_KEY --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV
+    cypress run --record --key $RECORD_KEY --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="-$CYPRESS_TAGS_EXCLUDE"
   fi
 
   section_title "Running Search UI tests."
   if [ "$NODE_ENV" == "development" ]; then
-    cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV
+    cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="-$CYPRESS_TAGS_EXCLUDE"
   elif [ "$NODE_ENV" == "debug" ]; then
-    cypress open --browser $BROWSER --config numTestsKeptInMemory=0 --env NODE_ENV=$NODE_ENV
+    cypress open --browser $BROWSER --config numTestsKeptInMemory=0 --env NODE_ENV=$NODE_ENV,grgrepTags="-$CYPRESS_TAGS_EXCLUDE"
   else 
-    cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV
+    cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="-$CYPRESS_TAGS_EXCLUDE"
   fi
 else
   echo -e "SKIP_UI_TEST was set to true. Skipping UI tests\n"
