@@ -3,14 +3,37 @@
 ###############################################################################
 # Copyright (c) 2020 Red Hat, Inc.
 ###############################################################################
-echo "Initiating Search E2E tests..."
 
-section_title () {
-  printf "\n$(tput bold)$1 $(tput sgr0)\n"
+####################
+## COLORS
+####################
+PURPLE="\033[0;35m"
+CYAN="\033[0;36m"
+YELLOW="\033[0;33m"
+NC="\033[0m"
+
+log_color () {
+  case $1 in
+    yellow)
+      echo -e "${YELLOW}$2 ${NC}"$3
+    ;;
+    cyan)
+      echo -e "${CYAN}$2 ${NC}"$3
+    ;;
+    purple)
+      echo -e "${PURPLE}$2 ${NC}"$3
+    ;;
+  esac
 }
 
+# section_title () {
+#   printf "\n$(tput bold)$1 $(tput sgr0)\n"
+# }
+
+log_color "cyan" "Initiating Search E2E tests...\n"
+
 if [ -z "$BROWSER" ]; then
-  echo "BROWSER not exported; setting to 'chrome' (options available: 'chrome', 'firefox')"
+  log_color "purple" "BROWSER" "not exported; setting to 'chrome' (options available: 'chrome', 'firefox')"
   export BROWSER="chrome"
 fi
 
@@ -19,7 +42,7 @@ OPTIONS_FILE=/resources/options.yaml
 USER_OPTIONS_FILE=./options.yaml
 
 if [ -f $OPTIONS_FILE ]; then
-  echo "Using test config from: $OPTIONS_FILE"
+  log_color "yellow" "Using test config from: $OPTIONS_FILE\n"
   export CYPRESS_OC_IDP=`yq e '.options.identityProvider' $OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_USER=`yq e '.options.hub.user' $OPTIONS_FILE`
@@ -28,7 +51,7 @@ if [ -f $OPTIONS_FILE ]; then
   export OPTIONS_HUB_USER=`yq e '.options.hub.user' $OPTIONS_FILE`
   export OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $OPTIONS_FILE`
 elif [ -f $USER_OPTIONS_FILE ]; then
-  echo "Using test config from: $USER_OPTIONS_FILE"
+  log_color "yellow" "Using test config from: $USER_OPTIONS_FILE\n"
   export CYPRESS_OC_IDP=`yq e '.options.identityProvider' $USER_OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $USER_OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_USER=`yq e '.options.hub.user' $USER_OPTIONS_FILE`
@@ -37,45 +60,59 @@ elif [ -f $USER_OPTIONS_FILE ]; then
   export OPTIONS_HUB_USER=`yq e '.options.hub.user' $USER_OPTIONS_FILE`
   export OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $USER_OPTIONS_FILE`
 else
-  echo -e "Options file does not exist, using test config from environment variables.\n"
+  log_color "yellow" "Options file does not exist, using test config from environment variables.\n"
 fi
 
 export CYPRESS_BASE_URL=https://multicloud-console.apps.$CYPRESS_OPTIONS_HUB_BASEDOMAIN
 
-echo -e "Running tests with the following environment:\n"
-echo -e "\tCYPRESS_OPTIONS_HUB_BASEDOMAIN : $CYPRESS_OPTIONS_HUB_BASEDOMAIN"
-echo -e "\tCYPRESS_OPTIONS_HUB_BASE_URL   : $CYPRESS_BASE_URL"
-echo -e "\tCYPRESS_OPTIONS_HUB_USER       : $CYPRESS_OPTIONS_HUB_USER"
-echo -e "\tCYPRESS_OC_IDP                 : $CYPRESS_OC_IDP\n"
-
 # Check to see if CYPRESS_OC_IDP is null.
 if [[ -z $CYPRESS_OC_IDP || "$CYPRESS_OC_IDP" == "null" ]]; then
-  echo -e "CYPRESS_OC_IDP is (null or not set); setting to 'kube:admin'\n"
+  log_color "purple" "CYPRESS_OC_IDP" "is (null or not set); setting to 'kube:admin'\n"
   export CYPRESS_OC_IDP=kube:admin
 fi
 
+log_color "cyan" "Running tests with the following environment:\n"
+log_color "purple" "\tCYPRESS_OPTIONS_HUB_BASEDOMAIN" "\t: $CYPRESS_OPTIONS_HUB_BASEDOMAIN"
+log_color "purple" "\tCYPRESS_OPTIONS_HUB_BASE_URL" "\t: $CYPRESS_BASE_URL"
+log_color "purple" "\tCYPRESS_OPTIONS_HUB_USER" "\t: $CYPRESS_OPTIONS_HUB_USER"
+log_color "purple" "\tCYPRESS_OC_IDP" "\t\t\t: $CYPRESS_OC_IDP\n"
+
 if [[ -z $OPTIONS_MANAGED_BASEDOMAIN || -z $OPTIONS_MANAGED_USER || -z $OPTIONS_MANAGED_PASSWORD ]]; then
-   echo 'One or more variables are undefined. Copying kubeconfigs...'
+   log_color "yellow" "One or more variables are undefined. Copying kubeconfigs...\n"
    cp /opt/.kube/import-kubeconfig ./config/import-kubeconfig
 else
-  echo "Logging into the managed cluster using credentials and generating the kubeconfig..."
+  log_color "cyan" "Logging into the managed cluster using credentials and generating the kubeconfig..."
   mkdir ./import-kubeconfig && touch ./import-kubeconfig/kubeconfig
   export KUBECONFIG=$(pwd)/import-kubeconfig/kubeconfig
   export OPTIONS_MANAGED_URL="https://api.$OPTIONS_MANAGED_BASEDOMAIN:6443"
   oc login --server=$OPTIONS_MANAGED_URL -u $OPTIONS_MANAGED_USER -p $OPTIONS_MANAGED_PASSWORD --insecure-skip-tls-verify
   unset KUBECONFIG
-  echo "Copying managed cluster kubeconfig to ./cypress/config/import-kubeconfig ..."
+  log_color "yellow" "Copying managed cluster kubeconfig to ./cypress/config/import-kubeconfig ...\n"
   cp ./import-kubeconfig/* ./config/import-kubeconfig
 fi
 
-echo -e "\nLogging into Kube API server\n"
+log_color "cyan" "Logging into Kube API server"
 oc login --server=https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443 -u $CYPRESS_OPTIONS_HUB_USER -p $CYPRESS_OPTIONS_HUB_PASSWORD --insecure-skip-tls-verify
 
 testCode=0
 
-echo "Checking RedisGraph deployment."
-installNamespace=`oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`
+echo -e
+
+if [[ "https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443" =~ "openshiftapps.com" ]]; then
+  log_color "yellow" "ROSA cluster detected - excluding @rbac tests\n"
+  if [[ -z "$CYPRESS_TAGS_EXCLUDE" ]]; then
+    export CYPRESS_TAGS_EXCLUDE="@rbac"
+  else
+    export CYPRESS_TAGS_EXCLUDE="@rbac $CYPRESS_TAGS_EXCLUDE"
+  fi
+fi
+
+echo -e
+
+log_color "cyan" "Checking RedisGraph deployment."
+installNamespace=`oc get subscriptions.operators.coreos.com --all-namespaces | grep advanced-cluster-management | awk '{print $1}'`
 rgstatus=`oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}" -n ${installNamespace}`
+
 if [ "$rgstatus" == "true" ]; then
   echo -e "RedisGraph deployment is enabled.\n"
 else
@@ -95,18 +132,18 @@ if [ -z "$NODE_ENV" ]; then
 fi
 
 if [ -z "$SKIP_API_TEST" ]; then
-  echo -e "SKIP_API_TEST not exported; setting to false (set SKIP_API_TEST to true, if you wish to skip the API tests)"
+  log_color "purple" "SKIP_API_TEST" "not exported; setting to false (set ${PURPLE}SKIP_API_TEST${NC} to true, if you wish to skip the API tests)"
   export SKIP_API_TEST=false
 fi
 
 if [ -z "$SKIP_UI_TEST" ]; then
-  echo -e "SKIP_UI_TEST not exported; setting to false (set SKIP_UI_TEST to true, if you wish to skip the UI tests)\n"
+  log_color "purple" "SKIP_UI_TEST" "not exported; setting to false (set ${PURPLE}SKIP_UI_TEST${NC} to true, if you wish to skip the UI tests)\n"
   export SKIP_UI_TEST=false
 fi
 
-echo -e "Setting env to run in: $NODE_ENV\n"
+log_color "yellow" "Setting env to run in:" "$NODE_ENV\n"
 
-echo "Create RBAC users"
+log_color "cyan" "Create RBAC users"
 if [ -f /rbac-setup.sh ]; then
   chmod +x /rbac-setup.sh
   source /rbac-setup.sh
@@ -115,45 +152,53 @@ else # DEV
   source build/rbac-setup.sh
 fi
 
+echo -e
+
+if [[ -z $CYPRESS_TAGS_EXCLUDE ]]; then
+  log_color "purple" "CYPRESS_TAGS_EXCLUDE" "not exported; running all test (set ${PURPLE}CYPRESS_TAGS_EXCLUDE${NC} to include a test tags i.e ${YELLOW}@critical${NC}, if you wish to exclude a test from the execution)\n"
+else
+  log_color "purple" "Excluding tests that contain the following tags: ${YELLOW}$CYPRESS_TAGS_EXCLUDE${NC}"
+fi
+
 if [ "$SKIP_API_TEST" == false ]; then 
-  section_title "Running Search API tests."
+  log_color "cyan" "Running Search API tests.\n"
   npm run test:api
 else
-  echo -e "\nSKIP_API_TEST was set to true. Skipping API tests"
+  log_color "purple" "SKIP_API_TEST" "was set to true. Skipping API tests"
 fi
 
 if [ -z "$RECORD" ]; then
-  echo -e "RECORD not exported; setting to false (set RECORD to true, if you wish to view results within dashboard)"
+  log_color "purple" "RECORD" "not exported; setting to false (set ${PURPLE}RECORD${NC} to true, if you wish to view results within dashboard)\n"
   export RECORD=false
 fi
 
 if [ "$SKIP_UI_TEST" == false ]; then
   if [ "$RECORD" == true ]; then
-    echo "Preparing to run test within record mode. (Results will be displayed within dashboard)"
-    cypress run --record --key $RECORD_KEY --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV
+    echo -e "Preparing to run test within record mode. (Results will be displayed within dashboard)\n"
+    cypress run --record --key $RECORD_KEY --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="-$CYPRESS_TAGS_EXCLUDE"
   fi
 
-  section_title "Running Search UI tests."
+  log_color "cyan" "Running Search UI tests."
   if [ "$NODE_ENV" == "development" ]; then
-    cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV
+    cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="-$CYPRESS_TAGS_EXCLUDE"
   elif [ "$NODE_ENV" == "debug" ]; then
-    cypress open --browser $BROWSER --config numTestsKeptInMemory=0 --env NODE_ENV=$NODE_ENV
+    cypress open --browser $BROWSER --config numTestsKeptInMemory=0 --env NODE_ENV=$NODE_ENV,grgrepTags="-$CYPRESS_TAGS_EXCLUDE"
   else 
-    cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV
+    cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="-$CYPRESS_TAGS_EXCLUDE"
   fi
 else
-  echo -e "SKIP_UI_TEST was set to true. Skipping UI tests\n"
+  log_color "purple" "SKIP_UI_TEST" "was set to true. Skipping UI tests\n"
 fi
 
 testCode=$?
 
 if [[ "$SKIP_UI_TEST" == false && "$SKIP_API_TEST" == false ]]; then
-  section_title "Merging XML and JSON reports..."
+  log_color "cyan" "Merging XML and JSON reports..."
   npm run test:merge-reports
   ls -R results
 fi
 
-echo "Clean up RBAC setup"
+log_color "cyan" "Clean up RBAC setup"
 if [ -f /rbac-clean.sh ]; then
   chmod +x /rbac-clean.sh
   source /rbac-clean.sh

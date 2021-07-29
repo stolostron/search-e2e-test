@@ -20,6 +20,7 @@
 
 import './commands'
 require('cypress-terminal-report/src/installLogsCollector')()
+require('cypress-grep')()
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED='0'
 var timeoutID
