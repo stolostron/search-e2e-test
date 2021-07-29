@@ -92,8 +92,7 @@ else
 fi
 
 log_color "cyan" "\nLogging into Kube API server"
-# oc login --server=https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443 -u $CYPRESS_OPTIONS_HUB_USER -p $CYPRESS_OPTIONS_HUB_PASSWORD --insecure-skip-tls-verify
-oc login --token=sha256~gfpywGAnANKJtgbNMpx8R9nvYcxPTMyse7cv7mx4WNk --server=https://api.aws-480-qszcr.dev07.red-chesterfield.com:6443
+oc login --server=https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443 -u $CYPRESS_OPTIONS_HUB_USER -p $CYPRESS_OPTIONS_HUB_PASSWORD --insecure-skip-tls-verify
 
 testCode=0
 
