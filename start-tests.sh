@@ -26,14 +26,14 @@ log_color () {
   esac
 }
 
-section_title () {
-  printf "\n$(tput bold)$1 $(tput sgr0)\n"
-}
+# section_title () {
+#   printf "\n$(tput bold)$1 $(tput sgr0)\n"
+# }
 
-log_color "cyan" "$(section_title "Initiating Search E2E tests...\n")"
+log_color "cyan" "Initiating Search E2E tests...\n"
 
 if [ -z "$BROWSER" ]; then
-  log_color purple "BROWSER" "not exported; setting to 'chrome' (options available: 'chrome', 'firefox')"
+  log_color "purple" "BROWSER" "not exported; setting to 'chrome' (options available: 'chrome', 'firefox')"
   export BROWSER="chrome"
 fi
 
@@ -87,17 +87,19 @@ else
   export OPTIONS_MANAGED_URL="https://api.$OPTIONS_MANAGED_BASEDOMAIN:6443"
   oc login --server=$OPTIONS_MANAGED_URL -u $OPTIONS_MANAGED_USER -p $OPTIONS_MANAGED_PASSWORD --insecure-skip-tls-verify
   unset KUBECONFIG
-  echo -e "Copying managed cluster kubeconfig to ./cypress/config/import-kubeconfig ...\n"
+  log_color "yellow" "Copying managed cluster kubeconfig to ./cypress/config/import-kubeconfig ...\n"
   cp ./import-kubeconfig/* ./config/import-kubeconfig
 fi
 
-log_color "cyan" "\nLogging into Kube API server"
+log_color "cyan" "Logging into Kube API server"
 oc login --server=https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443 -u $CYPRESS_OPTIONS_HUB_USER -p $CYPRESS_OPTIONS_HUB_PASSWORD --insecure-skip-tls-verify
 
 testCode=0
 
+echo -e
+
 if [[ "https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443" =~ "openshiftapps.com" ]]; then
-  echo "ROSA cluster detected - excluding @rbac tests"
+  log_color "yellow" "ROSA cluster detected - excluding @rbac tests\n"
   if [[ -z "$CYPRESS_TAGS_EXCLUDE" ]]; then
     export CYPRESS_TAGS_EXCLUDE="@rbac"
   else
@@ -105,7 +107,9 @@ if [[ "https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443" =~ "openshiftapps.com
   fi
 fi
 
-log_color "cyan" "\nChecking RedisGraph deployment."
+echo -e
+
+log_color "cyan" "Checking RedisGraph deployment."
 installNamespace=`oc get subscriptions.operators.coreos.com --all-namespaces | grep advanced-cluster-management | awk '{print $1}'`
 rgstatus=`oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}" -n ${installNamespace}`
 
@@ -148,31 +152,33 @@ else # DEV
   source build/rbac-setup.sh
 fi
 
+echo -e
+
 if [[ -z $CYPRESS_TAGS_EXCLUDE ]]; then
-  log_color "purple" "\nCYPRESS_TAGS_EXCLUDE" "not exported; running all test (set ${PURPLE}CYPRESS_TAGS_EXCLUDE${NC} to include a test tags i.e ${YELLOW}@critical${NC}, if you wish to exclude a test from the execution)"
+  log_color "purple" "CYPRESS_TAGS_EXCLUDE" "not exported; running all test (set ${PURPLE}CYPRESS_TAGS_EXCLUDE${NC} to include a test tags i.e ${YELLOW}@critical${NC}, if you wish to exclude a test from the execution)\n"
 else
-  log_color "purple" "\nExcluding tests that contain the following tags: ${YELLOW}$CYPRESS_TAGS_EXCLUDE${NC}"
+  log_color "purple" "Excluding tests that contain the following tags: ${YELLOW}$CYPRESS_TAGS_EXCLUDE${NC}"
 fi
 
 if [ "$SKIP_API_TEST" == false ]; then 
-  log_color "cyan" "$(section_title "Running Search API tests.")"
+  log_color "cyan" "Running Search API tests.\n"
   npm run test:api
 else
-  log_color "purple" "\nSKIP_API_TEST" "was set to true. Skipping API tests\n"
+  log_color "purple" "SKIP_API_TEST" "was set to true. Skipping API tests"
 fi
 
 if [ -z "$RECORD" ]; then
-  log_color "purple" "RECORD" "not exported; setting to false (set ${PURPLE}RECORD${NC} to true, if you wish to view results within dashboard)"
+  log_color "purple" "RECORD" "not exported; setting to false (set ${PURPLE}RECORD${NC} to true, if you wish to view results within dashboard)\n"
   export RECORD=false
 fi
 
 if [ "$SKIP_UI_TEST" == false ]; then
   if [ "$RECORD" == true ]; then
-    echo "Preparing to run test within record mode. (Results will be displayed within dashboard)"
+    echo -e "Preparing to run test within record mode. (Results will be displayed within dashboard)\n"
     cypress run --record --key $RECORD_KEY --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="-$CYPRESS_TAGS_EXCLUDE"
   fi
 
-  log_color "cyan" "$(section_title "Running Search UI tests.")"
+  log_color "cyan" "Running Search UI tests."
   if [ "$NODE_ENV" == "development" ]; then
     cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="-$CYPRESS_TAGS_EXCLUDE"
   elif [ "$NODE_ENV" == "debug" ]; then
@@ -187,7 +193,7 @@ fi
 testCode=$?
 
 if [[ "$SKIP_UI_TEST" == false && "$SKIP_API_TEST" == false ]]; then
-  log_color "cyan" "$(section_title "Merging XML and JSON reports...")"
+  log_color "cyan" "Merging XML and JSON reports..."
   npm run test:merge-reports
   ls -R results
 fi
