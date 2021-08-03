@@ -26,16 +26,14 @@ clusterModes.forEach((clusterMode) => {
     after(function() {
       if (clusterMode.label === 'Managed') {
         cy.log('Logging back into hub the cluster')
-        cy.exec('oc login --token=sha256~vBkt0K1vYaBQP0JLA_I-W65Yge3AtxuAqMuzWEbKtjI --server=https://api.ocp-482-h97mj.dev07.red-chesterfield.com:6443')
-        // cliHelper.login(Cypress.env('OPTIONS_HUB_BASEDOMAIN'), Cypress.env('OPTIONS_HUB_USER'), Cypress.env('OPTIONS_HUB_PASSWORD'))
+        cliHelper.login(Cypress.env('OPTIONS_HUB_BASEDOMAIN'), Cypress.env('OPTIONS_HUB_USER'), Cypress.env('OPTIONS_HUB_PASSWORD'))
       }
     })
 
     context(`prereq: create resource with oc command`, function() {
       if (clusterMode.label === 'Managed') {
         it(`[P1][Sev1][${squad}] should log into managed cluster`, function() {
-          cy.exec('oc login --token=sha256~rknAUVwR2I7pP2eOvhhjeYvz3NYH_fZKDBmJjgEmdaM --server=https://api.sno-managed-n4945.dev07.red-chesterfield.com:6443')
-          // cliHelper.login(Cypress.env('OPTIONS_MANAGED_BASEDOMAIN'), Cypress.env('OPTIONS_MANAGED_USER'), Cypress.env('OPTIONS_MANAGED_PASSWORD'))
+          cliHelper.login(Cypress.env('OPTIONS_MANAGED_BASEDOMAIN'), Cypress.env('OPTIONS_MANAGED_USER'), Cypress.env('OPTIONS_MANAGED_PASSWORD'))
         })
       }
 
