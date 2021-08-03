@@ -21,13 +21,20 @@ describe('Search: Overview page', function () {
     overviewPage.shouldLoad()
   })
 
-  it(`[P2][Sev2][${squad}] should have link to search page`, function () {
-    overviewPage.shouldHaveLinkToSearchPage()
+  it(`[P2][Sev2][${squad}] should have refresh options`, function () {
+    overviewPage.shouldHaveRefreshDropdown()
   })
 
-  it(`[P2][Sev2][${squad}] should have link to resource creation page`, function () {
-    overviewPage.shouldLoad()
-    overviewPage.shouldHaveLinkToResourceCreationPage()
+  it(`[P2][Sev2][${squad}] should have clusters provider card`, function () {
+    overviewPage.shouldHaveClusterProviderCard()
+  })
+
+  it(`[P2][Sev2][${squad}] should have clusters summary breakdown`, function () {
+    overviewPage.shouldHaveClusterSummary()
+  })
+
+  it(`[P2][Sev2][${squad}] should have link to search page`, function () {
+    overviewPage.shouldHaveLinkToSearchPage()
   })
 
   it(`[P2][Sev2][${squad}] add cloud connection action works`, function () {

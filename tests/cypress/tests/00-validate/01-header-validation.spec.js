@@ -10,7 +10,7 @@ import { searchPage } from '../../views/search'
 
 const tabs = ['Documentation', 'About']
 
-describe('RHACM4K-1420 - UI - header validation for version and doc', function() {
+describe('RHACM4K-1420: UI: header validation for version and doc', function() {
   before(function() {
     cy.login()
   })
@@ -21,7 +21,7 @@ describe('RHACM4K-1420 - UI - header validation for version and doc', function()
 
   tabs.forEach(tab => {
     it(`[P1][Sev1][${squad}] should click on the "info" icon on the upper right side of the header and click the ${tab} button`, function() {
-      searchPage.shouldLoad()
+      searchPage.whenGoToWelcomePage()
       searchPage.whenToClickHelpIcon()
       searchPage.whenToClickTabInHelpIcon(tab)
     })

@@ -41,7 +41,7 @@ describe('RHACM4K-537: Search: Search using filters', function() {
       return;
     }
 
-    describe(`[P1][Sev1][${squad}] Search using "${filter.type}" filter`, function() {
+    context(`[P1][Sev1][${squad}] Search using "${filter.type}" filter`, function() {
       beforeEach(function() {
         searchBar.whenClearFilters()
         searchBar.whenFocusSearchBar()

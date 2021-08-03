@@ -26,9 +26,7 @@ log_color () {
   esac
 }
 
-# section_title () {
-#   printf "\n$(tput bold)$1 $(tput sgr0)\n"
-# }
+set -e
 
 log_color "cyan" "Initiating Search E2E tests...\n"
 
@@ -79,7 +77,7 @@ log_color "purple" "\tCYPRESS_OC_IDP" "\t\t\t: $CYPRESS_OC_IDP\n"
 
 if [[ -z $OPTIONS_MANAGED_BASEDOMAIN || -z $OPTIONS_MANAGED_USER || -z $OPTIONS_MANAGED_PASSWORD ]]; then
    log_color "yellow" "One or more variables are undefined. Copying kubeconfigs...\n"
-   cp /opt/.kube/import-kubeconfig ./config/import-kubeconfig
+   cp /opt/.kube/import-kubeconfig ./config/import-kubeconfig || :
 else
   log_color "cyan" "Logging into the managed cluster using credentials and generating the kubeconfig..."
   mkdir ./import-kubeconfig && touch ./import-kubeconfig/kubeconfig
@@ -88,11 +86,11 @@ else
   oc login --server=$OPTIONS_MANAGED_URL -u $OPTIONS_MANAGED_USER -p $OPTIONS_MANAGED_PASSWORD --insecure-skip-tls-verify
   unset KUBECONFIG
   log_color "yellow" "Copying managed cluster kubeconfig to ./cypress/config/import-kubeconfig ...\n"
-  cp ./import-kubeconfig/* ./config/import-kubeconfig
+  cp ./import-kubeconfig/* ./config/import-kubeconfig || :
 fi
 
 log_color "cyan" "Logging into Kube API server"
-oc login --server=https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443 -u $CYPRESS_OPTIONS_HUB_USER -p $CYPRESS_OPTIONS_HUB_PASSWORD --insecure-skip-tls-verify
+oc login --server=https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443 -u $CYPRESS_OPTIONS_HUB_USER -p $CYPRESS_OPTIONS_HUB_PASSWORD --insecure-skip-tls-verify || :
 
 testCode=0
 

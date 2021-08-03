@@ -15,7 +15,7 @@ const SEARCH_MESSAGES_LOADING_SUGGESTIONS = 'Loading...'
 
 export const searchPage = {
   whenGoToSearchPage:() => cy.visit('/search'),
-  
+  whenGoToWelcomePage:() => cy.visit('/multicloud/welcome'),
   whenExpandRelationshipTiles:() => {
     cy.get('.pf-c-skeleton', {timeout: 2000}).should('not.exist')
     cy.get('.pf-l-gallery', {timeout: 2000}).children().should('have.length.above', 1).then(() => {
@@ -24,6 +24,9 @@ export const searchPage = {
   },
   whenGetResourceTableRow:(resource, name) => {
     return cy.get('tr').filter(`:contains("${name}")`)
+  },
+  whenCreateResourceObject:() => {
+    cy.get(`[aria-label="create-button"]`).click()
   },
   whenDeleteResourceDetailItem:(resource, name) => {
     searchPage.whenGetResourceTableRow(resource, name).find('.pf-c-dropdown__toggle', {timeout: 2000}).click({ force: true })
@@ -76,12 +79,8 @@ export const searchPage = {
       cy.get('.pf-c-about-modal-box__body')
       cy.get('.pf-c-spinner.pf-m-md').should('not.exist')
 
-      cy.get('.version-details__no').invoke('text').then((text) => {
-        if (text != Cypress.env('ACM_VERSION')) {
-          cy.log('Modal Version needs to be updated from 2.3.0 to 2.4.0')
-        } else {
-          cy.get('.version-details__no').should('contain', Cypress.env('ACM_VERSION'))
-        }
+      cy.get('.version-details__no').invoke('text').then(() => {
+        cy.get('.version-details__no').should('contain', Cypress.env('ACM_VERSION'))
       })
 
       cy.get('.pf-c-about-modal-box__close')

@@ -23,15 +23,14 @@ export const cliHelper = {
         return cy.wrap(targetCluster)
       })
     },
+    generateNamespace: (postfix=null) => {
+      return postfix ? `search-${postfix}` : `search-${Date.now()}`
+    },
     createNamespace: (name) => {
-      cy.exec(`oc create namespace ${name}`).then(() => {
-        cy.log(`Successfully created namespace (${name})`)
-      })
+      cy.exec(`oc create namespace ${name}`)
     },
     createDeployment: (name, namespace, image) => {
-      cy.exec(`oc create deployment ${name} --image=${image} -n ${namespace}`).then(() => {
-        cy.log(`Successfully created deployment (${name})`)
-      })
+      cy.exec(`oc create deployment ${name} --image=${image} -n ${namespace}`)
     },
     createApplication: (appName, namespace) => {
       cy.readFile('tests/cypress/templates/application.yaml').then((cfg) => {
