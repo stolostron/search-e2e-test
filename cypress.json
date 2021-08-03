@@ -15,8 +15,7 @@
   "watchForFileChanges": true,
   "nodeVersion": "system",
   "env": {
-    "OC_IDP": "kube:admin",
-    "ACM_VERSION": "2.4.0"
+    "OC_IDP": "kube:admin"
   },
   "reporter": "cypress-multi-reporters",
   "reporterOptions": {

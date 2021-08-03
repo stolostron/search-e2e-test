@@ -80,7 +80,7 @@ export const searchPage = {
       cy.get('.pf-c-spinner.pf-m-md').should('not.exist')
 
       cy.get('.version-details__no').invoke('text').then(() => {
-        cy.get('.version-details__no').should('contain', Cypress.env('ACM_VERSION'))
+        cy.get('.version-details__no').should('contain', '2.4')
       })
 
       cy.get('.pf-c-about-modal-box__close')
