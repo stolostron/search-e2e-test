@@ -8,7 +8,7 @@
 import { squad } from '../../config'
 import { overviewPage } from '../../views/overview'
 
-describe('Search: Overview page', function () {
+describe('RHACM4K-1419: Search: Overview page', function () {
   before(function() {
     cy.login()
   })
@@ -17,28 +17,69 @@ describe('Search: Overview page', function () {
     overviewPage.whenGoToOverviewPage()
   })
 
-  it(`[P1][Sev1][${squad}] should load the overview page`, function () {
-    overviewPage.shouldLoad()
+  context('UI - overview page validation', function() {
+    it(`[P1][Sev1][${squad}] should load the overview page`, function () {
+      overviewPage.shouldLoad()
+    })
+
+    it(`[P2][Sev2][${squad}] should have refresh options`, function () {
+      overviewPage.shouldHaveRefreshDropdown()
+    })
+
+    it(`[P2][Sev2][${squad}] should have clusters provider card`, function () {
+      overviewPage.shouldHaveClusterProviderCard()
+    })
+
+    it(`[P2][Sev2][${squad}] should have clusters summary breakdown`, function () {
+      overviewPage.shouldHaveClusterSummary()
+    })
+
+    it(`[P2][Sev2][${squad}] should have link to search page`, function () {
+      overviewPage.shouldHaveLinkToSearchPage()
+    })
+
+    it(`[P2][Sev2][${squad}] add cloud connection action works`, function () {
+      overviewPage.whenAddProviderConnectionAction()
+      overviewPage.shouldLoadProviderConnectionPage()
+    })
   })
 
-  it(`[P2][Sev2][${squad}] should have refresh options`, function () {
-    overviewPage.shouldHaveRefreshDropdown()
-  })
+  context('UI - overiewe page link validation', function() {
+    it(`[P2][Sev2][${squad}] should have link to welcome page from left nav`, function () {
+      overviewPage.shouldHaveLeftNavLinkToTargetedPage('Welcome')
+    })
 
-  it(`[P2][Sev2][${squad}] should have clusters provider card`, function () {
-    overviewPage.shouldHaveClusterProviderCard()
-  })
+    it(`[P2][Sev2][${squad}] should have link to cluster page from left nav`, function () {
+      overviewPage.shouldHaveLeftNavLinkToTargetedPage('Clusters')
+    })
 
-  it(`[P2][Sev2][${squad}] should have clusters summary breakdown`, function () {
-    overviewPage.shouldHaveClusterSummary()
-  })
+    it(`[P2][Sev2][${squad}] should have link to bare metal assets page from left nav`, function () {
+      overviewPage.shouldHaveLeftNavLinkToTargetedPage('Bare metal assets')
+    })
 
-  it(`[P2][Sev2][${squad}] should have link to search page`, function () {
-    overviewPage.shouldHaveLinkToSearchPage()
-  })
+    it(`[P2][Sev2][${squad}] should have link to automation page from left nav`, function () {
+      overviewPage.shouldHaveLeftNavLinkToTargetedPage('Automation')
+    })
 
-  it(`[P2][Sev2][${squad}] add cloud connection action works`, function () {
-    overviewPage.whenAddProviderConnectionAction()
-    overviewPage.shouldLoadProviderConnectionPage()
+    it(`[P2][Sev2][${squad}] should have link to application page from left nav`, function () {
+      overviewPage.shouldHaveLeftNavLinkToTargetedPage('Applications')
+    })
+
+    it(`[P2][Sev2][${squad}] should have link to governance page from left nav`, function () {
+      overviewPage.shouldHaveLeftNavLinkToTargetedPage('Governance')
+    })
+
+    it(`[P2][Sev2][${squad}] should have link to credential page from left nav`, function () {
+      overviewPage.shouldHaveLeftNavLinkToTargetedPage('Credentials')
+    })
+
+    it(`[P2][Sev2][${squad}] should have link to visual web terminal page from left nav`, function () {
+      overviewPage.shouldHaveLeftNavLinkToTargetedPage('Visual Web Terminal', true, '/kui')
+    })
+
+    it(`[P2][Sev2][${squad}] should have link to resource creation page`, function () {
+      overviewPage.shouldLoad()
+      overviewPage.shouldHaveLinkToResourceCreationPage()
+    })
   })
 })

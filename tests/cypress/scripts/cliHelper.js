@@ -27,10 +27,14 @@ export const cliHelper = {
       return postfix ? `search-${postfix}` : `search-${Date.now()}`
     },
     createNamespace: (name) => {
-      cy.exec(`oc create namespace ${name}`)
+      cy.exec(`oc create namespace ${name}`, {failOnNonZeroExit: false}).then((res) => {
+        cy.log(res.stdout ? res.stdout : res.stderr)
+      })
     },
     createDeployment: (name, namespace, image) => {
-      cy.exec(`oc create deployment ${name} --image=${image} -n ${namespace}`)
+      cy.exec(`oc create deployment ${name} --image=${image} -n ${namespace}`, {failOnNonZeroExit: false}).then((res) => {
+        cy.log(res.stdout ? res.stdout : res.stderr)
+      })
     },
     createApplication: (appName, namespace) => {
       cy.readFile('tests/cypress/templates/application.yaml').then((cfg) => {

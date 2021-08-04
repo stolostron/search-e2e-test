@@ -18,18 +18,20 @@ describe('RHACM4K-913: Search - common filter and conditions', function () {
     searchPage.whenGoToSearchPage()
   })
 
-  it(`[P1][Sev1][${squad}] should create namespace and application`, function() {
-    cliHelper.createNamespace(namespace)
-    cliHelper.createApplication(appName, namespace)
-  })
+  context('verify search result with common filter and conditions', function() {
+    it(`[P1][Sev1][${squad}] should create namespace and application`, function() {
+      cliHelper.createNamespace(namespace)
+      cliHelper.createApplication(appName, namespace)
+    })
 
-  it(`[P1][Sev1][${squad}] should login`, function() {
-    cy.login()
-  })
+    it(`[P1][Sev1][${squad}] should login`, function() {
+      cy.login()
+    })
 
-  it(`[P2][Sev2][${squad}] should find expected application and delete application`, function () {
-    searchPage.shouldFindApplicationInNS(appName, namespace)
-    searchPage.shouldDeleteApplicationInNS(appName, namespace)
-    cliHelper.deleteNamespace(namespace)
+    it(`[P2][Sev2][${squad}] should find expected application and delete application`, function () {
+      searchPage.shouldFindApplicationInNS(appName, namespace)
+      searchPage.shouldDeleteApplicationInNS(appName, namespace)
+      cliHelper.deleteNamespace(namespace)
+    })
   })
 })

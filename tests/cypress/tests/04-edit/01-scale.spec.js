@@ -65,7 +65,7 @@ clusterModes.forEach((clusterMode) => {
       cliHelper.deleteNamespace(clusterMode.namespace)
     })
 
-    context('search resources: verify yaml edit function and scale resources', function() {
+    context('search resources: verify edit yaml function and scale resources', function() {
       // Logging into the hub cluster UI.
       before(function() {
         if (clusterMode.label !== 'Managed') {

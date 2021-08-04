@@ -67,7 +67,7 @@ export const overviewPage = {
       })
     })
   },
-  shouldHaveLinkToTargetedPage: (page, noClick, path) => {
+  shouldHaveLeftNavLinkToTargetedPage: (page, noClick, path) => {
     overviewPage.shouldLoad()
     cy.get('.pf-c-nav__list').contains(page)
 

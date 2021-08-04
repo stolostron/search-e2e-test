@@ -9,7 +9,7 @@ import { squad } from '../../config'
 import { cliHelper } from '../../scripts/cliHelper'
 import { searchPage } from '../../views/search'
 
-describe('RHACM4K-1695: Search: Verify the managed cluster info in the search page', function() {
+describe('RHACM4K-912: Search: Verify the managed cluster info in the search page', function() {
   before(function() {
     cliHelper.getTargetManagedCluster().as('clusterName')
   })
