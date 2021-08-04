@@ -7,6 +7,7 @@
 
 import { popupModal } from './popup'
 import { getOpt } from '../scripts/utils'
+import { podDetailPage } from './podDetailPage'
 
 const SEARCH_MESSAGES_INPUT_PLACE_HOLDER = 'Search items'
 const SEARCH_MESSAGES_NO_RESULTS = 'No results found for the current search criteria.'
@@ -97,7 +98,32 @@ export const searchPage = {
     searchPage.shouldLoadResults()
     cy.get('.pf-c-alert pf-m-inline pf-m-danger').should('not.exist')
   },
-  
+  shouldValidateManagedCluster:() => {
+    searchBar.whenFocusSearchBar()
+    searchBar.whenEnterTextInSearchBar('ManagedClusterJoined', 'True')
+  },
+  shouldSelectFirstSuggestionValue:() => {
+    cy.get('.react-tags__suggestions ul#ReactTags').children().should('have.length.above', 1)
+    cy.get('li#ReactTags-1').click()
+  },
+  shouldVerifyManagedClusterPodsAreRunning:(name) => {
+    searchBar.whenFilterByKind('pod')
+    searchBar.whenFilterByCluster(name)
+    searchBar.whenEnterTextInSearchBar('namespace')
+
+    searchPage.shouldSelectFirstSuggestionValue()
+    searchPage.shouldLoadResults()
+    cy.get(`[data-label="Status"]`).should('contain', 'Running')
+  },
+  shouldVerifyManagedClusterPodsYamlAndLogs:(name) => {
+    searchPage.shouldVerifyManagedClusterPodsAreRunning(name)
+
+    cy.get(`td[data-label="Name"]`).each(($el) => {
+      searchPage.whenGoToResourceDetailItemPage('pod', $el.text())
+      podDetailPage.whenClickOnLogsTab()
+      cy.go('back')
+    })
+  },
   shouldFindRelationshipTile: (resource, count) => {
     cy.get('.pf-c-page__main-section').should('contain', `${count}`)
     cy.get('.pf-c-page__main-section').should('contain', `Related ${resource}`)
