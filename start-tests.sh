@@ -26,8 +26,6 @@ log_color () {
   esac
 }
 
-set -e
-
 log_color "cyan" "Initiating Search E2E tests...\n"
 
 if [ -z "$BROWSER" ]; then
@@ -77,7 +75,7 @@ log_color "purple" "\tCYPRESS_OC_IDP" "\t\t\t: $CYPRESS_OC_IDP\n"
 
 if [[ -z $OPTIONS_MANAGED_BASEDOMAIN || -z $OPTIONS_MANAGED_USER || -z $OPTIONS_MANAGED_PASSWORD ]]; then
    log_color "yellow" "One or more variables are undefined. Copying kubeconfigs...\n"
-   cp /opt/.kube/import-kubeconfig ./config/import-kubeconfig || :
+   cp /opt/.kube/import-kubeconfig ./config/import-kubeconfig 
 else
   log_color "cyan" "Logging into the managed cluster using credentials and generating the kubeconfig..."
   mkdir ./import-kubeconfig && touch ./import-kubeconfig/kubeconfig
@@ -86,11 +84,11 @@ else
   oc login --server=$OPTIONS_MANAGED_URL -u $OPTIONS_MANAGED_USER -p $OPTIONS_MANAGED_PASSWORD --insecure-skip-tls-verify
   unset KUBECONFIG
   log_color "yellow" "Copying managed cluster kubeconfig to ./cypress/config/import-kubeconfig ...\n"
-  cp ./import-kubeconfig/* ./config/import-kubeconfig || :
+  cp ./import-kubeconfig/* ./config/import-kubeconfig 
 fi
 
 log_color "cyan" "Logging into Kube API server"
-oc login --server=https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443 -u $CYPRESS_OPTIONS_HUB_USER -p $CYPRESS_OPTIONS_HUB_PASSWORD --insecure-skip-tls-verify || :
+oc login --server=https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443 -u $CYPRESS_OPTIONS_HUB_USER -p $CYPRESS_OPTIONS_HUB_PASSWORD --insecure-skip-tls-verify 
 
 testCode=0
 
@@ -120,9 +118,9 @@ else
 fi
 
 # We are caching the cypress binary for containerization, therefore it does not need npx. However, locally we need it.
-HEADLESS="--headless"
+DISPLAY="--headless"
 if [[ "$LIVE_MODE" == true ]]; then
-  HEADLESS=""
+  DISPLAY="--headed"
 fi
 
 if [ -z "$NODE_ENV" ]; then
@@ -173,16 +171,16 @@ fi
 if [ "$SKIP_UI_TEST" == false ]; then
   if [ "$RECORD" == true ]; then
     echo -e "Preparing to run test within record mode. (Results will be displayed within dashboard)\n"
-    cypress run --record --key $RECORD_KEY --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="-$CYPRESS_TAGS_EXCLUDE"
+    cypress run --record --key $RECORD_KEY --browser $BROWSER $DISPLAY --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="-$CYPRESS_TAGS_EXCLUDE"
   fi
 
   log_color "cyan" "Running Search UI tests."
   if [ "$NODE_ENV" == "development" ]; then
-    cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="-$CYPRESS_TAGS_EXCLUDE"
+    cypress run --browser $BROWSER $DISPLAY --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="-$CYPRESS_TAGS_EXCLUDE"
   elif [ "$NODE_ENV" == "debug" ]; then
     cypress open --browser $BROWSER --config numTestsKeptInMemory=0 --env NODE_ENV=$NODE_ENV,grgrepTags="-$CYPRESS_TAGS_EXCLUDE"
   else 
-    cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="-$CYPRESS_TAGS_EXCLUDE"
+    cypress run --browser $BROWSER $DISPLAY --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="-$CYPRESS_TAGS_EXCLUDE"
   fi
 else
   log_color "purple" "SKIP_UI_TEST" "was set to true. Skipping UI tests\n"
