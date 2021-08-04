@@ -17,24 +17,25 @@ clusterModes.forEach((clusterMode) => {
     return;
   }
 
+  // Prereq test suite. We need to create the resources for both cluster before we log into the UI.
   describe(`Search: Create resource in ${clusterMode.label} Cluster`, function() {
     before(function() {
       clusterMode.valueFn().as('clusterName')
     })
 
+    // After creating the resources from the managed cluster, we need to log back into the hub cluster for the next test suite.
     after(function() {
       if (clusterMode.label === 'Managed') {
         cy.log('Logging back into hub the cluster')
-        cliHelper.login(Cypress.env('OPTIONS_HUB_BASEDOMAIN'), Cypress.env('OPTIONS_HUB_USER'), Cypress.env('OPTIONS_HUB_PASSWORD'))
+        cliHelper.login('Local')
       }
     })
 
+    // Log into the hub and managed cluster with the oc command to create the resources.
     context(`prereq: create resource with oc command`, function() {
-      if (clusterMode.label === 'Managed') {
-        it(`[P1][Sev1][${squad}] should log into managed cluster`, function() {
-          cliHelper.login(Cypress.env('OPTIONS_MANAGED_BASEDOMAIN'), Cypress.env('OPTIONS_MANAGED_USER'), Cypress.env('OPTIONS_MANAGED_PASSWORD'))
-        })
-      }
+      it(`[P1][Sev1][${squad}] should log into ${clusterMode.label.toLocaleLowerCase()} cluster`, function() {
+        cliHelper.login(clusterMode.label)
+      })
 
       it(`[P1][Sev1][${squad}] should create namespace resource`, function() {
         cliHelper.createNamespace(clusterMode.namespace)
@@ -58,6 +59,7 @@ clusterModes.forEach((clusterMode) => {
     })
 
     context('search resource: verify delete function in search result', function() {
+      // Logging into the hub cluster UI.
       before(function() {
         if (clusterMode.label !== 'Managed') {
           cy.login()

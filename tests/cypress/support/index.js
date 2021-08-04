@@ -18,7 +18,6 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
-import { cliHelper } from '../scripts/cliHelper'
 import './commands'
 require('cypress-terminal-report/src/installLogsCollector')()
 require('cypress-grep')()
@@ -30,7 +29,6 @@ const err = 'Test taking too long! It has been running for 5 minutes.'
 
 before(() => {
   // This is needed for search to deploy RedisGraph upstream. Without this search won't be operational.
-  cliHelper.login(Cypress.env('OPTIONS_HUB_BASEDOMAIN'), Cypress.env('OPTIONS_HUB_USER'), Cypress.env('OPTIONS_HUB_PASSWORD'))
   cy.exec(`oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`, {failOnNonZeroExit: false}).then((res) => {
     var namespace = res.stdout
 

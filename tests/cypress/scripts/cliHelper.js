@@ -44,7 +44,9 @@ export const cliHelper = {
         cy.log(`Successfully deleted namespace (${name})`)
       })
     },
-    login: (domain, user, passw) => {
-      cy.exec(`oc login --server=https://api.${domain}:6443 -u ${user} -p ${passw} --insecure-skip-tls-verify`)
+    login: (cluster) => {
+      var mode = cluster === 'Local' ? 'HUB' : 'MANAGED'
+      cy.exec(`oc login --server=https://api.${Cypress.env(`OPTIONS_${mode}_BASEDOMAIN`)}:6443 -u ${Cypress.env(`OPTIONS_${mode}_USER`)} -p ${Cypress.env(`OPTIONS_${mode}_PASSWORD`)} --insecure-skip-tls-verify`
+      )
     }
   }
