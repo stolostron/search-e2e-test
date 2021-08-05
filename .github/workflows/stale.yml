@@ -1,0 +1,23 @@
+name: Mark stale issues and pull requests
+
+on:
+  schedule:
+  - cron: '0 8 * * Mon-Fri'
+
+jobs:
+  stale:
+
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+
+    steps:
+    - uses: actions/stale@v3
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        close-pr-message: 'Closing pr due to lack of activity.'
+        days-before-pr-stale: 30
+        days-before-pr-close: 10
+        stale-pr-message: 'This pr has been automatically marked as stale because it has not had recent activity. It will be closed in 10 days, if no further activity occurs. Thank you for your contributions.'
+        stale-pr-label: 'stale'
