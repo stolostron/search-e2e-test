@@ -49,4 +49,4 @@ End-to-end tests for the Open Cluster Management search component. The tests con
 These are a few useful links that will help provide technical reference and best practices when developing for the platform.
 
 - [Cypress Docs](https://docs.cypress.io/guides/overview/why-cypress.html)
-- [NPM Docs](https://docs.npmjs.com)
+- [NPM Docs](https://docs.npmjs.com) 
