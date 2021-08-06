@@ -1,6 +1,11 @@
 name: Mark stale issues and pull requests
 
 on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - /^release-[0-9]+\..*$/
   schedule:
   - cron: '0 8 * * Mon-Fri'
 
