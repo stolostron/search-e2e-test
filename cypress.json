@@ -8,7 +8,7 @@
   "pluginsFile": "tests/cypress/plugins/index.js",
   "pageLoadTimeout": 90000,
   "numTestsKeptInMemory": 10,
-  "screenshotsFolder" : "results/screenshots",
+  "screenshotsFolder": "results/screenshots",
   "supportFile": "tests/cypress/support/index.js",
   "videosFolder": "results/videos",
   "videoUploadOnPasses": false,

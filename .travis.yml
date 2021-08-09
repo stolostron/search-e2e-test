@@ -1,5 +1,5 @@
 os:
- - linux
+  - linux
 
 addons:
   apt:
@@ -34,7 +34,6 @@ branches:
 before_scripts:
   - make init
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export COMPONENT_TAG_EXTENSION="-PR${TRAVIS_PULL_REQUEST}-${TRAVIS_COMMIT}"; fi;
-
 
 stages:
   - build

@@ -18,41 +18,61 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
-import './commands'
-require('cypress-terminal-report/src/installLogsCollector')()
-require('cypress-grep')()
+import "./commands";
+import { cliHelper } from "../scripts/cliHelper";
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED='0'
-var timeoutID
+require("cypress-terminal-report/src/installLogsCollector")();
+require("cypress-grep")();
 
-const err = 'Test taking too long! It has been running for 5 minutes.'
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+var timeoutID;
+
+const err = "Test taking too long! It has been running for 5 minutes.";
 
 before(() => {
-  // This is needed for search to deploy RedisGraph upstream. Without this search won't be operational.
-  cy.exec(`oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`, {failOnNonZeroExit: false}).then((res) => {
-    var namespace = res.stdout
+  // Log into cluster with oc command.
+  cliHelper.login("Local");
 
-    cy.exec(`oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}" -n ${namespace}`, {failOnNonZeroExit: false}).then(result => {
-      if (result.stdout == "true"){
-        cy.task('log', 'Redisgraph deployment is enabled.')
+  // This is needed for search to deploy RedisGraph upstream. Without this search won't be operational.
+  cy.exec(`oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`, {
+    failOnNonZeroExit: false,
+  }).then((res) => {
+    var namespace = res.stdout;
+
+    cy.exec(
+      `oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}" -n ${namespace}`,
+      { failOnNonZeroExit: false }
+    ).then((result) => {
+      if (result.stdout == "true") {
+        cy.task("log", "Redisgraph deployment is enabled.");
       } else {
-        cy.task('log', 'Redisgraph deployment disabled, enabling and waiting 10 seconds for the search-redisgraph-0 pod.')
-        cy.exec(`oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n ${namespace}`)
-        return cy.wait(10*1000)
+        cy.task(
+          "log",
+          "Redisgraph deployment disabled, enabling and waiting 10 seconds for the search-redisgraph-0 pod."
+        );
+        cy.exec(
+          `oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n ${namespace}`
+        );
+        return cy.wait(10 * 1000);
       }
-    })
-    cy.clearCookies()
-  })
-})
+    });
+    cy.clearCookies();
+  });
+});
 
 beforeEach(() => {
-  Cypress.Cookies.preserveOnce('acm-access-token-cookie', '_oauth_proxy', 'XSRF-TOKEN', '_csrf')
+  Cypress.Cookies.preserveOnce(
+    "acm-access-token-cookie",
+    "_oauth_proxy",
+    "XSRF-TOKEN",
+    "_csrf"
+  );
   timeoutID = setTimeout(() => {
-    console.error(err)
-    throw Error(err)
-  }, 60000 * 5)
-})
+    console.error(err);
+    throw Error(err);
+  }, 60000 * 5);
+});
 
 afterEach(() => {
-  clearTimeout(timeoutID)
-})
+  clearTimeout(timeoutID);
+});

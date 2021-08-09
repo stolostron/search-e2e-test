@@ -5,8 +5,8 @@
 
 export const getOpt = (opts, key, defaultValue) => {
   if (opts && opts[key]) {
-    return opts[key]
+    return opts[key];
   }
 
-  return defaultValue
-}
+  return defaultValue;
+};

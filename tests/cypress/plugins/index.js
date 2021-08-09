@@ -9,30 +9,29 @@
 // https://on.cypress.io/plugins-guide
 // ***********************************************************
 
-const fs = require('fs')
+const fs = require("fs");
 
 /**
  * @type {Cypress.PluginConfig}
  */
 
-const { cleanReports } = require('../scripts/helpers')
+const { cleanReports } = require("../scripts/helpers");
 
 module.exports = (on, config) => {
-
-  cleanReports()
+  cleanReports();
 
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
 
-  require('cypress-terminal-report/src/installLogsPrinter')(on)
+  require("cypress-terminal-report/src/installLogsPrinter")(on);
 
-  on('task', {
+  on("task", {
     log(message) {
-      console.log(message)
+      console.log(message);
 
-      return null
+      return null;
     },
-  })
+  });
 
-  return config
-}
+  return config;
+};

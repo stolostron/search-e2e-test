@@ -5,81 +5,85 @@
 
 /// <reference types="cypress" />
 
-import { squad } from '../../config'
-import { overviewPage } from '../../views/overview'
+import { squad } from "../../config";
+import { overviewPage } from "../../views/overview";
 
-describe('RHACM4K-1419: Search: Overview page', function () {
-  before(function() {
-    cy.login()
-  })
+describe("RHACM4K-1419: Search: Overview page", function () {
+  before(function () {
+    cy.login();
+  });
 
   beforeEach(() => {
-    overviewPage.whenGoToOverviewPage()
-  })
+    overviewPage.whenGoToOverviewPage();
+  });
 
-  context('UI - overview page validation', function() {
+  context("UI - overview page validation", function () {
     it(`[P1][Sev1][${squad}] should load the overview page`, function () {
-      overviewPage.shouldLoad()
-    })
+      overviewPage.shouldLoad();
+    });
 
     it(`[P2][Sev2][${squad}] should have refresh options`, function () {
-      overviewPage.shouldHaveRefreshDropdown()
-    })
+      overviewPage.shouldHaveRefreshDropdown();
+    });
 
     it(`[P2][Sev2][${squad}] should have clusters provider card`, function () {
-      overviewPage.shouldHaveClusterProviderCard()
-    })
+      overviewPage.shouldHaveClusterProviderCard();
+    });
 
     it(`[P2][Sev2][${squad}] should have clusters summary breakdown`, function () {
-      overviewPage.shouldHaveClusterSummary()
-    })
+      overviewPage.shouldHaveClusterSummary();
+    });
 
     it(`[P2][Sev2][${squad}] should have link to search page`, function () {
-      overviewPage.shouldHaveLinkToSearchPage()
-    })
+      overviewPage.shouldHaveLinkToSearchPage();
+    });
 
     it(`[P2][Sev2][${squad}] add cloud connection action works`, function () {
-      overviewPage.whenAddProviderConnectionAction()
-      overviewPage.shouldLoadProviderConnectionPage()
-    })
-  })
+      overviewPage.whenAddProviderConnectionAction();
+      overviewPage.shouldLoadProviderConnectionPage();
+    });
+  });
 
-  context('UI - overiewe page link validation', function() {
+  context("UI - overiewe page link validation", function () {
     it(`[P2][Sev2][${squad}] should have link to welcome page from left nav`, function () {
-      overviewPage.shouldHaveLeftNavLinkToTargetedPage('Welcome')
-    })
+      overviewPage.shouldHaveLeftNavLinkToTargetedPage("Welcome");
+    });
 
     it(`[P2][Sev2][${squad}] should have link to cluster page from left nav`, function () {
-      overviewPage.shouldHaveLeftNavLinkToTargetedPage('Clusters')
-    })
+      overviewPage.shouldHaveLeftNavLinkToTargetedPage("Clusters");
+    });
 
     it(`[P2][Sev2][${squad}] should have link to bare metal assets page from left nav`, function () {
-      overviewPage.shouldHaveLeftNavLinkToTargetedPage('Bare metal assets')
-    })
+      overviewPage.shouldHaveLeftNavLinkToTargetedPage("Bare metal assets");
+    });
 
     it(`[P2][Sev2][${squad}] should have link to automation page from left nav`, function () {
-      overviewPage.shouldHaveLeftNavLinkToTargetedPage('Automation')
-    })
+      overviewPage.shouldHaveLeftNavLinkToTargetedPage("Automation");
+    });
 
     it(`[P2][Sev2][${squad}] should have link to application page from left nav`, function () {
-      overviewPage.shouldHaveLeftNavLinkToTargetedPage('Applications')
-    })
+      overviewPage.shouldHaveLeftNavLinkToTargetedPage("Applications");
+    });
 
     it(`[P2][Sev2][${squad}] should have link to governance page from left nav`, function () {
-      overviewPage.shouldHaveLeftNavLinkToTargetedPage('Governance')
-    })
+      overviewPage.shouldHaveLeftNavLinkToTargetedPage("Governance");
+    });
 
     it(`[P2][Sev2][${squad}] should have link to credential page from left nav`, function () {
-      overviewPage.shouldHaveLeftNavLinkToTargetedPage('Credentials')
-    })
+      overviewPage.shouldHaveLeftNavLinkToTargetedPage("Credentials");
+    });
 
     it(`[P2][Sev2][${squad}] should have link to visual web terminal page from left nav`, function () {
-      overviewPage.shouldHaveLeftNavLinkToTargetedPage('Visual Web Terminal', true, '/kui')
-    })
+      overviewPage.shouldHaveLeftNavLinkToTargetedPage(
+        "Visual Web Terminal",
+        true,
+        "/kui"
+      );
+    });
 
     it(`[P2][Sev2][${squad}] should have link to resource creation page`, function () {
-      overviewPage.shouldLoad()
-      overviewPage.shouldHaveLinkToResourceCreationPage()
-    })
-  })
-})
+      overviewPage.shouldLoad();
+      overviewPage.shouldHaveLinkToResourceCreationPage();
+    });
+  });
+});

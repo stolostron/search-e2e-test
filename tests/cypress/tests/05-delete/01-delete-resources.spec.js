@@ -5,60 +5,84 @@
 
 /// <reference types="cypress" />
 
-import { squad } from '../../config'
-import { cliHelper } from '../../scripts/cliHelper'
-import { searchPage, searchBar } from '../../views/search'
+import { squad } from "../../config";
+import { cliHelper } from "../../scripts/cliHelper";
+import { searchPage, searchBar } from "../../views/search";
 
-const clusterModes = [{ label: 'Local', valueFn: () => cy.wrap('local-cluster'), skip: false },
-                      { label: 'Managed', valueFn: () => cliHelper.getTargetManagedCluster(), skip: true }];
+const clusterModes = [
+  {
+    label: "Local",
+    valueFn: () => cy.wrap("local-cluster"),
+    skip: false,
+    namespace: cliHelper.generateNamespace(),
+  },
+  {
+    label: "Managed",
+    valueFn: () => cliHelper.getTargetManagedCluster(),
+    skip: false,
+    namespace: cliHelper.generateNamespace("", `managed-${Date.now()}`),
+  },
+];
+
+// Prereq test suite. We need to create the resources for both cluster before we log into the UI.
+cliHelper.setup(clusterModes);
 
 clusterModes.forEach((clusterMode) => {
   if (clusterMode.skip) {
     return;
   }
 
-  describe('Search: Search in ' + clusterMode.label + ' Cluster', function() {
-    before(function() {
-      clusterMode.valueFn().as('clusterName')
-      cy.generateNamespace().as('namespace')
-    })
-
-    before(function() {
-      cliHelper.createNamespace(this.namespace)
-      cliHelper.createDeployment(this.namespace + '-deployment', this.namespace, 'openshift/hello-openshift')
-      cy.login()
-    })
-
-    beforeEach(function() {
-      searchPage.whenGoToSearchPage()
-    })
-
-    describe('search resources', function() {
-      beforeEach(function() {
-        searchBar.whenFilterByNamespace(this.namespace, true)
-        searchBar.whenFilterByCluster(this.clusterName, true)
-        searchPage.shouldLoadResults()
-      })
-
-      it(`[P2][Sev2][${squad}] should delete deployment`, function() {
-        searchBar.whenFilterByKind('deployment')
-        searchPage.whenDeleteResourceDetailItem('deployment', this.namespace + '-deployment')
+  describe(
+    "RHACKM4K-726: Search: Search in " + clusterMode.label + " Cluster",
+    function () {
+      before(function () {
+        clusterMode.valueFn().as("clusterName");
       });
 
-      it(`[P2][Sev2][${squad}] should validate deployment was deleted`, function() {
-        searchBar.whenFilterByKind('deployment', true)
-        searchBar.whenFilterByName(this.namespace + '-deployment', true)
-        searchPage.shouldFindNoResults()
-      });
+      context(
+        "search resource: verify delete function in search result",
+        function () {
+          // Logging into the hub cluster UI.
+          before(function () {
+            if (clusterMode.label !== "Managed") {
+              cy.login();
+            }
+          });
 
-      it(`[P2][Sev2][${squad}] should delete namespace`, function() {
-        searchPage.whenDeleteNamespace(this.namespace)
-        cy.waitUsingSLA() // WORKAROUND to wait for resource to get indexed. Better solution is to retry instead of a hard wait.
-      });
+          beforeEach(function () {
+            searchPage.whenGoToSearchPage();
+            searchBar.whenFilterByNamespace(clusterMode.namespace, true);
+            searchBar.whenFilterByCluster(this.clusterName, true);
+            searchPage.shouldLoadResults();
+          });
 
-      it(`[P2][Sev2][${squad}] should validate namespace was deleted`, function() {
-        searchPage.shouldFindNoResults()
-      });
-    })
-  })
+          it(`[P2][Sev2][${squad}] should delete deployment`, function () {
+            searchBar.whenFilterByKind("deployment");
+            searchPage.whenDeleteResourceDetailItem(
+              "deployment",
+              clusterMode.namespace + "-deployment"
+            );
+          });
+
+          it(`[P2][Sev2][${squad}] should validate deployment was deleted`, function () {
+            searchBar.whenFilterByKind("deployment", true);
+            searchBar.whenFilterByName(
+              clusterMode.namespace + "-deployment",
+              true
+            );
+            searchPage.shouldFindNoResults();
+          });
+
+          it(`[P2][Sev2][${squad}] should delete namespace`, function () {
+            searchPage.whenDeleteNamespace(clusterMode.namespace);
+            cy.waitUsingSLA(); // WORKAROUND to wait for resource to get indexed. Better solution is to retry instead of a hard wait.
+          });
+
+          it(`[P2][Sev2][${squad}] should validate namespace was deleted`, function () {
+            searchPage.shouldFindNoResults();
+          });
+        }
+      );
+    }
+  );
 });

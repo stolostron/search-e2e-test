@@ -5,52 +5,72 @@
 
 /// <reference types="cypress" />
 
-import { squad } from '../../config'
-import { cliHelper } from '../../scripts/cliHelper'
-import { searchPage, searchBar } from '../../views/search'
-import { podDetailPage } from '../../views/podDetailPage'
+import { squad } from "../../config";
+import { cliHelper } from "../../scripts/cliHelper";
+import { searchPage, searchBar } from "../../views/search";
+import { podDetailPage } from "../../views/podDetailPage";
 
-const clusterModes = [{ label: 'Local', valueFn: () => cy.wrap('local-cluster'), skip: false },
-                      { label: 'Managed', valueFn: () => cliHelper.getTargetManagedCluster(), skip: true }];
+const clusterModes = [
+  {
+    label: "Local",
+    valueFn: () => cy.wrap("local-cluster"),
+    skip: false,
+    namespace: cliHelper.generateNamespace(),
+  },
+  {
+    label: "Managed",
+    valueFn: () => cliHelper.getTargetManagedCluster(),
+    skip: false,
+    namespace: cliHelper.generateNamespace("", `managed-${Date.now()}`),
+  },
+];
+
+// Prereq test suite. We need to create the resources for both cluster before we log into the UI.
+cliHelper.setup(clusterModes);
 
 clusterModes.forEach((clusterMode) => {
   if (clusterMode.skip) {
     return;
   }
 
-  describe('Search: Search in ' + clusterMode.label + ' Cluster', function() {
-    before(function() {
-      clusterMode.valueFn().as('clusterName')
-      cy.generateNamespace().as('namespace')
-    })
+  describe("Search: Search in " + clusterMode.label + " Cluster", function () {
+    before(function () {
+      clusterMode.valueFn().as("clusterName");
+    });
 
-    before(function() {
-      cliHelper.createNamespace(this.namespace)
-      cliHelper.createDeployment(this.namespace + '-deployment', this.namespace, 'openshift/hello-openshift')
-      cy.login()
-    })
+    // Log into cluster to clean up resources.
+    after(function () {
+      cliHelper.login(clusterMode.label);
+      cliHelper.deleteNamespace(clusterMode.namespace);
+    });
 
-    beforeEach(function() {
-      searchPage.whenGoToSearchPage()
-    })
+    context(
+      "search resources: verify resource deployment pod logs",
+      function () {
+        // Logging into the hub cluster UI.
+        before(function () {
+          if (clusterMode.label !== "Managed") {
+            cy.login();
+          }
+        });
 
-    after(function() {
-      cliHelper.deleteNamespace(this.namespace)
-    })
+        beforeEach(function () {
+          searchPage.whenGoToSearchPage();
+          searchBar.whenFilterByNamespace(clusterMode.namespace);
+          searchBar.whenFilterByCluster(this.clusterName);
+          searchPage.shouldLoadResults();
+        });
 
-    describe('search resources', function() {
-      beforeEach(function() {
-        searchBar.whenFilterByNamespace(this.namespace)
-        searchBar.whenFilterByCluster(this.clusterName)
-        searchPage.shouldLoadResults()
-      })
-      
-      it(`[P2][Sev2][${squad}] should see pod logs`, function() {
-        searchBar.whenFilterByKind('pod')
-        searchPage.whenGoToResourceDetailItemPage('pod', this.namespace + '-deployment-')
-        podDetailPage.whenClickOnLogsTab()
-        podDetailPage.shouldSeeLogs('serving on')
-      });
-    })
-  })
+        it(`[P2][Sev2][${squad}] should see pod logs`, function () {
+          searchBar.whenFilterByKind("pod");
+          searchPage.whenGoToResourceDetailItemPage(
+            "pod",
+            clusterMode.namespace + "-deployment"
+          );
+          podDetailPage.whenClickOnLogsTab();
+          podDetailPage.shouldSeeLogs("serving on");
+        });
+      }
+    );
+  });
 });
