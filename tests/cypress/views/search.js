@@ -7,6 +7,7 @@
 
 import { popupModal } from './popup'
 import { getOpt } from '../scripts/utils'
+import { podDetailPage } from './podDetailPage'
 
 const SEARCH_MESSAGES_INPUT_PLACE_HOLDER = 'Search items'
 const SEARCH_MESSAGES_NO_RESULTS = 'No results found for the current search criteria.'
