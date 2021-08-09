@@ -7,6 +7,7 @@
 
 import { popupModal } from './popup'
 import { getOpt } from '../scripts/utils'
+import { podDetailPage } from './podDetailPage'
 
 const SEARCH_MESSAGES_INPUT_PLACE_HOLDER = 'Search items'
 const SEARCH_MESSAGES_NO_RESULTS = 'No results found for the current search criteria.'
@@ -15,7 +16,7 @@ const SEARCH_MESSAGES_LOADING_SUGGESTIONS = 'Loading...'
 
 export const searchPage = {
   whenGoToSearchPage:() => cy.visit('/search'),
-  
+  whenGoToWelcomePage:() => cy.visit('/multicloud/welcome'),
   whenExpandRelationshipTiles:() => {
     cy.get('.pf-c-skeleton', {timeout: 2000}).should('not.exist')
     cy.get('.pf-l-gallery', {timeout: 2000}).children().should('have.length.above', 1).then(() => {
@@ -24,6 +25,9 @@ export const searchPage = {
   },
   whenGetResourceTableRow:(resource, name) => {
     return cy.get('tr').filter(`:contains("${name}")`)
+  },
+  whenCreateResourceObject:() => {
+    cy.get(`[aria-label="create-button"]`).click()
   },
   whenDeleteResourceDetailItem:(resource, name) => {
     searchPage.whenGetResourceTableRow(resource, name).find('.pf-c-dropdown__toggle', {timeout: 2000}).click({ force: true })
@@ -61,8 +65,32 @@ export const searchPage = {
   shouldLoad:() => {
     cy.get('.react-tags')
     cy.get('.react-tags__search-input')
+    cy.get('div.pc-f-skeleton').should('not.exist')
   },
+  whenToClickHelpIcon: () => {
+    cy.get('[data-test="about-dropdown"]').click()
+  },
+  whenToClickTabInHelpIcon: (tab) => {
+    cy.get('.pf-c-app-launcher__menu.pf-m-align-right')
 
+    if (tab === 'About') {
+      cy.get('button.pf-c-app-launcher__menu-item').should('contain', tab).click()
+      cy.get('.pf-c-about-modal-box')
+
+      cy.get('.pf-c-about-modal-box__body')
+      cy.get('.pf-c-spinner.pf-m-md').should('not.exist')
+
+      cy.get('.version-details__no').invoke('text').then(() => {
+        cy.get('.version-details__no').should('contain', Cypress.env("VERSION") ? Cypress.env("VERSION") : "2.4")
+      })
+
+      cy.get('.pf-c-about-modal-box__close')
+      cy.get(`[aria-label="Close Dialog"]`).click()
+
+    } else {
+      cy.get('li a.pf-c-app-launcher__menu-item').should('contain', tab).and('have.attr', 'href').should('contain', 'documentation')
+    }
+  },
   shouldFindNoResults: () => {
     cy.get('.pf-c-alert__title', { timeout: 30000 }).should('contain', SEARCH_MESSAGES_NO_RESULTS)
   },
@@ -70,7 +98,32 @@ export const searchPage = {
     searchPage.shouldLoadResults()
     cy.get('.pf-c-alert pf-m-inline pf-m-danger').should('not.exist')
   },
-  
+  shouldValidateManagedCluster:() => {
+    searchBar.whenFocusSearchBar()
+    searchBar.whenEnterTextInSearchBar('ManagedClusterJoined', 'True')
+  },
+  shouldSelectFirstSuggestionValue:() => {
+    cy.get('.react-tags__suggestions ul#ReactTags').children().should('have.length.above', 1)
+    cy.get('li#ReactTags-1').click()
+  },
+  shouldVerifyManagedClusterPodsAreRunning:(name) => {
+    searchBar.whenFilterByKind('pod')
+    searchBar.whenFilterByCluster(name)
+    searchBar.whenEnterTextInSearchBar('namespace')
+
+    searchPage.shouldSelectFirstSuggestionValue()
+    searchPage.shouldLoadResults()
+    cy.get(`[data-label="Status"]`).should('contain', 'Running')
+  },
+  shouldVerifyManagedClusterPodsYamlAndLogs:(name) => {
+    searchPage.shouldVerifyManagedClusterPodsAreRunning(name)
+
+    cy.get(`td[data-label="Name"]`).each(($el) => {
+      searchPage.whenGoToResourceDetailItemPage('pod', $el.text())
+      podDetailPage.whenClickOnLogsTab()
+      cy.go('back')
+    })
+  },
   shouldFindRelationshipTile: (resource, count) => {
     cy.get('.pf-c-page__main-section').should('contain', `${count}`)
     cy.get('.pf-c-page__main-section').should('contain', `Related ${resource}`)

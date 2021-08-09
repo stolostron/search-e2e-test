@@ -24,13 +24,13 @@ export const cliHelper = {
       })
     },
     createNamespace: (name) => {
-      cy.exec(`oc create namespace ${name}`).then(() => {
-        cy.log(`Successfully created namespace (${name})`)
+      cy.exec(`oc create namespace ${name}`, {failOnNonZeroExit: false}).then((res) => {
+        cy.log(res.stdout ? res.stdout : res.stderr)
       })
     },
     createDeployment: (name, namespace, image) => {
-      cy.exec(`oc create deployment ${name} --image=${image} -n ${namespace}`).then(() => {
-        cy.log(`Successfully created deployment (${name})`)
+      cy.exec(`oc create deployment ${name} --image=${image} -n ${namespace}`, {failOnNonZeroExit: false}).then((res) => {
+        cy.log(res.stdout ? res.stdout : res.stderr)
       })
     },
     createApplication: (appName, namespace) => {
@@ -41,8 +41,8 @@ export const cliHelper = {
       })
     },
     deleteNamespace: (name) => {
-      cy.exec(`oc delete namespace ${name}`).then(() => {
-        cy.log(`Successfully deleted namespace (${name})`)
+      cy.exec(`oc delete namespace ${name}`, {failOnNonZeroExit: false}).then((res) => {
+        cy.log(res.stdout ? res.stdout : res.stderr)
       })
     },
     login: (domain, user, passw) => {

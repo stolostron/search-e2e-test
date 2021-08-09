@@ -8,33 +8,36 @@
 import { searchPage, searchBar } from './search'
 
 export const savedSearches = {
-  validateClusterNamespace: (filterOptions, extraCluster) => {
+  whenGotoSearchPage: () => {
+    cy.get(`[aria-label="search-button"]`).click()
+  },
 
+  validateClusterNamespace: (filterOptions, extraCluster) => {
     //get managed clusters count
     searchPage.whenGoToSearchPage()
     searchBar.whenFocusSearchBar()
     searchBar.whenEnterTextInSearchBar('kind', 'cluster')
     searchBar.whenEnterTextInSearchBar('ManagedClusterJoined', 'True')
 
-    cy.get('.pf-c-expandable-section__toggle', {timeout:6000})
-      .then($btn =>{
-        var fullText = $btn.text()
-        var pattern = /[0-9]+/g
-        var ManagedClustersCount = fullText.match(pattern)
-	var expectedSearchClusterCount = Number(ManagedClustersCount)
+    cy.get('.pf-c-expandable-section__toggle', {timeout:6000}).then($btn => {
+      var fullText = $btn.text()
+      var pattern = /[0-9]+/g
+      var ManagedClustersCount = fullText.match(pattern)
+      var expectedSearchClusterCount = Number(ManagedClustersCount)
 
-	// local-cluster is default show in some filter conditions
-	if (extraCluster == 'has_local-cluster'){
-	  expectedSearchClusterCount = expectedSearchClusterCount + 1
-	}
+      // local-cluster is default show in some filter conditions
+      if (extraCluster == 'has_local-cluster') {
+        expectedSearchClusterCount = expectedSearchClusterCount + 1
+      }
 
-	searchPage.whenGoToSearchPage()
-        for (var key in filterOptions){
-          searchBar.whenEnterTextInSearchBar(key, filterOptions[key])
-	}
-	cy.contains(expectedSearchClusterCount)
-	cy.contains('Related cluster')
-      })
+      searchPage.whenGoToSearchPage()
+      for (var key in filterOptions) {
+        searchBar.whenEnterTextInSearchBar(key, filterOptions[key])
+      }
+
+      cy.contains(expectedSearchClusterCount)
+      cy.contains('Related cluster')
+    })
   },
 
   saveClusterNamespaceSearch: (filterOptions, queryName, queryDesc) => {

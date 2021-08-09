@@ -32,7 +32,6 @@
 import { getOpt } from '../scripts/utils'
 
 import 'cypress-wait-until'
-import { oauthIssuer } from '../views/welcome'
 
 Cypress.Commands.add('login', (OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OC_IDP) => {
   var user = OPTIONS_HUB_USER || Cypress.env('OPTIONS_HUB_USER');
