@@ -3,6 +3,8 @@
   "version": "2.3.0",
   "description": "End to end test for Search component",
   "scripts": {
+    "rbac:clean": "./build/rbac-clean.sh",
+    "rbac:setup": "./build/rbac-setup.sh",
     "test": "npm run test:clean-reports && npm run test:headless && npm run test:merge-reports",
     "test:api": "jest --colors",
     "test:clean-reports": "rm -rf ./results",

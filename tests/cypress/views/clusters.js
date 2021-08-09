@@ -6,12 +6,15 @@
 /// <reference types="cypress" />
 
 export const clustersPage = {
+  whenGoToClusterPage: () => {
+    cy.visit('/multicloud/clusters')
+  },
   shouldLoad: () => {
+    clustersPage.whenGoToClusterPage()
     cy.get('.pf-c-title').should('contain', 'Cluster')
     cy.get('.pf-c-spinner').should('not.exist')
   },
   shouldHaveLinkToSearchPage: () => {
-    cy.visit('/multicloud/clusters')
     clustersPage.shouldLoad()
 
     cy.get('.pf-c-table tbody').find('tr').first().then((c) => {
