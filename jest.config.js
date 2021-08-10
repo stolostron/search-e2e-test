@@ -1,18 +1,18 @@
 module.exports = {
-  globalSetup: "./globalSetup.js",
-  globalTeardown: "./globalTeardown.js",
+  globalSetup: './globalSetup.js',
+  globalTeardown: './globalTeardown.js',
   verbose: true,
-  rootDir: "./tests/api",
+  rootDir: './tests/api',
   reporters: [
-    "default",
+    'default',
     [
-      "jest-junit",
+      'jest-junit',
       {
-        suiteName: "Search API tests",
-        outputDirectory: "results",
-        outputName: "api-tests.xml",
+        suiteName: 'Search API tests',
+        outputDirectory: 'results',
+        outputName: 'api-tests.xml',
       },
     ],
   ],
-  testResultsProcessor: "jest-junit",
-};
+  testResultsProcessor: 'jest-junit',
+}

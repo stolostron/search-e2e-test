@@ -7,32 +7,32 @@
 
 export const clustersPage = {
   shouldLoad: () => {
-    cy.get(".pf-c-title").should("contain", "Cluster");
-    cy.get(".pf-c-spinner").should("not.exist");
+    cy.get('.pf-c-title').should('contain', 'Cluster')
+    cy.get('.pf-c-spinner').should('not.exist')
   },
   shouldHaveLinkToSearchPage: () => {
-    cy.visit("/multicloud/clusters");
-    clustersPage.shouldLoad();
+    cy.visit('/multicloud/clusters')
+    clustersPage.shouldLoad()
 
-    cy.get(".pf-c-table tbody")
-      .find("tr")
+    cy.get('.pf-c-table tbody')
+      .find('tr')
       .first()
       .then((c) => {
-        let name = c.find('[data-label="Name"] a').text();
+        let name = c.find('[data-label="Name"] a').text()
         cy.wrap(c)
-          .find(".pf-c-dropdown__toggle")
+          .find('.pf-c-dropdown__toggle')
           .click()
-          .get("a")
-          .contains("Search cluster")
+          .get('a')
+          .contains('Search cluster')
           .click()
           .then(() =>
             cy
               .url()
               .should(
-                "include",
+                'include',
                 `/search?filters={%22textsearch%22:%22cluster%3A${name}%22}`
               )
-          );
-      });
+          )
+      })
   },
-};
+}

@@ -5,40 +5,40 @@
 
 /// <reference types="cypress" />
 
-import { squad } from "../../config";
-import { overviewPage } from "../../views/overview";
+import { squad } from '../../config'
+import { overviewPage } from '../../views/overview'
 
 const rbac_users = [
-  "search-e2e-admin-cluster",
-  "search-e2e-admin-ns",
-  "search-e2e-view-ns",
-  "search-e2e-edit-ns",
-];
-const password = Cypress.env("OPTIONS_HUB_PASSWORD");
-const IDP = "search-e2e-htpasswd";
+  'search-e2e-admin-cluster',
+  'search-e2e-admin-ns',
+  'search-e2e-view-ns',
+  'search-e2e-edit-ns',
+]
+const password = Cypress.env('OPTIONS_HUB_PASSWORD')
+const IDP = 'search-e2e-htpasswd'
 
 describe(
   `RBAC users to read the Overview page`,
-  { tags: "@rbac" },
+  { tags: '@rbac' },
   function () {
-    const overviewPagePolarionIDs = ["731", "921", "919", "920"];
+    const overviewPagePolarionIDs = ['731', '921', '919', '920']
 
     rbac_users.forEach((user, index) => {
-      var roleAccess = user.split("-");
+      var roleAccess = user.split('-')
 
       it(`RHACM4K-${overviewPagePolarionIDs[index]}[P1][Sev1][${squad}] Login: ${user} user`, function () {
-        cy.login(user, password, IDP);
-      });
+        cy.login(user, password, IDP)
+      })
 
       it(`RHACM4K-${overviewPagePolarionIDs[index]}[P2][Sev2][${squad}] As an user with name ${user} with ${roleAccess[3]}-role-binding of default ${roleAccess[2]} role, the user can read the Overview page.`, function () {
-        overviewPage.whenGoToOverviewPage();
-        overviewPage.shouldLoad();
-        overviewPage.shouldHaveLinkToSearchPage();
-      });
+        overviewPage.whenGoToOverviewPage()
+        overviewPage.shouldLoad()
+        overviewPage.shouldHaveLinkToSearchPage()
+      })
 
       it(`RHACM4K-${overviewPagePolarionIDs[index]}[P1][Sev1][${squad}] Logout: ${user} user`, function () {
-        cy.logout();
-      });
-    });
+        cy.logout()
+      })
+    })
   }
-);
+)

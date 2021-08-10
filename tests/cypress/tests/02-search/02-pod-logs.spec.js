@@ -5,65 +5,65 @@
 
 /// <reference types="cypress" />
 
-import { squad } from "../../config";
-import { cliHelper } from "../../scripts/cliHelper";
-import { searchPage, searchBar } from "../../views/search";
-import { podDetailPage } from "../../views/podDetailPage";
+import { squad } from '../../config'
+import { cliHelper } from '../../scripts/cliHelper'
+import { searchPage, searchBar } from '../../views/search'
+import { podDetailPage } from '../../views/podDetailPage'
 
 const clusterModes = [
-  { label: "Local", valueFn: () => cy.wrap("local-cluster"), skip: false },
+  { label: 'Local', valueFn: () => cy.wrap('local-cluster'), skip: false },
   {
-    label: "Managed",
+    label: 'Managed',
     valueFn: () => cliHelper.getTargetManagedCluster(),
     skip: true,
   },
-];
+]
 
 clusterModes.forEach((clusterMode) => {
   if (clusterMode.skip) {
-    return;
+    return
   }
 
-  describe("Search: Search in " + clusterMode.label + " Cluster", function () {
+  describe('Search: Search in ' + clusterMode.label + ' Cluster', function () {
     before(function () {
-      clusterMode.valueFn().as("clusterName");
-      cy.generateNamespace().as("namespace");
-    });
+      clusterMode.valueFn().as('clusterName')
+      cy.generateNamespace().as('namespace')
+    })
 
     before(function () {
-      cliHelper.createNamespace(this.namespace);
+      cliHelper.createNamespace(this.namespace)
       cliHelper.createDeployment(
-        this.namespace + "-deployment",
+        this.namespace + '-deployment',
         this.namespace,
-        "openshift/hello-openshift"
-      );
-      cy.login();
-    });
+        'openshift/hello-openshift'
+      )
+      cy.login()
+    })
 
     beforeEach(function () {
-      searchPage.whenGoToSearchPage();
-    });
+      searchPage.whenGoToSearchPage()
+    })
 
     after(function () {
-      cliHelper.deleteNamespace(this.namespace);
-    });
+      cliHelper.deleteNamespace(this.namespace)
+    })
 
-    describe("search resources", function () {
+    describe('search resources', function () {
       beforeEach(function () {
-        searchBar.whenFilterByNamespace(this.namespace);
-        searchBar.whenFilterByCluster(this.clusterName);
-        searchPage.shouldLoadResults();
-      });
+        searchBar.whenFilterByNamespace(this.namespace)
+        searchBar.whenFilterByCluster(this.clusterName)
+        searchPage.shouldLoadResults()
+      })
 
       it(`[P2][Sev2][${squad}] should see pod logs`, function () {
-        searchBar.whenFilterByKind("pod");
+        searchBar.whenFilterByKind('pod')
         searchPage.whenGoToResourceDetailItemPage(
-          "pod",
-          this.namespace + "-deployment-"
-        );
-        podDetailPage.whenClickOnLogsTab();
-        podDetailPage.shouldSeeLogs("serving on");
-      });
-    });
-  });
-});
+          'pod',
+          this.namespace + '-deployment-'
+        )
+        podDetailPage.whenClickOnLogsTab()
+        podDetailPage.shouldSeeLogs('serving on')
+      })
+    })
+  })
+})

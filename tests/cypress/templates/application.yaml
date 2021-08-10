@@ -43,4 +43,4 @@ metadata:
 spec:
   clusterSelector:
     matchLabels:
-      "local-cluster": "true"
+      'local-cluster': 'true'

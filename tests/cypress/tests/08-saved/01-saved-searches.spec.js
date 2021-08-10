@@ -4,85 +4,85 @@
  ****************************************************************************** */
 
 /// <reference types="cypress" />
-import { savedSearches } from "../../views/savedSearches";
-import { squad } from "../../config";
+import { savedSearches } from '../../views/savedSearches'
+import { squad } from '../../config'
 
-const queryDefaultNamespaceName = "default namespace search";
+const queryDefaultNamespaceName = 'default namespace search'
 const queryDefaultNamespaceDesc =
-  "this is searching that each cluster should have default namespace";
+  'this is searching that each cluster should have default namespace'
 
-const queryOcmaNamespaceName = "open-cluster-management-agent search";
+const queryOcmaNamespaceName = 'open-cluster-management-agent search'
 const queryOcmaNamespaceDesc =
-  "this is searching that each cluster should have open-cluster-management-agent";
+  'this is searching that each cluster should have open-cluster-management-agent'
 
-const queryOCMaEditedName = `[E2E] default namespace search - ${Date.now()}`;
+const queryOCMaEditedName = `[E2E] default namespace search - ${Date.now()}`
 const queryOcmaEditedDesc =
-  "[Created by Search E2E automation] This is searching that each cluster should have default namespace -2";
+  '[Created by Search E2E automation] This is searching that each cluster should have default namespace -2'
 
-describe("RHACM4K-412 - Search: Saved searches", function () {
+describe('RHACM4K-412 - Search: Saved searches', function () {
   before(function () {
-    cy.login();
-  });
+    cy.login()
+  })
 
   it(`[P2][Sev2][${squad}] should find each managed cluster has default namespace`, function () {
-    savedSearches.validateClusterNamespace({ namespace: "default" }, "");
-  });
+    savedSearches.validateClusterNamespace({ namespace: 'default' }, '')
+  })
 
   it(`[P2][Sev2][${squad}] should find open-cluster-management-agent namespace exists`, function () {
     savedSearches.validateClusterNamespace(
-      { kind: "namespace", name: "open-cluster-management-agent" },
-      "has_local-cluster"
-    );
-  });
+      { kind: 'namespace', name: 'open-cluster-management-agent' },
+      'has_local-cluster'
+    )
+  })
 
   it(`[P2][Sev2][${squad}] should be able to save current search`, function () {
     savedSearches.saveClusterNamespaceSearch(
-      { namespace: "default" },
+      { namespace: 'default' },
       queryDefaultNamespaceName,
       queryDefaultNamespaceDesc
-    );
+    )
     savedSearches.saveClusterNamespaceSearch(
-      { kind: "namespace", name: "open-cluster-management-agent" },
+      { kind: 'namespace', name: 'open-cluster-management-agent' },
       queryOcmaNamespaceName,
       queryOcmaNamespaceDesc
-    );
-  });
+    )
+  })
 
   it(`[P2][Sev2][${squad}] should be able to find the saved searches`, function () {
-    savedSearches.getSavedSearch(queryDefaultNamespaceName);
-    savedSearches.getSavedSearch(queryOcmaNamespaceName);
-  });
+    savedSearches.getSavedSearch(queryDefaultNamespaceName)
+    savedSearches.getSavedSearch(queryOcmaNamespaceName)
+  })
 
   it(`[P2][Sev2][${squad}] should be able to edit the saved searches`, function () {
     savedSearches.editSavedSearch(
       queryDefaultNamespaceName,
       queryOCMaEditedName,
       queryOcmaEditedDesc
-    );
-  });
+    )
+  })
 
   it(`[P2][Sev2][${squad}] should be able to find the saved searches`, function () {
-    savedSearches.getSavedSearch(queryOCMaEditedName);
-    savedSearches.getSavedSearch(queryOcmaNamespaceName);
-  });
+    savedSearches.getSavedSearch(queryOCMaEditedName)
+    savedSearches.getSavedSearch(queryOcmaNamespaceName)
+  })
 
   it(`[P2][Sev2][${squad}] should be able to revert back the edited saved searches`, function () {
     savedSearches.editSavedSearch(
       queryOCMaEditedName,
       queryDefaultNamespaceName,
       queryDefaultNamespaceDesc
-    );
-  });
+    )
+  })
 
   it(`[P2][Sev2][${squad}] should be able to share the saved searches`, function () {
-    savedSearches.shareSavedSearch(queryDefaultNamespaceName);
-  });
+    savedSearches.shareSavedSearch(queryDefaultNamespaceName)
+  })
 
   it(`[P2][Sev2][${squad}] should be able to delete the saved searches ${queryDefaultNamespaceName}`, function () {
-    savedSearches.whenDeleteSavedSearch(queryDefaultNamespaceName);
-  });
+    savedSearches.whenDeleteSavedSearch(queryDefaultNamespaceName)
+  })
 
   it(`[P2][Sev2][${squad}] should be able to delete the saved search ${queryOcmaNamespaceName}`, function () {
-    savedSearches.whenDeleteSavedSearch(queryOcmaNamespaceName);
-  });
-});
+    savedSearches.whenDeleteSavedSearch(queryOcmaNamespaceName)
+  })
+})

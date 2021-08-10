@@ -1,6 +1,6 @@
 {
   "name": "search-e2e-test",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "End to end test for Search component",
   "scripts": {
     "check": "prettier --check .",
@@ -62,5 +62,9 @@
     "hooks": {
       "pre-commit": "npm run check"
     }
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
   }
 }

@@ -5,15 +5,15 @@
 
 /// <reference types="cypress" />
 
-import { squad } from "../../config";
-import { searchPage, searchBar } from "../../views/search";
+import { squad } from '../../config'
+import { searchPage, searchBar } from '../../views/search'
 import {
   filtersRegistry,
   multipleValues,
   combined,
   simple,
   useText,
-} from "../../scripts/filters";
+} from '../../scripts/filters'
 
 // Filter Specification
 // - type: the filter name
@@ -30,39 +30,39 @@ import {
 // - combined(list): it will check that the combination of the current filter with the filters provided in the `list` arguments works fine
 // - multipleValues(count): it will check that the filter works fine when using multiple values at the same time
 
-const nameFilter = filtersRegistry.createFilter("name");
-const labelFilter = filtersRegistry.createFilter("label");
-const kindFilter = filtersRegistry.createFilter("kind", {
+const nameFilter = filtersRegistry.createFilter('name')
+const labelFilter = filtersRegistry.createFilter('label')
+const kindFilter = filtersRegistry.createFilter('kind', {
   strategies: [multipleValues(2), combined([nameFilter, labelFilter])],
-});
-filtersRegistry.createFilter("role", {
-  values: [useText("master"), useText("worker")],
+})
+filtersRegistry.createFilter('role', {
+  values: [useText('master'), useText('worker')],
   strategies: [multipleValues(2)],
-});
-filtersRegistry.createFilter("status", {
+})
+filtersRegistry.createFilter('status', {
   strategies: [simple, multipleValues(2)],
-});
+})
 
-describe("RHACM4K-537: Search: Search using filters", function () {
+describe('RHACM4K-537: Search: Search using filters', function () {
   before(function () {
-    cy.login();
-    searchPage.whenGoToSearchPage();
-  });
+    cy.login()
+    searchPage.whenGoToSearchPage()
+  })
 
   filtersRegistry.filters.forEach((filter) => {
     if (filter.skip) {
-      return;
+      return
     }
 
     describe(`[P1][Sev1][${squad}] Search using "${filter.type}" filter`, function () {
       beforeEach(function () {
-        searchBar.whenClearFilters();
-        searchBar.whenFocusSearchBar();
-      });
+        searchBar.whenClearFilters()
+        searchBar.whenFocusSearchBar()
+      })
 
       if (filter.strategies) {
-        filter.strategies.forEach((runner) => runner(filter));
+        filter.strategies.forEach((runner) => runner(filter))
       }
-    });
-  });
-});
+    })
+  })
+})
