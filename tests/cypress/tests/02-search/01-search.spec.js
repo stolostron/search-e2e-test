@@ -5,84 +5,84 @@
 
 /// <reference types="cypress" />
 
-import { squad } from "../../config";
-import { cliHelper } from "../../scripts/cliHelper";
-import { searchPage, searchBar } from "../../views/search";
+import { squad } from '../../config'
+import { cliHelper } from '../../scripts/cliHelper'
+import { searchPage, searchBar } from '../../views/search'
 
 const clusterModes = [
   {
-    label: "Local",
-    valueFn: () => cy.wrap("local-cluster"),
+    label: 'Local',
+    valueFn: () => cy.wrap('local-cluster'),
     skip: false,
     namespace: cliHelper.generateNamespace(),
   },
   {
-    label: "Managed",
+    label: 'Managed',
     valueFn: () => cliHelper.getTargetManagedCluster(),
     skip: false,
-    namespace: cliHelper.generateNamespace("", `managed-${Date.now()}`),
+    namespace: cliHelper.generateNamespace('', `managed-${Date.now()}`),
   },
-];
+]
 
 // Prereq test suite. We need to create the resources for both cluster before we log into the UI.
-cliHelper.setup(clusterModes);
+cliHelper.setup(clusterModes)
 
 clusterModes.forEach((clusterMode) => {
   if (clusterMode.skip) {
-    return;
+    return
   }
 
-  describe("Search: Search in " + clusterMode.label + " Cluster", function () {
+  describe('Search: Search in ' + clusterMode.label + ' Cluster', function () {
     before(function () {
-      clusterMode.valueFn().as("clusterName");
-    });
+      clusterMode.valueFn().as('clusterName')
+    })
 
     // Log into cluster to clean up resources.
     after(function () {
-      cliHelper.login(clusterMode.label);
-      cliHelper.deleteNamespace(clusterMode.namespace);
-    });
+      cliHelper.login(clusterMode.label)
+      cliHelper.deleteNamespace(clusterMode.namespace)
+    })
 
     context(
-      "search resources: verify resource exist after creation",
+      'search resources: verify resource exist after creation',
       function () {
         // Logging into the hub cluster UI.
         before(function () {
-          if (clusterMode.label !== "Managed") {
-            cy.login();
+          if (clusterMode.label !== 'Managed') {
+            cy.login()
           }
-        });
+        })
 
         beforeEach(function () {
-          searchPage.whenGoToSearchPage();
-          searchBar.whenFilterByNamespace(clusterMode.namespace);
-          searchBar.whenFilterByCluster(this.clusterName);
-          searchPage.shouldLoadResults();
-        });
+          searchPage.whenGoToSearchPage()
+          searchBar.whenFilterByNamespace(clusterMode.namespace)
+          searchBar.whenFilterByCluster(this.clusterName)
+          searchPage.shouldLoadResults()
+        })
 
         it(`[P3][Sev3][${squad}] should have expected count of relationships`, function () {
-          searchPage.whenExpandRelationshipTiles();
-          searchPage.shouldFindRelationshipTile("cluster", "1");
-          searchPage.shouldFindRelationshipTile("deployment", "1");
-          searchPage.shouldFindRelationshipTile("pod", "1");
-        });
+          searchPage.whenExpandRelationshipTiles()
+          searchPage.shouldFindRelationshipTile('cluster', '1')
+          searchPage.shouldFindRelationshipTile('deployment', '1')
+          searchPage.shouldFindRelationshipTile('pod', '1')
+        })
 
         it(`[P1][Sev1][${squad}] should work kind filter for deployment`, function () {
-          searchBar.whenFilterByKind("deployment");
+          searchBar.whenFilterByKind('deployment')
           searchPage.shouldFindResourceDetailItem(
-            "deployment",
-            clusterMode.namespace + "-deployment"
-          );
-        });
+            'deployment',
+            clusterMode.namespace + '-deployment'
+          )
+        })
 
         it(`[P1][Sev1][${squad}] should work kind filter for pod`, function () {
-          searchBar.whenFilterByKind("pod");
+          searchBar.whenFilterByKind('pod')
           searchPage.shouldFindResourceDetailItem(
-            "pod",
-            clusterMode.namespace + "-deployment-"
-          );
-        });
+            'pod',
+            clusterMode.namespace + '-deployment-'
+          )
+        })
       }
-    );
-  });
-});
+    )
+  })
+})
