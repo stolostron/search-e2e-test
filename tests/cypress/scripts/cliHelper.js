@@ -36,11 +36,11 @@ export const cliHelper = {
     return `${prefix ? prefix : 'search'}-${postfix ? postfix : Date.now()}`
   },
   createNamespace: (name) => {
-    cy.exec(`oc create namespace ${name}`, { failOnNonZeroExit: false }).then(
-      (res) => {
-        cy.log(res.stdout ? res.stdout : res.stderr)
-      }
-    )
+    cy.exec(`oc create namespace ${name}`, {
+      failOnNonZeroExit: false,
+    }).then((res) => {
+      cy.log(res.stdout ? res.stdout : res.stderr)
+    })
   },
   createDeployment: (name, namespace, image) => {
     cy.exec(`oc create deployment ${name} --image=${image} -n ${namespace}`, {

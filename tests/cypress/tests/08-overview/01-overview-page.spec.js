@@ -73,14 +73,6 @@ describe('RHACM4K-1419: Search: Overview page', function () {
       overviewPage.shouldHaveLeftNavLinkToTargetedPage('Credentials')
     })
 
-    it(`[P2][Sev2][${squad}] should have link to visual web terminal page from left nav`, function () {
-      overviewPage.shouldHaveLeftNavLinkToTargetedPage(
-        'Visual Web Terminal',
-        true,
-        '/kui'
-      )
-    })
-
     it(`[P2][Sev2][${squad}] should have link to resource creation page`, function () {
       overviewPage.shouldLoad()
       overviewPage.shouldHaveLinkToResourceCreationPage()

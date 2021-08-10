@@ -433,7 +433,9 @@ describe('RHACM4K-913: Search - common filter and conditions', () => {
       const pods = searchRes.body.data.searchResult[0].items
       expect(pods.length.toString()).toEqual(cliRes.toString().trim())
     } else {
-      log({ message: 'Test skipped because kubeconfigs[0] is undefined.' })
+      log({
+        message: 'Test skipped because kubeconfigs[0] is undefined.',
+      })
     }
   }, 20000)
 
@@ -481,7 +483,9 @@ describe('RHACM4K-913: Search - common filter and conditions', () => {
       const pods = searchRes.body.data.searchResult[0].items
       expect(pods.length.toString()).toEqual(cliRes.toString().trim())
     } else {
-      log({ message: 'Test skipped because kubeconfigs[0] is undefined.' })
+      log({
+        message: 'Test skipped because kubeconfigs[0] is undefined.',
+      })
     }
   }, 20000)
 
@@ -504,7 +508,9 @@ describe('RHACM4K-913: Search - common filter and conditions', () => {
       const pods = searchRes.body.data.searchResult[0].items
       expect(pods.length.toString()).toEqual(cliRes.toString().trim())
     } else {
-      log({ message: 'Test skipped because kubeconfigs[0] is undefined.' })
+      log({
+        message: 'Test skipped because kubeconfigs[0] is undefined.',
+      })
     }
   }, 20000)
 })

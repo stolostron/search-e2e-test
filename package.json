@@ -1,6 +1,6 @@
 {
   "name": "search-e2e-test",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "End to end test for Search component",
   "scripts": {
     "rbac:clean": "./build/rbac-clean.sh",
@@ -59,6 +59,11 @@
     "prettier": "^2.3.2",
     "querystring": "^0.2.1",
     "selenium-standalone": "^7.1.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run check"
+    }
   },
   "prettier": {
     "semi": false,
