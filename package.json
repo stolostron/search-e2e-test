@@ -1,8 +1,10 @@
 {
   "name": "search-e2e-test",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "End to end test for Search component",
   "scripts": {
+    "check": "prettier --check .",
+    "check:fix": "prettier --write .",
     "test": "npm run test:clean-reports && npm run test:headless && npm run test:merge-reports",
     "test:api": "jest --colors",
     "test:clean-reports": "rm -rf ./results",
@@ -46,12 +48,23 @@
     "cypress-wait-until": "^1.7.1",
     "eslint-plugin-cypress": "^2.11.3",
     "geckodriver": "^2.0.2",
+    "husky": "^7.0.1",
     "junit-report-merger": "^3.0.0",
     "mocha": "^9.0.3",
     "mocha-junit-reporter": "^2.0.0",
     "mochawesome": "^6.2.2",
     "mochawesome-merge": "^4.2.0",
+    "prettier": "^2.3.2",
     "querystring": "^0.2.1",
     "selenium-standalone": "^7.1.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run check"
+    }
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
   }
 }

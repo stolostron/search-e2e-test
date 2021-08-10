@@ -9,7 +9,7 @@ import { squad } from '../../config'
 import { overviewPage } from '../../views/overview'
 
 describe('RHACM4K-1419: Search: Overview page', function () {
-  before(function() {
+  before(function () {
     cy.login()
   })
 
@@ -17,7 +17,7 @@ describe('RHACM4K-1419: Search: Overview page', function () {
     overviewPage.whenGoToOverviewPage()
   })
 
-  context('UI - overview page validation', function() {
+  context('UI - overview page validation', function () {
     it(`[P1][Sev1][${squad}] should load the overview page`, function () {
       overviewPage.shouldLoad()
     })
@@ -44,7 +44,7 @@ describe('RHACM4K-1419: Search: Overview page', function () {
     })
   })
 
-  context('UI - overiewe page link validation', function() {
+  context('UI - overiewe page link validation', function () {
     it(`[P2][Sev2][${squad}] should have link to welcome page from left nav`, function () {
       overviewPage.shouldHaveLeftNavLinkToTargetedPage('Welcome')
     })
@@ -71,10 +71,6 @@ describe('RHACM4K-1419: Search: Overview page', function () {
 
     it(`[P2][Sev2][${squad}] should have link to credential page from left nav`, function () {
       overviewPage.shouldHaveLeftNavLinkToTargetedPage('Credentials')
-    })
-
-    it(`[P2][Sev2][${squad}] should have link to visual web terminal page from left nav`, function () {
-      overviewPage.shouldHaveLeftNavLinkToTargetedPage('Visual Web Terminal', true, '/kui')
     })
 
     it(`[P2][Sev2][${squad}] should have link to resource creation page`, function () {

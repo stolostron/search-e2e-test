@@ -1,5 +1,5 @@
 os:
- - linux
+  - linux
 
 addons:
   apt:
@@ -35,7 +35,6 @@ before_scripts:
   - make init
   - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export COMPONENT_TAG_EXTENSION="-PR${TRAVIS_PULL_REQUEST}-${TRAVIS_COMMIT}"; fi;
 
-
 stages:
   - build
   - test
@@ -45,24 +44,24 @@ stages:
 jobs:
   include:
     - stage: build
-      name: "Build the image and push it"
+      name: 'Build the image and push it'
       language: node_js
       script:
         - make build-test-image
         - make component/push
     - stage: test
-      name: "Run Search E2E tests"
+      name: 'Run Search E2E tests'
       language: node_js
       script:
         - make component/pull
         - make component/test/e2e
     - stage: release-ff
-      name: "Push commits from main to branch defined in RELEASE_FF_BRANCH"
+      name: 'Push commits from main to branch defined in RELEASE_FF_BRANCH'
       if: type = push AND branch =~ /^main$/
       script:
         - make release-ff
     - stage: publish
-      name: "Publish the image to quay with an official version/sha tag and publish entry to integration pipeline stage"
+      name: 'Publish the image to quay with an official version/sha tag and publish entry to integration pipeline stage'
       if: type = push AND branch =~ /^release-[0-9]+\..*$/
       script:
         - make pipeline-manifest/update PIPELINE_MANIFEST_COMPONENT_SHA256=${TRAVIS_COMMIT} PIPELINE_MANIFEST_COMPONENT_REPO=${TRAVIS_REPO_SLUG} PIPELINE_MANIFEST_BRANCH=${TRAVIS_BRANCH}

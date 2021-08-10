@@ -9,11 +9,11 @@ import { squad } from '../../config'
 import { clustersPage } from '../../views/clusters'
 
 describe('RHACM4K-413: Search: Linked page', function () {
-  before(function() {
+  before(function () {
     cy.login()
   })
 
-  it(`[P1][Sev1][${squad}] should load the cluster page`, function() {
+  it(`[P1][Sev1][${squad}] should load the cluster page`, function () {
     clustersPage.shouldLoad()
   })
 
