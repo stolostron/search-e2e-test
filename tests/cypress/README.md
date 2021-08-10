@@ -42,9 +42,9 @@ options:
 
 1. Export the following environemnt variables:
 
-    - OPTIONS_HUB_BASEDOMAIN (e.g. `<cluster>.dev07.open-cluster-management.com`)
-    - OPTIONS_HUB_USER (`login username`; defaults to `kubeadmin` if not set)
-    - OPTIONS_HUB_PASSWORD (`login password`)
+   - OPTIONS_HUB_BASEDOMAIN (e.g. `<cluster>.dev07.open-cluster-management.com`)
+   - OPTIONS_HUB_USER (`login username`; defaults to `kubeadmin` if not set)
+   - OPTIONS_HUB_PASSWORD (`login password`)
 
 ```bash
 export OPTIONS_HUB_BASEDOMAIN=BASE_DOMAIN
@@ -119,7 +119,7 @@ Before the user can access the dashboard, you will need to visit the [Cypress Da
 
 After receiving the command from Cypress, do not forget to add the `projectID` to `cypress.json` or else the dashboard will not be availble within the current project.
 
-***cypress.json***
+**_cypress.json_**
 
 ```bash
 {
@@ -132,19 +132,19 @@ After receiving the command from Cypress, do not forget to add the `projectID` t
 
 Control the behavior of this service with these environment variables.
 
-| Name                   | Required | Default Value   | Descripition                                                                 |
-|------------------------|----------|-----------------|------------------------------------------------------------------------------|
-| BROWSER                | no       | chrome          | Run Cypress in the browser with the given name (***chrome, firefox***)       |
-| CYPRESS_BASE_URL       | no       | chrome          | Base url of the target cluster (***This is only required when the user test the E2E tests with the following command: `npx cypress open`***)       |
-| LIVE_MODE              | no       | false           | Display the E2E tests being executed in the browser                          |
-| NODE_ENV               | no       | development     | The environment to run the test (***debug, development, production***)       |
-| OPTIONS_HUB_BASEDOMAIN | yes      |                 | Base domain of the target cluster (***Variable can also be exported as CYPRESS_OPTIONS_HUB_BASEDOMAIN***) |
-| OPTIONS_HUB_PASSWORD   | yes      |                 | Base password of the target cluster (***Variable can also be exported as CYPRESS_OPTIONS_HUB_PASSWORD***) |
-| OPTIONS_HUB_USER       | yes      |                 | Base user of the targeted cluster (***Variable can also be exported as CYPRESS_OPTIONS_HUB_USER***) |
-| RECORD                 | no       | false           | When set to true, Cypress tests will be recorded in the Cypress dashboard    |
-| RECORD_KEY             | no       |                 | Record key that is provided when the dashboard is set up (***This is only required when the `RECORD` variable is set to true***)|
-| SKIP_API_TEST          | no       | false           | Skip the API tests when running all tests                                    |
-| SKIP_UI_TEST           | no       | false           | Skip the UI tests when running all tests                                     |
+| Name                   | Required | Default Value | Descripition                                                                                                                                 |
+| ---------------------- | -------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| BROWSER                | no       | chrome        | Run Cypress in the browser with the given name (**_chrome, firefox_**)                                                                       |
+| CYPRESS_BASE_URL       | no       | chrome        | Base url of the target cluster (**_This is only required when the user test the E2E tests with the following command: `npx cypress open`_**) |
+| LIVE_MODE              | no       | false         | Display the E2E tests being executed in the browser                                                                                          |
+| NODE_ENV               | no       | development   | The environment to run the test (**_debug, development, production_**)                                                                       |
+| OPTIONS_HUB_BASEDOMAIN | yes      |               | Base domain of the target cluster (**_Variable can also be exported as CYPRESS_OPTIONS_HUB_BASEDOMAIN_**)                                    |
+| OPTIONS_HUB_PASSWORD   | yes      |               | Base password of the target cluster (**_Variable can also be exported as CYPRESS_OPTIONS_HUB_PASSWORD_**)                                    |
+| OPTIONS_HUB_USER       | yes      |               | Base user of the targeted cluster (**_Variable can also be exported as CYPRESS_OPTIONS_HUB_USER_**)                                          |
+| RECORD                 | no       | false         | When set to true, Cypress tests will be recorded in the Cypress dashboard                                                                    |
+| RECORD_KEY             | no       |               | Record key that is provided when the dashboard is set up (**_This is only required when the `RECORD` variable is set to true_**)             |
+| SKIP_API_TEST          | no       | false         | Skip the API tests when running all tests                                                                                                    |
+| SKIP_UI_TEST           | no       | false         | Skip the UI tests when running all tests                                                                                                     |
 
 ## Links
 
