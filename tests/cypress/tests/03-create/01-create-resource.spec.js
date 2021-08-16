@@ -26,16 +26,18 @@ clusterModes.forEach((clusterMode) => {
   describe(
     'RHACM4K-1233: Search: Search in ' + clusterMode.label + ' Cluster',
     function () {
-      before(function () {
-        cy.login()
-      })
-
-      beforeEach(function () {
-        searchPage.whenGoToSearchPage()
+      context('prereq: user should log into the ACM console', function () {
+        it(`[P1][Sev1][${squad}] should login`, function () {
+          cy.login()
+        })
       })
 
       // For now, we are only clicking the button within the hub cluster header.
       context('search resources: verify create resource in search', () => {
+        beforeEach(function () {
+          searchPage.whenGoToSearchPage()
+        })
+
         it(`[P2][Sev2][${squad}] should load the search page`, function () {
           searchPage.shouldLoad()
         })

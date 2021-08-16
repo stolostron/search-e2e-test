@@ -9,15 +9,17 @@ import { squad } from '../../config'
 import { overviewPage } from '../../views/overview'
 
 describe('RHACM4K-1419: Search: Overview page', function () {
-  before(function () {
-    cy.login()
-  })
-
-  beforeEach(() => {
-    overviewPage.whenGoToOverviewPage()
+  context('prereq: user should log into the ACM console', function () {
+    it(`[P1][Sev1][${squad}] should login`, function () {
+      cy.login()
+    })
   })
 
   context('UI - overview page validation', function () {
+    beforeEach(() => {
+      overviewPage.whenGoToOverviewPage()
+    })
+
     it(`[P1][Sev1][${squad}] should load the overview page`, function () {
       overviewPage.shouldLoad()
     })
@@ -44,7 +46,11 @@ describe('RHACM4K-1419: Search: Overview page', function () {
     })
   })
 
-  context('UI - overiewe page link validation', function () {
+  context('UI - overview page link validation', function () {
+    beforeEach(() => {
+      overviewPage.whenGoToOverviewPage()
+    })
+
     it(`[P2][Sev2][${squad}] should have link to welcome page from left nav`, function () {
       overviewPage.shouldHaveLeftNavLinkToTargetedPage('Welcome')
     })

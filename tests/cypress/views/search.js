@@ -150,10 +150,20 @@ export const searchPage = {
     searchBar.whenFilterByKind('pod')
     searchBar.whenFilterByCluster(name)
     searchBar.whenEnterTextInSearchBar('namespace')
+    cy.wait(2500) // Adding a delay to ensure that the namespace suggestion values are indeed populated and returned for the test to use.
 
-    searchPage.shouldSelectFirstSuggestionValue()
-    searchPage.shouldLoadResults()
-    cy.get(`[data-label="Status"]`).should('contain', 'Running')
+    cy.get('.react-tags__suggestions ul#ReactTags')
+      .children()
+      .then((elem) => {
+        if (elem.length <= 1) {
+          // If the namespaces aren't returned, there's a good chance the cluster resources has been deleted.
+          cy.log(`Cluster: ${name} has not returned any namespace values...`) // Adding this test condition case for the canary.
+        } else {
+          searchPage.shouldSelectFirstSuggestionValue()
+          searchPage.shouldLoadResults()
+          cy.get(`[data-label="Status"]`).should('contain', 'Running')
+        }
+      })
   },
   shouldVerifyManagedClusterPodsYamlAndLogs: (name) => {
     searchPage.shouldVerifyManagedClusterPodsAreRunning(name)

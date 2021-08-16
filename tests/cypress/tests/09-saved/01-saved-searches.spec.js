@@ -20,11 +20,13 @@ const queryOcmaEditedDesc =
   '[Created by Search E2E automation] This is searching that each cluster should have default namespace -2'
 
 describe('RHACM4K-1262 - Search: multiple managedclusters base tests', function () {
-  before(function () {
-    cy.login()
+  context('prereq: user should log into the ACM console', function () {
+    it(`[P1][Sev1][${squad}] should login`, function () {
+      cy.login()
+    })
   })
 
-  context('verify saved searches function', function () {
+  context('verify: saved searches function', function () {
     it(`[P2][Sev2][${squad}] should find each managed cluster has default namespace`, function () {
       savedSearches.validateClusterNamespace({ namespace: 'default' }, '')
     })
@@ -70,7 +72,7 @@ describe('RHACM4K-1262 - Search: multiple managedclusters base tests', function 
 })
 
 describe('RHACM4K-412 - Search: Saved searches', function () {
-  context('verify saved searches resource actions', function () {
+  context('verify: saved searches resource actions', function () {
     it(`[P2][Sev2][${squad}] should be able to edit the saved searches`, function () {
       savedSearches.editSavedSearch(
         queryDefaultNamespaceName,

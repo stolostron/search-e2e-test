@@ -11,16 +11,20 @@ import { searchPage } from '../../views/search'
 import { savedSearches, searchBar } from '../../views/suggestedSearches'
 
 describe('RHACM4K-411: Search: Verify the suggested search templates', function () {
-  before(function () {
-    cy.login()
+  context('prereq: user should log into the ACM console', function () {
+    it(`[P1][Sev1][${squad}] should login`, function () {
+      cy.login()
+    })
   })
 
-  it(`[P3][Sev3][${squad}] should load the overview page`, function () {
-    overviewPage.whenGoToOverviewPage()
-  })
+  context('verify: overview page link to search page', function () {
+    it(`[P3][Sev3][${squad}] should load the overview page`, function () {
+      overviewPage.whenGoToOverviewPage()
+    })
 
-  it(`[P3][Sev3][${squad}] should navigate to Search page by clicking the search icon on the top right corner of the ACM console`, function () {
-    overviewPage.whenGotoSearchPage()
+    it(`[P3][Sev3][${squad}] should navigate to Search page by clicking the search icon on the top right corner of the ACM console`, function () {
+      overviewPage.whenGotoSearchPage()
+    })
   })
 })
 

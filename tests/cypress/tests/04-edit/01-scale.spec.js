@@ -46,16 +46,18 @@ clusterModes.forEach((clusterMode) => {
         cliHelper.deleteNamespace(clusterMode.namespace)
       })
 
+      // Logging into the hub cluster UI.
+      if (clusterMode.label !== 'Managed') {
+        context('prereq: user should log into the ACM console', function () {
+          it(`[P1][Sev1][${squad}] should login`, function () {
+            cy.login()
+          })
+        })
+      }
+
       context(
         'search resources: verify edit yaml function and scale resources',
         function () {
-          // Logging into the hub cluster UI.
-          before(function () {
-            if (clusterMode.label !== 'Managed') {
-              cy.login()
-            }
-          })
-
           beforeEach(function () {
             searchPage.whenGoToSearchPage()
             searchBar.whenFilterByNamespace(clusterMode.namespace)
