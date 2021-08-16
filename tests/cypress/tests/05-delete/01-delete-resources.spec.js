@@ -56,6 +56,10 @@ clusterModes.forEach((clusterMode) => {
             searchPage.shouldLoadResults()
           })
 
+          after(function () {
+            cliHelper.login(clusterMode.label)
+          })
+
           it(`[P2][Sev2][${squad}] should delete deployment`, function () {
             searchBar.whenFilterByKind('deployment')
             searchPage.whenDeleteResourceDetailItem(
