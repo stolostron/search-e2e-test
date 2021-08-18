@@ -16,12 +16,11 @@ describe('RHACM4K-1420: UI: header validation for version and doc', function () 
   })
 
   beforeEach(function () {
-    searchPage.whenGoToSearchPage()
+    searchPage.whenGoToWelcomePage()
   })
 
   tabs.forEach((tab) => {
     it(`[P1][Sev1][${squad}] should click on the "info" icon on the upper right side of the header and click the ${tab} button`, function () {
-      searchPage.whenGoToWelcomePage()
       searchPage.whenToClickHelpIcon()
       searchPage.whenToClickTabInHelpIcon(tab)
     })

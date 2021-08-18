@@ -46,6 +46,9 @@ filtersRegistry.createFilter('status', {
 describe('RHACM4K-537: Search: Search using filters', function () {
   before(function () {
     cy.login()
+  })
+
+  beforeEach(function() {
     searchPage.whenGoToSearchPage()
   })
 
