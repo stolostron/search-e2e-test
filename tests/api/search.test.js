@@ -27,7 +27,7 @@ describe('RHACM4K-1695: Search - verify managed cluster info in the search page'
   // Cleanup and teardown here.
   afterAll(() => {})
 
-  test(`[P1][Sev1][${squad}] Search - verify managed cluster info in the search page.`, async () => {
+  test(`RHACM4K-1695: [P1][Sev1][${squad}] Search - verify managed cluster info in the search page.`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'name', values: ['!local-cluster'] },
@@ -63,7 +63,7 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
   const app = 'console'
   const namespace = 'openshift-console'
 
-  test(`[P2][Sev2][${squad}] Verify a deleted pod is recreated.`, async () => {
+  test(`RHACM4K-1696: [P2][Sev2][${squad}] Verify a deleted pod is recreated.`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['deployment'] },
@@ -82,7 +82,7 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
       .catch(() => {})
   }, 20000)
 
-  test(`[P2][Sev2][${squad}] Search kind application on specific namespace.`, async () => {
+  test(`RHACM4K-1696: [P2][Sev2][${squad}] Search kind application on specific namespace.`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['deployment'] },
@@ -96,7 +96,7 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
     expect(res.body.data.searchResult[0].items[0].namespace).toEqual(namespace)
   }, 20000)
 
-  test(`[P2][Sev2][${squad}] Search kind pod and namespace open-cluster-management.`, async () => {
+  test(`RHACM4K-1696: [P2][Sev2][${squad}] Search kind pod and namespace open-cluster-management.`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['pod'] },
@@ -111,7 +111,7 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
     })
   }, 20000)
 
-  test(`[P2][Sev2][${squad}] Search kind pod on specific cluster.`, async () => {
+  test(`RHACM4K-1696: [P2][Sev2][${squad}] Search kind pod on specific cluster.`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['pod'] },
@@ -126,7 +126,7 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
     })
   }, 20000)
 
-  test(`[P2][Sev2][${squad}] Search kind:certpolicycontroller.`, async () => {
+  test(`RHACM4K-1696: [P2][Sev2][${squad}] Search kind:certpolicycontroller.`, async () => {
     var query = searchQueryBuilder({
       filters: [{ property: 'kind', values: ['certpolicycontroller'] }],
     })
@@ -142,7 +142,7 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
     )
   }, 20000)
 
-  test(`[P2][Sev2][${squad}] Search kind:iampolicycontroller.`, async () => {
+  test(`RHACM4K-1696: [P2][Sev2][${squad}] Search kind:iampolicycontroller.`, async () => {
     var query = searchQueryBuilder({
       filters: [{ property: 'kind', values: ['iampolicycontroller'] }],
     })
@@ -379,7 +379,7 @@ describe('RHACM4K-913: Search - common filter and conditions', () => {
     console.log(message)
   }
 
-  test(`[P3][Sev3][${squad}] should have expected count of pods in ocm on hub cluster.`, async () => {
+  test(`RHACM4K-913: [P3][Sev3][${squad}] should have expected count of pods in ocm on hub cluster.`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['pod'] },
