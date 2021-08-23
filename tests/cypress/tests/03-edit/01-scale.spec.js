@@ -24,7 +24,7 @@ clusterModes.forEach((clusterMode) => {
     return
   }
 
-  describe('Search: Search in ' + clusterMode.label + ' Cluster', function () {
+  describe('RHACM4K-1574: Search: Search in ' + clusterMode.label + ' Cluster', function () {
     before(function () {
       clusterMode.valueFn().as('clusterName')
       cy.generateNamespace().as('namespace')
@@ -48,7 +48,7 @@ clusterModes.forEach((clusterMode) => {
       cliHelper.deleteNamespace(this.namespace)
     })
 
-    describe('search resources', function () {
+    describe('RHACM4K-1574: search resources', function () {
       beforeEach(function () {
         searchBar.whenFilterByNamespace(this.namespace)
         searchBar.whenFilterByCluster(this.clusterName)
