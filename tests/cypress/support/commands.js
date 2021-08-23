@@ -39,7 +39,7 @@ Cypress.Commands.add(
     var user = OPTIONS_HUB_USER || Cypress.env('OPTIONS_HUB_USER')
     var password = OPTIONS_HUB_PASSWORD || Cypress.env('OPTIONS_HUB_PASSWORD')
     var idp = OC_IDP || Cypress.env('OC_IDP')
-    cy.visit('/oauth/start?rd=/')
+    cy.visit('/search')
     cy.get('body').then((body) => {
       // Check if logged in
       if (body.find('#header').length === 0) {
@@ -153,8 +153,8 @@ Cypress.Commands.add('logout', () => {
       cy.contains('Logout').click()
       cy.wait(4000)
       cy.location('pathname')
-      .clearCookies()
-        // .should('match', new RegExp('/oauth/authorize(\\?.*)?$'))
+        .should('match', new RegExp('/oauth/authorize(\\?.*)?$'))
+        .clearCookies()
     }
   })
 })
