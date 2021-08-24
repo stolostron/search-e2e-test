@@ -5,6 +5,8 @@
 
 /// <reference types="cypress" />
 
+import { searchPage } from './search'
+
 export const searchBar = {
   shouldContainTag: (filter) => {
     cy.get('.react-tags__selected-tag-name').should('contain', filter)
@@ -26,19 +28,15 @@ export const savedSearches = {
       .parent()
   },
   whenVerifyRelatedItemsDetails: () => {
-    cy.waitUsingSLA()
-    cy.get('.page-content-container > :nth-child(2)').then(($span) => {
-      if ($span.text() !== 'No search results found.') {
-        cy.contains('Show all').click()
-        cy.get('.bx--tile-content > :nth-child(1) > .content > .text').each(
-          ($el) => {
-            const itemName = $el.text()
-            cy.wrap($el).click()
-            suggestedTemplate
-              .whenGetRelatedItemDetails(itemName)
-              .should('exist')
-            cy.wrap($el).click()
-          }
+    searchPage.shouldLoadResults()
+    cy.wait(1000) // Adding a delay, so the skeletons will not confuse cypress when searching for the related tiles.
+
+    cy.get('.pf-l-gallery.pf-m-gutter').then(($related) => {
+      if ($related.children().length > 0) {
+        cy.get('.pf-c-tile__body').first().click()
+        cy.get('.pf-c-expandable-section__toggle-text').should(
+          'contain.text',
+          'Related'
         )
       }
     })

@@ -44,9 +44,10 @@ filtersRegistry.createFilter('status', {
 })
 
 describe('RHACM4K-537: Search: Search using filters', function () {
-  before(function () {
-    cy.login()
-    searchPage.whenGoToSearchPage()
+  context('prereq: user should log into the ACM console', function () {
+    it(`[P1][Sev1][${squad}] should login`, function () {
+      cy.login()
+    })
   })
 
   filtersRegistry.filters.forEach((filter) => {
@@ -54,15 +55,19 @@ describe('RHACM4K-537: Search: Search using filters', function () {
       return
     }
 
-    describe(`[P1][Sev1][${squad}] Search using "${filter.type}" filter`, function () {
-      beforeEach(function () {
-        searchBar.whenClearFilters()
-        searchBar.whenFocusSearchBar()
-      })
+    context(
+      `[P1][Sev1][${squad}] Search using "${filter.type}" filter`,
+      function () {
+        beforeEach(function () {
+          searchPage.whenGoToSearchPage()
+          searchBar.whenClearFilters()
+          searchBar.whenFocusSearchBar()
+        })
 
-      if (filter.strategies) {
-        filter.strategies.forEach((runner) => runner(filter))
+        if (filter.strategies) {
+          filter.strategies.forEach((runner) => runner(filter))
+        }
       }
-    })
+    )
   })
 })

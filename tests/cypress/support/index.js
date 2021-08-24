@@ -19,6 +19,8 @@
 // ***********************************************************
 
 import './commands'
+import { cliHelper } from '../scripts/cliHelper'
+
 require('cypress-terminal-report/src/installLogsCollector')()
 require('cypress-grep')()
 
@@ -28,6 +30,9 @@ var timeoutID
 const err = 'Test taking too long! It has been running for 5 minutes.'
 
 before(() => {
+  // Log into cluster with oc command.
+  cliHelper.login('Local')
+
   // This is needed for search to deploy RedisGraph upstream. Without this search won't be operational.
   cy.exec(`oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`, {
     failOnNonZeroExit: false,
@@ -36,9 +41,7 @@ before(() => {
 
     cy.exec(
       `oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}" -n ${namespace}`,
-      {
-        failOnNonZeroExit: false,
-      }
+      { failOnNonZeroExit: false }
     ).then((result) => {
       if (result.stdout == 'true') {
         cy.task('log', 'Redisgraph deployment is enabled.')

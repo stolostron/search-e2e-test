@@ -3,6 +3,8 @@
  * Copyright (c) 2021 Red Hat, Inc.
  ****************************************************************************** */
 
+import { squad } from '../config'
+
 export const cliHelper = {
   getTargetManagedCluster: () => {
     return cy
@@ -30,6 +32,9 @@ export const cliHelper = {
         return cy.wrap(targetCluster)
       })
   },
+  generateNamespace: (prefix, postfix) => {
+    return `${prefix ? prefix : 'search'}-${postfix ? postfix : Date.now()}`
+  },
   createNamespace: (name) => {
     cy.exec(`oc create namespace ${name}`, {
       failOnNonZeroExit: false,
@@ -54,15 +59,44 @@ export const cliHelper = {
     })
   },
   deleteNamespace: (name) => {
-    cy.exec(`oc delete namespace ${name}`, {
-      failOnNonZeroExit: false,
-    }).then((res) => {
-      cy.log(res.stdout ? res.stdout : res.stderr)
-    })
-  },
-  login: (domain, user, passw) => {
-    cy.exec(
-      `oc login --server=https://api.${domain}:6443 -u ${user} -p ${passw} --insecure-skip-tls-verify`
+    cy.exec(`oc delete namespace ${name}`, { failOnNonZeroExit: false }).then(
+      (res) => {
+        cy.log(res.stdout ? res.stdout : res.stderr)
+      }
     )
+  },
+  login: (mode) => {
+    var mode = mode === 'Local' ? 'HUB' : 'MANAGED'
+    cy.exec(
+      `oc login --server=https://api.${Cypress.env(
+        `OPTIONS_${mode}_BASEDOMAIN`
+      )}:6443 -u ${Cypress.env(`OPTIONS_${mode}_USER`)} -p ${Cypress.env(
+        `OPTIONS_${mode}_PASSWORD`
+      )} --insecure-skip-tls-verify`
+    )
+  },
+  setup: (modes) => {
+    modes.forEach((mode) => {
+      describe(`Search: Create resource in ${mode.label} Cluster`, function () {
+        // Log into the hub and managed cluster with the oc command to create the resources.
+        context(`prereq: create resource with oc command`, function () {
+          it(`[P1][Sev1][${squad}] should log into ${mode.label.toLocaleLowerCase()} cluster`, function () {
+            cliHelper.login(mode.label)
+          })
+
+          it(`[P1][Sev1][${squad}] should create namespace resource`, function () {
+            cliHelper.createNamespace(mode.namespace)
+          })
+
+          it(`[P1][Sev1][${squad}] should create deployment resource`, function () {
+            cliHelper.createDeployment(
+              mode.namespace + '-deployment',
+              mode.namespace,
+              'openshift/hello-openshift'
+            )
+          })
+        })
+      })
+    })
   },
 }

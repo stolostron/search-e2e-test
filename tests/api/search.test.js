@@ -44,10 +44,7 @@ describe('RHACM4K-1695: Search - verify managed cluster info in the search page'
       filters: [
         { property: 'cluster', values: ['!local-cluster'] },
         { property: 'kind', values: ['pod'] },
-        {
-          property: 'namespace',
-          values: ['open-cluster-management-agent'],
-        },
+        { property: 'namespace', values: ['open-cluster-management-agent'] },
       ],
     })
     res = await sendRequest(query, token)
@@ -402,10 +399,7 @@ describe('RHACM4K-913: Search - common filter and conditions', () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['pod'] },
-        {
-          property: 'namespace',
-          values: ['open-cluster-management-agent'],
-        },
+        { property: 'namespace', values: ['open-cluster-management-agent'] },
         { property: 'status', values: ['Running'] },
         { property: 'cluster', values: ['local-cluster'] },
       ],
@@ -425,10 +419,7 @@ describe('RHACM4K-913: Search - common filter and conditions', () => {
       var query = searchQueryBuilder({
         filters: [
           { property: 'kind', values: ['pod'] },
-          {
-            property: 'namespace',
-            values: ['open-cluster-management-agent'],
-          },
+          { property: 'namespace', values: ['open-cluster-management-agent'] },
           { property: 'status', values: ['Running'] },
           { property: 'cluster', values: [managedCluster] },
         ],
