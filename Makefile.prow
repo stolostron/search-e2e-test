@@ -1,0 +1,19 @@
+# Copyright Contributors to the Open Cluster Management project
+
+-include /opt/build-harness/Makefile.prow
+
+.PHONY: install
+install:
+	npm ci
+
+.PHONY: lint
+lint:
+	npm run lint
+
+.PHONY: check
+lint:
+	npm run check
+
+.PHONY: unit-test
+unit-test:
+	npm run test

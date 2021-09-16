@@ -3,6 +3,7 @@
   "version": "2.4.0",
   "description": "End to end test for Search component",
   "scripts": {
+    "lint": "concurrently npm:*:lint",
     "rbac:clean": "./build/rbac-clean.sh",
     "rbac:setup": "./build/rbac-setup.sh",
     "check": "prettier --check .",
@@ -56,6 +57,7 @@
     "mocha-junit-reporter": "^2.0.0",
     "mochawesome": "^6.2.2",
     "mochawesome-merge": "^4.2.0",
+    "concurrently": "^6.2.0",
     "prettier": "^2.3.2",
     "querystring": "^0.2.1",
     "selenium-standalone": "^7.1.0"
