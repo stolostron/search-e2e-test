@@ -1,11 +1,14 @@
 # Copyright (c) 2020 Red Hat, Inc.
 
-FROM mikefarah/yq:4 as builder
-# FROM cypress/included:8.3.0 as production
+# FROM mikefarah/yq:4 as builder
+FROM cypress/included:8.3.0 as production
 
 USER root
 
 COPY --from=builder /usr/bin/yq /usr/local/bin/yq
+
+RUN mkdir -p /opt/app-root/src/grc-ui/cypress_cache
+ENV CYPRESS_CACHE_FOLDER=/opt/app-root/src/grc-ui/cypress_cache
 
 COPY package.json .
 COPY package-lock.json .
