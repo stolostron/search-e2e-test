@@ -9,22 +9,27 @@ USER root
 
 # COPY --from=builder /usr/bin/yq /usr/local/bin/yq
 
-RUN mkdir -p /search-e2e/cypress_cache
+RUN mkdir -p /search-e2e-tests/cypress_cache
 ENV CYPRESS_CACHE_FOLDER=/search-e2e/cypress_cache
 
-COPY package.json .
-COPY package-lock.json .
-COPY cypress.json .
-COPY jest.config.js .
-COPY start-tests.sh .
-COPY download-clis.sh .
+WORKDIR /search-e2e-tests
+
+COPY package.json ./
+COPY package-lock.json ./
+COPY cypress.json ./
+COPY jest.config.js ./
+COPY start-tests.sh ./
+COPY download-clis.sh ./
 COPY config ./config
 COPY tests ./tests
-COPY build/rbac-setup.sh .
-COPY build/rbac-clean.sh .
+COPY build/rbac-setup.sh ./
+COPY build/rbac-clean.sh ./
 
 RUN npm ci
 RUN sh download-clis.sh
+
+# Make the directory writable by non-root users
+RUN chmod -R go+w /search-e2e-tests
 
 RUN ["chmod", "+x", "start-tests.sh"]
 
