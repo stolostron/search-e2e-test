@@ -1,7 +1,7 @@
 # Copyright (c) 2020 Red Hat, Inc.
 
 FROM cypress/included:8.3.0 as production
-# FROM registry.access.redhat.com/ubi8/nodejs-14:1
+# FROM registry.ci.openshift.org/open-cluster-management/builder:nodejs14-linux as builder
 
 USER root
 
@@ -21,9 +21,7 @@ COPY tests ./tests
 COPY build/rbac-setup.sh ./
 COPY build/rbac-clean.sh ./
 
-RUN apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
-
-RUN npm install --unsafe-perm=true --allow-root cypress@8.4.1
+RUN npm install -g --unsafe-perm=true --allow-root cypress@8.4.1
 RUN npm install cypress-grep \
     cypress-multi-reporters \
     cypress-terminal-report \
