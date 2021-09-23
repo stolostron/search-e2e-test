@@ -4,7 +4,6 @@
 
 .PHONY: install
 install:
-	npm -g config set user root
 	npm install
 
 .PHONY: lint
