@@ -5,13 +5,13 @@ FROM registry.ci.openshift.org/open-cluster-management/builder:nodejs14-linux as
 
 USER root
 
-RUN mkdir -p /go/src/github.com/open-cluster-management/search-e2e-test/cypress_cache
-ENV CYPRESS_CACHE_FOLDER=/go/src/github.com/open-cluster-management/search-e2e-test/cypress_cache
+RUN mkdir -p /search-e2e-test/cypress_cache
+ENV CYPRESS_CACHE_FOLDER=/search-e2e-test/cypress_cache
 
-WORKDIR /go/src/github.com/open-cluster-management/search-e2e-test
+WORKDIR /search-e2e-test
 
 # Make the directory writable by non-root users
-RUN chmod -R go+w /go/src/github.com/open-cluster-management/search-e2e-test
+RUN chmod -R go+w /search-e2e-test
 
 COPY package.json ./
 COPY package-lock.json ./
