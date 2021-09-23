@@ -10,6 +10,9 @@ ENV CYPRESS_CACHE_FOLDER=/search-e2e/cypress_cache
 
 WORKDIR /search-e2e-tests
 
+# Make the directory writable by non-root users
+RUN chmod -R go+w /search-e2e-tests
+
 COPY package.json ./
 COPY package-lock.json ./
 COPY cypress.json ./
@@ -34,9 +37,6 @@ RUN npm install cypress-grep \
 
 RUN sh download-clis.sh
 
-# Make the directory writable by non-root users
-RUN chmod -R go+w /search-e2e-tests
-
-# RUN ["chmod", "+x", "start-tests.sh"]
+RUN ["chmod", "+x", "start-tests.sh"]
 
 ENTRYPOINT ["./start-tests.sh"]
