@@ -6,7 +6,7 @@ FROM registry.ci.openshift.org/open-cluster-management/builder:nodejs14-linux as
 USER root
 
 RUN mkdir -p /search-e2e-tests/cypress_cache
-ENV CYPRESS_CACHE_FOLDER=/search-e2e/cypress_cache
+ENV CYPRESS_CACHE_FOLDER=/search-e2e-tests/cypress_cache
 
 WORKDIR /search-e2e-tests
 
