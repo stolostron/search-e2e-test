@@ -1,7 +1,7 @@
 # Copyright (c) 2020 Red Hat, Inc.
 
-FROM cypress/included:8.3.0 as production
-# FROM registry.ci.openshift.org/open-cluster-management/builder:nodejs14-linux as builder
+# FROM cypress/included:8.3.0 as production
+FROM registry.ci.openshift.org/open-cluster-management/builder:nodejs14-linux as builder
 
 USER root
 
