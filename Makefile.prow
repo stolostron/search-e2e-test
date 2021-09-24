@@ -4,16 +4,16 @@
 
 .PHONY: install
 install:
-	npm install
+	sudo npm install
 
 .PHONY: lint
 lint:
-	npm run lint
+	sudo npm run lint
 
 .PHONY: check
 check:
-	npm run check
+	sudo npm run check
 
 .PHONY: unit-test
 unit-test:
-	npm run test
+	sudo npm run test
