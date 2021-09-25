@@ -4,9 +4,8 @@
 
 .PHONY: install
 install:
-	mkdir ~/.npm-dir
-	npm config set prefix '~/.npm-dir'
-	export PATH=~/.npm-dir:$PATH
+	npm config set prefix '.'
+	export PATH=.:$PATH
 	npm install
 
 .PHONY: lint
