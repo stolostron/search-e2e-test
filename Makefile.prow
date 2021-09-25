@@ -4,8 +4,8 @@
 
 .PHONY: install
 install:
-	npm config set prefix '.'
-	export PATH=.:$PATH
+	npm config set prefix '/tmp'
+	export PATH=/tmp:$PATH
 	npm install
 
 .PHONY: lint
