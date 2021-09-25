@@ -4,7 +4,10 @@
 
 .PHONY: install
 install:
-	sudo npm install
+	mkdir ~/.npm-dir
+	npm config set prefix '~/.npm-dir'
+	export PATH=~/.npm-dir:$PATH
+	npm install
 
 .PHONY: lint
 lint:
