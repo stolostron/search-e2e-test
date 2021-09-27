@@ -26,17 +26,6 @@ COPY build/rbac-clean.sh ./
 
 RUN npm install
 
-# RUN npm install -g --unsafe-perm=true --allow-root cypress@8.4.1
-# RUN npm install cypress-grep \
-#     cypress-multi-reporters \
-#     cypress-terminal-report \
-#     cypress-wait-until \
-#     @cypress/code-coverage \
-#     mocha \
-#     mocha-junit-reporter \
-#     mochawesome \
-#     mochawesome-merge
-
 RUN sh download-clis.sh
 
 RUN ["chmod", "+x", "start-tests.sh"]
