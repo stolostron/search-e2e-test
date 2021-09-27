@@ -19,3 +19,7 @@ check:
 .PHONY: unit-test
 unit-test:
 	sudo npm run test
+
+.PHONY: test-e2e
+test-e2e:
+        start-tests.sh
