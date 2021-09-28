@@ -19,7 +19,7 @@ const clusterModes = [
   {
     label: 'Managed',
     valueFn: () => cliHelper.getTargetManagedCluster(),
-    skip: false,
+    skip: true,
     namespace: cliHelper.generateNamespace('', `managed-${Date.now()}`),
   },
 ]
