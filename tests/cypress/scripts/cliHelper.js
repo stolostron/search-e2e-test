@@ -77,26 +77,28 @@ export const cliHelper = {
   },
   setup: (modes) => {
     modes.forEach((mode) => {
-      describe(`Search: Create resource in ${mode.label} Cluster`, function () {
-        // Log into the hub and managed cluster with the oc command to create the resources.
-        context(`prereq: create resource with oc command`, function () {
-          it(`[P1][Sev1][${squad}] should log into ${mode.label.toLocaleLowerCase()} cluster`, function () {
-            cliHelper.login(mode.label)
-          })
-
-          it(`[P1][Sev1][${squad}] should create namespace resource`, function () {
-            cliHelper.createNamespace(mode.namespace)
-          })
-
-          it(`[P1][Sev1][${squad}] should create deployment resource`, function () {
-            cliHelper.createDeployment(
-              mode.namespace + '-deployment',
-              mode.namespace,
-              'openshift/hello-openshift'
-            )
+      if (!mode.skip) {
+        describe(`Search: Create resource in ${mode.label} Cluster`, function () {
+          // Log into the hub and managed cluster with the oc command to create the resources.
+          context(`prereq: create resource with oc command`, function () {
+            it(`[P1][Sev1][${squad}] should log into ${mode.label.toLocaleLowerCase()} cluster`, function () {
+              cliHelper.login(mode.label)
+            })
+  
+            it(`[P1][Sev1][${squad}] should create namespace resource`, function () {
+              cliHelper.createNamespace(mode.namespace)
+            })
+  
+            it(`[P1][Sev1][${squad}] should create deployment resource`, function () {
+              cliHelper.createDeployment(
+                mode.namespace + '-deployment',
+                mode.namespace,
+                'openshift/hello-openshift'
+              )
+            })
           })
         })
-      })
+      }
     })
   },
 }
