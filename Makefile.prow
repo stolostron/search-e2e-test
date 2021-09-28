@@ -22,4 +22,4 @@ unit-test:
 
 .PHONY: test-e2e
 test-e2e:
-        start-tests.sh
+	start-tests.sh
