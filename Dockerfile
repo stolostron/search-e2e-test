@@ -1,7 +1,9 @@
 # Copyright (c) 2020 Red Hat, Inc.
 
-# FROM cypress/included:8.3.0 as production
 FROM registry.ci.openshift.org/open-cluster-management/builder:nodejs14-linux as builder
+
+# FROM cypress/included:8.3.0 as production
+FROM quay.io/kcormier/cypress-included:latest as production
 
 USER root
 
@@ -24,7 +26,7 @@ COPY tests ./tests
 COPY build/rbac-setup.sh ./build
 COPY build/rbac-clean.sh ./build
 
-RUN npm install
+RUN npm ci
 
 RUN sh download-clis.sh
 
