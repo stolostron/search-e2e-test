@@ -2,14 +2,13 @@
 
 FROM registry.ci.openshift.org/open-cluster-management/builder:nodejs14-linux as builder
 
-# FROM cypress/included:8.3.0 as production
-FROM quay.io/kcormier/cypress-included:latest as production
+FROM cypress/included:8.5.0 as production
+# FROM quay.io/kcormier/cypress-included:latest as production
 
 USER root
 
 RUN mkdir -p /search-e2e-test/cypress_cache
 ENV CYPRESS_CACHE_FOLDER=/search-e2e-test/cypress_cache
-
 WORKDIR /search-e2e-test
 
 # Make the directory writable by non-root users
@@ -23,10 +22,11 @@ COPY start-tests.sh ./
 COPY download-clis.sh ./
 COPY config ./config
 COPY tests ./tests
-COPY build/rbac-setup.sh ./build
-COPY build/rbac-clean.sh ./build
+RUN mkdir -p build
+COPY build/rbac-setup.sh ./build/
+COPY build/rbac-clean.sh ./build/
 
-RUN npm ci
+RUN npm install
 
 RUN sh download-clis.sh
 
