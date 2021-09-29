@@ -21,8 +21,8 @@ COPY start-tests.sh ./
 COPY download-clis.sh ./
 COPY config ./config
 COPY tests ./tests
-COPY build/rbac-setup.sh ./
-COPY build/rbac-clean.sh ./
+COPY build/rbac-setup.sh ./build
+COPY build/rbac-clean.sh ./build
 
 RUN npm install
 
