@@ -76,6 +76,7 @@ log_color "purple" "\tCYPRESS_OC_IDP" "\t\t\t: $CYPRESS_OC_IDP\n"
 if [[ -z $OPTIONS_MANAGED_BASEDOMAIN || -z $OPTIONS_MANAGED_USER || -z $OPTIONS_MANAGED_PASSWORD ]]; then
    log_color "yellow" "One or more variables are undefined. Copying kubeconfigs...\n"
    cp /opt/.kube/config ./config/import-kubeconfig
+   echo $OPTIONS_KUBECONFIG_MOUNT_PATH
 else
   log_color "cyan" "Logging into the managed cluster using credentials and generating the kubeconfig..."
   mkdir ./import-kubeconfig && touch ./import-kubeconfig/kubeconfig
