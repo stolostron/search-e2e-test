@@ -7,6 +7,10 @@ import { squad } from '../config'
 
 export const cliHelper = {
   getTargetManagedCluster: () => {
+    if (Cypress.env('OPTIONS_MANAGED_CLUSTER_NAME')) {
+      return Cypress.env('OPTIONS_MANAGED_CLUSTER_NAME')
+    }
+
     return cy
       .exec('oc get managedclusters -o custom-columns=NAME:.metadata.name')
       .then((result) => {
@@ -18,7 +22,7 @@ export const cliHelper = {
           Cypress.env('NODE_ENV') !== 'development' &&
           Cypress.env('NODE_ENV') !== 'debug'
         ) {
-          targetCluster = managedClusters.find((c) => c.startsWith('import-'))
+          targetCluster = managedClusters.find((c) => c.startsWith('canary-') || c.startsWith('import-'))
         }
 
         // When running locally or if the cluster is not available, try testing on an available managed cluster.

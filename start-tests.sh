@@ -46,6 +46,7 @@ if [ -f $OPTIONS_FILE ]; then
   export OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $OPTIONS_FILE`
   export OPTIONS_HUB_USER=`yq e '.options.hub.user' $OPTIONS_FILE`
   export OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $OPTIONS_FILE`
+  export OPTIONS_MANAGED_CLUSTER_NAME=`yq e '.options.clusters[0].name' $OPTIONS_FILE`
 elif [ -f $USER_OPTIONS_FILE ]; then
   log_color "yellow" "Using test config from: $USER_OPTIONS_FILE\n"
   export CYPRESS_OC_IDP=`yq e '.options.identityProvider' $USER_OPTIONS_FILE`
@@ -55,6 +56,7 @@ elif [ -f $USER_OPTIONS_FILE ]; then
   export OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $USER_OPTIONS_FILE`
   export OPTIONS_HUB_USER=`yq e '.options.hub.user' $USER_OPTIONS_FILE`
   export OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $USER_OPTIONS_FILE`
+  export OPTIONS_MANAGED_CLUSTER_NAME=`yq e '.options.clusters[0].name' $USER_OPTIONS_FILE`
 else
   log_color "yellow" "Options file does not exist, using test config from environment variables.\n"
 fi
