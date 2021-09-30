@@ -89,7 +89,8 @@ if [[ -z $OPTIONS_HUB_BASEDOMAIN || -z $OPTIONS_HUB_USER || -z $OPTIONS_HUB_PASS
     export CYPRESS_USE_HUB_KUBECONFIG=true
 
     echo -e "Kubeconfig file detected at: ${HUB_KUBECONFIG} => copying to ./config/hub-kubeconfig"
-    cp $HUB_KUBECONFIG ./config/hub-kubeconfig && export CYPRESS_HUB_KUBECONFIG=./config/hub-kubeconfig
+    cp $HUB_KUBECONFIG ./config/hub-kubeconfig
+    export CYPRESS_HUB_KUBECONFIG=./config/hub-kubeconfig
 
     HUB_CLUSTER=($(oc config get-clusters --kubeconfig=./config/hub-kubeconfig))
     export CYPRESS_HUB_CLUSTER_CONTEXT=default/${HUB_CLUSTER[1]}/kube:admin
@@ -149,7 +150,8 @@ else
       export CYPRESS_SKIP_MANAGED_CLUSTER_TEST=false
 
       echo -e "Kubeconfig file detected at: ${MANAGED_KUBECONFIG} - copying to ./config/hub-kubeconfig"
-      cp $MANAGED_KUBECONFIG ./config/import-kubeconfig && export CYPRESS_MANAGED_KUBECONFIG=./config/import-kubeconfig
+      cp $MANAGED_KUBECONFIG ./config/import-kubeconfig
+      export CYPRESS_MANAGED_KUBECONFIG=./config/import-kubeconfig
 
       MANAGED_CLUSTER=($(oc config get-clusters --kubeconfig=./config/import-kubeconfig))
       export CYPRESS_MANAGED_CLUSTER_CONTEXT=default/${MANAGED_CLUSTER[1]}/kube:admin
@@ -262,6 +264,8 @@ if [ -z "$RECORD" ]; then
   log_color "purple" "RECORD" "not exported; setting to false (set ${PURPLE}RECORD${NC} to true, if you wish to view results within dashboard)\n"
   export RECORD=false
 fi
+
+env | grep "cypress" -i
 
 if [ "$SKIP_UI_TEST" == false ]; then
   if [ "$RECORD" == true ]; then

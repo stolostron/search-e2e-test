@@ -73,13 +73,13 @@ export const cliHelper = {
       )}:6443 -u ${Cypress.env(`OPTIONS_${mode}_USER`)} -p ${Cypress.env(
         `OPTIONS_${mode}_PASSWORD`
       )} --insecure-skip-tls-verify`
-    )
+    ).then(() => cy.exec('oc whoami --show-server=true'))
   },
   useKubeconfig: (mode) => {
     var mode = mode === 'Local' ? 'HUB' : 'MANAGED'
     cy.exec(
       `oc config use-context --kubeconfig=${Cypress.env(`${mode}_KUBECONFIG`)} ${Cypress.env(`${mode}_CLUSTER_CONTEXT`)}`
-    )
+    ).then(() => cy.exec('oc whoami --show-server=true'))
   },
   setup: (modes) => {
     modes.forEach((mode) => {
@@ -87,13 +87,15 @@ export const cliHelper = {
         describe(`Search: Create resource in ${mode.label} Cluster`, function () {
           // Log into the hub and managed cluster with the oc command to create the resources.
           context(`prereq: create resource with oc command`, function () {
-            it(`[P1][Sev1][${squad}] should log into ${mode.label.toLocaleLowerCase()} cluster`, function () {
-              if (Cypress.env(`USE_${mode.label === 'Local' ? 'HUB' : 'MANAGED'}_KUBECONFIG`)) {
-                cliHelper.useKubeconfig(mode.label)
-              } else {
+            if (!Cypress.env(`USE_${mode.label === 'Local' ? 'HUB' : 'MANAGED'}_KUBECONFIG`)) {
+              it(`[P1][Sev1][${squad}] should log into ${mode.label.toLocaleLowerCase()} cluster`, function () {
                 cliHelper.login(mode.label)
-              }
-            })
+              })
+            } else {
+              it(`[P1][Sev1][${squad}] should switch context within kubeconfig file to log into ${mode.label.toLocaleLowerCase()} cluster`, function () {
+                cliHelper.useKubeconfig(mode.label)
+              })
+            }
   
             it(`[P1][Sev1][${squad}] should create namespace resource`, function () {
               cliHelper.createNamespace(mode.namespace)
