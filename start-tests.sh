@@ -97,9 +97,9 @@ if [[ -z $OPTIONS_HUB_BASEDOMAIN || -z $OPTIONS_HUB_USER || -z $OPTIONS_HUB_PASS
       export SKIP_UI_TEST=true
     fi
 
-    echo -e "Kubeconfig file detected at: $OPTIONS_HUB_KUBECONFIG => copying to ./config/hub-kubeconfig"
-    cp $OPTIONS_HUB_KUBECONFIG ./config/hub-kubeconfig
-    export OPTIONS_HUB_KUBECONFIG=./config/hub-kubeconfig
+    echo -e "Kubeconfig file detected at: $OPTIONS_HUB_KUBECONFIG => copying to ./cypress/config/hub-kubeconfig"
+    cp $OPTIONS_HUB_KUBECONFIG ./cypress/config/hub-kubeconfig
+    export OPTIONS_HUB_KUBECONFIG=./cypress/config/hub-kubeconfig
 
     if [[ -z $OPTIONS_HUB_KUBECONTEXT || "$OPTIONS_HUB_KUBECONTEXT" == "null" ]]; then
       HUB_CLUSTER=($(oc config get-clusters --kubeconfig=$OPTIONS_HUB_KUBECONFIG))
@@ -169,9 +169,9 @@ else
       export CYPRESS_USE_MANAGED_KUBECONFIG=true
       export CYPRESS_SKIP_MANAGED_CLUSTER_TEST=false
 
-      echo -e "Kubeconfig file detected at: $OPTIONS_MANAGED_KUBECONFIG - copying to ./config/import-kubeconfig"
-      cp $OPTIONS_MANAGED_KUBECONFIG ./config/import-kubeconfig
-      export OPTIONS_MANAGED_KUBECONFIG=./config/import-kubeconfig
+      echo -e "Kubeconfig file detected at: $OPTIONS_MANAGED_KUBECONFIG - copying to ./cypress/config/import-kubeconfig"
+      cp $OPTIONS_MANAGED_KUBECONFIG ./cypress/config/import-kubeconfig
+      export OPTIONS_MANAGED_KUBECONFIG=./cypress/config/import-kubeconfig
 
       if [[ -z $OPTIONS_MANAGED_KUBECONTEXT || "$OPTIONS_MANAGED_KUBECONTEXT" == "null" ]]; then
         MANAGED_CLUSTER=($(oc config get-clusters --kubeconfig=$OPTIONS_MANAGED_KUBECONFIG))
