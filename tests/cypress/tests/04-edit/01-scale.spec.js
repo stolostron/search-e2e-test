@@ -20,7 +20,7 @@ const clusterModes = [
   {
     label: 'Managed',
     valueFn: () => cliHelper.getTargetManagedCluster(),
-    skip: true,
+    skip: Cypress.env('SKIP_MANAGED_CLUSTER_TEST'),
     namespace: cliHelper.generateNamespace('', `managed-${Date.now()}`),
   },
 ]

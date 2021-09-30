@@ -30,8 +30,13 @@ var timeoutID
 const err = 'Test taking too long! It has been running for 5 minutes.'
 
 before(() => {
-  // Log into cluster with oc command.
-  cliHelper.login('Local')
+  if (!Cypress.env("USE_HUB_KUBECONFIG")) {
+    // Log into cluster with oc command.
+    cliHelper.login('Local')
+  } else {
+    // Switch context with kubeconfig file.
+    cliHelper.useKubeconfig('Local')
+  }
 
   // This is needed for search to deploy RedisGraph upstream. Without this search won't be operational.
   cy.exec(`oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`, {

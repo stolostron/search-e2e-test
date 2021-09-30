@@ -75,6 +75,12 @@ export const cliHelper = {
       )} --insecure-skip-tls-verify`
     )
   },
+  useKubeconfig: (mode) => {
+    var mode = mode === 'Local' ? 'HUB' : 'MANAGED'
+    cy.exec(
+      `oc config use-context --kubeconfig=${Cypress.env(`${mode}_KUBECONFIG`)} ${Cypress.env(`${mode}_CLUSTER_CONTEXT`)}`
+    )
+  },
   setup: (modes) => {
     modes.forEach((mode) => {
       if (!mode.skip) {
