@@ -170,8 +170,8 @@ else
       export CYPRESS_SKIP_MANAGED_CLUSTER_TEST=false
 
       echo -e "Kubeconfig file detected at: $OPTIONS_MANAGED_KUBECONFIG - copying to ./cypress/config/import-kubeconfig"
-      cp $OPTIONS_MANAGED_KUBECONFIG ./cypress/config/import-kubeconfig
-      export OPTIONS_MANAGED_KUBECONFIG=./cypress/config/import-kubeconfig
+      cp $OPTIONS_MANAGED_KUBECONFIG ./config/import-kubeconfig
+      export OPTIONS_MANAGED_KUBECONFIG=./config/import-kubeconfig
 
       if [[ -z $OPTIONS_MANAGED_KUBECONTEXT || "$OPTIONS_MANAGED_KUBECONTEXT" == "null" ]]; then
         MANAGED_CLUSTER=($(oc config get-clusters --kubeconfig=$OPTIONS_MANAGED_KUBECONFIG))
