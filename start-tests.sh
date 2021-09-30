@@ -140,7 +140,7 @@ else
     log_color "red" "One or more variables are undefined for imported cluster." "(set ${PURPLE}OPTIONS_MANAGED_BASEDOMAIN, OPTIONS_MANAGED_BASEDOMAIN, and OPTIONS_MANAGED_BASEDOMAIN${NC} to execute the test with environment variables)\n"
 
     if [ ! -f $MANAGED_KUBECONFIG ]; then
-      log_color "red" "The kubeconfig file for imported cluster was not located." "(set ${PURPLE}KUBECONFIG${NC} to ${YELLOW}${IMPORTED_KUBECONFIG}${NC} and oc login to create kubeconfig file."
+      log_color "red" "The kubeconfig file for imported cluster was not located." "(set ${PURPLE}KUBECONFIG${NC} to ${YELLOW}${MANAGED_KUBECONFIG}${NC} and oc login to create kubeconfig file."
       echo -e "Skipping managed cluster test.\n"
       export CYPRESS_SKIP_MANAGED_CLUSTER_TEST=true
     else
@@ -154,15 +154,19 @@ else
       MANAGED_CLUSTER=($(oc config get-clusters --kubeconfig=./config/import-kubeconfig))
       export CYPRESS_MANAGED_CLUSTER_CONTEXT=default/${MANAGED_CLUSTER[1]}/kube:admin
 
-      export CYPRESS_OPTIONS_MANAGED_BASEDOMAIN=$(echo ${MANAGED_CLUSTER[1]} | cut -d'-' -f2- | cut -d':' -f1)
-      export OPTIONS_MANAGED_BASEDOMAIN=$CYPRESS_OPTIONS_MANAGED_BASEDOMAIN
-      export CYPRESS_OPTIONS_MANAGED_USER=kubeadmin
+      export OPTIONS_MANAGED_BASEDOMAIN=$(echo ${MANAGED_CLUSTER[1]} | cut -d'-' -f2- | cut -d':' -f1)
+      export CYPRESS_OPTIONS_MANAGED_BASEDOMAIN=$OPTIONS_MANAGED_BASEDOMAIN
+      export OPTIONS_MANAGED_USER=kubeadmin
+      export CYPRESS_OPTIONS_MANAGED_USE=$OPTIONS_MANAGED_USER
 
       log_color "purple" "IMPORTED CLUSTER:" "${CYPRESS_OPTIONS_MANAGED_BASEDOMAIN}\n"
-      oc config use-context --kubeconfig=$MANAGED_KUBECONFIG default/${MANAGED_CLUSTER[1]}/kube:admin
+      # oc config use-context --kubeconfig=$MANAGED_KUBECONFIG default/${MANAGED_CLUSTER[1]}/kube:admin
     fi
   else
     echo -e "Environment variables detected. Configuring tests to execute with imported cluster exported variables."
+    export CYPRESS_OPTIONS_MANAGED_BASEDOMAIN=$OPTIONS_MANAGED_BASEDOMAIN
+    export CYPRESS_OPTIONS_MANAGED_USER=$OPTIONS_MANAGED_USER
+    export CYPRESS_OPTIONS_MANAGED_PASSWORD=$OPTIONS_MANAGED_PASSWORD
   fi
 fi
 

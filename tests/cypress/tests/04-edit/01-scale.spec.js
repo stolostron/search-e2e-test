@@ -33,6 +33,8 @@ clusterModes.forEach((clusterMode) => {
     return
   }
 
+  var mode = clusterMode.label === 'Local' ? 'HUB' : 'MANAGED'
+
   describe(
     'RHACM4K-1574: Search: Search in ' + clusterMode.label + ' Cluster',
     function () {
@@ -42,7 +44,7 @@ clusterModes.forEach((clusterMode) => {
 
       // Log into cluster to clean up resources.
       after(function () {
-        if (!Cypress.env(`USE_${clusterMode.label}_KUBECONFIG`)) {
+        if (!Cypress.env(`USE_${mode}_KUBECONFIG`)) {
           // Log into cluster with oc command.
           cliHelper.login(clusterMode.label)
         } else {

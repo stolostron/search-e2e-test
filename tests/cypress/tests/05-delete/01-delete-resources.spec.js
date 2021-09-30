@@ -32,6 +32,8 @@ clusterModes.forEach((clusterMode) => {
     return
   }
 
+  var mode = clusterMode.label === 'Local' ? 'HUB' : 'MANAGED'
+
   describe(
     'RHACKM4K-726: Search: Search in ' + clusterMode.label + ' Cluster',
     function () {
@@ -59,7 +61,7 @@ clusterModes.forEach((clusterMode) => {
           })
 
           after(function () {
-            if (!Cypress.env(`USE_${clusterMode.label}_KUBECONFIG`)) {
+            if (!Cypress.env(`USE_${mode}_KUBECONFIG`)) {
               // Log into cluster with oc command.
               cliHelper.login(clusterMode.label)
             } else {
