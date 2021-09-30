@@ -3,7 +3,6 @@
 FROM registry.ci.openshift.org/open-cluster-management/builder:nodejs14-linux as builder
 
 FROM cypress/included:8.5.0 as production
-# FROM quay.io/kcormier/cypress-included:latest as production
 
 USER root
 

@@ -22,4 +22,5 @@ unit-test:
 
 .PHONY: test-e2e
 test-e2e:
+	echo "TODO: Execute the tests using the docker image."
 	start-tests.sh
