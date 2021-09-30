@@ -88,7 +88,11 @@ export const cliHelper = {
           // Log into the hub and managed cluster with the oc command to create the resources.
           context(`prereq: create resource with oc command`, function () {
             it(`[P1][Sev1][${squad}] should log into ${mode.label.toLocaleLowerCase()} cluster`, function () {
-              cliHelper.login(mode.label)
+              if (Cypress.env(`USE_${mode.label}_KUBECONFIG`)) {
+                cliHelper.useKubeconfig(mode.label)
+              } else {
+                cliHelper.login(mode.label)
+              }
             })
   
             it(`[P1][Sev1][${squad}] should create namespace resource`, function () {

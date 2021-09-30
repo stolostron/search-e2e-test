@@ -59,7 +59,13 @@ clusterModes.forEach((clusterMode) => {
           })
 
           after(function () {
-            cliHelper.login(clusterMode.label)
+            if (!Cypress.env(`USE_${clusterMode.label}_KUBECONFIG`)) {
+              // Log into cluster with oc command.
+              cliHelper.login(clusterMode.label)
+            } else {
+              // Switch context with kubeconfig file.
+              cliHelper.useKubeconfig(clusterMode.label)
+            }
           })
 
           it(`[P2][Sev2][${squad}] should delete deployment`, function () {
