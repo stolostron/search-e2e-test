@@ -98,8 +98,8 @@ if [[ -z $OPTIONS_HUB_BASEDOMAIN || -z $OPTIONS_HUB_USER || -z $OPTIONS_HUB_PASS
     fi
 
     echo -e "Kubeconfig file detected at: $OPTIONS_HUB_KUBECONFIG => copying to ./cypress/config/hub-kubeconfig"
-    cp $OPTIONS_HUB_KUBECONFIG ./cypress/config/hub-kubeconfig
-    export OPTIONS_HUB_KUBECONFIG=./cypress/config/hub-kubeconfig
+    cp $OPTIONS_HUB_KUBECONFIG ./config/hub-kubeconfig
+    export OPTIONS_HUB_KUBECONFIG=./config/hub-kubeconfig
 
     if [[ -z $OPTIONS_HUB_KUBECONTEXT || "$OPTIONS_HUB_KUBECONTEXT" == "null" ]]; then
       HUB_CLUSTER=($(oc config get-clusters --kubeconfig=$OPTIONS_HUB_KUBECONFIG))

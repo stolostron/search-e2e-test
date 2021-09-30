@@ -41,9 +41,9 @@ const getSearchApiRoute = async () => {
 
 const getKubeConfig = () => {
   const kubeconfigs = []
-  const dir = './cypress/config'
+  const dir = './config'
   fs.readdirSync(dir).forEach((file) => {
-    if (file[0] !== '.') {
+    if (file[0] !== '.' || file != "index.js") {
       kubeconfigs.push(`${dir}/${file}`)
     }
   })
