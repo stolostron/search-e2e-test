@@ -33,25 +33,22 @@ clusterModes.forEach((clusterMode) => {
     return
   }
 
-  var mode = clusterMode.label === 'Local' ? 'HUB' : 'MANAGED'
-
-  describe(
-    'RHACM4K-1574: Search: Search in ' + clusterMode.label + ' Cluster',
-    function () {
+  describe('RHACM4K-1574: Search: Search in ' + clusterMode.label + ' Cluster', function () {
+      var KUBECONFIG = clusterMode.label !== 'Managed' ? '' : `KUBECONFIG=${Cypress.env('OPTIONS_MANAGED_KUBECONFIG')}`
       before(function () {
         clusterMode.valueFn().as('clusterName')
       })
 
       // Log into cluster to clean up resources.
       after(function () {
-        if (!Cypress.env(`USE_${mode}_KUBECONFIG`)) {
+        if (clusterMode.label === 'Managed' && Cypress.env('USE_MANAGED_KUBECONFIG')) {
+          // Switch context with kubeconfig file.
+          cliHelper.useManagedKubeconfig()
+        } else {
           // Log into cluster with oc command.
           cliHelper.login(clusterMode.label)
-        } else {
-          // Switch context with kubeconfig file.
-          cliHelper.useKubeconfig(clusterMode.label)
         }
-        cliHelper.deleteNamespace(clusterMode.namespace)
+        cliHelper.deleteNamespace(clusterMode.namespace, KUBECONFIG)
       })
 
       // Logging into the hub cluster UI.

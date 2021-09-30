@@ -33,8 +33,6 @@ clusterModes.forEach((clusterMode) => {
     return
   }
 
-  var mode = clusterMode.label === 'Local' ? 'HUB' : 'MANAGED'
-
   describe('Search: Search in ' + clusterMode.label + ' Cluster', function () {
     before(function () {
       clusterMode.valueFn().as('clusterName')
@@ -42,12 +40,12 @@ clusterModes.forEach((clusterMode) => {
 
     // Log into cluster to clean up resources.
     after(function () {
-      if (!Cypress.env(`USE_${mode}_KUBECONFIG`)) {
+      if (clusterMode.label === 'Managed' && Cypress.env('USE_MANAGED_KUBECONFIG')) {
+        // Switch context with kubeconfig file.
+        cliHelper.useManagedKubeconfig()
+      } else {
         // Log into cluster with oc command.
         cliHelper.login(clusterMode.label)
-      } else {
-        // Switch context with kubeconfig file.
-        cliHelper.useKubeconfig(clusterMode.label)
       }
       cliHelper.deleteNamespace(clusterMode.namespace)
     })

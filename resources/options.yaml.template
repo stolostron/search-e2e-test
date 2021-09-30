@@ -1,6 +1,11 @@
 options:
-  identityProvider: OC_IDP
+  identityProvider: BASE_OC_IDP
   hub:
     baseDomain: BASE_DOMAIN
     user: BASE_USER
     password: BASE_PASSWORD
+    kubecontext: BASE_KUBECONTEXT
+  clusters:
+  - name: MANAGED_CLUSTER_NAME
+    kubeconfig: MANAGED_KUBECONFIG
+    basedomain: MANAGED_BASEDOMAIN

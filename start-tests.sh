@@ -39,6 +39,8 @@ log_color "cyan" "Initiating Search E2E tests...\n"
 if [ -z "$BROWSER" ]; then
   log_color "purple" "BROWSER" "not exported; setting to 'chrome' (options available: 'chrome', 'firefox')\n"
   export BROWSER="chrome"
+else
+  log_color "purple" "BROWSER set (running in $BROWSER)\n"
 fi
 
 # Load test config mounted at /resources/options.yaml
@@ -46,91 +48,109 @@ OPTIONS_FILE=/resources/options.yaml
 USER_OPTIONS_FILE=./resources/options.yaml
 
 # Load test kubeconfig mounted at /opt/.kube/config and /opt/.kube/import-kubeconfig
-HUB_KUBECONFIG=${HUB_KUBECONFIG:-'/opt/.kube/config'}
-MANAGED_KUBECONFIG=${MANAGED_KUBECONFIG:-'/opt/.kube/import-kubeconfig'}
+OPTIONS_HUB_KUBECONFIG=${OPTIONS_HUB_KUBECONFIG:-'/opt/.kube/config'}
+OPTIONS_MANAGED_KUBECONFIG=${OPTIONS_MANAGED_KUBECONFIG:-'/opt/.kube/import-kubeconfig'}
 
 # Check to see if the test config options file is mounted/available.
 if [ -f $OPTIONS_FILE ]; then
   log_color "yellow" "Using test config from: $OPTIONS_FILE\n"
-  export CYPRESS_OC_IDP=`yq e '.options.identityProvider' $OPTIONS_FILE`
-  export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $OPTIONS_FILE`
-  export CYPRESS_OPTIONS_HUB_USER=`yq e '.options.hub.user' $OPTIONS_FILE`
-  export CYPRESS_OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $OPTIONS_FILE`
   export OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $OPTIONS_FILE`
   export OPTIONS_HUB_USER=`yq e '.options.hub.user' $OPTIONS_FILE`
   export OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $OPTIONS_FILE`
+  export OPTIONS_HUB_KUBECONTEXT=`yq e '.options.hub.kubecontext' $OPTIONS_FILE`
+  export OPTIONS_MANAGED_BASEDOMAIN=`yq e '.options.clusters[0].basedomain' $OPTIONS_FILE`
+  export OPTIONS_MANAGED_CLUSTER_NAME=`yq e '.options.clusters[0].name' $OPTIONS_FILE`
+  export OPTIONS_MANAGED_KUBECONFIG=`yq e '.options.clusters[0].kubeconfig' $OPTIONS_FILE`
+  export OPTIONS_HUB_OC_IDP=`yq e '.options.identityProvider' $OPTIONS_FILE`
 elif [ -f $USER_OPTIONS_FILE ]; then
   log_color "yellow" "Using test config from: $USER_OPTIONS_FILE\n"
-  export CYPRESS_OC_IDP=`yq e '.options.identityProvider' $USER_OPTIONS_FILE`
-  export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $USER_OPTIONS_FILE`
-  export CYPRESS_OPTIONS_HUB_USER=`yq e '.options.hub.user' $USER_OPTIONS_FILE`
-  export CYPRESS_OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $USER_OPTIONS_FILE`
   export OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $USER_OPTIONS_FILE`
   export OPTIONS_HUB_USER=`yq e '.options.hub.user' $USER_OPTIONS_FILE`
   export OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $USER_OPTIONS_FILE`
+  export OPTIONS_HUB_KUBECONTEXT=`yq e '.options.hub.kubecontext' $USER_OPTIONS_FILE`
+  export OPTIONS_MANAGED_BASEDOMAIN=`yq e '.options.clusters[0].basedomain' $USER_OPTIONS_FILE`
+  export OPTIONS_MANAGED_CLUSTER_NAME=`yq e '.options.clusters[0].name' $USER_OPTIONS_FILE`
+  export OPTIONS_MANAGED_KUBECONFIG=`yq e '.options.clusters[0].kubeconfig' $USER_OPTIONS_FILE`
+  export OPTIONS_HUB_OC_IDP=`yq e '.options.identityProvider' $USER_OPTIONS_FILE`
 else
   log_color "yellow" "Options file does not exist, checking to see if the test can be configured with environment variables."
 fi
 
-# Check to see if CYPRESS_OC_IDP is null.
-if [[ -z $CYPRESS_OC_IDP || "$CYPRESS_OC_IDP" == "null" ]]; then
-  log_color "purple" "CYPRESS_OC_IDP" "is (null or not set); setting to 'kube:admin'\n"
-  export CYPRESS_OC_IDP=kube:admin
+# Check to see if OC_IDP is unset or null.
+if [[ -z $OPTIONS_HUB_OC_IDP || "$OPTIONS_HUB_OC_IDP" == "null" ]]; then
+  log_color "purple" "OPTIONS_HUB_OC_IDP" "is (null or not set); setting to 'kube:admin'\n"
+  export OPTIONS_HUB_OC_IDP=kube:admin
+else
+  log_color "purple" "OPTIONS_HUB_OC_IDP" "detected, using $OPTIONS_HUB_OC_IDP for test.\n"
 fi
 
+# Check to see if OPTIONS_HUB_BASEDOMAIN, OPTIONS_HUB_USER, or OPTIONS_HUB_PASSWORD are missing. We need these to run the UI test.
 if [[ -z $OPTIONS_HUB_BASEDOMAIN || -z $OPTIONS_HUB_USER || -z $OPTIONS_HUB_PASSWORD ]]; then
   log_color "red" "One or more exported variables are undefined for hub cluster." "(set ${PURPLE}OPTIONS_HUB_BASEDOMAIN, OPTIONS_HUB_BASEDOMAIN, and OPTIONS_HUB_BASEDOMAIN${NC} to execute the test with environment variables)\n"
 
-  if [ ! -f $HUB_KUBECONFIG ]; then
-    log_color "red" "The kubeconfig file for hub cluster was not located." "(set ${PURPLE}KUBECONFIG${NC} to ${YELLOW}${HUB_KUBECONFIG}${NC} and oc login to create kubeconfig file."
+  if [ ! -f $OPTIONS_HUB_KUBECONFIG ]; then
+    log_color "red" "The kubeconfig file for hub cluster was not located." "(set ${PURPLE}KUBECONFIG${NC} to ${YELLOW}$OPTIONS_HUB_KUBECONFIG${NC} and oc login to create kubeconfig file."
     exit 1
   else
-    # Exporting this variable so cypress will know to use the kubeconfig file for the hub cluster.
-    export CYPRESS_USE_HUB_KUBECONFIG=true
-
-    echo -e "Kubeconfig file detected at: ${HUB_KUBECONFIG} => copying to ./config/hub-kubeconfig"
-    cp $HUB_KUBECONFIG ./config/hub-kubeconfig
-    export CYPRESS_HUB_KUBECONFIG=./config/hub-kubeconfig
-
-    HUB_CLUSTER=($(oc config get-clusters --kubeconfig=./config/hub-kubeconfig))
-    export CYPRESS_HUB_CLUSTER_CONTEXT=default/${HUB_CLUSTER[1]}/kube:admin
-
-    oc config use-context --kubeconfig=$HUB_KUBECONFIG $CYPRESS_HUB_CLUSTER_CONTEXT
-    echo -e
-
-    export CYPRESS_OPTIONS_HUB_BASEDOMAIN=$(oc whoami --show-server=true | cut -d'.' -f2- | cut -d':' -f1)
-    export OPTIONS_HUB_BASEDOMAIN=$CYPRESS_OPTIONS_HUB_BASEDOMAIN
-
-    if [[ $CYPRESS_OC_IDP == "kube:admin" && -z $CYPRESS_OPTIONS_HUB_USER ]]; then
-      export CYPRESS_OPTIONS_HUB_USER=kubeadmin
+    if [[ -z $OPTIONS_HUB_PASSWORD || "$OPTIONS_HUB_PASSWORD" == "null" ]]; then
+      log_color "purple" "OPTIONS_HUB_PASSWORD" "is required to login into the ACM console. ${YELLOW}Skipping UI test.${NC}\n"
+      export SKIP_UI_TEST=true
     fi
 
-    log_color "purple" "HUB CLUSTER:" "${CYPRESS_OPTIONS_HUB_BASEDOMAIN}"
+    echo -e "Kubeconfig file detected at: $OPTIONS_HUB_KUBECONFIG => copying to ./config/hub-kubeconfig"
+    cp $OPTIONS_HUB_KUBECONFIG ./config/hub-kubeconfig
+    export OPTIONS_HUB_KUBECONFIG=./config/hub-kubeconfig
+
+    if [[ -z $OPTIONS_HUB_KUBECONTEXT || "$OPTIONS_HUB_KUBECONTEXT" == "null" ]]; then
+      HUB_CLUSTER=($(oc config get-clusters --kubeconfig=$OPTIONS_HUB_KUBECONFIG))
+      export OPTIONS_HUB_KUBECONTEXT=default/${HUB_CLUSTER[1]}/kube:admin
+    fi
+
+    echo -e
+    log_color "cyan" "Switching context to log into Kube API server"
+    oc config use-context --kubeconfig=$OPTIONS_HUB_KUBECONFIG $OPTIONS_HUB_KUBECONTEXT
+    
+    export OPTIONS_HUB_BASEDOMAIN=$(oc whoami --show-server=true | cut -d'.' -f2- | cut -d':' -f1)
+
+    if [[ $OPTIONS_HUB_OC_IDP == "kube:admin" && -z $OPTIONS_HUB_USER ]]; then
+      export OPTIONS_HUB_USER=kubeadmin
+    fi
+
+    log_color "purple" "HUB CLUSTER:" "$OPTIONS_HUB_BASEDOMAIN"
   fi
 else
   echo -e "Environment variables detected. Configuring tests to execute with exported variables."
-  export CYPRESS_OPTIONS_HUB_BASEDOMAIN=$OPTIONS_HUB_BASEDOMAIN
-  export CYPRESS_OPTIONS_HUB_USER=$OPTIONS_HUB_USER
-  export CYPRESS_OPTIONS_HUB_PASSWORD=$OPTIONS_HUB_PASSWORD
 fi
 
-echo -e
+# Export variables to cypress.
+export CYPRESS_OPTIONS_HUB_BASEDOMAIN=$OPTIONS_HUB_BASEDOMAIN
+export CYPRESS_OPTIONS_HUB_KUBECONFIG=$OPTIONS_HUB_KUBECONFIG
+export CYPRESS_OPTIONS_HUB_KUBECONTEXT=$OPTIONS_HUB_KUBECONTEXT
+export CYPRESS_OPTIONS_HUB_PASSWORD=$OPTIONS_HUB_PASSWORD
+export CYPRESS_OPTIONS_HUB_USER=$OPTIONS_HUB_USER
+export CYPRESS_OPTIONS_HUB_OC_IDP=$OPTIONS_HUB_OC_IDP
 
-export CYPRESS_BASE_URL=https://multicloud-console.apps.$CYPRESS_OPTIONS_HUB_BASEDOMAIN
+# Export base url for cluster.
+export BASE_URL=https://multicloud-console.apps.$OPTIONS_HUB_BASEDOMAIN
+export CYPRESS_BASE_URL=$BASE_URL
+
+echo -e
 
 log_color "cyan" "Running tests with the following environment:\n"
 log_color "purple" "\tCYPRESS_OPTIONS_HUB_BASEDOMAIN" "\t: $CYPRESS_OPTIONS_HUB_BASEDOMAIN"
 log_color "purple" "\tCYPRESS_OPTIONS_HUB_BASE_URL" "\t: $CYPRESS_BASE_URL"
 log_color "purple" "\tCYPRESS_OPTIONS_HUB_USER" "\t: $CYPRESS_OPTIONS_HUB_USER"
-log_color "purple" "\tCYPRESS_OC_IDP" "\t\t\t: $CYPRESS_OC_IDP\n"
+log_color "purple" "\tCYPRESS_OPTIONS_HUB_OC_IDP" "\t: $CYPRESS_OPTIONS_HUB_OC_IDP\n"
 
-if [ -z $CYPRESS_USE_HUB_KUBECONFIG ]; then
+if [[ ! -z $CYPRESS_OPTIONS_HUB_PASSWORD && "$CYPRESS_OPTIONS_HUB_PASSWORD" != "null" ]]; then
   log_color "cyan" "Logging into Kube API server"
   oc login --server=https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443 -u $CYPRESS_OPTIONS_HUB_USER -p $CYPRESS_OPTIONS_HUB_PASSWORD --insecure-skip-tls-verify
 fi
 
+# Search for managed clusters.
 MANAGED_CLUSTERS=($(oc get managedclusters -o custom-columns='name:.metadata.name' --no-headers))
 
+# Check to see if there are any managed cluster available.
 if [ ${#MANAGED_CLUSTERS[@]} == "1" ]; then
   echo -e "No managable clusters detected for the hub cluster: $CYPRESS_OPTIONS_HUB_BASEDOMAIN.\n"
   export CYPRESS_SKIP_MANAGED_CLUSTER_TEST=true
@@ -140,8 +160,8 @@ else
   if [[ -z $OPTIONS_MANAGED_BASEDOMAIN || -z $OPTIONS_MANAGED_USER || -z $OPTIONS_MANAGED_PASSWORD ]]; then
     log_color "red" "One or more variables are undefined for imported cluster." "(set ${PURPLE}OPTIONS_MANAGED_BASEDOMAIN, OPTIONS_MANAGED_BASEDOMAIN, and OPTIONS_MANAGED_BASEDOMAIN${NC} to execute the test with environment variables)\n"
 
-    if [ ! -f $MANAGED_KUBECONFIG ]; then
-      log_color "red" "The kubeconfig file for imported cluster was not located." "(set ${PURPLE}KUBECONFIG${NC} to ${YELLOW}${MANAGED_KUBECONFIG}${NC} and oc login to create kubeconfig file."
+    if [ ! -f $OPTIONS_MANAGED_KUBECONFIG ]; then
+      log_color "red" "The kubeconfig file for imported cluster was not located." "(set ${PURPLE}KUBECONFIG${NC} to ${YELLOW}${OPTIONS_MANAGED_KUBECONFIG}${NC} and oc login to create kubeconfig file."
       echo -e "Skipping managed cluster test.\n"
       export CYPRESS_SKIP_MANAGED_CLUSTER_TEST=true
     else
@@ -149,28 +169,40 @@ else
       export CYPRESS_USE_MANAGED_KUBECONFIG=true
       export CYPRESS_SKIP_MANAGED_CLUSTER_TEST=false
 
-      echo -e "Kubeconfig file detected at: ${MANAGED_KUBECONFIG} - copying to ./config/hub-kubeconfig"
-      cp $MANAGED_KUBECONFIG ./config/import-kubeconfig
-      export CYPRESS_MANAGED_KUBECONFIG=./config/import-kubeconfig
+      echo -e "Kubeconfig file detected at: $OPTIONS_MANAGED_KUBECONFIG - copying to ./config/import-kubeconfig"
+      cp $OPTIONS_MANAGED_KUBECONFIG ./config/import-kubeconfig
+      export OPTIONS_MANAGED_KUBECONFIG=./config/import-kubeconfig
 
-      MANAGED_CLUSTER=($(oc config get-clusters --kubeconfig=./config/import-kubeconfig))
-      export CYPRESS_MANAGED_CLUSTER_CONTEXT=default/${MANAGED_CLUSTER[1]}/kube:admin
+      if [[ -z $OPTIONS_MANAGED_KUBECONTEXT || "$OPTIONS_MANAGED_KUBECONTEXT" == "null" ]]; then
+        MANAGED_CLUSTER=($(oc config get-clusters --kubeconfig=$OPTIONS_MANAGED_KUBECONFIG))
+        export OPTIONS_MANAGED_KUBECONTEXT=default/${MANAGED_CLUSTER[1]}/kube:admin
+      fi
+
+      echo -e
+      log_color "cyan" "Switching context to log into Kube API server"
+      oc config use-context --kubeconfig=$OPTIONS_MANAGED_KUBECONFIG $OPTIONS_MANAGED_KUBECONTEXT
+      
+      export OPTIONS_HUB_BASEDOMAIN=$(oc whoami --show-server=true | cut -d'.' -f2- | cut -d':' -f1)
+
+      if [[ $OPTIONS_HUB_OC_IDP == "kube:admin" && -z $OPTIONS_HUB_USER ]]; then
+        export OPTIONS_HUB_USER=kubeadmin
+      fi
 
       export OPTIONS_MANAGED_BASEDOMAIN=$(echo ${MANAGED_CLUSTER[1]} | cut -d'-' -f2- | cut -d':' -f1)
-      export CYPRESS_OPTIONS_MANAGED_BASEDOMAIN=$OPTIONS_MANAGED_BASEDOMAIN
-      export OPTIONS_MANAGED_USER=kubeadmin
-      export CYPRESS_OPTIONS_MANAGED_USE=$OPTIONS_MANAGED_USER
 
-      log_color "purple" "IMPORTED CLUSTER:" "${CYPRESS_OPTIONS_MANAGED_BASEDOMAIN}\n"
-      # oc config use-context --kubeconfig=$MANAGED_KUBECONFIG default/${MANAGED_CLUSTER[1]}/kube:admin
+      log_color "purple" "IMPORTED CLUSTER:" "$OPTIONS_MANAGED_BASEDOMAIN\n"
     fi
   else
     echo -e "Environment variables detected. Configuring tests to execute with imported cluster exported variables."
-    export CYPRESS_OPTIONS_MANAGED_BASEDOMAIN=$OPTIONS_MANAGED_BASEDOMAIN
-    export CYPRESS_OPTIONS_MANAGED_USER=$OPTIONS_MANAGED_USER
-    export CYPRESS_OPTIONS_MANAGED_PASSWORD=$OPTIONS_MANAGED_PASSWORD
   fi
 fi
+
+export CYPRESS_MANAGED_CLUSTER_NAME=$MANAGED_CLUSTER_NAME
+export CYPRESS_OPTIONS_MANAGED_BASEDOMAIN=$OPTIONS_MANAGED_BASEDOMAIN
+export CYPRESS_OPTIONS_MANAGED_KUBECONFIG=$OPTIONS_MANAGED_KUBECONFIG
+export CYPRESS_OPTIONS_MANAGED_KUBECONTEXT=$OPTIONS_MANAGED_KUBECONTEXT
+export CYPRESS_OPTIONS_MANAGED_PASSWORD=$OPTIONS_MANAGED_PASSWORD
+export CYPRESS_OPTIONS_MANAGED_USER=kubeadmin
 
 testCode=0
 
@@ -265,7 +297,7 @@ if [ -z "$RECORD" ]; then
   export RECORD=false
 fi
 
-env | grep "cypress" -i
+env | grep "cypress_" -i
 
 if [ "$SKIP_UI_TEST" == false ]; then
   if [ "$RECORD" == true ]; then
