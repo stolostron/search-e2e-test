@@ -343,20 +343,22 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
 })
 
 describe('RHACM4K-913: Search - common filter and conditions', () => {
-  beforeAll(async () => {
-    // Get kubeconfig for imported clusters
-    kubeconfigs = getKubeConfig()
+  // Get kubeconfig for imported clusters
+  var kubeconfigs = getKubeConfig()
 
-    // Get managed cluster
-    if (kubeconfigs[0]) {
+  // Get managed cluster
+  var import_kubeconfig = kubeconfigs.find((k) => k.includes('import'))
+
+  beforeAll(async () => {
+    if (import_kubeconfig) {
       managedCluster = execSync(
-        `oc --kubeconfig ${kubeconfigs[0]} get klusterlets.operator.open-cluster-management.io -o custom-columns=NAME:.spec.clusterName --no-headers`
+        `oc --kubeconfig ${import_kubeconfig} get klusterlets.operator.open-cluster-management.io -o custom-columns=NAME:.spec.clusterName --no-headers`
       )
         .toString()
         .trim()
     } else {
       console.log(
-        'Cannot get managedCluster because kubeconfigs[0] is undefined.'
+        'Cannot get managedCluster because import_kubeconfig is undefined.'
       )
     }
   })
@@ -415,7 +417,7 @@ describe('RHACM4K-913: Search - common filter and conditions', () => {
   }, 20000)
 
   test(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent on imported cluster.`, async () => {
-    if (kubeconfigs[0]) {
+    if (import_kubeconfig) {
       var query = searchQueryBuilder({
         filters: [
           { property: 'kind', values: ['pod'] },
@@ -427,14 +429,14 @@ describe('RHACM4K-913: Search - common filter and conditions', () => {
       const [searchRes, cliRes] = await Promise.all([
         sendRequest(query, token),
         execShellCommand(
-          `oc --kubeconfig ${kubeconfigs[0]} get pods -n open-cluster-management-agent --field-selector=status.phase==Running --no-headers | wc -l`
+          `oc --kubeconfig ${import_kubeconfig} get pods -n open-cluster-management-agent --field-selector=status.phase==Running --no-headers | wc -l`
         ),
       ])
       const pods = searchRes.body.data.searchResult[0].items
       expect(pods.length.toString()).toEqual(cliRes.toString().trim())
     } else {
       log({
-        message: 'Test skipped because kubeconfigs[0] is undefined.',
+        message: 'Test skipped because import_kubeconfig is undefined.',
       })
     }
   }, 20000)
@@ -462,7 +464,7 @@ describe('RHACM4K-913: Search - common filter and conditions', () => {
   }, 20000)
 
   test(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent-addon on imported cluster.`, async () => {
-    if (kubeconfigs[0]) {
+    if (import_kubeconfig) {
       var query = searchQueryBuilder({
         filters: [
           { property: 'kind', values: ['pod'] },
@@ -477,20 +479,20 @@ describe('RHACM4K-913: Search - common filter and conditions', () => {
       const [searchRes, cliRes] = await Promise.all([
         sendRequest(query, token),
         execShellCommand(
-          `oc --kubeconfig ${kubeconfigs[0]} get pods -n open-cluster-management-agent-addon --field-selector=status.phase==Running --no-headers | wc -l`
+          `oc --kubeconfig ${import_kubeconfig} get pods -n open-cluster-management-agent-addon --field-selector=status.phase==Running --no-headers | wc -l`
         ),
       ])
       const pods = searchRes.body.data.searchResult[0].items
       expect(pods.length.toString()).toEqual(cliRes.toString().trim())
     } else {
       log({
-        message: 'Test skipped because kubeconfigs[0] is undefined.',
+        message: 'Test skipped because import_kubeconfig is undefined.',
       })
     }
   }, 20000)
 
   test(`[P3][Sev3][${squad}] should have expected count of pods in kube-system on imported cluster.`, async () => {
-    if (kubeconfigs[0]) {
+    if (import_kubeconfig) {
       var query = searchQueryBuilder({
         filters: [
           { property: 'kind', values: ['pod'] },
@@ -502,14 +504,14 @@ describe('RHACM4K-913: Search - common filter and conditions', () => {
       const [searchRes, cliRes] = await Promise.all([
         sendRequest(query, token),
         execShellCommand(
-          `oc --kubeconfig ${kubeconfigs[0]} get pods -n kube-system --field-selector=status.phase==Running --no-headers | wc -l`
+          `oc --kubeconfig ${import_kubeconfig} get pods -n kube-system --field-selector=status.phase==Running --no-headers | wc -l`
         ),
       ])
       const pods = searchRes.body.data.searchResult[0].items
       expect(pods.length.toString()).toEqual(cliRes.toString().trim())
     } else {
       log({
-        message: 'Test skipped because kubeconfigs[0] is undefined.',
+        message: 'Test skipped because import_kubeconfig is undefined.',
       })
     }
   }, 20000)

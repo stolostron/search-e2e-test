@@ -38,7 +38,7 @@ describe('RHACM4K-912: Search: Verify the managed cluster info in the search pag
     })
 
     it(`[P3][Sev3][${squad}] should verify the yaml information is correct and there are no errors in the logs`, function () {
-      searchPage.shouldVerifyManagedClusterPodsYamlAndLogs(this.clusterName)
+      searchPage.shouldVerifyManagedClusterPodsAreRunning(this.clusterName, true)
     })
   })
 })
