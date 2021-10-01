@@ -35,7 +35,7 @@ fi
 
 # Load test config mounted at /resources/options.yaml
 OPTIONS_FILE=/resources/options.yaml
-USER_OPTIONS_FILE=./resources/options.yaml
+USER_OPTIONS_FILE=./options.yaml
 
 if [ -f $OPTIONS_FILE ]; then
   log_color "yellow" "Using test config from: $OPTIONS_FILE\n"
