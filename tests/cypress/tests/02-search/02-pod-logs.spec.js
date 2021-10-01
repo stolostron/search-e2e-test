@@ -33,7 +33,7 @@ clusterModes.forEach((clusterMode) => {
     return
   }
 
-  describe('Search: Search in ' + clusterMode.label + ' Cluster', function () {
+  describe('Search: Search in ' + clusterMode.label + ' Cluster', { tags: ['@canary', '@rosa'] }, function () {
     before(function () {
       clusterMode.valueFn().as('clusterName')
     })
@@ -46,33 +46,30 @@ clusterModes.forEach((clusterMode) => {
 
     // Logging into the hub cluster UI.
     if (clusterMode.label !== 'Managed') {
-      context('prereq: user should log into the ACM console', function () {
+      context('prereq: user should log into the ACM console', { tags: ['@required'] }, function () {
         it(`[P1][Sev1][${squad}] should login`, function () {
           cy.login()
         })
       })
     }
 
-    context(
-      'search resources: verify resource deployment pod logs',
-      function () {
-        beforeEach(function () {
-          searchPage.whenGoToSearchPage()
-          searchBar.whenFilterByNamespace(clusterMode.namespace)
-          searchBar.whenFilterByCluster(this.clusterName)
-          searchPage.shouldLoadResults()
-        })
+    context('search resources: verify resource deployment pod logs', { tags: ['@bvt'] }, function () {
+      beforeEach(function () {
+        searchPage.whenGoToSearchPage()
+        searchBar.whenFilterByNamespace(clusterMode.namespace)
+        searchBar.whenFilterByCluster(this.clusterName)
+        searchPage.shouldLoadResults()
+      })
 
-        it(`[P2][Sev2][${squad}] should see pod logs`, function () {
-          searchBar.whenFilterByKind('pod')
-          searchPage.whenGoToResourceDetailItemPage(
-            'pod',
-            clusterMode.namespace + '-deployment'
-          )
-          podDetailPage.whenClickOnLogsTab()
-          podDetailPage.shouldSeeLogs('serving on')
-        })
-      }
-    )
+      it(`[P2][Sev2][${squad}] should see pod logs`, function () {
+        searchBar.whenFilterByKind('pod')
+        searchPage.whenGoToResourceDetailItemPage(
+          'pod',
+          clusterMode.namespace + '-deployment'
+        )
+        podDetailPage.whenClickOnLogsTab()
+        podDetailPage.shouldSeeLogs('serving on')
+      })
+    })
   })
 })

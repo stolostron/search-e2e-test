@@ -14,8 +14,8 @@ const appName = `auto-test-app-${postfix}`
 
 const namespace = cliHelper.generateNamespace()
 
-describe('RHACM4K-913: Search - common filter and conditions', function () {
-  context('prereq: create resource with oc command and login', function () {
+describe('RHACM4K-913: Search - common filter and conditions', { tags: ['@canary'] }, function () {
+  context('prereq: create resource with oc command and log into the ACM console', { tags: ['@required'] }, function () {
     it(`[P1][Sev1][${squad}] should create namespace and application`, function () {
       cliHelper.createNamespace(namespace)
       cliHelper.createApplication(appName, namespace)
@@ -26,9 +26,7 @@ describe('RHACM4K-913: Search - common filter and conditions', function () {
     })
   })
 
-  context(
-    'verify: search result with common filter and conditions',
-    function () {
+  context('verify: search result with common filter and conditions', { tags: ['@bvt'] }, function () {
       beforeEach(function () {
         searchPage.whenGoToSearchPage()
       })

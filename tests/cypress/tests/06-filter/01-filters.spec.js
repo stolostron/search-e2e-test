@@ -32,42 +32,44 @@ import {
 
 const nameFilter = filtersRegistry.createFilter('name')
 const labelFilter = filtersRegistry.createFilter('label')
-const kindFilter = filtersRegistry.createFilter('kind', {
+
+filtersRegistry.createFilter('kind', {
   strategies: [multipleValues(2), combined([nameFilter, labelFilter])],
 })
+
 filtersRegistry.createFilter('role', {
   values: [useText('master'), useText('worker')],
   strategies: [multipleValues(2)],
 })
+
 filtersRegistry.createFilter('status', {
   strategies: [simple, multipleValues(2)],
 })
 
-describe('RHACM4K-537: Search: Search using filters', function () {
-  context('prereq: user should log into the ACM console', function () {
+describe('RHACM4K-537: Search: Search using filters', { tags: ['@canary'] }, function () {
+  context('prereq: user should log into the ACM console', { tags: ['@required'] }, function () {
     it(`[P1][Sev1][${squad}] should login`, function () {
       cy.login()
     })
   })
 
-  filtersRegistry.filters.forEach((filter) => {
-    if (filter.skip) {
-      return
-    }
+  context(`verify: broad spectrum of search result`, { tags: ['@bvt']} , function() {
+    beforeEach(function () {
+      searchPage.whenGoToSearchPage()
+      searchBar.whenClearFilters()
+      searchBar.whenFocusSearchBar()
+    })
 
-    context(
-      `[P1][Sev1][${squad}] Search using "${filter.type}" filter`,
-      function () {
-        beforeEach(function () {
-          searchPage.whenGoToSearchPage()
-          searchBar.whenClearFilters()
-          searchBar.whenFocusSearchBar()
-        })
+    filtersRegistry.filters.forEach((filter) => {
+      if (filter.skip) {
+        return
+      }  
 
+      it(`[P1][Sev1][${squad}] Search using "${filter.type}" filter`, function() { 
         if (filter.strategies) {
           filter.strategies.forEach((runner) => runner(filter))
         }
-      }
-    )
+      })
+    })
   })
 })
