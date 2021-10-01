@@ -172,7 +172,10 @@ else
 fi
 
 if [[ ! -z $CYPRESS_TAGS_INCLUDE || ! -z $CYPRESS_TAGS_EXCLUDE ]]; then
-  CYPRESS_TAGS="${CYPRESS_TAGS_INCLUDE $CYPESS_TAGS_EXCLUDE}"
+  CYPRESS_TAGS="$CYPRESS_TAGS_INCLUDE"
+  CYPRESS_TAGS="$CYPRESS_TAGS $CYPRESS_TAGS_EXCLUDE"
+
+  echo -e "Executing tests with the following tags: $CYPRESS_TAGS\n"
 fi
 
 if [ "$SKIP_API_TEST" == false ]; then 
