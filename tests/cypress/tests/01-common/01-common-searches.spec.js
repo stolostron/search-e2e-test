@@ -14,7 +14,7 @@ const appName = `auto-test-app-${postfix}`
 
 const namespace = cliHelper.generateNamespace()
 
-describe('RHACM4K-913: Search - common filter and conditions', { tags: ['@canary'] }, function () {
+describe('RHACM4K-913: Search - common filter and conditions', { tags: ['@canary', '@rosa'] }, function () {
   context('prereq: create resource with oc command and log into the ACM console', { tags: ['@required'] }, function () {
     it(`[P1][Sev1][${squad}] should create namespace and application`, function () {
       cliHelper.createNamespace(namespace)

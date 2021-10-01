@@ -83,7 +83,7 @@ export const cliHelper = {
   setup: (modes) => {
     modes.forEach((mode) => {
       if (!mode.skip) {
-        describe(`Search: Create resource in ${mode.label} Cluster`, { tags: ['@canary'] }, function () {
+        describe(`Search: Create resource in ${mode.label} Cluster`, { tags: ['@canary', '@rosa'] }, function () {
           // Log into the hub and managed cluster with the oc command to create the resources.
           context(`prereq: create resource with oc command`, { tags: ['@required'] }, function () {
             it(`[P1][Sev1][${squad}] should log into ${mode.label.toLocaleLowerCase()} cluster`, function () {

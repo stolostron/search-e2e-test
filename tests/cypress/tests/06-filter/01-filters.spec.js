@@ -46,7 +46,7 @@ filtersRegistry.createFilter('status', {
   strategies: [simple, multipleValues(2)],
 })
 
-describe('RHACM4K-537: Search: Search using filters', { tags: ['@canary'] }, function () {
+describe('RHACM4K-537: Search: Search using filters', { tags: ['@canary', '@rosa'] }, function () {
   context('prereq: user should log into the ACM console', { tags: ['@required'] }, function () {
     it(`[P1][Sev1][${squad}] should login`, function () {
       cy.login()
