@@ -57,7 +57,7 @@ describe('RHACM4K-1695: Search - verify managed cluster info in the search page'
       })
     } else {
       log({
-        message: 'Test skipped because there are no managedCluster detected.',
+        message: 'Test skipped because no managedCluster detected.',
       })
     }
   }, 20000)
