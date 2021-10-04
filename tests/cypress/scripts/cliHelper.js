@@ -16,7 +16,12 @@ export const cliHelper = {
       .exec('oc get managedclusters -o custom-columns=NAME:.metadata.name')
       .then((result) => {
         const managedClusters = result.stdout.split('\n').slice(1)
-        let targetCluster
+        var targetCluster
+
+        if (managedClusters.length === 1 && managedClusters.find((c) => c.includes('local-cluster'))) {
+          cy.log(`No imported cluster name found. Using local-cluster for testing.`)
+          return cy.wrap(targetCluster = 'local-cluster')
+        }
 
         // In the canary tests, we only need to focus on the import-xxxx managed cluster.
         if (

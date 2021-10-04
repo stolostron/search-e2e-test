@@ -10,6 +10,7 @@ const {
   deletePod,
 } = require('../common-lib/clusterAccess')
 
+jest.retryTimes(3);
 describe('RHACM4K-1696: Search - Verify search result with common filter and conditions', () => {
   beforeAll(async () => {
     // Log in and get access token
