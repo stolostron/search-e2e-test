@@ -15,4 +15,5 @@ module.exports = {
     ],
   ],
   testResultsProcessor: 'jest-junit',
+  testRunner: "jest-circus/runner"
 }
