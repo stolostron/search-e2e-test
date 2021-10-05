@@ -33,8 +33,8 @@ clusterModes.forEach((clusterMode) => {
     return
   }
 
-  describe('RHACM4K-1574: Search: Search in ' + clusterMode.label + ' Cluster', function () {
-      var KUBECONFIG = clusterMode.label !== 'Managed' ? '' : `KUBECONFIG=${Cypress.env('OPTIONS_MANAGED_KUBECONFIG')}`
+  describe('RHACM4K-1574: Search: Search in ' + clusterMode.label + ' Cluster', { tags: ['@canary', '@rosa'] }, function () {
+    var KUBECONFIG = clusterMode.label !== 'Managed' ? '' : `KUBECONFIG=${Cypress.env('OPTIONS_MANAGED_KUBECONFIG')}`
       before(function () {
         clusterMode.valueFn().as('clusterName')
       })
@@ -50,57 +50,52 @@ clusterModes.forEach((clusterMode) => {
         }
         cliHelper.deleteNamespace(clusterMode.namespace, KUBECONFIG)
       })
-
-      // Logging into the hub cluster UI.
-      if (clusterMode.label !== 'Managed') {
-        context('prereq: user should log into the ACM console', function () {
-          it(`[P1][Sev1][${squad}] should login`, function () {
-            cy.login()
-          })
+    // Logging into the hub cluster UI.
+    if (clusterMode.label !== 'Managed') {
+      context('prereq: user should log into the ACM console', { tags: ['@required'] }, function () {
+        it(`[P1][Sev1][${squad}] should login`, function () {
+          cy.login()
         })
-      }
-
-      context(
-        'search resources: verify edit yaml function and scale resources',
-        function () {
-          beforeEach(function () {
-            searchPage.whenGoToSearchPage()
-            searchBar.whenFilterByNamespace(clusterMode.namespace)
-            searchBar.whenFilterByCluster(this.clusterName)
-            searchPage.shouldLoadResults()
-          })
-
-          it(`[P2][Sev2][${squad}] should delete pod`, function () {
-            searchBar.whenFilterByKind('pod')
-            searchPage.whenDeleteResourceDetailItem(
-              'pod',
-              clusterMode.namespace + '-deployment'
-            )
-            searchPage.shouldBeResourceDetailItemCreatedFewSecondsAgo(
-              'pod',
-              clusterMode.namespace + '-deployment'
-            )
-          })
-
-          it(`[P3][Sev3][${squad}] should edit yaml and scale deployment`, function () {
-            searchBar.whenFilterByKind('deployment')
-            searchPage.whenGoToResourceDetailItemPage(
-              'deployment',
-              clusterMode.namespace + '-deployment'
-            )
-            deploymentDetailPage.whenScaleReplicasTo(2)
-          })
-
-          it(`[P3][Sev3][${squad}] should verify that the deployment scaled`, function () {
-            searchBar.whenFilterByKind('deployment')
-            searchPage.whenGetResourceTableRow(
-              'deployment',
-              clusterMode.namespace + '-deployment'
-            )
-            searchPage.shouldFindRelationshipTile('pod', '2')
-          })
-        }
-      )
+      })
     }
-  )
+
+    context('search resources: verify edit yaml function and scale resources', { tags: ['@bvt'] }, function () {
+      beforeEach(function () {
+        searchPage.whenGoToSearchPage()
+        searchBar.whenFilterByNamespace(clusterMode.namespace)
+        searchBar.whenFilterByCluster(this.clusterName)
+        searchPage.shouldLoadResults()
+      })
+
+      it(`[P2][Sev2][${squad}] should delete pod`, function () {
+        searchBar.whenFilterByKind('pod')
+        searchPage.whenDeleteResourceDetailItem(
+          'pod',
+          clusterMode.namespace + '-deployment'
+        )
+        searchPage.shouldBeResourceDetailItemCreatedFewSecondsAgo(
+          'pod',
+          clusterMode.namespace + '-deployment'
+        )
+      })
+
+      it(`[P3][Sev3][${squad}] should edit yaml and scale deployment`, function () {
+        searchBar.whenFilterByKind('deployment')
+        searchPage.whenGoToResourceDetailItemPage(
+          'deployment',
+          clusterMode.namespace + '-deployment'
+        )
+        deploymentDetailPage.whenScaleReplicasTo(2)
+      })
+
+      it(`[P3][Sev3][${squad}] should verify that the deployment scaled`, function () {
+        searchBar.whenFilterByKind('deployment')
+        searchPage.whenGetResourceTableRow(
+          'deployment',
+          clusterMode.namespace + '-deployment'
+        )
+        searchPage.shouldFindRelationshipTile('pod', '2')
+      })
+    })
+  })
 })

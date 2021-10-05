@@ -54,7 +54,6 @@ export const savedSearches = {
   },
 
   editSavedSearch: (queryName, editedName, editedDesc) => {
-    searchPage.whenGoToSearchPage()
     cy.get('h4.pf-c-title.pf-m-md').contains('Saved searches')
     cy.get('.pf-c-card__header')
       .contains(queryName)
@@ -69,7 +68,6 @@ export const savedSearches = {
   },
 
   shareSavedSearch: (queryName) => {
-    searchPage.whenGoToSearchPage()
     cy.get('h4.pf-c-title.pf-m-md').contains('Saved searches')
     cy.get('.pf-c-card__header')
       .contains(queryName)
@@ -87,7 +85,6 @@ export const savedSearches = {
   },
 
   getSavedSearch: (queryName) => {
-    searchPage.whenGoToSearchPage()
     cy.get('h4.pf-c-title.pf-m-md').contains('Saved searches')
     cy.get('button.pf-c-dropdown__toggle')
       .contains('Saved searches')
@@ -95,10 +92,10 @@ export const savedSearches = {
     cy.get('ul.pf-c-dropdown__menu.pf-m-align-right')
       .contains(queryName)
       .click()
+    cy.go('back')
   },
 
   whenDeleteSavedSearch: (queryName) => {
-    searchPage.whenGoToSearchPage()
     cy.get('h4.pf-c-title.pf-m-md').contains('Saved searches')
     cy.get('.pf-c-card__header')
       .contains(queryName)

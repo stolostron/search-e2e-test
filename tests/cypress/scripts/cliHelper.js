@@ -16,7 +16,12 @@ export const cliHelper = {
       .exec('oc get managedclusters -o custom-columns=NAME:.metadata.name')
       .then((result) => {
         const managedClusters = result.stdout.split('\n').slice(1)
-        let targetCluster
+        var targetCluster
+
+        if (managedClusters.length === 1 && managedClusters.find((c) => c.includes('local-cluster'))) {
+          cy.log(`No imported cluster name found. Using local-cluster for testing.`)
+          return cy.wrap(targetCluster = 'local-cluster')
+        }
 
         // In the canary tests, we only need to focus on the import-xxxx managed cluster.
         if (
@@ -86,22 +91,21 @@ export const cliHelper = {
   setup: (modes) => {
     modes.forEach((mode) => {
       if (!mode.skip) {
-        describe(`Search: Create resource in ${mode.label} Cluster`, function () {
+        describe(`Search: Create resource in ${mode.label} Cluster`, { tags: ['@canary', '@rosa'] }, function () {
           var KUBECONFIG = mode.label !== 'Managed' ? '' : `KUBECONFIG=${Cypress.env('OPTIONS_MANAGED_KUBECONFIG')}`
 
           // Log into the hub and managed cluster with the oc command to create the resources.
-          context(`prereq: create resource with oc command`, function () {
-            // /cy.log(!Cypress.env('USE_MANAGED_KUBECONFIG'))
-            if (mode.label === 'Managed' && Cypress.env('USE_MANAGED_KUBECONFIG')) {
+          context(`prereq: create resource with oc command`, { tags: ['@required'] }, function () {
+            if (mode.label !== 'Managed' && !Cypress.env('USE_MANAGED_KUBECONFIG')) {
+              it(`[P1][Sev1][${squad}] should log into ${mode.label.toLocaleLowerCase()} cluster`, function () {
+                cliHelper.login(mode.label)
+              })              
+            } else {
               it(`[P1][Sev1][${squad}] should switch context within kubeconfig file to log into ${mode.label.toLocaleLowerCase()} cluster`, function () {
                 cliHelper.useManagedKubeconfig()
               })
-            } else {
-              it(`[P1][Sev1][${squad}] should log into ${mode.label.toLocaleLowerCase()} cluster`, function () {
-                cliHelper.login(mode.label)
-              })
             }
-  
+
             it(`[P1][Sev1][${squad}] should create namespace resource`, function () {
               cliHelper.createNamespace(mode.namespace, KUBECONFIG)
             })
