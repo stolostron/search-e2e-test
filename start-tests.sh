@@ -145,7 +145,7 @@ log_color "purple" "\tCYPRESS_OPTIONS_HUB_USER" "\t: $CYPRESS_OPTIONS_HUB_USER"
 log_color "purple" "\tCYPRESS_OPTIONS_HUB_OC_IDP" "\t: $CYPRESS_OPTIONS_HUB_OC_IDP\n"
 
 if [[ ! -z $CYPRESS_OPTIONS_HUB_PASSWORD && "$CYPRESS_OPTIONS_HUB_PASSWORD" != "null" ]]; then
-  log_color "cyan" "Logging into Kube API server"
+  log_color "cyan" "Logging into Kube API server."
   export KUBECONFIG=$(pwd)/config/hub-kubeconfig
 
   oc login --server=https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443 -u $CYPRESS_OPTIONS_HUB_USER -p $CYPRESS_OPTIONS_HUB_PASSWORD --insecure-skip-tls-verify
@@ -153,12 +153,24 @@ if [[ ! -z $CYPRESS_OPTIONS_HUB_PASSWORD && "$CYPRESS_OPTIONS_HUB_PASSWORD" != "
   unset KUBECONFIG
 
   if [[ -f $OPTIONS_HUB_KUBECONFIG ]]; then
-    echo -e "Found hub cluster kubeconfig.\n"
+    echo -e "Succesfully detected hub cluster kubeconfig.\n"
   else
     echo -e "Failed to create or locate hub cluster kubeconfig.\n"
   fi
 
   export CYPRESS_OPTIONS_HUB_KUBECONFIG=$OPTIONS_HUB_KUBECONFIG
+fi
+
+log_color "cyan" "Checking RedisGraph deployment."
+installNamespace=`oc get subscriptions.operators.coreos.com --all-namespaces | grep advanced-cluster-management | awk '{print $1}'`
+rgstatus=`oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}" -n ${installNamespace}`
+
+if [ "$rgstatus" == "true" ]; then
+  echo -e "RedisGraph deployment is enabled.\n"
+else
+  echo -e "RedisGraph deployment disabled, enabling and waiting 60 seconds for the search-redisgraph-0 pod.\n"
+  oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n $installNamespace
+  sleep 60
 fi
 
 # Search for managed clusters.
@@ -201,7 +213,6 @@ else
 
       log_color "cyan" "Switching context to log into Kube API server"
       oc config use-context --kubeconfig=$OPTIONS_MANAGED_KUBECONFIG $OPTIONS_MANAGED_KUBECONTEXT
-
       export OPTIONS_MANAGED_BASEDOMAIN=$(echo ${MANAGED_CLUSTER[1]} | cut -d'-' -f2- | cut -d':' -f1)
       export OPTIONS_MANAGED_USER=kubeadmin
 
@@ -219,7 +230,7 @@ else
     unset KUBECONFIG
 
     if [[ -f $OPTIONS_MANAGED_KUBECONFIG ]]; then
-      echo -e "Found managed cluster kubeconfig.\n"
+      echo -e "Successfully detected managed cluster kubeconfig.\n"
     else
       echo -e "Failed to create or locate managed cluster kubeconfig.\n"
     fi
@@ -237,7 +248,13 @@ export CYPRESS_OPTIONS_MANAGED_USER=kubeadmin
 testCode=0
 
 VERSION=`oc get subscriptions.operators.coreos.com -A -o yaml | grep currentCSV:\ advanced-cluster-management | awk '{$1=$1};1' | sed "s/currentCSV:\ advanced-cluster-management.v//"`
-log_color "purple" "Testing with ACM Version": "$VERSION\n"
+log_color "green" "Testing with ACM Version": "$VERSION"
+
+if [[ -z $NODE_ENV ]]; then
+  export NODE_ENV="production" || set NODE_ENV="production"
+fi
+
+log_color "green" "Setting env to run in:" "$NODE_ENV\n"
 
 if [[ "https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443" =~ "canary" || "$TEST_ENV" == "canary" ]]; then
   log_color "yellow" "Canary cluster environment detected - running test that are tagged with @canary, @required, and @bvt.\n"
@@ -261,29 +278,11 @@ if [[ "https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443" =~ "openshiftapps.com
   fi
 fi
 
-log_color "cyan" "Checking RedisGraph deployment."
-installNamespace=`oc get subscriptions.operators.coreos.com --all-namespaces | grep advanced-cluster-management | awk '{print $1}'`
-rgstatus=`oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}" -n ${installNamespace}`
-
-if [ "$rgstatus" == "true" ]; then
-  echo -e "RedisGraph deployment is enabled.\n"
-else
-  echo -e "RedisGraph deployment disabled, enabling and waiting 60 seconds for the search-redisgraph-0 pod.\n"
-  oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n $installNamespace
-  sleep 60
-fi
-
 # We are caching the cypress binary for containerization, therefore it does not need npx. However, locally we need it.
 DISPLAY="--headless"
 if [[ "$LIVE_MODE" == true ]]; then
   DISPLAY="--headed"
 fi
-
-if [[ -z $NODE_ENV ]]; then
-  export NODE_ENV="production" || set NODE_ENV="production"
-fi
-
-log_color "yellow" "Setting env to run in:" "$NODE_ENV\n"
 
 if [[ -z $SKIP_API_TEST ]]; then
   log_color "purple" "SKIP_API_TEST" "not exported; setting to false (set ${PURPLE}SKIP_API_TEST${NC} to true, if you wish to skip the API tests)"
@@ -311,7 +310,7 @@ fi
 if [[ ! -z $CYPRESS_TAGS_INCLUDE || ! -z $CYPRESS_TAGS_EXCLUDE ]]; then
   CYPRESS_TAGS="$CYPRESS_TAGS_INCLUDE $CYPRESS_TAGS_EXCLUDE"
 
-  echo -e "\nExecuting tests with the following tags: $CYPRESS_TAGS\n"
+  echo -e "Executing tests with the following tags: $CYPRESS_TAGS\n"
 fi
 
 if [[ "$SKIP_API_TEST" == false ]]; then 
