@@ -21,15 +21,14 @@ COPY start-tests.sh ./
 COPY download-clis.sh ./
 COPY config ./config
 COPY tests ./tests
-RUN mkdir -p build
+RUN mkdir -m 755 -p build
+
 COPY build/rbac-setup.sh ./build/
 COPY build/rbac-clean.sh ./build/
 
 RUN npm install
 
 RUN sh download-clis.sh
-
-RUN ["chmod", "+x", "build"]
 RUN ["chmod", "+x", "start-tests.sh"]
 
 ENTRYPOINT ["./start-tests.sh"]
