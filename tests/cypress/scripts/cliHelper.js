@@ -7,8 +7,8 @@ import { squad } from '../config'
 
 export const cliHelper = {
   getTargetManagedCluster: () => {
-    if (Cypress.env("OPTIONS_MANAGED_CLUSTER_NAME")) {
-      cy.log(`Imported cluster name found: ${Cypress.env("OPTIONS_MANAGED_CLUSTER_NAME")}`)
+    if (Cypress.env('OPTIONS_MANAGED_CLUSTER_NAME')) {
+      cy.log(`Imported cluster name found: ${Cypress.env('OPTIONS_MANAGED_CLUSTER_NAME')}`)
       return cy.wrap(Cypress.env("OPTIONS_MANAGED_CLUSTER_NAME"))
     }
 
