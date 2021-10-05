@@ -20,4 +20,4 @@ export CYPRESS_BASE_URL=$OCM_ADDRESS
 export OPTIONS_HUB_BASEDOMAIN=$(echo $HUB_CREDS | jq -r '.api_url') 
 export OPTIONS_HUB_USER=$(echo $HUB_CREDS | jq -r '.username') 
 export OPTIONS_HUB_PASSWORD=$(echo $HUB_CREDS | jq -r '.password') 
-./run-prow-e2e-tests.sh
+./start-tests.sh
