@@ -15,5 +15,8 @@ module.exports = {
     ],
   ],
   testResultsProcessor: 'jest-junit',
-  testRunner: "jest-circus/runner"
 }
+
+process.env = Object.assign(process.env, {
+  retry: 2,
+});

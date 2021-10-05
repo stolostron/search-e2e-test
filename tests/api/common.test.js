@@ -1,5 +1,7 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
+jest.retryTimes(process.env.retry)
+
 const squad = require('../../config').get('squadName')
 const {
   getSearchApiRoute,
@@ -10,7 +12,6 @@ const {
   deletePod,
 } = require('../common-lib/clusterAccess')
 
-jest.retryTimes(3);
 describe('RHACM4K-1696: Search - Verify search result with common filter and conditions', () => {
   beforeAll(async () => {
     // Log in and get access token
