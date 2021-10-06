@@ -99,9 +99,9 @@ if [[ -z $OPTIONS_HUB_BASEDOMAIN || -z $OPTIONS_HUB_USER || -z $OPTIONS_HUB_PASS
       export SKIP_UI_TEST=true
     fi
 
-    echo -e "Kubeconfig file detected at: $OPTIONS_HUB_KUBECONFIG => copying to $(pwd)/config/hub-kubeconfig"
-    cp $OPTIONS_HUB_KUBECONFIG $(pwd)/config/hub-kubeconfig
-    export OPTIONS_HUB_KUBECONFIG=$(pwd)/config/hub-kubeconfig
+    echo -e "Kubeconfig file detected at: $OPTIONS_HUB_KUBECONFIG => copying to ./config/hub-kubeconfig"
+    cp $OPTIONS_HUB_KUBECONFIG ./config/hub-kubeconfig
+    export OPTIONS_HUB_KUBECONFIG=./config/hub-kubeconfig
 
     # Check to see if there are any kubecontext to be used from the hub cluster kubeconfig.
     if [[ -z $OPTIONS_HUB_KUBECONTEXT || "$OPTIONS_HUB_KUBECONTEXT" == "null" ]]; then
@@ -146,7 +146,7 @@ log_color "purple" "\tCYPRESS_OPTIONS_HUB_OC_IDP" "\t: $CYPRESS_OPTIONS_HUB_OC_I
 
 if [[ ! -z $CYPRESS_OPTIONS_HUB_PASSWORD && "$CYPRESS_OPTIONS_HUB_PASSWORD" != "null" ]]; then
   log_color "cyan" "Logging into Kube API server."
-  export KUBECONFIG=$(pwd)/config/hub-kubeconfig
+  export KUBECONFIG=./config/hub-kubeconfig
 
   oc login --server=https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443 -u $CYPRESS_OPTIONS_HUB_USER -p $CYPRESS_OPTIONS_HUB_PASSWORD --insecure-skip-tls-verify
   export OPTIONS_HUB_KUBECONFIG=$KUBECONFIG
@@ -203,8 +203,8 @@ else
       export CYPRESS_SKIP_MANAGED_CLUSTER_TEST=false
 
       echo -e "Kubeconfig file detected at: $OPTIONS_MANAGED_KUBECONFIG - copying to ./config/import-kubeconfig\n"
-      cp $OPTIONS_MANAGED_KUBECONFIG $(pwd)/config/import-kubeconfig
-      export OPTIONS_MANAGED_KUBECONFIG=$(pwd)/config/import-kubeconfig
+      cp $OPTIONS_MANAGED_KUBECONFIG ./config/import-kubeconfig
+      export OPTIONS_MANAGED_KUBECONFIG=./config/import-kubeconfig
 
       if [[ -z $OPTIONS_MANAGED_KUBECONTEXT || "$OPTIONS_MANAGED_KUBECONTEXT" == "null" ]]; then
         MANAGED_CLUSTER=($(oc config get-clusters --kubeconfig=$OPTIONS_MANAGED_KUBECONFIG))
@@ -222,7 +222,7 @@ else
     echo -e "Environment variables detected for managed cluster. Configuring tests to execute with imported cluster exported variables.\n"
     log_color "cyan" "Logging into the managed cluster using credentials and generating the kubeconfig..."
 
-    export KUBECONFIG=$(pwd)/config/import-kubeconfig
+    export KUBECONFIG=./config/import-kubeconfig
     export OPTIONS_MANAGED_URL="https://api.$OPTIONS_MANAGED_BASEDOMAIN:6443"
     
     oc login --server=$OPTIONS_MANAGED_URL -u $OPTIONS_MANAGED_USER -p $OPTIONS_MANAGED_PASSWORD --insecure-skip-tls-verify
