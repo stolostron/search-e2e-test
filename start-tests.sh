@@ -166,8 +166,8 @@ if [[ ! -z $CYPRESS_OPTIONS_HUB_PASSWORD && "$CYPRESS_OPTIONS_HUB_PASSWORD" != "
   export CYPRESS_OPTIONS_HUB_KUBECONFIG=$OPTIONS_HUB_KUBECONFIG
 fi
 
-VERSION=`oc get subscriptions.operators.coreos.com -A -o yaml | grep currentCSV:\ advanced-cluster-management | awk '{$1=$1};1' | sed "s/currentCSV:\ advanced-cluster-management.v//"`
-log_color "green" "Testing with ACM Version": "$VERSION\n"
+export CYPRESS_ACM_VERSION=`oc get subscriptions.operators.coreos.com -A -o yaml | grep currentCSV:\ advanced-cluster-management | awk '{$1=$1};1' | sed "s/currentCSV:\ advanced-cluster-management.v//"`
+log_color "green" "Testing with ACM Version": "$CYPRESS_ACM_VERSION\n"
 
 log_color "cyan" "Checking RedisGraph deployment."
 installNamespace=`oc get subscriptions.operators.coreos.com --all-namespaces | grep advanced-cluster-management | awk '{print $1}'`
@@ -263,25 +263,37 @@ fi
 
 log_color "green" "Setting env to run in:" "$NODE_ENV\n"
 
+# Running canary test. Depending on the test mode, we want to filter the test related to that mode and all tests that are marked required.
 if [[ "https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443" =~ "canary" || "$TEST_ENV" == "canary" ]]; then
-  log_color "yellow" "Canary cluster environment detected - running test that are tagged with @canary, @required, and @bvt.\n"
+  log_color "yellow" "Canary cluster environment detected:"
 
-  # Running canary test. We want to run all tests that are marked required and that are bvt.
-  if [[ -z $CYPRESS_TAGS_INCLUDE ]]; then
-    export CYPRESS_TAGS_INCLUDE="@canary+@required @canary+@bvt"
+  if [[ "$TEST_MODE" == "BVT" ]]; then
+    echo -e "Test mode set to @BVT - running test that are tagged with @CANARY, @required, and @BVT.\n"
+    TAGS="@CANARY+@required @CANARY+@BVT"
+
+  elif [[ "$TEST_MODE" == "smoke" ]]; then
+    echo -e "Test mode set to @smoke - running test that are tagged with @CANARY, @required, and @smoke.\n"
+    TAGS="@CANARY+@required @CANARY+@smoke"
+
   else
-    export CYPRESS_TAGS_INCLUDE="@canary+@required @canary+@bvt $CYPRESS_TAGS_INCLUDE"
+    echo -e "Test mode set to @$TEST_MODE - preparing to run all test. (set ${PURPLE}TEST_MODE${NC} to @BVT or @smoke)\n"
+  fi
+
+  if [[ -z $CYPRESS_TAGS_INCLUDE ]]; then
+    export CYPRESS_TAGS_INCLUDE=$TAGS
+  else
+    export CYPRESS_TAGS_INCLUDE="$TAGS $CYPRESS_TAGS_INCLUDE"
   fi
 fi
 
-if [[ "https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443" =~ "openshiftapps.com" || "$TEST_ENV" == "rosa" ]]; then
-  log_color "yellow" "ROSA cluster environment detected - excluding test that are tagged with @rosa and @rbac.\n"
+if [[ "https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443" =~ "openshiftapps.com" || "$USER_E2E_TEST_MODE" == "rosa" ]]; then
+  log_color "yellow" "ROSA cluster environment detected - excluding test that are tagged with @ROSA and @RBAC.\n"
   
   # Running rosa test. We want to run all tests that are marked rosa but exclude rbac.
   if [[ -z "$CYPRESS_TAGS_EXCLUDE" ]]; then
-    export CYPRESS_TAGS_EXCLUDE="@rosa+-@rbac"
+    export CYPRESS_TAGS_EXCLUDE="@ROSA+-@RBAC"
   else
-    export CYPRESS_TAGS_EXCLUDE="@rosa+-@rbac $CYPRESS_TAGS_EXCLUDE"
+    export CYPRESS_TAGS_EXCLUDE="@ROSA+-@RBAC $CYPRESS_TAGS_EXCLUDE"
   fi
 fi
 
@@ -304,14 +316,14 @@ if [[ -z $SKIP_UI_TEST ]]; then
 fi
 
 if [[ -z $CYPRESS_TAGS_INCLUDE ]]; then
-  log_color "purple" "CYPRESS_TAGS_INCLUDE" "not exported; (set ${PURPLE}CYPRESS_TAGS_INCLUDE${NC} to include a test tags i.e ${YELLOW}@canary${NC}, if you wish to execute on a subset of tests)"
+  log_color "purple" "CYPRESS_TAGS_INCLUDE" "not exported; (set ${PURPLE}CYPRESS_TAGS_INCLUDE${NC} to include a test tags i.e ${YELLOW}@CANARY${NC}, if you wish to execute on a subset of tests)"
 else
   log_color "purple" "Including tests that only contain the following tags: ${YELLOW}$CYPRESS_TAGS_INCLUDE${NC}"
   CYPRESS_TAGS=$CYPRESS_TAGS_INCLUDE
 fi
 
 if [ -z $CYPRESS_TAGS_EXCLUDE ]; then
-  log_color "purple" "CYPRESS_TAGS_EXCLUDE" "not exported; (set ${PURPLE}CYPRESS_TAGS_EXCLUDE${NC} to include a test tags i.e ${YELLOW}@rbac${NC}, if you wish to execute and exclude a subset of test from the run)\n"
+  log_color "purple" "CYPRESS_TAGS_EXCLUDE" "not exported; (set ${PURPLE}CYPRESS_TAGS_EXCLUDE${NC} to include a test tags i.e ${YELLOW}@RBAC${NC}, if you wish to execute and exclude a subset of test from the run)\n"
 else
   log_color "purple" "Excluding tests that contain the following tags: ${YELLOW}$CYPRESS_TAGS_EXCLUDE${NC}"
 fi
@@ -354,16 +366,16 @@ if [[ "$SKIP_UI_TEST" == false ]]; then
 
   if [[ "$RECORD" == true ]]; then
     echo -e "Preparing to run test within record mode. (Results will be displayed within dashboard)\n"
-    cypress run --record --key $RECORD_KEY --browser $BROWSER $DISPLAY --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env VERSION=$VERSION,NODE_ENV=$NODE_ENV,grepTags="${CYPRESS_TAGS:-}"
+    cypress run --record --key $RECORD_KEY --browser $BROWSER $DISPLAY --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="${CYPRESS_TAGS:-}"
   fi
 
   log_color "cyan" "Running Search UI tests."
   if [ "$NODE_ENV" == "development" ]; then
-    cypress run --browser $BROWSER $DISPLAY --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env VERSION=$VERSION,NODE_ENV=$NODE_ENV,grepTags="${CYPRESS_TAGS:-}"
+    cypress run --browser $BROWSER $DISPLAY --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="${CYPRESS_TAGS:-}"
   elif [ "$NODE_ENV" == "debug" ]; then
-    cypress open --browser $BROWSER --config numTestsKeptInMemory=0 --env VERSION=$VERSION,NODE_ENV=$NODE_ENV,grepTags=$CYPRESS_TAGS
+    cypress open --browser $BROWSER --config numTestsKeptInMemory=0 --env NODE_ENV=$NODE_ENV,grepTags=$CYPRESS_TAGS
   else
-    cypress run --browser $BROWSER $DISPLAY --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env VERSION=$VERSION,NODE_ENV=$NODE_ENV,grepTags="${CYPRESS_TAGS:-}"
+    cypress run --browser $BROWSER $DISPLAY --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="${CYPRESS_TAGS:-}"
   fi
 else
   log_color "purple" "SKIP_UI_TEST" "was set to true. Skipping UI tests\n"

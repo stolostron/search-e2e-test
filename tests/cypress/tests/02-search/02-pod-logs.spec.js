@@ -33,7 +33,7 @@ clusterModes.forEach((clusterMode) => {
     return
   }
 
-  describe('Search: Search in ' + clusterMode.label + ' Cluster', { tags: ['@canary', '@rosa'] }, function () {
+  describe('Search: Search in ' + clusterMode.label + ' Cluster', { tags: ['@CANARY', '@ROSA'] }, function () {
     before(function () {
       clusterMode.valueFn().as('clusterName')
     })
@@ -59,7 +59,7 @@ clusterModes.forEach((clusterMode) => {
       })
     }
 
-    context('search resources: verify resource deployment pod logs', { tags: ['@bvt'] }, function () {
+    context('search resources: verify resource deployment pod logs', { tags: ['@BVT'] }, function () {
       beforeEach(function () {
         searchPage.whenGoToSearchPage()
         searchBar.whenFilterByNamespace(clusterMode.namespace)

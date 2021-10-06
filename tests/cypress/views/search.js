@@ -113,7 +113,7 @@ export const searchPage = {
         .then(() => {
           cy.get('.version-details__no').should(
             'contain',
-            Cypress.env('VERSION') ? Cypress.env('VERSION') : '2.4'
+            Cypress.env('ACM_VERSION') ? Cypress.env('ACM_VERSION') : '2.4'
           )
         })
 

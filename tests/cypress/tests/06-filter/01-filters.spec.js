@@ -46,14 +46,14 @@ filtersRegistry.createFilter('status', {
   strategies: [simple, multipleValues(2)],
 })
 
-describe('RHACM4K-537: Search: Search using filters', { tags: ['@canary', '@rosa'] }, function () {
+describe('RHACM4K-537: Search: Search using filters', { tags: ['@CANARY', '@ROSA'] }, function () {
   context('prereq: user should log into the ACM console', { tags: ['@required'] }, function () {
     it(`[P1][Sev1][${squad}] should login`, function () {
       cy.login()
     })
   })
 
-  context(`verify: broad spectrum of search result`, { tags: ['@bvt']} , function() {
+  context(`verify: broad spectrum of search result`, { tags: ['@BVT']} , function() {
     beforeEach(function () {
       searchPage.whenGoToSearchPage()
       searchBar.whenClearFilters()

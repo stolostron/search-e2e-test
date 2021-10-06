@@ -32,7 +32,7 @@ clusterModes.forEach((clusterMode) => {
     return
   }
 
-  describe('Search: Search in ' + clusterMode.label + ' Cluster', { tags: ['@canary', '@rosa'] }, function () {
+  describe('Search: Search in ' + clusterMode.label + ' Cluster', { tags: ['@CANARY', '@ROSA'] }, function () {
     var KUBECONFIG = clusterMode.label !== 'Managed' ? '' : `KUBECONFIG=${Cypress.env('OPTIONS_MANAGED_KUBECONFIG')}`
     before(function () {
       clusterMode.valueFn().as('clusterName')
@@ -59,7 +59,7 @@ clusterModes.forEach((clusterMode) => {
       })
     }
 
-    context('search resources: verify resource exist after creation', { tags: ['@bvt'] },function () {
+    context('search resources: verify resource exist after creation', { tags: ['@BVT'] },function () {
       beforeEach(function () {
         searchPage.whenGoToSearchPage()
         searchBar.whenFilterByNamespace(clusterMode.namespace)

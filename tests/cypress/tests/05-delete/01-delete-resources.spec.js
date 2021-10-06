@@ -32,7 +32,7 @@ clusterModes.forEach((clusterMode) => {
     return
   }
 
-  describe('RHACKM4K-726: Search: Search in ' + clusterMode.label + ' Cluster', { tags: ['@canary', '@rosa'] }, function () {
+  describe('RHACKM4K-726: Search: Search in ' + clusterMode.label + ' Cluster', { tags: ['@CANARY', '@ROSA'] }, function () {
       before(function () {
         clusterMode.valueFn().as('clusterName')
       })
@@ -46,7 +46,7 @@ clusterModes.forEach((clusterMode) => {
         })
       }
 
-      context('search resource: verify delete function in search result', { tags: ['@bvt'] },
+      context('search resource: verify delete function in search result', { tags: ['@BVT'] },
         function () {
           beforeEach(function () {
             searchPage.whenGoToSearchPage()

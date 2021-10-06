@@ -33,7 +33,7 @@ clusterModes.forEach((clusterMode) => {
     return
   }
 
-  describe('RHACM4K-1574: Search: Search in ' + clusterMode.label + ' Cluster', { tags: ['@canary', '@rosa'] }, function () {
+  describe('RHACM4K-1574: Search: Search in ' + clusterMode.label + ' Cluster', { tags: ['@CANARY', '@ROSA'] }, function () {
     var KUBECONFIG = clusterMode.label !== 'Managed' ? '' : `KUBECONFIG=${Cypress.env('OPTIONS_MANAGED_KUBECONFIG')}`
       before(function () {
         clusterMode.valueFn().as('clusterName')
@@ -59,7 +59,7 @@ clusterModes.forEach((clusterMode) => {
       })
     }
 
-    context('search resources: verify edit yaml function and scale resources', { tags: ['@bvt'] }, function () {
+    context('search resources: verify edit yaml function and scale resources', { tags: ['@BVT'] }, function () {
       beforeEach(function () {
         searchPage.whenGoToSearchPage()
         searchBar.whenFilterByNamespace(clusterMode.namespace)
