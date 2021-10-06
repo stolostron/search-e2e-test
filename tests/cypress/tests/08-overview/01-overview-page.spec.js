@@ -8,14 +8,14 @@
 import { squad } from '../../config'
 import { overviewPage } from '../../views/overview'
 
-describe('RHACM4K-1419: Search: Overview page', function () {
-  context('prereq: user should log into the ACM console', function () {
+describe('RHACM4K-1419: Search: Overview page', { tags: [] }, function () {
+  context('prereq: user should log into the ACM console', { tags: ['@required'] }, function () {
     it(`[P1][Sev1][${squad}] should login`, function () {
       cy.login()
     })
   })
 
-  context('UI - overview page validation', function () {
+  context('UI - overview page validation', { tags: [] }, function () {
     beforeEach(() => {
       overviewPage.whenGoToOverviewPage()
     })
@@ -46,7 +46,7 @@ describe('RHACM4K-1419: Search: Overview page', function () {
     })
   })
 
-  context('UI - overview page link validation', function () {
+  context('UI - overview page link validation', { tags: [] }, function () {
     beforeEach(() => {
       overviewPage.whenGoToOverviewPage()
     })

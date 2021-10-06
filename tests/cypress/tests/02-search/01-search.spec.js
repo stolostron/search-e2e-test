@@ -32,7 +32,7 @@ clusterModes.forEach((clusterMode) => {
     return
   }
 
-  describe('Search: Search in ' + clusterMode.label + ' Cluster', function () {
+  describe('Search: Search in ' + clusterMode.label + ' Cluster', { tags: ['@canary', '@rosa'] }, function () {
     before(function () {
       clusterMode.valueFn().as('clusterName')
     })
@@ -45,46 +45,43 @@ clusterModes.forEach((clusterMode) => {
 
     // Logging into the hub cluster UI.
     if (clusterMode.label !== 'Managed') {
-      context('prereq: user should log into the ACM console', function () {
+      context('prereq: user should log into the ACM console', { tags: ['@required'] }, function () {
         it(`[P1][Sev1][${squad}] should login`, function () {
           cy.login()
         })
       })
     }
 
-    context(
-      'search resources: verify resource exist after creation',
-      function () {
-        beforeEach(function () {
-          searchPage.whenGoToSearchPage()
-          searchBar.whenFilterByNamespace(clusterMode.namespace)
-          searchBar.whenFilterByCluster(this.clusterName)
-          searchPage.shouldLoadResults()
-        })
+    context('search resources: verify resource exist after creation', { tags: ['@bvt'] },function () {
+      beforeEach(function () {
+        searchPage.whenGoToSearchPage()
+        searchBar.whenFilterByNamespace(clusterMode.namespace)
+        searchBar.whenFilterByCluster(this.clusterName)
+        searchPage.shouldLoadResults()
+      })
 
-        it(`[P3][Sev3][${squad}] should have expected count of relationships`, function () {
-          searchPage.whenExpandRelationshipTiles()
-          searchPage.shouldFindRelationshipTile('cluster', '1')
-          searchPage.shouldFindRelationshipTile('deployment', '1')
-          searchPage.shouldFindRelationshipTile('pod', '1')
-        })
+      it(`[P3][Sev3][${squad}] should have expected count of relationships`, function () {
+        searchPage.whenExpandRelationshipTiles()
+        searchPage.shouldFindRelationshipTile('cluster', '1')
+        searchPage.shouldFindRelationshipTile('deployment', '1')
+        searchPage.shouldFindRelationshipTile('pod', '1')
+      })
 
-        it(`[P1][Sev1][${squad}] should work kind filter for deployment`, function () {
-          searchBar.whenFilterByKind('deployment')
-          searchPage.shouldFindResourceDetailItem(
-            'deployment',
-            clusterMode.namespace + '-deployment'
-          )
-        })
+      it(`[P1][Sev1][${squad}] should work kind filter for deployment`, function () {
+        searchBar.whenFilterByKind('deployment')
+        searchPage.shouldFindResourceDetailItem(
+          'deployment',
+          clusterMode.namespace + '-deployment'
+        )
+      })
 
-        it(`[P1][Sev1][${squad}] should work kind filter for pod`, function () {
-          searchBar.whenFilterByKind('pod')
-          searchPage.shouldFindResourceDetailItem(
-            'pod',
-            clusterMode.namespace + '-deployment-'
-          )
-        })
-      }
-    )
+      it(`[P1][Sev1][${squad}] should work kind filter for pod`, function () {
+        searchBar.whenFilterByKind('pod')
+        searchPage.shouldFindResourceDetailItem(
+          'pod',
+          clusterMode.namespace + '-deployment-'
+        )
+      })
+    })
   })
 })
