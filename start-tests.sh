@@ -36,6 +36,7 @@ log_color () {
 
 log_color "cyan" "Initiating Search E2E tests...\n"
 
+# Set browser for UI testing.
 if [ -z "$BROWSER" ]; then
   log_color "purple" "BROWSER" "not exported; setting to 'chrome' (options available: 'chrome', 'firefox')\n"
   export BROWSER="chrome"
@@ -84,6 +85,9 @@ else
   log_color "purple" "OPTIONS_HUB_OC_IDP" "detected, using $OPTIONS_HUB_OC_IDP for test.\n"
 fi
 
+# Create dir for kube configs.
+mkdir -p ./kube/config
+
 # Check to see if OPTIONS_HUB_BASEDOMAIN, OPTIONS_HUB_USER, or OPTIONS_HUB_PASSWORD are missing. We need these to run the UI test.
 if [[ -z $OPTIONS_HUB_BASEDOMAIN || -z $OPTIONS_HUB_USER || -z $OPTIONS_HUB_PASSWORD ]]; then
   log_color "red" "One or more exported variables are undefined for hub cluster." "(set ${PURPLE}OPTIONS_HUB_BASEDOMAIN, OPTIONS_HUB_BASEDOMAIN, and OPTIONS_HUB_BASEDOMAIN${NC} to execute the test with environment variables)\n"
@@ -99,9 +103,9 @@ if [[ -z $OPTIONS_HUB_BASEDOMAIN || -z $OPTIONS_HUB_USER || -z $OPTIONS_HUB_PASS
       export SKIP_UI_TEST=true
     fi
 
-    echo -e "Kubeconfig file detected at: $OPTIONS_HUB_KUBECONFIG => copying to ./config/hub-kubeconfig"
-    cp $OPTIONS_HUB_KUBECONFIG ./config/hub-kubeconfig
-    export OPTIONS_HUB_KUBECONFIG=./config/hub-kubeconfig
+    echo -e "Kubeconfig file detected at: $OPTIONS_HUB_KUBECONFIG => copying to ./kube/config/hub-kubeconfig"
+    cp $OPTIONS_HUB_KUBECONFIG ./kube/config/hub-kubeconfig
+    export OPTIONS_HUB_KUBECONFIG=./kube/config/hub-kubeconfig
 
     # Check to see if there are any kubecontext to be used from the hub cluster kubeconfig.
     if [[ -z $OPTIONS_HUB_KUBECONTEXT || "$OPTIONS_HUB_KUBECONTEXT" == "null" ]]; then
@@ -146,7 +150,9 @@ log_color "purple" "\tCYPRESS_OPTIONS_HUB_OC_IDP" "\t: $CYPRESS_OPTIONS_HUB_OC_I
 
 if [[ ! -z $CYPRESS_OPTIONS_HUB_PASSWORD && "$CYPRESS_OPTIONS_HUB_PASSWORD" != "null" ]]; then
   log_color "cyan" "Logging into Kube API server."
-  export KUBECONFIG=./config/hub-kubeconfig
+
+  export KUBECONFIG=./kube/config/hub-kubeconfig
+  touch $KUBECONFIG
 
   oc login --server=https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443 -u $CYPRESS_OPTIONS_HUB_USER -p $CYPRESS_OPTIONS_HUB_PASSWORD --insecure-skip-tls-verify
   export OPTIONS_HUB_KUBECONFIG=$KUBECONFIG
@@ -160,6 +166,9 @@ if [[ ! -z $CYPRESS_OPTIONS_HUB_PASSWORD && "$CYPRESS_OPTIONS_HUB_PASSWORD" != "
 
   export CYPRESS_OPTIONS_HUB_KUBECONFIG=$OPTIONS_HUB_KUBECONFIG
 fi
+
+VERSION=`oc get subscriptions.operators.coreos.com -A -o yaml | grep currentCSV:\ advanced-cluster-management | awk '{$1=$1};1' | sed "s/currentCSV:\ advanced-cluster-management.v//"`
+log_color "green" "Testing with ACM Version": "$VERSION\n"
 
 log_color "cyan" "Checking RedisGraph deployment."
 installNamespace=`oc get subscriptions.operators.coreos.com --all-namespaces | grep advanced-cluster-management | awk '{print $1}'`
@@ -202,9 +211,9 @@ else
       export CYPRESS_USE_MANAGED_KUBECONFIG=true
       export CYPRESS_SKIP_MANAGED_CLUSTER_TEST=false
 
-      echo -e "Kubeconfig file detected at: $OPTIONS_MANAGED_KUBECONFIG - copying to ./config/import-kubeconfig\n"
-      cp $OPTIONS_MANAGED_KUBECONFIG ./config/import-kubeconfig
-      export OPTIONS_MANAGED_KUBECONFIG=./config/import-kubeconfig
+      echo -e "Kubeconfig file detected at: $OPTIONS_MANAGED_KUBECONFIG - copying to ./kube/config/import-kubeconfig\n"
+      cp $OPTIONS_MANAGED_KUBECONFIG ./kube/config/import-kubeconfig
+      export OPTIONS_MANAGED_KUBECONFIG=./kube/config/import-kubeconfig
 
       if [[ -z $OPTIONS_MANAGED_KUBECONTEXT || "$OPTIONS_MANAGED_KUBECONTEXT" == "null" ]]; then
         MANAGED_CLUSTER=($(oc config get-clusters --kubeconfig=$OPTIONS_MANAGED_KUBECONFIG))
@@ -222,8 +231,10 @@ else
     echo -e "Environment variables detected for managed cluster. Configuring tests to execute with imported cluster exported variables.\n"
     log_color "cyan" "Logging into the managed cluster using credentials and generating the kubeconfig..."
 
-    export KUBECONFIG=./config/import-kubeconfig
     export OPTIONS_MANAGED_URL="https://api.$OPTIONS_MANAGED_BASEDOMAIN:6443"
+
+    export KUBECONFIG=./kube/config/import-kubeconfig
+    touch $KUBECONFIG
     
     oc login --server=$OPTIONS_MANAGED_URL -u $OPTIONS_MANAGED_USER -p $OPTIONS_MANAGED_PASSWORD --insecure-skip-tls-verify
     export OPTIONS_MANAGED_KUBECONFIG=$KUBECONFIG
@@ -246,9 +257,6 @@ export CYPRESS_OPTIONS_MANAGED_URL=$OPTIONS_MANAGED_URL
 export CYPRESS_OPTIONS_MANAGED_USER=kubeadmin
 
 testCode=0
-
-VERSION=`oc get subscriptions.operators.coreos.com -A -o yaml | grep currentCSV:\ advanced-cluster-management | awk '{$1=$1};1' | sed "s/currentCSV:\ advanced-cluster-management.v//"`
-log_color "green" "Testing with ACM Version": "$VERSION"
 
 if [[ -z $NODE_ENV ]]; then
   export NODE_ENV="production" || set NODE_ENV="production"
@@ -378,5 +386,8 @@ if [[ "$SKIP_UI_TEST" == false ]]; then
     source build/rbac-clean.sh
   fi
 fi
+
+# Clean up kube config
+rm -rf ./kube/config
 
 exit $testCode

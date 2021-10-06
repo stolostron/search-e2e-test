@@ -41,7 +41,7 @@ const getSearchApiRoute = async () => {
 
 const getKubeConfig = () => {
   const kubeconfigs = []
-  const dir = './config'
+  const dir = './kube/config'
   fs.readdirSync(dir).forEach((file) => {
     if (file[0] !== '.') {
       kubeconfigs.push(`${dir}/${file}`)
