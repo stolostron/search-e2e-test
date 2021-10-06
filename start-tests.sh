@@ -286,8 +286,8 @@ if [[ "https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443" =~ "canary" || "$TEST
   fi
 fi
 
-if [[ "https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443" =~ "openshiftapps.com" || "$USER_E2E_TEST_MODE" == "rosa" ]]; then
-  log_color "yellow" "ROSA cluster environment detected - excluding test that are tagged with @ROSA and @RBAC.\n"
+if [[ "https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443" =~ "openshiftapps.com" || "$TEST_ENV" == "rosa" ]]; then
+  log_color "yellow" "ROSA cluster environment detected: excluding test that are tagged with @ROSA and @RBAC.\n"
   
   # Running rosa test. We want to run all tests that are marked rosa but exclude rbac.
   if [[ -z "$CYPRESS_TAGS_EXCLUDE" ]]; then
