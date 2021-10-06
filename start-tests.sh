@@ -156,7 +156,6 @@ if [[ ! -z $CYPRESS_OPTIONS_HUB_PASSWORD && "$CYPRESS_OPTIONS_HUB_PASSWORD" != "
 
   oc login --server=https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443 -u $CYPRESS_OPTIONS_HUB_USER -p $CYPRESS_OPTIONS_HUB_PASSWORD --insecure-skip-tls-verify
   export OPTIONS_HUB_KUBECONFIG=$KUBECONFIG
-  unset KUBECONFIG
 
   if [[ -f $OPTIONS_HUB_KUBECONFIG ]]; then
     echo -e "Succesfully detected hub cluster kubeconfig.\n"
@@ -285,6 +284,8 @@ if [[ "https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443" =~ "openshiftapps.com
     export CYPRESS_TAGS_EXCLUDE="@rosa+-@rbac $CYPRESS_TAGS_EXCLUDE"
   fi
 fi
+
+export KUBECONFIG=$OPTIONS_HUB_KUBECONFIG
 
 # We are caching the cypress binary for containerization, therefore it does not need npx. However, locally we need it.
 DISPLAY="--headless"
