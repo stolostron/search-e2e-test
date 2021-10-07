@@ -27,10 +27,8 @@ COPY build/rbac-setup.sh ./build/
 COPY build/rbac-clean.sh ./build/
 
 RUN npm install
-RUN ["chmod", "+x", "./build/rbac-setup.sh"]
-RUN ["chmod", "+x", "./build/rbac-clean.sh"]
 
 RUN sh download-clis.sh
 RUN ["chmod", "+x", "start-tests.sh"]
-RUN sh ./build/rbac-setup.sh
+
 ENTRYPOINT ["./start-tests.sh"]

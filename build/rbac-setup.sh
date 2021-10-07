@@ -28,8 +28,7 @@ passwd=${OPTIONS_HUB_PASSWORD:-CYPRESS_OPTIONS_HUB_PASSWORD}
 
 if ! which htpasswd &>/dev/null; then
   if which apt-get &>/dev/null; then
-    apt-get update
-    apt-get install -y apache2-utils
+    yum install httpd-tools
   else
     echo "Error: Package manager apt-get not found. Failed to find or install htpasswd."
     exit 1
