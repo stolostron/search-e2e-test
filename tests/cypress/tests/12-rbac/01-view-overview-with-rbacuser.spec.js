@@ -17,14 +17,14 @@ const rbac_users = [
 const password = Cypress.env('OPTIONS_HUB_PASSWORD')
 const IDP = 'search-e2e-htpasswd'
 
-describe('RBAC users to read the Overview page', { tags: ['@canary', '@rosa'] },
+describe('RBAC users to read the Overview page', { tags: ['@CANARY', '@ROSA'] },
   function () {
     const overviewPagePolarionIDs = ['731', '921', '919', '920']
 
     rbac_users.forEach((user, index) => {
       var roleAccess = user.split('-')
 
-      context(`verify: read action for user ${user} with ${roleAccess[2]} role`, { tags: ['@bvt', '@rbac'] }, function () {
+      context(`verify: read action for user ${user} with ${roleAccess[2]} role`, { tags: ['@BVT', '@RBAC'] }, function () {
         it(`RHACM4K-${overviewPagePolarionIDs[index]}[P1][Sev1][${squad}] Login: ${user} user`, function () {
           cy.login(user, password, IDP)
         })
