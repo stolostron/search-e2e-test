@@ -1,5 +1,7 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
+jest.retryTimes(global.retry);
+
 const squad = require('../../config').get('squadName')
 const {
   getSearchApiRoute,
@@ -9,7 +11,6 @@ const {
 } = require('../common-lib/clusterAccess')
 const { execSync } = require('child_process')
 
-jest.retryTimes(3);
 describe('RHACM4K-1709: Search - Search using filters', () => {
   beforeAll(async () => {
     // Log in and get access token

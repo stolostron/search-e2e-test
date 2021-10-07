@@ -1,5 +1,7 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
+jest.retryTimes(global.retry);
+
 const squad = require('../../config').get('squadName')
 const { getSearchApiRoute, getToken } = require('../common-lib/clusterAccess')
 const request = require('supertest')
@@ -22,7 +24,6 @@ const query = {
     'query searchResult($input: [SearchInput]) {\n  searchResult: search(input: $input) {\n    items\n    __typename\n  }\n}\n',
 }
 
-jest.retryTimes(3);
 describe('Search API: Verify access:', () => {
   beforeAll(async () => {
     // Log in and get access token

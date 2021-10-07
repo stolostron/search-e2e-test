@@ -75,7 +75,7 @@ log_color "cyan" "Running tests with the following environment:\n"
 log_color "purple" "\tCYPRESS_OPTIONS_HUB_BASEDOMAIN" "\t: $CYPRESS_OPTIONS_HUB_BASEDOMAIN"
 log_color "purple" "\tCYPRESS_OPTIONS_HUB_BASE_URL" "\t: $CYPRESS_BASE_URL"
 log_color "purple" "\tCYPRESS_OPTIONS_HUB_USER" "\t: $CYPRESS_OPTIONS_HUB_USER"
-log_color "purple" "\tCYPRESS_OPTIONS_HUB_OC_IDP" "\t\t\t: $CYPRESS_OPTIONS_HUB_OC_IDP\n"
+log_color "purple" "\tCYPRESS_OPTIONS_HUB_OC_IDP" "\t: $CYPRESS_OPTIONS_HUB_OC_IDP\n"
 
 if [[ -z $OPTIONS_MANAGED_BASEDOMAIN || -z $OPTIONS_MANAGED_USER || -z $OPTIONS_MANAGED_PASSWORD ]]; then
    log_color "yellow" "One or more variables are undefined. Copying kubeconfigs...\n"

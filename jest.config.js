@@ -1,4 +1,7 @@
 module.exports = {
+  globals: {
+    "retry": 2
+  },
   globalSetup: './globalSetup.js',
   globalTeardown: './globalTeardown.js',
   verbose: true,
