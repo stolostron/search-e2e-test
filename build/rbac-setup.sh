@@ -26,14 +26,8 @@ fi
 
 passwd=${OPTIONS_HUB_PASSWORD:-CYPRESS_OPTIONS_HUB_PASSWORD}
 
-if ! which htpasswd &>/dev/null; then
-  if which apt-get &>/dev/null; then
-    yum install httpd-tools
-  else
-    echo "Error: Package manager apt-get not found. Failed to find or install htpasswd."
-    exit 1
-  fi
-fi
+
+yum install httpd-tools
 
 touch ${RBAC_DIR}/htpasswd
 for access in cluster ns; do
