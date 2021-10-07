@@ -71,16 +71,14 @@ try {
   }
 }
 
-if (
-  !nconf.get('options:hub:baseDomain') ||
-  !nconf.get('options:hub:user') ||
-  !nconf.get('options:hub:password')
-) {
-  throw new Error(`Missing environment variables.
-    The following are required to run this tests:
-    - OPTIONS_HUB_BASEDOMAIN or options.hub.baseDomain in options.yaml.
-    - OPTIONS_HUB_USER or options.hub.user in options.yaml.
-    - OPTIONS_HUB_PASSWORD or options.hub.password in options.yaml.`)
+if (!process.env.USE_HUB_KUBECONFIG) {
+  if (!nconf.get('options:hub:baseDomain') || !nconf.get('options:hub:user') || !nconf.get('options:hub:password')) {
+    throw new Error(`Missing environment variables.
+      The following are required to run this tests:
+      - OPTIONS_HUB_BASEDOMAIN or options.hub.baseDomain in options.yaml.
+      - OPTIONS_HUB_USER or options.hub.user in options.yaml.
+      - OPTIONS_HUB_PASSWORD or options.hub.password in options.yaml.\n`)
+  }
 }
 
 module.exports = nconf

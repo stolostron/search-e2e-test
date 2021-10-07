@@ -11,7 +11,7 @@ import { searchPage } from '../../views/search'
 import { savedSearches, searchBar } from '../../views/suggestedSearches'
 
 describe('RHACM4K-411: Search: Verify the suggested search templates', { tags: [] }, function () {
-  context('prereq: user should log into the ACM console', { tags: ['@required'] }, function () {
+  context('prereq: user should log into the ACM console', { tags: ['@REQUIRED'] }, function () {
     it(`[P1][Sev1][${squad}] should login`, function () {
       cy.login()
     })

@@ -37,12 +37,15 @@ log_color () {
 log_color "cyan" "Initiating Search E2E tests...\n"
 
 # Set browser for UI testing.
-if [ -z "$BROWSER" ]; then
+if [[ -z $BROWSER ]]; then
   log_color "purple" "BROWSER" "not exported; setting to 'chrome' (options available: 'chrome', 'firefox')\n"
   export BROWSER="chrome"
 else
   log_color "purple" "BROWSER set (running in $BROWSER)\n"
 fi
+
+# Create directory for kubeconfigs.
+mkdir -p ./kube/config
 
 # Load test config mounted at /resources/options.yaml
 OPTIONS_FILE=/resources/options.yaml
@@ -74,23 +77,23 @@ elif [[ -f $USER_OPTIONS_FILE ]]; then
   export OPTIONS_MANAGED_KUBECONFIG=`yq e '.options.clusters[0].kubeconfig' $USER_OPTIONS_FILE`
   export OPTIONS_HUB_OC_IDP=`yq e '.options.identityProvider' $USER_OPTIONS_FILE`
 else
-  log_color "yellow" "Options file does not exist, checking to see if the test can be configured with environment variables."
+  log_color "yellow" "Options file does not exist, checking to see if the test can be configured with environment variables.\n"
 fi
 
 # Check to see if OPTIONS_HUB_OC_IDP is unset or null.
 if [[ -z $OPTIONS_HUB_OC_IDP || "$OPTIONS_HUB_OC_IDP" == "null" ]]; then
-  log_color "purple" "OPTIONS_HUB_OC_IDP" "is (null or not set); setting to 'kube:admin'\n"
+  log_color "purple" "OPTIONS_HUB_OC_IDP" "not exported or null; setting to 'kube:admin' (set ${PURPLE}OPTIONS_HUB_OC_IDP${NC} to execute the test with target identity provider)"
   export OPTIONS_HUB_OC_IDP=kube:admin
+
+  log_color "purple" "OPTIONS_HUB_USER" "setting to default user: 'kubeadmin'\n"
+  export OPTIONS_HUB_USER=kubeadmin
 else
   log_color "purple" "OPTIONS_HUB_OC_IDP" "detected, using $OPTIONS_HUB_OC_IDP for test.\n"
 fi
 
-# Create dir for kube configs.
-mkdir -p ./kube/config
-
 # Check to see if OPTIONS_HUB_BASEDOMAIN, OPTIONS_HUB_USER, or OPTIONS_HUB_PASSWORD are missing. We need these to run the UI test.
 if [[ -z $OPTIONS_HUB_BASEDOMAIN || -z $OPTIONS_HUB_USER || -z $OPTIONS_HUB_PASSWORD ]]; then
-  log_color "red" "One or more exported variables are undefined for hub cluster." "(set ${PURPLE}OPTIONS_HUB_BASEDOMAIN, OPTIONS_HUB_BASEDOMAIN, and OPTIONS_HUB_BASEDOMAIN${NC} to execute the test with environment variables)\n"
+  log_color "red" "One or more exported variables are undefined for hub cluster." "(set ${PURPLE}OPTIONS_HUB_BASEDOMAIN, OPTIONS_HUB_USER, and OPTIONS_HUB_PASSWORD${NC} to execute the test with environment variables)\n"
 
   # Check to see if the kubeconfig for the hub cluster is available.
   if [[ ! -f $OPTIONS_HUB_KUBECONFIG ]]; then
@@ -99,29 +102,26 @@ if [[ -z $OPTIONS_HUB_BASEDOMAIN || -z $OPTIONS_HUB_USER || -z $OPTIONS_HUB_PASS
   else
     # To run the E2E test, we need the password to log into the UI. If it's not exported or available from the options.yaml file, skip the UI test.
     if [[ -z $OPTIONS_HUB_PASSWORD || "$OPTIONS_HUB_PASSWORD" == "null" ]]; then
-      log_color "purple" "OPTIONS_HUB_PASSWORD" "is required to login into the ACM console. ${YELLOW}Skipping UI test.${NC}\n"
+      log_color "purple" "OPTIONS_HUB_PASSWORD" "not exported; (${PURPLE}OPTIONS_HUB_PASSWORD${NC} is required to login into the ACM console... Skipping UI test)\n"
       export SKIP_UI_TEST=true
     fi
 
-    echo -e "Kubeconfig file detected at: $OPTIONS_HUB_KUBECONFIG => copying to ./kube/config/hub-kubeconfig"
+    echo -e "Kubeconfig file detected at: $OPTIONS_HUB_KUBECONFIG => ${YELLOW}copying to ./kube/config/hub-kubeconfig${NC}"
     cp $OPTIONS_HUB_KUBECONFIG ./kube/config/hub-kubeconfig
     export OPTIONS_HUB_KUBECONFIG=./kube/config/hub-kubeconfig
 
     # Check to see if there are any kubecontext to be used from the hub cluster kubeconfig.
     if [[ -z $OPTIONS_HUB_KUBECONTEXT || "$OPTIONS_HUB_KUBECONTEXT" == "null" ]]; then
       HUB_CLUSTER=($(oc config get-clusters --kubeconfig=$OPTIONS_HUB_KUBECONFIG))
-      export OPTIONS_HUB_KUBECONTEXT=default/${HUB_CLUSTER[1]}/kube:admin
+      export OPTIONS_HUB_KUBECONTEXT=default/${HUB_CLUSTER[1]}/$OPTIONS_HUB_OC_IDP
     fi
 
     echo -e
     log_color "cyan" "Switching context to log into Kube API server"
     oc config use-context --kubeconfig=$OPTIONS_HUB_KUBECONFIG $OPTIONS_HUB_KUBECONTEXT
     
+    export USE_HUB_KUBECONFIG=true
     export OPTIONS_HUB_BASEDOMAIN=$(oc whoami --show-server=true | cut -d'.' -f2- | cut -d':' -f1)
-
-    if [[ $OPTIONS_HUB_OC_IDP == "kube:admin" && -z $OPTIONS_HUB_USER ]]; then
-      export OPTIONS_HUB_USER=kubeadmin
-    fi
 
     log_color "purple" "HUB CLUSTER:" "$OPTIONS_HUB_BASEDOMAIN"
   fi
@@ -166,23 +166,27 @@ if [[ ! -z $CYPRESS_OPTIONS_HUB_PASSWORD && "$CYPRESS_OPTIONS_HUB_PASSWORD" != "
   export CYPRESS_OPTIONS_HUB_KUBECONFIG=$OPTIONS_HUB_KUBECONFIG
 fi
 
-export CYPRESS_ACM_VERSION=`oc get subscriptions.operators.coreos.com -A -o yaml | grep currentCSV:\ advanced-cluster-management | awk '{$1=$1};1' | sed "s/currentCSV:\ advanced-cluster-management.v//"`
+if [[ ! -z $USE_HUB_KUBECONFIG ]]; then
+  ADD_KUBECONFIG="--kubeconfig=$OPTIONS_HUB_KUBECONFIG"
+fi
+
+export CYPRESS_ACM_VERSION=`oc get subscriptions.operators.coreos.com $ADD_KUBECONFIG -A -o yaml | grep currentCSV:\ advanced-cluster-management | awk '{$1=$1};1' | sed "s/currentCSV:\ advanced-cluster-management.v//"`
 log_color "green" "Testing with ACM Version": "$CYPRESS_ACM_VERSION\n"
 
 log_color "cyan" "Checking RedisGraph deployment."
-installNamespace=`oc get subscriptions.operators.coreos.com --all-namespaces | grep advanced-cluster-management | awk '{print $1}'`
-rgstatus=`oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}" -n ${installNamespace}`
+installNamespace=`oc get subscriptions.operators.coreos.com $ADD_KUBECONFIG --all-namespaces | grep advanced-cluster-management | awk '{print $1}'`
+rgstatus=`oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}" $ADD_KUBECONFIG -n $installNamespace`
 
 if [ "$rgstatus" == "true" ]; then
   echo -e "RedisGraph deployment is enabled.\n"
 else
   echo -e "RedisGraph deployment disabled, enabling and waiting 60 seconds for the search-redisgraph-0 pod.\n"
-  oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n $installNamespace
+  oc set env deploy search-operator DEPLOY_REDISGRAPH="true" $ADD_KUBECONFIG -n $installNamespace
   sleep 60
 fi
 
 # Search for managed clusters.
-MANAGED_CLUSTERS=($(oc get managedclusters -o custom-columns='name:.metadata.name' --no-headers))
+MANAGED_CLUSTERS=($(oc get managedclusters $ADD_KUBECONFIG -o custom-columns='name:.metadata.name' --no-headers))
 
 # Check to see if there are any managed cluster available.
 if [[ ${#MANAGED_CLUSTERS[@]} == "1" && ${MANAGED_CLUSTERS[0]} =~ "local-cluster" ]]; then
@@ -192,7 +196,7 @@ else
   echo -e "Detected clusters within the fleet: ${GREEN}${MANAGED_CLUSTERS[@]}${NC}\n"
 
   if [[ -z $OPTIONS_MANAGED_BASEDOMAIN || -z $OPTIONS_MANAGED_USER || -z $OPTIONS_MANAGED_PASSWORD ]]; then
-    log_color "red" "One or more variables are undefined for imported cluster." "(set ${PURPLE}OPTIONS_MANAGED_BASEDOMAIN, OPTIONS_MANAGED_BASEDOMAIN, and OPTIONS_MANAGED_BASEDOMAIN${NC} to execute the test with environment variables)\n"
+    log_color "red" "One or more exported variables are undefined for imported cluster." "(set ${PURPLE}OPTIONS_MANAGED_BASEDOMAIN, OPTIONS_MANAGED_USER, and OPTIONS_MANAGED_PASSWORD${NC} to execute the test with environment variables)\n"
 
     # The mount path will be set by CICD.
     if [[ ! -z $OPTIONS_KUBECONFIG_MOUNT_PATH ]]; then
@@ -210,7 +214,7 @@ else
       export CYPRESS_USE_MANAGED_KUBECONFIG=true
       export CYPRESS_SKIP_MANAGED_CLUSTER_TEST=false
 
-      echo -e "Kubeconfig file detected at: $OPTIONS_MANAGED_KUBECONFIG - copying to ./kube/config/import-kubeconfig\n"
+      echo -e "Kubeconfig file detected at: $OPTIONS_MANAGED_KUBECONFIG - ${YELLOW}copying to ./kube/config/import-kubeconfig${NC}\n"
       cp $OPTIONS_MANAGED_KUBECONFIG ./kube/config/import-kubeconfig
       export OPTIONS_MANAGED_KUBECONFIG=./kube/config/import-kubeconfig
 
@@ -267,16 +271,21 @@ log_color "green" "Setting env to run in:" "$NODE_ENV\n"
 if [[ "https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443" =~ "canary" || "$TEST_ENV" == "canary" ]]; then
   log_color "yellow" "Canary cluster environment detected:"
 
-  if [[ "$TEST_MODE" == "BVT" ]]; then
-    echo -e "Test mode set to @BVT - running test that are tagged with @CANARY, @required, and @BVT.\n"
-    TAGS="@CANARY+@required @CANARY+@BVT"
+  if [[ -z $TEST_MODE ]]; then
+    log_color "purple" "TEST_MODE" "not exported; setting to 'BVT' (options available 'BVT', 'SMOKE')\n"
+    TAGS="@CANARY+@REQUIRED @CANARY+@BVT"
+    export TEST_MODE=BVT
+
+  elif [[ "$TEST_MODE" == "BVT" ]]; then
+    log_color "purple" "TEST_MODE" "set to @BVT - running test that are tagged with @CANARY, @REQUIRED, and @BVT.\n"
+    TAGS="@CANARY+@REQUIRED @CANARY+@BVT"
 
   elif [[ "$TEST_MODE" == "smoke" ]]; then
-    echo -e "Test mode set to @smoke - running test that are tagged with @CANARY, @required, and @smoke.\n"
-    TAGS="@CANARY+@required @CANARY+@smoke"
+    log_color "purple" "TEST_MODE" "set to @SMOKE - running test that are tagged with @CANARY, @REQUIRED, and @SMOKE.\n"
+    TAGS="@CANARY+@REQUIRED @CANARY+@SMOKE"
 
   else
-    echo -e "Test mode set to @$TEST_MODE - preparing to run all test. (set ${PURPLE}TEST_MODE${NC} to @BVT or @smoke)\n"
+    log_color "purple" "TEST_MODE" "set to @$TEST_MODE - unknown option selected. Preparing to run all test. (options available 'BVT' or 'SMOKE')\n"
   fi
 
   if [[ -z $CYPRESS_TAGS_INCLUDE ]]; then
@@ -311,14 +320,16 @@ if [[ -z $SKIP_API_TEST ]]; then
 fi
 
 if [[ -z $SKIP_UI_TEST ]]; then
-  log_color "purple" "SKIP_UI_TEST" "not exported; setting to false (set ${PURPLE}SKIP_UI_TEST${NC} to true, if you wish to skip the UI tests)\n"
+  log_color "purple" "SKIP_UI_TEST" "not exported; setting to false (set ${PURPLE}SKIP_UI_TEST${NC} to true, if you wish to skip the UI tests)"
   export SKIP_UI_TEST=false
 fi
+
+echo -e
 
 if [[ -z $CYPRESS_TAGS_INCLUDE ]]; then
   log_color "purple" "CYPRESS_TAGS_INCLUDE" "not exported; (set ${PURPLE}CYPRESS_TAGS_INCLUDE${NC} to include a test tags i.e ${YELLOW}@CANARY${NC}, if you wish to execute on a subset of tests)"
 else
-  log_color "purple" "Including tests that only contain the following tags: ${YELLOW}$CYPRESS_TAGS_INCLUDE${NC}"
+  log_color "purple" "Including tests that only contain the following tags: ${YELLOW}$CYPRESS_TAGS_INCLUDE${NC}\n"
   CYPRESS_TAGS=$CYPRESS_TAGS_INCLUDE
 fi
 
@@ -348,11 +359,11 @@ if [[ -z $RECORD ]]; then
   export RECORD=false
 fi
 
-# Displaying cypress environment variables, so we know all of the ones that are being passed successfully.
-env | grep "cypress_" -i
-echo -e
-
 if [[ "$SKIP_UI_TEST" == false ]]; then
+  # Displaying cypress environment variables, so we know all of the ones that are being passed successfully.
+  env | grep "cypress_" -i
+  echo -e
+
   log_color "cyan" "Create RBAC users"
   if [[ -f /rbac-setup.sh ]]; then
     chmod +x /rbac-setup.sh
@@ -399,8 +410,5 @@ if [[ "$SKIP_UI_TEST" == false ]]; then
     source build/rbac-clean.sh
   fi
 fi
-
-# Clean up kube config
-rm -rf ./kube/config
 
 exit $testCode

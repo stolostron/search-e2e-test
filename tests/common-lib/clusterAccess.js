@@ -8,11 +8,17 @@ const fs = require('fs')
 
 // Login to the cluster
 const clusterLogin = () => {
-  execSync(
-    `oc login -u ${config.get('options:hub:user')} -p ${config.get(
-      'options:hub:password'
-    )} --server=https://api.${config.get('options:hub:baseDomain')}:6443`
-  )
+  if (!process.env.USE_HUB_KUBECONFIG) {
+    execSync(
+      `oc login -u ${config.get('options:hub:user')} -p ${config.get(
+        'options:hub:password'
+      )} --server=https://api.${config.get('options:hub:baseDomain')}:6443`
+    )
+  } else {
+    execSync(
+      `oc config use-context --kubeconfig=${process.env.OPTIONS_HUB_KUBECONFIG} ${process.env.OPTIONS_HUB_KUBECONTEXT}`
+    )
+  }
 }
 
 // Login and get access token

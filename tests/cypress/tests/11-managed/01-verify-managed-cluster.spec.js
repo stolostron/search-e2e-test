@@ -14,7 +14,7 @@ describe('RHACM4K-912: Search: Verify the managed cluster info in the search pag
     cliHelper.getTargetManagedCluster().as('clusterName')
   })
 
-  context('prereq: user should log into the ACM console', { tags: ['@required'] }, function () {
+  context('prereq: user should log into the ACM console', { tags: ['@REQUIRED'] }, function () {
     it(`[P1][Sev1][${squad}] should login`, function () {
       cy.login()
     })

@@ -95,7 +95,7 @@ export const cliHelper = {
           var KUBECONFIG = mode.label !== 'Managed' ? '' : `KUBECONFIG=${Cypress.env('OPTIONS_MANAGED_KUBECONFIG')}`
 
           // Log into the hub and managed cluster with the oc command to create the resources.
-          context(`prereq: create resource with oc command`, { tags: ['@required'] }, function () {
+          context(`prereq: create resource with oc command`, { tags: ['@REQUIRED'] }, function () {
             if (mode.label === 'Managed' && Cypress.env('USE_MANAGED_KUBECONFIG')) {
               it(`[P1][Sev1][${squad}] should switch context within kubeconfig file to log into ${mode.label.toLocaleLowerCase()} cluster`, function () {
                 cliHelper.useManagedKubeconfig()
