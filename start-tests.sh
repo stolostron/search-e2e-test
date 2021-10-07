@@ -39,7 +39,7 @@ USER_OPTIONS_FILE=./options.yaml
 
 if [ -f $OPTIONS_FILE ]; then
   log_color "yellow" "Using test config from: $OPTIONS_FILE\n"
-  export CYPRESS_OC_IDP=`yq e '.options.identityProvider' $OPTIONS_FILE`
+  export CYPRESS_OPTIONS_HUB_OC_IDP=`yq e '.options.identityProvider' $OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_USER=`yq e '.options.hub.user' $OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $OPTIONS_FILE`
@@ -50,7 +50,7 @@ if [ -f $OPTIONS_FILE ]; then
   export OPTIONS_MANAGED_CLUSTER_NAME=`yq e '.options.clusters[0].name' $OPTIONS_FILE`
 elif [ -f $USER_OPTIONS_FILE ]; then
   log_color "yellow" "Using test config from: $USER_OPTIONS_FILE\n"
-  export CYPRESS_OC_IDP=`yq e '.options.identityProvider' $USER_OPTIONS_FILE`
+  export CYPRESS_OPTIONS_HUB_OC_IDP=`yq e '.options.identityProvider' $USER_OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $USER_OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_USER=`yq e '.options.hub.user' $USER_OPTIONS_FILE`
   export CYPRESS_OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $USER_OPTIONS_FILE`
@@ -65,17 +65,17 @@ fi
 
 export CYPRESS_BASE_URL=https://multicloud-console.apps.$CYPRESS_OPTIONS_HUB_BASEDOMAIN
 
-# Check to see if CYPRESS_OC_IDP is null.
-if [[ -z $CYPRESS_OC_IDP || "$CYPRESS_OC_IDP" == "null" ]]; then
-  log_color "purple" "CYPRESS_OC_IDP" "is (null or not set); setting to 'kube:admin'\n"
-  export CYPRESS_OC_IDP=kube:admin
+# Check to see if CYPRESS_OPTIONS_HUB_OC_IDP is null.
+if [[ -z $CYPRESS_OPTIONS_HUB_OC_IDP || "$CYPRESS_OPTIONS_HUB_OC_IDP" == "null" ]]; then
+  log_color "purple" "CYPRESS_OPTIONS_HUB_OC_IDP" "is (null or not set); setting to 'kube:admin'\n"
+  export CYPRESS_OPTIONS_HUB_OC_IDP=kube:admin
 fi
 
 log_color "cyan" "Running tests with the following environment:\n"
 log_color "purple" "\tCYPRESS_OPTIONS_HUB_BASEDOMAIN" "\t: $CYPRESS_OPTIONS_HUB_BASEDOMAIN"
 log_color "purple" "\tCYPRESS_OPTIONS_HUB_BASE_URL" "\t: $CYPRESS_BASE_URL"
 log_color "purple" "\tCYPRESS_OPTIONS_HUB_USER" "\t: $CYPRESS_OPTIONS_HUB_USER"
-log_color "purple" "\tCYPRESS_OC_IDP" "\t\t\t: $CYPRESS_OC_IDP\n"
+log_color "purple" "\tCYPRESS_OPTIONS_HUB_OC_IDP" "\t\t\t: $CYPRESS_OPTIONS_HUB_OC_IDP\n"
 
 if [[ -z $OPTIONS_MANAGED_BASEDOMAIN || -z $OPTIONS_MANAGED_USER || -z $OPTIONS_MANAGED_PASSWORD ]]; then
    log_color "yellow" "One or more variables are undefined. Copying kubeconfigs...\n"

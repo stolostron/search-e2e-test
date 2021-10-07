@@ -15,7 +15,7 @@
   "watchForFileChanges": true,
   "nodeVersion": "system",
   "env": {
-    "OC_IDP": "kube:admin"
+    "OPTIONS_HUB_OC_IDP": "kube:admin"
   },
   "reporter": "cypress-multi-reporters",
   "reporterOptions": {
