@@ -8,14 +8,14 @@
 import { squad } from '../../config'
 import { clustersPage } from '../../views/clusters'
 
-describe('RHACM4K-413: Search: Linked page', function () {
-  context('prereq: user should log into the ACM console', function () {
+describe('RHACM4K-413: Search: Linked page', { tags: [] }, function () {
+  context('prereq: user should log into the ACM console', { tags: ['@required'] }, function () {
     it(`[P1][Sev1][${squad}] should login`, function () {
       cy.login()
     })
   })
 
-  context('verify: cluster page link to search page', function () {
+  context('verify: cluster page link to search page', { tags: [] }, function () {
     it(`[P1][Sev1][${squad}] should load the cluster page`, function () {
       clustersPage.shouldLoad()
     })

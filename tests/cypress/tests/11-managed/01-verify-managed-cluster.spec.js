@@ -9,18 +9,18 @@ import { squad } from '../../config'
 import { cliHelper } from '../../scripts/cliHelper'
 import { searchPage } from '../../views/search'
 
-describe('RHACM4K-912: Search: Verify the managed cluster info in the search page', function () {
+describe('RHACM4K-912: Search: Verify the managed cluster info in the search page', { tags: ['@canary', '@rosa'] }, function () {
   before(function () {
     cliHelper.getTargetManagedCluster().as('clusterName')
   })
 
-  context('prereq: user should log into the ACM console', function () {
+  context('prereq: user should log into the ACM console', { tags: ['@required'] }, function () {
     it(`[P1][Sev1][${squad}] should login`, function () {
       cy.login()
     })
   })
 
-  context('verify: managed cluster resource endpoint', () => {
+  context('verify: managed cluster resource endpoint', { tags: ['@bvt'] }, () => {
     beforeEach(function () {
       searchPage.whenGoToSearchPage()
     })
@@ -38,7 +38,7 @@ describe('RHACM4K-912: Search: Verify the managed cluster info in the search pag
     })
 
     it(`[P3][Sev3][${squad}] should verify the yaml information is correct and there are no errors in the logs`, function () {
-      searchPage.shouldVerifyManagedClusterPodsYamlAndLogs(this.clusterName)
+      searchPage.shouldVerifyManagedClusterPodsAreRunning(this.clusterName, true)
     })
   })
 })

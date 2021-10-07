@@ -146,7 +146,7 @@ export const searchPage = {
       .should('have.length.above', 1)
     cy.get('li#ReactTags-1').click()
   },
-  shouldVerifyManagedClusterPodsAreRunning: (name) => {
+  shouldVerifyManagedClusterPodsAreRunning: (name, checkLogs) => {
     searchBar.whenFilterByKind('pod')
     searchBar.whenFilterByCluster(name)
     searchBar.whenEnterTextInSearchBar('namespace')
@@ -162,17 +162,16 @@ export const searchPage = {
           searchPage.shouldSelectFirstSuggestionValue()
           searchPage.shouldLoadResults()
           cy.get(`[data-label="Status"]`).should('contain', 'Running')
+
+          if (checkLogs) {
+            cy.get(`td[data-label="Name"]`).each(($el) => {
+              searchPage.whenGoToResourceDetailItemPage('pod', $el.text())
+              podDetailPage.whenClickOnLogsTab()
+              cy.go('back')
+            })
+          }
         }
       })
-  },
-  shouldVerifyManagedClusterPodsYamlAndLogs: (name) => {
-    searchPage.shouldVerifyManagedClusterPodsAreRunning(name)
-
-    cy.get(`td[data-label="Name"]`).each(($el) => {
-      searchPage.whenGoToResourceDetailItemPage('pod', $el.text())
-      podDetailPage.whenClickOnLogsTab()
-      cy.go('back')
-    })
   },
   shouldFindRelationshipTile: (resource, count) => {
     cy.get('.pf-c-page__main-section').should('contain', `${count}`)

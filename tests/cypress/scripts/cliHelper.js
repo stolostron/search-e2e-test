@@ -7,18 +7,28 @@ import { squad } from '../config'
 
 export const cliHelper = {
   getTargetManagedCluster: () => {
+    if (Cypress.env('OPTIONS_MANAGED_CLUSTER_NAME')) {
+      cy.log(`Imported cluster name found: ${Cypress.env('OPTIONS_MANAGED_CLUSTER_NAME')}`)
+      return cy.wrap(Cypress.env("OPTIONS_MANAGED_CLUSTER_NAME"))
+    }
+
     return cy
       .exec('oc get managedclusters -o custom-columns=NAME:.metadata.name')
       .then((result) => {
         const managedClusters = result.stdout.split('\n').slice(1)
-        let targetCluster
+        var targetCluster
+
+        if (managedClusters.length === 1 && managedClusters.find((c) => c.includes('local-cluster'))) {
+          cy.log(`No imported cluster name found. Using local-cluster for testing.`)
+          return cy.wrap(targetCluster = 'local-cluster')
+        }
 
         // In the canary tests, we only need to focus on the import-xxxx managed cluster.
         if (
           Cypress.env('NODE_ENV') !== 'development' &&
           Cypress.env('NODE_ENV') !== 'debug'
         ) {
-          targetCluster = managedClusters.find((c) => c.startsWith('import-'))
+          targetCluster = managedClusters.find((c) => c.startsWith('canary-') || c.startsWith('import-'))
         }
 
         // When running locally or if the cluster is not available, try testing on an available managed cluster.
@@ -78,9 +88,9 @@ export const cliHelper = {
   setup: (modes) => {
     modes.forEach((mode) => {
       if (!mode.skip) {
-        describe(`Search: Create resource in ${mode.label} Cluster`, function () {
+        describe(`Search: Create resource in ${mode.label} Cluster`, { tags: ['@canary', '@rosa'] }, function () {
           // Log into the hub and managed cluster with the oc command to create the resources.
-          context(`prereq: create resource with oc command`, function () {
+          context(`prereq: create resource with oc command`, { tags: ['@required'] }, function () {
             it(`[P1][Sev1][${squad}] should log into ${mode.label.toLocaleLowerCase()} cluster`, function () {
               cliHelper.login(mode.label)
             })

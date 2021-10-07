@@ -22,6 +22,7 @@ const query = {
     'query searchResult($input: [SearchInput]) {\n  searchResult: search(input: $input) {\n    items\n    __typename\n  }\n}\n',
 }
 
+jest.retryTimes(3);
 describe('Search API: Verify access:', () => {
   beforeAll(async () => {
     // Log in and get access token
