@@ -38,9 +38,7 @@ endif
 DOCKER_NAMESPACE := open-cluster-management
 DOCKER_REGISTRY := quay.io
 
-BROWSER ?= chrome
 TEST_IMAGE_TAG ?= $(COMPONENT_VERSION)$(COMPONENT_TAG_EXTENSION)
-
 
 install:
 	npm install
@@ -55,7 +53,6 @@ build-test-image:
 run-test-image:
 	npm run test:clean-reports
 	docker run \
-	-e BROWSER=$(BROWSER) \
 	--volume $(shell pwd)/options.yaml:/resources/options.yaml \
 	--volume $(shell pwd)/results:/results \
 	quay.io/open-cluster-management/search-e2e:$(TEST_IMAGE_TAG)
@@ -67,7 +64,6 @@ run-test-image-pr:
 
 	docker run \
 	-v /var/run/docker.sock:/var/run/docker.sock \
-	-e BROWSER=$(BROWSER) \
 	-e USER=$(shell git log -1 --format='%ae') \
 	-e GITHUB_TOKEN=$(GITHUB_TOKEN) \
 	-e TRAVIS_BUILD_WEB_URL=$(TRAVIS_BUILD_WEB_URL) \

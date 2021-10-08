@@ -1,5 +1,7 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
+jest.retryTimes(global.retry);
+
 const squad = require('../../config').get('squadName')
 const {
   getSearchApiRoute,
@@ -10,7 +12,6 @@ const {
 } = require('../common-lib/clusterAccess')
 const { exec, execSync } = require('child_process')
 
-jest.retryTimes(3);
 describe('RHACM4K-913: Search - Verify search results with different queries', () => {
   // Get kubeconfig for imported clusters
   var kubeconfigs = getKubeConfig()

@@ -1,5 +1,7 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
+jest.retryTimes(global.retry);
+
 const squad = require('../../config').get('squadName')
 const {
   getSearchApiRoute,
@@ -9,7 +11,6 @@ const {
 } = require('../common-lib/clusterAccess')
 const _ = require('lodash')
 
-jest.retryTimes(3);
 describe('RHACM4K-1695: Search - verify managed cluster info in the search page', () => {
   beforeAll(async () => {
     // Log in and get access token
