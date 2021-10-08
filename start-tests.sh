@@ -103,24 +103,24 @@ log_color "purple" "Testing with ACM Version: $VERSION"
 echo -e
 
 if [[ "https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443" =~ "canary" || "$TEST_ENV" == "canary" ]]; then
-  log_color "yellow" "Canary cluster environment detected - running test that are tagged with @canary, @required, and @bvt.\n"
+  log_color "yellow" "Canary cluster environment detected - running test that are tagged with @CANARY, @REQUIRED, and @BVT.\n"
 
   # Running canary test. We want to run all tests that are marked required and that are bvt
   if [[ -z "$CYPRESS_TAGS_INCLUDE" ]]; then
-    export CYPRESS_TAGS_INCLUDE="@canary+@required @canary+@bvt"
+    export CYPRESS_TAGS_INCLUDE="@CANARY+@REQUIRED @CANARY+@BVT"
   else
-    export CYPRESS_TAGS_INCLUDE="@canary+@required @canary+@bvt $CYPRESS_TAGS_INCLUDE"
+    export CYPRESS_TAGS_INCLUDE="@CANARY+@REQUIRED @CANARY+@BVT $CYPRESS_TAGS_INCLUDE"
   fi
 fi
 
 if [[ "https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443" =~ "openshiftapps.com" || "$TEST_ENV" == "rosa" ]]; then
-  log_color "yellow" "ROSA cluster environment detected - excluding test that are tagged with @rosa and @rbac.\n"
+  log_color "yellow" "ROSA cluster environment detected - excluding test that are tagged with @ROSA and @RBAC.\n"
   
   # Running rosa test. We want to run all tests that are marked rosa but exclude 
   if [[ -z "$CYPRESS_TAGS_EXCLUDE" ]]; then
-    export CYPRESS_TAGS_EXCLUDE="@rosa+-@rbac"
+    export CYPRESS_TAGS_EXCLUDE="@ROSA+-@RBAC"
   else
-    export CYPRESS_TAGS_EXCLUDE="@rosa+-@rbac $CYPRESS_TAGS_EXCLUDE"
+    export CYPRESS_TAGS_EXCLUDE="@ROSA+-@RBAC $CYPRESS_TAGS_EXCLUDE"
   fi
 fi
 
@@ -159,7 +159,7 @@ fi
 log_color "yellow" "Setting env to run in:" "$NODE_ENV\n"
 
 if [[ -z $CYPRESS_TAGS_INCLUDE ]]; then
-  log_color "purple" "CYPRESS_TAGS_INCLUDE" "not exported; set ${PURPLE}CYPRESS_TAGS_INCLUDE${NC} to include a test tags i.e ${YELLOW}@canary${NC}, if you wish to execute on a subset of tests)"
+  log_color "purple" "CYPRESS_TAGS_INCLUDE" "not exported; set ${PURPLE}CYPRESS_TAGS_INCLUDE${NC} to include a test tags i.e ${YELLOW}@CANARY${NC}, if you wish to execute on a subset of tests)"
 else
   log_color "purple" "Including tests that only contain the following tags: ${YELLOW}$CYPRESS_TAGS_INCLUDE${NC}"
   CYPRESS_TAGS=$CYPRESS_TAGS_INCLUDE

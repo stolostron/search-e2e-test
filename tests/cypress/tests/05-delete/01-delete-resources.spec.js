@@ -32,21 +32,21 @@ clusterModes.forEach((clusterMode) => {
     return
   }
 
-  describe('RHACKM4K-726: Search: Search in ' + clusterMode.label + ' Cluster', { tags: ['@canary', '@rosa'] }, function () {
+  describe('RHACKM4K-726: Search: Search in ' + clusterMode.label + ' Cluster', { tags: ['@CANARY', '@ROSA'] }, function () {
       before(function () {
         clusterMode.valueFn().as('clusterName')
       })
 
       // Logging into the hub cluster UI.
       if (clusterMode.label !== 'Managed') {
-        context('prereq: user should log into the ACM console', { tags: ['@required'] }, function () {
+        context('prereq: user should log into the ACM console', { tags: ['@REQUIRED'] }, function () {
           it(`[P1][Sev1][${squad}] should login`, function () {
             cy.login()
           })
         })
       }
 
-      context('search resource: verify delete function in search result', { tags: ['@bvt'] },
+      context('search resource: verify delete function in search result', { tags: ['@BVT'] },
         function () {
           beforeEach(function () {
             searchPage.whenGoToSearchPage()

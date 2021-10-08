@@ -32,7 +32,7 @@ clusterModes.forEach((clusterMode) => {
     return
   }
 
-  describe('Search: Search in ' + clusterMode.label + ' Cluster', { tags: ['@canary', '@rosa'] }, function () {
+  describe('Search: Search in ' + clusterMode.label + ' Cluster', { tags: ['@CANARY', '@ROSA'] }, function () {
     before(function () {
       clusterMode.valueFn().as('clusterName')
     })
@@ -45,14 +45,14 @@ clusterModes.forEach((clusterMode) => {
 
     // Logging into the hub cluster UI.
     if (clusterMode.label !== 'Managed') {
-      context('prereq: user should log into the ACM console', { tags: ['@required'] }, function () {
+      context('prereq: user should log into the ACM console', { tags: ['@REQUIRED'] }, function () {
         it(`[P1][Sev1][${squad}] should login`, function () {
           cy.login()
         })
       })
     }
 
-    context('search resources: verify resource exist after creation', { tags: ['@bvt'] },function () {
+    context('search resources: verify resource exist after creation', { tags: ['@BVT'] },function () {
       beforeEach(function () {
         searchPage.whenGoToSearchPage()
         searchBar.whenFilterByNamespace(clusterMode.namespace)
