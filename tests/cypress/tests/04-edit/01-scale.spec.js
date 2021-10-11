@@ -16,12 +16,14 @@ const clusterModes = [
     valueFn: () => cy.wrap('local-cluster'),
     skip: false,
     namespace: cliHelper.generateNamespace(),
+    kubeconfig: Cypress.env('USE_HUB_KUBECONFIG') ? `KUBECONFIG=${Cypress.env('OPTIONS_HUB_KUBECONFIG')}` : ''
   },
   {
     label: 'Managed',
     valueFn: () => cliHelper.getTargetManagedCluster(),
-    skip: true,
+    skip: Cypress.env('SKIP_MANAGED_CLUSTER_TEST'),
     namespace: cliHelper.generateNamespace('', `managed-${Date.now()}`),
+    kubeconfig: Cypress.env('USE_MANAGED_KUBECONFIG') ? `KUBECONFIG=${Cypress.env('OPTIONS_MANAGED_KUBECONFIG')}` : ''
   },
 ]
 
@@ -40,8 +42,14 @@ clusterModes.forEach((clusterMode) => {
 
     // Log into cluster to clean up resources.
     after(function () {
-      cliHelper.login(clusterMode.label)
-      cliHelper.deleteNamespace(clusterMode.namespace)
+      if (clusterMode.label === 'Managed' && Cypress.env('USE_MANAGED_KUBECONFIG')) {
+        // Switch context with kubeconfig file.
+        cliHelper.useManagedKubeconfig()
+      } else {
+        // Log into cluster with oc command.
+        cliHelper.login(clusterMode.label)
+      }
+      cliHelper.deleteNamespace(clusterMode.namespace, clusterMode.kubeconfig)
     })
 
     // Logging into the hub cluster UI.
