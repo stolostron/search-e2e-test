@@ -5,7 +5,7 @@
 
 /// <reference types="cypress" />
 
-import { squad } from '../../config'
+import { squad, tags } from '../../config'
 import { overviewPage } from '../../views/overview'
 
 const rbac_users = [
@@ -17,7 +17,7 @@ const rbac_users = [
 const password = Cypress.env('OPTIONS_HUB_PASSWORD')
 const IDP = 'search-e2e-htpasswd'
 
-describe('RBAC users to read the Overview page', { tags: ['@CANARY', '@ROSA'] },
+describe('RBAC users to read the Overview page', { tags: tags.environments },
   function () {
     const overviewPagePolarionIDs = ['731', '921', '919', '920']
 

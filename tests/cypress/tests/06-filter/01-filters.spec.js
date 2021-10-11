@@ -5,7 +5,7 @@
 
 /// <reference types="cypress" />
 
-import { squad } from '../../config'
+import { squad, tags } from '../../config'
 import { searchPage, searchBar } from '../../views/search'
 import {
   filtersRegistry,
@@ -46,8 +46,8 @@ filtersRegistry.createFilter('status', {
   strategies: [simple, multipleValues(2)],
 })
 
-describe('RHACM4K-537: Search: Search using filters', { tags: ['@CANARY', '@ROSA'] }, function () {
-  context('prereq: user should log into the ACM console', { tags: ['@REQUIRED'] }, function () {
+describe('RHACM4K-537: Search: Search using filters', { tags: tags.environments }, function () {
+  context('prereq: user should log into the ACM console', { tags: tags.required }, function () {
     it(`[P1][Sev1][${squad}] should login`, function () {
       cy.login()
     })

@@ -5,7 +5,7 @@
 
 /// <reference types="cypress" />
 
-import { squad } from '../../config'
+import { squad, tags } from '../../config'
 import { cliHelper } from '../../scripts/cliHelper'
 import { searchPage } from '../../views/search'
 
@@ -14,8 +14,8 @@ const appName = `auto-test-app-${postfix}`
 
 const namespace = cliHelper.generateNamespace()
 
-describe('RHACM4K-913: Search - common filter and conditions', { tags: ['@CANARY', '@ROSA'] }, function () {
-  context('prereq: create resource with oc command and log into the ACM console', { tags: ['@REQUIRED'] }, function () {
+describe('RHACM4K-913: Search - common filter and conditions', { tags: tags.environment }, function () {
+  context('prereq: create resource with oc command and log into the ACM console', { tags: tags.required }, function () {
     it(`[P1][Sev1][${squad}] should create namespace and application`, function () {
       cliHelper.createNamespace(namespace)
       cliHelper.createApplication(appName, namespace)

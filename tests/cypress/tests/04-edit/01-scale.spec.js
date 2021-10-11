@@ -5,7 +5,7 @@
 
 /// <reference types="cypress" />
 
-import { squad } from '../../config'
+import { squad, tags } from '../../config'
 import { cliHelper } from '../../scripts/cliHelper'
 import { searchPage, searchBar } from '../../views/search'
 import { deploymentDetailPage } from '../../views/deploymentDetailPage'
@@ -33,7 +33,7 @@ clusterModes.forEach((clusterMode) => {
     return
   }
 
-  describe('RHACM4K-1574: Search: Search in ' + clusterMode.label + ' Cluster', { tags: ['@CANARY', '@ROSA'] }, function () {
+  describe('RHACM4K-1574: Search: Search in ' + clusterMode.label + ' Cluster', { tags: tags.environments }, function () {
     before(function () {
       clusterMode.valueFn().as('clusterName')
     })
@@ -46,7 +46,7 @@ clusterModes.forEach((clusterMode) => {
 
     // Logging into the hub cluster UI.
     if (clusterMode.label !== 'Managed') {
-      context('prereq: user should log into the ACM console', { tags: ['@REQUIRED'] }, function () {
+      context('prereq: user should log into the ACM console', { tags: tags.required }, function () {
         it(`[P1][Sev1][${squad}] should login`, function () {
           cy.login()
         })

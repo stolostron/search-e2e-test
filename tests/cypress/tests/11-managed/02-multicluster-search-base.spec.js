@@ -4,8 +4,8 @@
  ****************************************************************************** */
 
 /// <reference types="cypress" />
+import { squad, tags } from '../../config'
 import { savedSearches } from '../../views/savedSearches'
-import { squad } from '../../config'
 import { searchPage } from '../../views/search'
 
 const queryDefaultNamespaceName = 'default namespace search'
@@ -14,8 +14,8 @@ const queryDefaultNamespaceDesc = 'this is searching that each cluster should ha
 const queryOcmaNamespaceName = 'open-cluster-management-agent search'
 const queryOcmaNamespaceDesc = 'this is searching that each cluster should have open-cluster-management-agent'
 
-describe('RHACM4K-1262 - Search: multiple managedclusters base tests', { tags: ['@CANARY', '@ROSA'] }, function () {
-  context('prereq: user should log into the ACM console', { tags: ['@REQUIRED'] }, function () {
+describe('RHACM4K-1262 - Search: multiple managedclusters base tests', { tags: tags.environments }, function () {
+  context('prereq: user should log into the ACM console', { tags: tags.required }, function () {
     it(`[P1][Sev1][${squad}] should login`, function () {
       cy.login()
     })

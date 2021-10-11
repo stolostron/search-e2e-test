@@ -3,7 +3,7 @@
  * Copyright (c) 2021 Red Hat, Inc.
  ****************************************************************************** */
 
-import { squad } from '../config'
+import { squad, tags } from '../config'
 
 export const cliHelper = {
   getTargetManagedCluster: () => {
@@ -88,9 +88,9 @@ export const cliHelper = {
   setup: (modes) => {
     modes.forEach((mode) => {
       if (!mode.skip) {
-        describe(`Search: Create resource in ${mode.label} Cluster`, { tags: ['@CANARY', '@ROSA'] }, function () {
+        describe(`Search: Create resource in ${mode.label} Cluster`, { tags: tags.environments }, function () {
           // Log into the hub and managed cluster with the oc command to create the resources.
-          context(`prereq: create resource with oc command`, { tags: ['@REQUIRED'] }, function () {
+          context(`prereq: create resource with oc command`, { tags: tags.required }, function () {
             it(`[P1][Sev1][${squad}] should log into ${mode.label.toLocaleLowerCase()} cluster`, function () {
               cliHelper.login(mode.label)
             })
