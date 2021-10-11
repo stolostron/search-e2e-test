@@ -77,18 +77,13 @@ export const cliHelper = {
   },
   login: (mode) => {
     var mode = mode === 'Local' ? 'HUB' : 'MANAGED'
-    cy.exec(
-      `oc login --server=https://api.${Cypress.env(
-        `OPTIONS_${mode}_BASEDOMAIN`
-      )}:6443 -u ${Cypress.env(`OPTIONS_${mode}_USER`)} -p ${Cypress.env(
-        `OPTIONS_${mode}_PASSWORD`
-      )} --insecure-skip-tls-verify`
+    cy.exec(`oc login --server=https://api.${Cypress.env(`OPTIONS_${mode}_BASEDOMAIN`)}:6443 -u ${Cypress.env(`OPTIONS_${mode}_USER`)} -p ${Cypress.env(`OPTIONS_${mode}_PASSWORD`)} --insecure-skip-tls-verify`
     )
   },
   setup: (modes) => {
     modes.forEach((mode) => {
       if (!mode.skip) {
-        describe(`Search: Create resource in ${mode.label} Cluster`, { tags: tags.environments }, function () {
+        describe(`Search: Create resource in ${mode.label} Cluster`, { tags: tags.env }, function () {
           // Log into the hub and managed cluster with the oc command to create the resources.
           context(`prereq: create resource with oc command`, { tags: tags.required }, function () {
             it(`[P1][Sev1][${squad}] should log into ${mode.label.toLocaleLowerCase()} cluster`, function () {

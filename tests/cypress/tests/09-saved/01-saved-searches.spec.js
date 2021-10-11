@@ -18,7 +18,7 @@ const queryDefaultNamespaceDesc = `This is searching that the cluster should hav
 const queryEditNamespaceName = `[E2E] ${queryDefaultNamespaceName}-2`
 const queryEditNamespaceDesc = `[Created by Search E2E automation] This is searching that the cluster should have ${namespace} namespace.-2`
 
-describe('RHACM4K-412 - Search: Saved searches', { tags: tags.environments }, function () {
+describe('RHACM4K-412 - Search: Saved searches', { tags: tags.env }, function () {
   context('prereq: user should log into the ACM console', { tags: tags.required }, function () {
     it(`[P1][Sev1][${squad}] should create namespace`, function () {
       cliHelper.createNamespace(namespace)
@@ -29,7 +29,7 @@ describe('RHACM4K-412 - Search: Saved searches', { tags: tags.environments }, fu
     })
   })
 
-  context('verify: saved searches resource actions', { tags: ['@BVT'] },  function () {
+  context('verify: saved searches resource actions', { tags: tags.modes },  function () {
     beforeEach(function () {
       searchPage.whenGoToSearchPage()
     })

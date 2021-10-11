@@ -14,14 +14,14 @@ const queryDefaultNamespaceDesc = 'this is searching that each cluster should ha
 const queryOcmaNamespaceName = 'open-cluster-management-agent search'
 const queryOcmaNamespaceDesc = 'this is searching that each cluster should have open-cluster-management-agent'
 
-describe('RHACM4K-1262 - Search: multiple managedclusters base tests', { tags: tags.environments }, function () {
+describe('RHACM4K-1262 - Search: multiple managedclusters base tests', { tags: tags.env }, function () {
   context('prereq: user should log into the ACM console', { tags: tags.required }, function () {
     it(`[P1][Sev1][${squad}] should login`, function () {
       cy.login()
     })
   })
 
-  context('verify: multicluster managed base', { tags: ['@BVT'] } , function () {
+  context('verify: multicluster managed base', { tags: tags.modes } , function () {
     beforeEach(function () {
       searchPage.whenGoToSearchPage()
     })

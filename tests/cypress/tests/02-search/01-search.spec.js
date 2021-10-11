@@ -32,7 +32,7 @@ clusterModes.forEach((clusterMode) => {
     return
   }
 
-  describe('Search: Search in ' + clusterMode.label + ' Cluster', { tags: tags.environments }, function () {
+  describe('Search: Search in ' + clusterMode.label + ' Cluster', { tags: tags.env }, function () {
     before(function () {
       clusterMode.valueFn().as('clusterName')
     })
@@ -52,7 +52,7 @@ clusterModes.forEach((clusterMode) => {
       })
     }
 
-    context('search resources: verify resource exist after creation', { tags: ['@BVT'] },function () {
+    context('search resources: verify resource exist after creation', { tags: tags.modes },function () {
       beforeEach(function () {
         searchPage.whenGoToSearchPage()
         searchBar.whenFilterByNamespace(clusterMode.namespace)

@@ -33,7 +33,7 @@ clusterModes.forEach((clusterMode) => {
     return
   }
 
-  describe('RHACM4K-1574: Search: Search in ' + clusterMode.label + ' Cluster', { tags: tags.environments }, function () {
+  describe('RHACM4K-1574: Search: Search in ' + clusterMode.label + ' Cluster', { tags: tags.env }, function () {
     before(function () {
       clusterMode.valueFn().as('clusterName')
     })
@@ -53,7 +53,7 @@ clusterModes.forEach((clusterMode) => {
       })
     }
 
-    context('search resources: verify edit yaml function and scale resources', { tags: ['@BVT'] }, function () {
+    context('search resources: verify edit yaml function and scale resources', { tags: tags.modes }, function () {
       beforeEach(function () {
         searchPage.whenGoToSearchPage()
         searchBar.whenFilterByNamespace(clusterMode.namespace)

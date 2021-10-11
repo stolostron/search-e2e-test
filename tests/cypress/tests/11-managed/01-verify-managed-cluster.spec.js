@@ -9,7 +9,7 @@ import { squad, tags } from '../../config'
 import { cliHelper } from '../../scripts/cliHelper'
 import { searchPage } from '../../views/search'
 
-describe('RHACM4K-912: Search: Verify the managed cluster info in the search page', { tags: tags.environments }, function () {
+describe('RHACM4K-912: Search: Verify the managed cluster info in the search page', { tags: tags.env }, function () {
   before(function () {
     cliHelper.getTargetManagedCluster().as('clusterName')
   })
@@ -20,7 +20,7 @@ describe('RHACM4K-912: Search: Verify the managed cluster info in the search pag
     })
   })
 
-  context('verify: managed cluster resource endpoint', { tags: ['@BVT'] }, () => {
+  context('verify: managed cluster resource endpoint', { tags: tags.modes }, () => {
     beforeEach(function () {
       searchPage.whenGoToSearchPage()
     })
