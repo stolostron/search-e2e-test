@@ -79,6 +79,12 @@ if (!process.env.USE_HUB_KUBECONFIG) {
       - OPTIONS_HUB_USER or options.hub.user in options.yaml.
       - OPTIONS_HUB_PASSWORD or options.hub.password in options.yaml.\n`)
   }
+} else {
+  if (!nconf.get('options:hub:kubeconfig')) {
+    throw new Error(`Missing environment variables.
+      The following are required to run this tests:
+      - OPTIONS_HUB_KUBECONFIG or options.hub.kubeconfig in options.yaml.`)
+  }
 }
 
 module.exports = nconf

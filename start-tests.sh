@@ -279,20 +279,18 @@ if [[ "https://api.${CYPRESS_OPTIONS_HUB_BASEDOMAIN}:6443" =~ "canary" || "$TEST
   log_color "yellow" "Canary cluster environment detected:"
 
   if [[ -z $TEST_MODE ]]; then
-    log_color "purple" "TEST_MODE" "not exported; setting to 'BVT' (options available 'BVT', 'SMOKE')\n"
-    TAGS="@CANARY+@REQUIRED @CANARY+@BVT"
-    export TEST_MODE=BVT
+    log_color "purple" "TEST_MODE" "not exported; continuing to execute all tests suites by default (options available 'BVT', 'SVT')\n"
 
   elif [[ "$TEST_MODE" == "BVT" ]]; then
     log_color "purple" "TEST_MODE" "set to @BVT - running test that are tagged with @CANARY, @REQUIRED, and @BVT.\n"
     TAGS="@CANARY+@REQUIRED @CANARY+@BVT"
 
-  elif [[ "$TEST_MODE" == "smoke" ]]; then
-    log_color "purple" "TEST_MODE" "set to @SMOKE - running test that are tagged with @CANARY, @REQUIRED, and @SMOKE.\n"
-    TAGS="@CANARY+@REQUIRED @CANARY+@SMOKE"
+  elif [[ "$TEST_MODE" == "SVT" ]]; then
+    log_color "purple" "TEST_MODE" "set to @SVT - running test that are tagged with @CANARY, @REQUIRED, and @SVT.\n"
+    TAGS="@CANARY+@REQUIRED @CANARY+@SVT"
 
   else
-    log_color "purple" "TEST_MODE" "set to @$TEST_MODE - unknown option selected. Preparing to run all test. (options available 'BVT' or 'SMOKE')\n"
+    log_color "purple" "TEST_MODE" "set to @$TEST_MODE - unknown option selected. Preparing to run all test. (options available 'BVT' or 'SVT')\n"
   fi
 
   if [[ -z $CYPRESS_TAGS_INCLUDE ]]; then

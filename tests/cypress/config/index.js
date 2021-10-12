@@ -6,6 +6,6 @@
 exports.squad = 'observability-usa'
 exports.tags = {
     env: ['@CANARY', '@ROSA'],
-    modes: ['@BVT', '@SMOKE'],
+    modes: ['@BVT', '@SVT'],
     required: ['@REQUIRED'],
 }
