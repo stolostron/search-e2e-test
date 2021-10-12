@@ -6,16 +6,10 @@
 /// <reference types="cypress" />
 
 import { squad, tags } from '../../config'
-import { cliHelper } from '../../scripts/cliHelper'
 import { searchPage } from '../../views/search'
 
 const clusterModes = [
   { label: 'Local', valueFn: () => cy.wrap('local-cluster'), skip: false },
-  {
-    label: 'Managed',
-    valueFn: () => cliHelper.getTargetManagedCluster(),
-    skip: Cypress.env('SKIP_MANAGED_CLUSTER_TEST'),
-  },
 ]
 
 clusterModes.forEach((clusterMode) => {
