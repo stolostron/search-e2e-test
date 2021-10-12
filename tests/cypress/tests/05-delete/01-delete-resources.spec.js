@@ -57,8 +57,15 @@ clusterModes.forEach((clusterMode) => {
             searchPage.shouldLoadResults()
           })
 
+          // Log into cluster to clean up resources
           after(function () {
-            cliHelper.login(clusterMode.label)
+            if (clusterMode.label === 'Managed' && Cypress.env('USE_MANAGED_KUBECONFIG')) {
+              // Switch context with kubeconfig file.
+              cliHelper.useManagedKubeconfig()
+            } else {
+              // Log into cluster with oc command.
+              cliHelper.login(clusterMode.label)
+            }
           })
 
           it(`[P2][Sev2][${squad}] should delete deployment`, function () {

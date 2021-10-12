@@ -213,7 +213,7 @@ else
       export USE_MANAGED_KUBECONFIG=true
       export SKIP_MANAGED_CLUSTER_TEST=false
 
-      echo -e "Kubeconfig file detected at: $OPTIONS_MANAGED_KUBECONFIG - ${YELLOW}copying to ./kube/config/import-kubeconfig${NC}\n"
+      echo -e "Kubeconfig file detected at: $OPTIONS_MANAGED_KUBECONFIG => ${YELLOW}copying to ./kube/config/import-kubeconfig${NC}\n"
       cp $OPTIONS_MANAGED_KUBECONFIG ./kube/config/import-kubeconfig
       export OPTIONS_MANAGED_KUBECONFIG=./kube/config/import-kubeconfig
 

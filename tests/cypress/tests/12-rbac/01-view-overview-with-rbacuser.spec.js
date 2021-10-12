@@ -17,10 +17,10 @@ const rbac_users = [
 const password = Cypress.env('OPTIONS_HUB_PASSWORD')
 const IDP = 'search-e2e-htpasswd'
 
-const ignore = []
+let ignore
 
 if (Cypress.env('TEST_ENV') === 'rosa') {
-  ignore.push('@RBAC')
+  ignore = ['@RBAC']
 }
 
 describe('RBAC users to read the Overview page', { tags: tags.env, },
@@ -30,7 +30,7 @@ describe('RBAC users to read the Overview page', { tags: tags.env, },
     rbac_users.forEach((user, index) => {
       var roleAccess = user.split('-')
 
-      context(`RHACM4K-${overviewPagePolarionIDs[index]} - verify: read action for user ${user} with ${roleAccess[2]} role`, { tags: ignore || tags.modes }, function () {
+      context(`RHACM4K-${overviewPagePolarionIDs[index]} - verify: read action for user ${user} with ${roleAccess[2]} role`, { tags: ignore ? ignore : tags.modes }, function () {
         it(`[P1][Sev1][${squad}] Login: ${user} user`, { tags: tags.required }, function () {
           cy.login(user, password, IDP)
         })
