@@ -190,7 +190,7 @@ MANAGED_CLUSTERS=($(oc get managedclusters $ADD_KUBECONFIG -o custom-columns='na
 # Check to see if there are any managed cluster available.
 if [[ ${#MANAGED_CLUSTERS[@]} == "1" && ${MANAGED_CLUSTERS[0]} =~ "local-cluster" ]]; then
   echo -e "No managable clusters detected for the hub cluster: $CYPRESS_OPTIONS_HUB_BASEDOMAIN.\n"
-  export CYPRESS_SKIP_MANAGED_CLUSTER_TEST=true
+  export SKIP_MANAGED_CLUSTER_TEST=true
 else
   echo -e "Detected clusters within the fleet: ${GREEN}${MANAGED_CLUSTERS[@]}${NC}\n"
 
@@ -207,11 +207,11 @@ else
     if [[ ! -f $OPTIONS_MANAGED_KUBECONFIG ]]; then
       log_color "red" "The kubeconfig file for imported cluster was not located." "(set ${PURPLE}KUBECONFIG${NC} to ${YELLOW}$OPTIONS_MANAGED_KUBECONFIG${NC} and oc login to create kubeconfig file)"
       echo -e "Skipping managed cluster test.\n"
-      export CYPRESS_SKIP_MANAGED_CLUSTER_TEST=true
+      export SKIP_MANAGED_CLUSTER_TEST=true
     else
       # Exporting this variable so cypress will know to use the kubeconfig file for the imported cluster.
-      export CYPRESS_USE_MANAGED_KUBECONFIG=true
-      export CYPRESS_SKIP_MANAGED_CLUSTER_TEST=false
+      export USE_MANAGED_KUBECONFIG=true
+      export SKIP_MANAGED_CLUSTER_TEST=false
 
       echo -e "Kubeconfig file detected at: $OPTIONS_MANAGED_KUBECONFIG - ${YELLOW}copying to ./kube/config/import-kubeconfig${NC}\n"
       cp $OPTIONS_MANAGED_KUBECONFIG ./kube/config/import-kubeconfig
@@ -258,6 +258,8 @@ export CYPRESS_OPTIONS_MANAGED_KUBECONFIG=$OPTIONS_MANAGED_KUBECONFIG
 export CYPRESS_OPTIONS_MANAGED_KUBECONTEXT=$OPTIONS_MANAGED_KUBECONTEXT
 export CYPRESS_OPTIONS_MANAGED_PASSWORD=$OPTIONS_MANAGED_PASSWORD
 export CYPRESS_OPTIONS_MANAGED_USER=kubeadmin
+export CYPRESS_SKIP_MANAGED_CLUSTER_TEST=$SKIP_MANAGED_CLUSTER_TEST
+export CYPRESS_USE_MANAGED_KUBECONFIG=$USE_MANAGED_KUBECONFIG
 
 log_color "cyan" "Running tests with the following imported cluster environment:\n"
 log_color "purple" "\tCYPRESS_OPTIONS_MANAGED_BASEDOMAIN" "\t: $CYPRESS_OPTIONS_MANAGED_BASEDOMAIN"
