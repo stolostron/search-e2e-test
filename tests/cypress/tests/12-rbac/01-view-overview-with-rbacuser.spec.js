@@ -5,7 +5,7 @@
 
 /// <reference types="cypress" />
 
-import { squad } from '../../config'
+import { squad, tags } from '../../config'
 import { overviewPage } from '../../views/overview'
 
 const rbac_users = [
@@ -17,25 +17,31 @@ const rbac_users = [
 const password = Cypress.env('OPTIONS_HUB_PASSWORD')
 const IDP = 'search-e2e-htpasswd'
 
-describe('RBAC users to read the Overview page', { tags: ['@CANARY', '@ROSA'] },
+let ignore
+
+if (Cypress.env('TEST_ENV') === 'rosa') {
+  ignore = ['@RBAC']
+}
+
+describe('RBAC users to read the Overview page', { tags: tags.env, },
   function () {
     const overviewPagePolarionIDs = ['731', '921', '919', '920']
 
     rbac_users.forEach((user, index) => {
       var roleAccess = user.split('-')
 
-      context(`verify: read action for user ${user} with ${roleAccess[2]} role`, { tags: ['@BVT', '@RBAC'] }, function () {
-        it(`RHACM4K-${overviewPagePolarionIDs[index]}[P1][Sev1][${squad}] Login: ${user} user`, function () {
+      context(`RHACM4K-${overviewPagePolarionIDs[index]} - verify: read action for user ${user} with ${roleAccess[2]} role`, { tags: ignore ? ignore : tags.modes }, function () {
+        it(`[P1][Sev1][${squad}] Login: ${user} user`, { tags: tags.required }, function () {
           cy.login(user, password, IDP)
         })
   
-        it(`RHACM4K-${overviewPagePolarionIDs[index]}[P2][Sev2][${squad}] As an user with name ${user} with ${roleAccess[3]}-role-binding of default ${roleAccess[2]} role, the user can read the Overview page.`, function () {
+        it(`[P2][Sev2][${squad}] As an user with name ${user} with ${roleAccess[3]}-role-binding of default ${roleAccess[2]} role, the user can read the Overview page.`, function () {
           overviewPage.whenGoToOverviewPage()
           overviewPage.shouldLoad()
           overviewPage.shouldHaveLinkToSearchPage()
         })
   
-        it(`RHACM4K-${overviewPagePolarionIDs[index]}[P1][Sev1][${squad}] Logout: ${user} user`, function () {
+        it(`[P1][Sev1][${squad}] Logout: ${user} user`, function () {
           cy.logout()
         })
       })

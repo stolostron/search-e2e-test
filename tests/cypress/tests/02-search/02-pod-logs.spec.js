@@ -5,7 +5,7 @@
 
 /// <reference types="cypress" />
 
-import { squad } from '../../config'
+import { squad, tags } from '../../config'
 import { cliHelper } from '../../scripts/cliHelper'
 import { searchPage, searchBar } from '../../views/search'
 import { podDetailPage } from '../../views/podDetailPage'
@@ -16,12 +16,14 @@ const clusterModes = [
     valueFn: () => cy.wrap('local-cluster'),
     skip: false,
     namespace: cliHelper.generateNamespace(),
+    kubeconfig: Cypress.env('USE_HUB_KUBECONFIG') ? `KUBECONFIG=${Cypress.env('OPTIONS_HUB_KUBECONFIG')}` : ''
   },
   {
     label: 'Managed',
     valueFn: () => cliHelper.getTargetManagedCluster(),
-    skip: true,
+    skip: Cypress.env('SKIP_MANAGED_CLUSTER_TEST'),
     namespace: cliHelper.generateNamespace('', `managed-${Date.now()}`),
+    kubeconfig: Cypress.env('USE_MANAGED_KUBECONFIG') ? `KUBECONFIG=${Cypress.env('OPTIONS_MANAGED_KUBECONFIG')}` : ''
   },
 ]
 
@@ -33,27 +35,33 @@ clusterModes.forEach((clusterMode) => {
     return
   }
 
-  describe('Search: Search in ' + clusterMode.label + ' Cluster', { tags: ['@CANARY', '@ROSA'] }, function () {
+  describe('Search: Search in ' + clusterMode.label + ' Cluster', { tags: tags.env }, function () {
     before(function () {
       clusterMode.valueFn().as('clusterName')
     })
 
     // Log into cluster to clean up resources.
     after(function () {
-      cliHelper.login(clusterMode.label)
-      cliHelper.deleteNamespace(clusterMode.namespace)
+      if (clusterMode.label === 'Managed' && Cypress.env('USE_MANAGED_KUBECONFIG')) {
+        // Switch context with kubeconfig file.
+        cliHelper.useManagedKubeconfig()
+      } else {
+        // Log into cluster with oc command.
+        cliHelper.login(clusterMode.label)
+      }
+      cliHelper.deleteNamespace(clusterMode.namespace, clusterMode.kubeconfig)
     })
 
     // Logging into the hub cluster UI.
     if (clusterMode.label !== 'Managed') {
-      context('prereq: user should log into the ACM console', { tags: ['@REQUIRED'] }, function () {
+      context('prereq: user should log into the ACM console', { tags: tags.required }, function () {
         it(`[P1][Sev1][${squad}] should login`, function () {
           cy.login()
         })
       })
     }
 
-    context('search resources: verify resource deployment pod logs', { tags: ['@BVT'] }, function () {
+    context('search resources: verify resource deployment pod logs', { tags: tags.modes }, function () {
       beforeEach(function () {
         searchPage.whenGoToSearchPage()
         searchBar.whenFilterByNamespace(clusterMode.namespace)

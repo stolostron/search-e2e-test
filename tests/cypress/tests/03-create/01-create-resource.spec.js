@@ -5,17 +5,11 @@
 
 /// <reference types="cypress" />
 
-import { squad } from '../../config'
-import { cliHelper } from '../../scripts/cliHelper'
+import { squad, tags } from '../../config'
 import { searchPage } from '../../views/search'
 
 const clusterModes = [
   { label: 'Local', valueFn: () => cy.wrap('local-cluster'), skip: false },
-  {
-    label: 'Managed',
-    valueFn: () => cliHelper.getTargetManagedCluster(),
-    skip: true,
-  },
 ]
 
 clusterModes.forEach((clusterMode) => {
@@ -24,7 +18,7 @@ clusterModes.forEach((clusterMode) => {
   }
 
   describe('RHACM4K-1233: Search: Search in ' + clusterMode.label + ' Cluster', { tags: [] }, function () {
-    context('prereq: user should log into the ACM console', { tags: ['@REQUIRED'] }, function () {
+    context('prereq: user should log into the ACM console', { tags: tags.required }, function () {
       it(`[P1][Sev1][${squad}] should login`, function () {
         cy.login()
       })
