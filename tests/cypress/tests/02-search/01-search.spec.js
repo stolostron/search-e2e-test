@@ -42,8 +42,7 @@ clusterModes.forEach((clusterMode) => {
     // Log into cluster to clean up resources.
     after(function () {
       if (clusterMode.label === 'Managed' && Cypress.env('USE_MANAGED_KUBECONFIG')) {
-        // Switch context with kubeconfig file.
-        cliHelper.useManagedKubeconfig()
+        cy.log('Skipping login and using import-kubeconfig file')
       } else {
         // Log into cluster with oc command.
         cliHelper.login(clusterMode.label)
