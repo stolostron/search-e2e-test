@@ -63,7 +63,7 @@ if [[ -f $OPTIONS_FILE ]]; then
   export OPTIONS_HUB_OC_IDP=`yq e '.options.identityProvider' $OPTIONS_FILE`
   export OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $OPTIONS_FILE`
   export OPTIONS_HUB_USER=`yq e '.options.hub.user' $OPTIONS_FILE`
-  export OPTIONS_MANAGED_BASEDOMAIN=`yq e '.options.clusters[0].basedomain' $OPTIONS_FILE`
+  export OPTIONS_MANAGED_BASEDOMAIN=`yq e '.options.clusters[0].baseDomain' $OPTIONS_FILE`
   export OPTIONS_MANAGED_CLUSTER_NAME=`yq e '.options.clusters[0].name' $OPTIONS_FILE`
   export OPTIONS_MANAGED_KUBECONFIG=`yq e '.options.clusters[0].kubeconfig' $OPTIONS_FILE`
 elif [[ -f $USER_OPTIONS_FILE ]]; then
@@ -73,7 +73,7 @@ elif [[ -f $USER_OPTIONS_FILE ]]; then
   export OPTIONS_HUB_OC_IDP=`yq e '.options.identityProvider' $USER_OPTIONS_FILE`
   export OPTIONS_HUB_PASSWORD=`yq e '.options.hub.password' $USER_OPTIONS_FILE`
   export OPTIONS_HUB_USER=`yq e '.options.hub.user' $USER_OPTIONS_FILE`
-  export OPTIONS_MANAGED_BASEDOMAIN=`yq e '.options.clusters[0].basedomain' $USER_OPTIONS_FILE`
+  export OPTIONS_MANAGED_BASEDOMAIN=`yq e '.options.clusters[0].baseDomain' $USER_OPTIONS_FILE`
   export OPTIONS_MANAGED_CLUSTER_NAME=`yq e '.options.clusters[0].name' $USER_OPTIONS_FILE`
   export OPTIONS_MANAGED_KUBECONFIG=`yq e '.options.clusters[0].kubeconfig' $USER_OPTIONS_FILE`
 else

@@ -8,4 +8,4 @@ options:
   clusters:
   - name: MANAGED_CLUSTER_NAME
     kubeconfig: MANAGED_KUBECONFIG
-    basedomain: MANAGED_BASEDOMAIN
+    baseDomain: MANAGED_BASEDOMAIN
