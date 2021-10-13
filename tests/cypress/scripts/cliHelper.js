@@ -80,24 +80,19 @@ export const cliHelper = {
     cy.exec(`oc login --server=https://api.${Cypress.env(`OPTIONS_${mode}_BASEDOMAIN`)}:6443 -u ${Cypress.env(`OPTIONS_${mode}_USER`)} -p ${Cypress.env(`OPTIONS_${mode}_PASSWORD`)} --insecure-skip-tls-verify`
     )
   },
-  useManagedKubeconfig: () => {
-    cy.exec(`oc config use-context --kubeconfig=${Cypress.env('OPTIONS_MANAGED_KUBECONFIG')} ${Cypress.env('OPTIONS_MANAGED_KUBECONTEXT')}`)
-  },
   setup: (modes) => {
     modes.forEach((mode) => {
       if (!mode.skip) {
         describe(`Search: Create resource in ${mode.label} Cluster`, { tags: tags.env }, function () {
           // Log into the hub and managed cluster with the oc command to create the resources.
           context(`prereq: create resource with oc command`, { tags: tags.required }, function () {
-            if (mode.label === 'Managed' && Cypress.env('USE_MANAGED_KUBECONFIG')) {
-              it(`[P1][Sev1][${squad}] should switch context within kubeconfig file to log into ${mode.label.toLocaleLowerCase()} cluster`, function () {
-                cliHelper.useManagedKubeconfig()
-              })
-            } else {
-              it(`[P1][Sev1][${squad}] should log into ${mode.label.toLocaleLowerCase()} cluster`, function () {
+            it(`[P1][Sev1][${squad}] should log into ${mode.label.toLocaleLowerCase()} cluster`, function () {
+              if (mode.label === 'Managed' && Cypress.env('USE_MANAGED_KUBECONFIG')) {
+                cy.log('Skipping login and using kubeconfig file')
+              } else {
                 cliHelper.login(mode.label)
-              })
-            }
+              }
+            })
 
             it(`[P1][Sev1][${squad}] should create namespace resource`, function () {
               cliHelper.createNamespace(mode.namespace, mode.kubeconfig)
