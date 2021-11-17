@@ -39,7 +39,7 @@ Cypress.Commands.add(
     var user = OPTIONS_HUB_USER || Cypress.env('OPTIONS_HUB_USER')
     var password = OPTIONS_HUB_PASSWORD || Cypress.env('OPTIONS_HUB_PASSWORD')
     var idp = OPTIONS_HUB_OC_IDP || Cypress.env('OPTIONS_HUB_OC_IDP')
-    cy.visit('/search')
+    cy.visit('/multicloud/search')
     cy.get('body').then((body) => {
       // Check if logged in
       if (body.find('#header').length === 0) {
