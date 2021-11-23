@@ -1,0 +1,71 @@
+os:
+  - linux
+
+addons:
+  apt:
+    packages:
+      - libgconf-2-4
+  chrome: stable
+
+cache:
+  directories:
+    - .npm
+    - ~/.cache
+
+services:
+  - xvfb
+  - docker
+
+env:
+  global:
+    - COMPONENT_TAG_EXTENSION="-${TRAVIS_COMMIT}"
+    - COMPONENT_INIT_COMMAND=${TRAVIS_BUILD_DIR}/build/install-dependencies.sh
+    - COMPONENT_BUILD_COMMAND=${TRAVIS_BUILD_DIR}/build/build.sh
+    - COMPONENT_E2E_TEST_COMMAND=${TRAVIS_BUILD_DIR}/build/e2e-test.sh
+    # - COMPONENT_E2E_TEST_COMMAND="docker run -it --volume $(pwd)/test-output:/results -e OPTIONS_HUB_BASEDOMAIN=${OPTIONS_HUB_BASEDOMAIN} -e OPTIONS_HUB_USER=${OPTIONS_HUB_USER} -e OPTIONS_HUB_PASSWORD=${OPTIONS_HUB_PASSWORD}"
+    - CYPRESS_CACHE_FOLDER=${TRAVIS_BUILD_DIR}/.cache/Cypress
+
+# Only build on main, and release branches
+branches:
+  only:
+    - main
+    - /^release-[0-9]+\..*$/
+
+before_scripts:
+  - make init
+  - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export COMPONENT_TAG_EXTENSION="-PR${TRAVIS_PULL_REQUEST}-${TRAVIS_COMMIT}"; fi;
+
+stages:
+  - build
+  - test
+  - release-ff
+  - publish
+
+jobs:
+  include:
+    - stage: build
+      name: 'Build the image and push it'
+      language: node_js
+      node_js:
+        - 10
+      script:
+        - make build-test-image
+        - make component/push
+    - stage: test
+      name: 'Run Search E2E tests'
+      language: node_js
+      node_js:
+        - 10
+      script:
+        - make component/pull
+        - make component/test/e2e
+    - stage: release-ff
+      name: 'Push commits from main to branch defined in RELEASE_FF_BRANCH'
+      if: type = push AND branch =~ /^main$/
+      script:
+        - make release-ff
+    - stage: publish
+      name: 'Publish the image to quay with an official version/sha tag and publish entry to integration pipeline stage'
+      if: type = push AND branch =~ /^release-[0-9]+\..*$/
+      script:
+        - make pipeline-manifest/update PIPELINE_MANIFEST_COMPONENT_SHA256=${TRAVIS_COMMIT} PIPELINE_MANIFEST_COMPONENT_REPO=${TRAVIS_REPO_SLUG} PIPELINE_MANIFEST_BRANCH=${TRAVIS_BRANCH}
