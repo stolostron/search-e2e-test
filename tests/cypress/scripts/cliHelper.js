@@ -46,21 +46,14 @@ export const cliHelper = {
     return `${prefix ? prefix : 'search'}-${postfix ? postfix : Date.now()}`
   },
   createNamespace: (name, kubeconfig='') => {
-    if (cy.state('runnable')._currentRetry > 0) {
-      cy.log(`Checking to see if namespace: ${name} was created within previous retry`)
-      cy.exec(`${kubeconfig} oc get namespace ${name}`).then((res) => {
-        if (!res.stderr) {
-          cy.log(`Namespace: ${name} was created succesfully.`)
-        } else {
-          cy.log(`Namespace: ${name} failed to created succesfully... recreating resource.`)
-          cy.exec(`${kubeconfig} oc create namespace ${name}`)
-        }
-      })
-    } else {
-      cy.exec(`${kubeconfig} oc create namespace ${name}`).then((res) => {
-        cy.log(res.stdout ? res.stdout : res.stderr)
-      })
-    }
+    cy.exec(`${kubeconfig} oc get namespace ${name}`, { failOnNonZeroExit: false }).then((res) => {
+      if (!res.stderr) {
+        cy.log(`Namespace: ${name} already exist within the cluster`)
+      } else {
+        cy.log(`Namespace: ${name} does not exist within the cluster. Preparing to create namespace resource.`)
+        cy.exec(`${kubeconfig} oc create namespace ${name}`)
+      }
+    })
   },
   createDeployment: (name, namespace, image, kubeconfig='') => {
     cy.exec(`${kubeconfig} oc create deployment ${name} --image=${image} -n ${namespace}`).then((res) => {
