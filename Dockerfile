@@ -7,16 +7,16 @@ USER root
 
 COPY --from=builder /usr/bin/yq /usr/local/bin/yq
 
-COPY package.json .
-COPY package-lock.json .
-COPY cypress.json .
-COPY jest.config.js .
-COPY start-tests.sh .
-COPY download-clis.sh .
+COPY package.json ./
+COPY package-lock.json ./
+COPY cypress.json ./
+COPY jest.config.js ./
+COPY start-tests.sh ./
+COPY download-clis.sh ./
 COPY config ./config
 COPY tests ./tests
-COPY build/rbac-setup.sh .
-COPY build/rbac-clean.sh .
+COPY build/rbac-setup.sh ./
+COPY build/rbac-clean.sh ./
 RUN npm i
 
 RUN sh download-clis.sh

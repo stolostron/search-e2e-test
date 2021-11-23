@@ -17,3 +17,7 @@ lint:
 .PHONY: unit-test
 unit-test:
 	npm run test
+
+.PHONY: test-e2e
+test-e2e:
+	echo "TODO: Execute the tests using the docker image."
