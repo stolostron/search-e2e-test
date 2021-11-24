@@ -8,6 +8,7 @@
 import { squad, tags } from '../../config'
 import { cliHelper } from '../../scripts/cliHelper'
 import { searchPage, searchBar } from '../../views/search'
+import {podDetailPage} from "../../../../../search-e2e-main/tests/cypress/views/podDetailPage";
 
 const clusterModes = [
   {
@@ -88,6 +89,16 @@ clusterModes.forEach((clusterMode) => {
           'pod',
           clusterMode.namespace + '-deployment-'
         )
+      })
+
+      it(`[P2][Sev2][${squad}] should see pod logs`, function () {
+        searchBar.whenFilterByKind('pod')
+        searchPage.whenGoToResourceDetailItemPage(
+          'pod',
+          clusterMode.namespace + '-deployment'
+        )
+        podDetailPage.whenClickOnLogsTab()
+        podDetailPage.shouldSeeLogs('serving on')
       })
     })
   })

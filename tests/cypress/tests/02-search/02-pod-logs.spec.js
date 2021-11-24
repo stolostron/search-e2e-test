@@ -35,48 +35,48 @@ clusterModes.forEach((clusterMode) => {
     return
   }
 
-  describe('Search: Search in ' + clusterMode.label + ' Cluster', { tags: tags.env }, function () {
-    before(function () {
-      clusterMode.valueFn().as('clusterName')
-    })
+  // describe('Search: Search in ' + clusterMode.label + ' Cluster', { tags: tags.env }, function () {
+  //   before(function () {
+  //     clusterMode.valueFn().as('clusterName')
+  //   })
+  //
+  //   // Log into cluster to clean up resources.
+  //   after(function () {
+  //     if (clusterMode.label === 'Managed' && Cypress.env('USE_MANAGED_KUBECONFIG')) {
+  //       cy.log('Skipping login and using import-kubeconfig file')
+  //     } else {
+  //       // Log into cluster with oc command.
+  //       cliHelper.login(clusterMode.label)
+  //     }
+  //     cliHelper.deleteNamespace(clusterMode.namespace, clusterMode.kubeconfig)
+  //   })
+  //
+  //   // Logging into the hub cluster UI.
+  //   if (clusterMode.label !== 'Managed') {
+  //     context('prereq: user should log into the ACM console', { tags: tags.required }, function () {
+  //       it(`[P1][Sev1][${squad}] should login`, function () {
+  //         cy.login()
+  //       })
+  //     })
+  //   }
 
-    // Log into cluster to clean up resources.
-    after(function () {
-      if (clusterMode.label === 'Managed' && Cypress.env('USE_MANAGED_KUBECONFIG')) {
-        cy.log('Skipping login and using import-kubeconfig file')
-      } else {
-        // Log into cluster with oc command.
-        cliHelper.login(clusterMode.label)
-      }
-      cliHelper.deleteNamespace(clusterMode.namespace, clusterMode.kubeconfig)
-    })
+    // context('search resources: verify resource deployment pod logs', { tags: tags.modes }, function () {
+    //   beforeEach(function () {
+    //     searchPage.whenGoToSearchPage()
+    //     searchBar.whenFilterByNamespace(clusterMode.namespace)
+    //     searchBar.whenFilterByCluster(this.clusterName)
+    //     searchPage.shouldLoadResults()
+    //   })
 
-    // Logging into the hub cluster UI.
-    if (clusterMode.label !== 'Managed') {
-      context('prereq: user should log into the ACM console', { tags: tags.required }, function () {
-        it(`[P1][Sev1][${squad}] should login`, function () {
-          cy.login()
-        })
-      })
-    }
-
-    context('search resources: verify resource deployment pod logs', { tags: tags.modes }, function () {
-      beforeEach(function () {
-        searchPage.whenGoToSearchPage()
-        searchBar.whenFilterByNamespace(clusterMode.namespace)
-        searchBar.whenFilterByCluster(this.clusterName)
-        searchPage.shouldLoadResults()
-      })
-
-      it(`[P2][Sev2][${squad}] should see pod logs`, function () {
-        searchBar.whenFilterByKind('pod')
-        searchPage.whenGoToResourceDetailItemPage(
-          'pod',
-          clusterMode.namespace + '-deployment'
-        )
-        podDetailPage.whenClickOnLogsTab()
-        podDetailPage.shouldSeeLogs('serving on')
-      })
-    })
-  })
+      // it(`[P2][Sev2][${squad}] should see pod logs`, function () {
+      //   searchBar.whenFilterByKind('pod')
+      //   searchPage.whenGoToResourceDetailItemPage(
+      //     'pod',
+      //     clusterMode.namespace + '-deployment'
+      //   )
+      //   podDetailPage.whenClickOnLogsTab()
+      //   podDetailPage.shouldSeeLogs('serving on')
+      // })
+    // })
+  // })
 })
