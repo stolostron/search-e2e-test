@@ -60,23 +60,23 @@ clusterModes.forEach((clusterMode) => {
       })
     }
 
-    context('search resources: verify resource deployment pod logs', { tags: tags.modes }, function () {
-      beforeEach(function () {
-        searchPage.whenGoToSearchPage()
-        searchBar.whenFilterByNamespace(clusterMode.namespace)
-        searchBar.whenFilterByCluster(this.clusterName)
-        searchPage.shouldLoadResults()
-      })
+    // context('search resources: verify resource deployment pod logs', { tags: tags.modes }, function () {
+      // beforeEach(function () {
+      //   searchPage.whenGoToSearchPage()
+      //   searchBar.whenFilterByNamespace(clusterMode.namespace)
+      //   searchBar.whenFilterByCluster(this.clusterName)
+      //   searchPage.shouldLoadResults()
+      // })
 
-      it(`[P2][Sev2][${squad}] should see pod logs`, function () {
-        searchBar.whenFilterByKind('pod')
-        searchPage.whenGoToResourceDetailItemPage(
-          'pod',
-          clusterMode.namespace + '-deployment'
-        )
-        podDetailPage.whenClickOnLogsTab()
-        podDetailPage.shouldSeeLogs('serving on')
-      })
-    })
+      // it(`[P2][Sev2][${squad}] should see pod logs`, function () {
+      //   searchBar.whenFilterByKind('pod')
+      //   searchPage.whenGoToResourceDetailItemPage(
+      //     'pod',
+      //     clusterMode.namespace + '-deployment'
+      //   )
+      //   podDetailPage.whenClickOnLogsTab()
+      //   podDetailPage.shouldSeeLogs('serving on')
+      // })
+    // })
   })
 })

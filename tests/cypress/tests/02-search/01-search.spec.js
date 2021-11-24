@@ -8,6 +8,7 @@
 import { squad, tags } from '../../config'
 import { cliHelper } from '../../scripts/cliHelper'
 import { searchPage, searchBar } from '../../views/search'
+import {podDetailPage} from "../../views/podDetailPage";
 
 const clusterModes = [
   {
@@ -34,7 +35,7 @@ clusterModes.forEach((clusterMode) => {
     return
   }
 
-  describe('Search: Search in ' + clusterMode.label + ' Cluster', { tags: tags.env }, function () {
+  describe('RHACM4K-1709: Search: Search in ' + clusterMode.label + ' Cluster', { tags: tags.env }, function () {
     before(function () {
       clusterMode.valueFn().as('clusterName')
     })
@@ -89,6 +90,17 @@ clusterModes.forEach((clusterMode) => {
           clusterMode.namespace + '-deployment-'
         )
       })
+
+      it(`[P2][Sev2][${squad}] should see pod logs`, function () {
+        searchBar.whenFilterByKind('pod')
+        searchPage.whenGoToResourceDetailItemPage(
+          'pod',
+          clusterMode.namespace + '-deployment'
+        )
+        podDetailPage.whenClickOnLogsTab()
+        podDetailPage.shouldSeeLogs('serving on')
+      })
+
     })
   })
 })
