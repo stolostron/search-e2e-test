@@ -19,6 +19,7 @@ pipeline {
             steps {
                 sh '''
                 npm config set unsafe-perm true
+                rm -rf package-lock.json
                 npm install
                 npm ci
                 npx browserslist@latest --update-db
