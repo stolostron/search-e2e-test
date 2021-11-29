@@ -20,6 +20,7 @@ pipeline {
                 sh '''
                 npm config set unsafe-perm true
                 rm -rf package-lock.json
+                yum groupinstall -y “Development tools”
                 npm install
                 npm ci
                 npx browserslist@latest --update-db
