@@ -11,7 +11,6 @@ import {podDetailPage} from "../../views/podDetailPage";
 import {cliHelper} from "../../scripts/cliHelper";
 
 
-// Under Progress
 describe('RHACM4K-1694: Search: search resiliency verification', {tags: []}, function () {
     context('prereq: user should log into the ACM console', {tags: tags.required}, function () {
         it(`[P1][Sev1][${squad}] should login`, function () {
@@ -45,11 +44,8 @@ describe('RHACM4K-1694: Search: search resiliency verification', {tags: []}, fun
         it(`[P2][Sev2][${squad}] Disable customization CR persistence flag and verify logs `, function () {
             // Disable customization CR persistence flag
             cliHelper.updateSearchCustomizationCR('false')
-
             searchBar.whenFilterByKind('pod')
-            // Need to use CLI to get the exact search-operator pod name and, then, search for it
             searchBar.whenFilterByName(this.pod)
-
             searchPage.whenGoToResourceDetailItemPage(
                 'pod',
                 this.pod
@@ -63,11 +59,8 @@ describe('RHACM4K-1694: Search: search resiliency verification', {tags: []}, fun
         it(`[P2][Sev2][${squad}] Enable customization CR persistence flag and verify logs `, function () {
             // Enable customization CR persistence flag
             cliHelper.updateSearchCustomizationCR('true')
-
             searchBar.whenFilterByKind('pod')
-            // Need to use CLI to get the exact search-operator pod name and, then, search for it
             searchBar.whenFilterByName(this.pod)
-
             searchPage.whenGoToResourceDetailItemPage(
                 'pod',
                 this.pod

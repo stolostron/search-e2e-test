@@ -69,26 +69,18 @@ export const cliHelper = {
         })
     },
 
-    // Under Progress
     findFullPodName: (name, namespace = 'ocm') => {
-        // return cy.exec(`oc get pods | grep ${name}`, {
-        //         failOnNonZeroExit: false,
-        //     })
-        // Log into cluster with oc command.
         cliHelper.login('Local')
-
         return cy
             .exec(
                 `oc get pods -n ${namespace} | grep ${name}`,
                 {failOnNonZeroExit: false}
             ).then(result => {
                     // Return pod name
-                    return cy.wrap(result.stdout.substr(0,result.stdout.indexOf(' ')))
+                    return cy.wrap(result.stdout.substr(0, result.stdout.indexOf(' ')))
                 }
             )
-    }
-    ,
-
+    },
     createApplication: (appName, namespace) => {
         cy.readFile('tests/cypress/templates/application.yaml').then((cfg) => {
             let b64Cfg = btoa(
