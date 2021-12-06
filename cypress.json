@@ -30,7 +30,7 @@
       "json": true
     },
     "mochaJunitReporterReporterOptions": {
-      "mochaFile": "cypress/results/alc-[hash].xml"
+      "mochaFile": "cypress/results/search-[hash].xml"
     }
   },
   "retries": 2,
