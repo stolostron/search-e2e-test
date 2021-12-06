@@ -1,0 +1,9 @@
+apiVersion: search.open-cluster-management.io/v1alpha1
+kind: SearchCustomization
+metadata:
+  name: searchcustomization
+  namespace: ocm
+spec:
+  persistence: boolean
+  storageClass: STRGCLASS
+  storageSize: 12Gi

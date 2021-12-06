@@ -8,7 +8,7 @@
 import { squad, tags } from '../../config'
 import { cliHelper } from '../../scripts/cliHelper'
 import { searchPage, searchBar } from '../../views/search'
-import {podDetailPage} from "../../../../../search-e2e-main/tests/cypress/views/podDetailPage";
+import {podDetailPage} from "../../views/podDetailPage";
 
 const clusterModes = [
   {
