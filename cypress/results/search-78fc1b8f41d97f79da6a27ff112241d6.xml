@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="128.6890" tests="1" failures="0">
+  <testsuite name="Root Suite" timestamp="2021-12-07T20:47:16" tests="0" file="tests/cypress/tests/03-create/02-verify-invalid-sc.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Search: Test resiliency" timestamp="2021-12-07T20:47:21" tests="1" time="128.6890" failures="0">
+    <testcase name="Search: Test resiliency RHACM4K-1694: Search resiliency verification" time="128.6890" classname="RHACM4K-1694: Search resiliency verification">
+    </testcase>
+  </testsuite>
+</testsuites>

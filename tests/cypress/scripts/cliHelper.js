@@ -79,7 +79,7 @@ export const cliHelper = {
                     // Return pod name
                     return cy.wrap(result.stdout.substr(0, result.stdout.indexOf(' ')))
                 }
-            )
+            );
     },
     createApplication: (appName, namespace) => {
         cy.readFile('tests/cypress/templates/application.yaml').then((cfg) => {

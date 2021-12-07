@@ -1,74 +1,79 @@
 /** *****************************************************************************
  * Licensed Materials - Property of Red Hat, Inc.
- * Copyright (c) 2020 Red Hat, Inc.
+ * Copyright (c) 2021 Red Hat, Inc.
  ****************************************************************************** */
 
 /// <reference types="cypress" />
 
-import {squad, tags} from '../../config'
+import {tags} from '../../config'
 import {searchBar, searchPage} from '../../views/search'
 import {podDetailPage} from "../../views/podDetailPage";
 import {cliHelper} from "../../scripts/cliHelper";
 
 
-describe('RHACM4K-1694: Search: search resiliency verification', {tags: []}, function () {
-    context('prereq: user should log into the ACM console', {tags: tags.required}, function () {
-        it(`[P1][Sev1][${squad}] should login`, function () {
-            cy.login()
-        })
+describe('Search: Test resiliency', {tags: tags.component}, function () {
+    before(() => {
+        // Get search-operator pod's full name
+        cliHelper.findFullPodName('search-operator').as('pod')
     })
 
-    context('search resources: verify CR searchoperator is created and search-operator pod is running', {tags: []}, function () {
-        beforeEach(function () {
-            cliHelper.findFullPodName('search-operator').as('pod')
-            searchPage.whenGoToSearchPage()
-        })
+    it(`RHACM4K-1694: Search resiliency verification`, {tags: ['@RHACM4K-1694', tags.status[1]]}, function () {
+        /* Verify CR 'searchoperator' is created and search-operator pod is running */
+        // Log in yo ACM
+        cy.login()
+        // Go to 'search' page
+        searchPage.whenGoToSearchPage()
+        // Verify 'search' page loads
+        searchPage.shouldLoad()
+        // Filter by 'pods'
+        searchBar.whenFilterByKind('pod')
+        // Filter by pod's name
+        searchBar.whenFilterByName(this.pod)
+        // Go to details page
+        searchPage.whenGoToResourceDetailItemPage(
+            'pod',
+            this.pod
+        )
+        // Check for logs
+        podDetailPage.whenClickOnLogsTab()
+        podDetailPage.shouldSeeLogs('RedisGraph Pod with PVC Running')
 
-        it(`[P2][Sev2][${squad}] should load the search page`, function () {
-            searchPage.shouldLoad()
-        })
+        /* Disable customization CR persistence flag and verify logs */
+        // Go to 'search' page
+        searchPage.whenGoToSearchPage()
+        // Disable customization CR persistence flag
+        cliHelper.updateSearchCustomizationCR('false')
+        // Filter by 'pods'
+        searchBar.whenFilterByKind('pod')
+        // Filter by pod's name
+        searchBar.whenFilterByName(this.pod)
+        // Go to details page
+        searchPage.whenGoToResourceDetailItemPage(
+            'pod',
+            this.pod
+        )
+        // Check for logs
+        podDetailPage.whenClickOnLogsTab()
+        podDetailPage.shouldSeeLogs('RedisGraph Pod Running with Persistence disabled')
 
-        it(`[P1][Sev1][${squad}] should work kind filter for pods`, function () {
-            searchBar.whenFilterByKind('pod')
-            searchBar.whenFilterByName(this.pod)
-            searchPage.whenGoToResourceDetailItemPage(
-                'pod',
-                this.pod
-            )
-
-            // Check for logs
-            podDetailPage.whenClickOnLogsTab()
-            podDetailPage.shouldSeeLogs('RedisGraph Pod with PVC Running')
-        })
-
-        it(`[P2][Sev2][${squad}] Disable customization CR persistence flag and verify logs `, function () {
-            // Disable customization CR persistence flag
-            cliHelper.updateSearchCustomizationCR('false')
-            searchBar.whenFilterByKind('pod')
-            searchBar.whenFilterByName(this.pod)
-            searchPage.whenGoToResourceDetailItemPage(
-                'pod',
-                this.pod
-            )
-
-            // Check for logs
-            podDetailPage.whenClickOnLogsTab()
-            podDetailPage.shouldSeeLogs('RedisGraph Pod Running with Persistence disabled')
-        })
-
-        it(`[P2][Sev2][${squad}] Enable customization CR persistence flag and verify logs `, function () {
-            // Enable customization CR persistence flag
-            cliHelper.updateSearchCustomizationCR('true')
-            searchBar.whenFilterByKind('pod')
-            searchBar.whenFilterByName(this.pod)
-            searchPage.whenGoToResourceDetailItemPage(
-                'pod',
-                this.pod
-            )
-
-            // Check for logs
-            podDetailPage.whenClickOnLogsTab()
-            podDetailPage.shouldSeeLogs('RedisGraph Pod with PVC Running')
-        })
+        /* Enable customization CR persistence flag and verify logs */
+        // Go to 'search' page
+        searchPage.whenGoToSearchPage()
+        // Disable customization CR persistence flag
+        cliHelper.updateSearchCustomizationCR('true')
+        // Filter by 'pods'
+        searchBar.whenFilterByKind('pod')
+        // Filter by pod's name
+        searchBar.whenFilterByName(this.pod)
+        // Go to details page
+        searchPage.whenGoToResourceDetailItemPage(
+            'pod',
+            this.pod
+        )
+        // Check for logs
+        podDetailPage.whenClickOnLogsTab()
+        podDetailPage.shouldSeeLogs('RedisGraph Pod with PVC Running')
     })
 })
+
+

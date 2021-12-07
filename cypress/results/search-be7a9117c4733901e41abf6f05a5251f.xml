@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="0.8460" tests="1" failures="1">
+  <testsuite name="Root Suite" timestamp="2021-12-07T20:25:31" tests="0" file="tests/cypress/tests/03-create/02-verify-invalid-sc.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Search: Test resiliency" timestamp="2021-12-07T20:25:44" tests="1" time="0.8460" failures="1">
+    <testcase name="Search: Test resiliency RHACM4K-1694: Search resiliency verification" time="0.8460" classname="RHACM4K-1694: Search resiliency verification">
+      <failure message="_cliHelper.cliHelper.findFullPodName(...).as is not a function" type="TypeError"><![CDATA[TypeError: _cliHelper.cliHelper.findFullPodName(...).as is not a function
+    at Context.eval (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/tests?p=tests/cypress/tests/03-create/02-verify-invalid-sc.spec.js:315:61)]]></failure>
+    </testcase>
+  </testsuite>
+</testsuites>

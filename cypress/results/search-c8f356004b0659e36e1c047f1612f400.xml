@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="0.0000" tests="0" failures="1">
+  <testsuite name="Root Suite" timestamp="2021-12-07T19:40:26" tests="0" file="tests/cypress/tests/03-create/02-verify-invalid-sc.spec.js" time="0.0000" failures="1">
+    <testcase name="Search: Test resiliency &quot;before all&quot; hook for &quot;RHACM4K-1694: Search resiliency verification&quot;" time="0.0000" classname="&quot;before all&quot; hook for &quot;RHACM4K-1694: Search resiliency verification&quot;">
+      <failure message="`cy.exec(&apos;oc login --server=https://api.undefined:6443 -u kubeadmin -p L4FCd-JLB8j-iVSzg-Ew2Sf --insecure-skip-tls-verify&apos;)` failed because the command exited with a non-zero code.
+
+Pass `{failOnNonZeroExit: false}` to ignore exit code failures.
+
+Information about the failure:
+Code: 1
+
+Stderr:
+error: dial tcp: lookup api.undefined on 10.11.5.19:53: no such host - verify you have provided the correct host and port and that the server is currently running.
+
+https://on.cypress.io/exec
+
+Because this error occurred during a `before all` hook we are skipping all of the remaining tests.
+
+Although you have test retries enabled, we do not retry tests when `before all` or `after all` hooks fail" type="CypressError"><![CDATA[CypressError: `cy.exec('oc login --server=https://api.undefined:6443 -u kubeadmin -p L4FCd-JLB8j-iVSzg-Ew2Sf --insecure-skip-tls-verify')` failed because the command exited with a non-zero code.
+
+Pass `{failOnNonZeroExit: false}` to ignore exit code failures.
+
+Information about the failure:
+Code: 1
+
+Stderr:
+error: dial tcp: lookup api.undefined on 10.11.5.19:53: no such host - verify you have provided the correct host and port and that the server is currently running.
+
+https://on.cypress.io/exec
+
+Because this error occurred during a `before all` hook we are skipping all of the remaining tests.
+
+Although you have test retries enabled, we do not retry tests when `before all` or `after all` hooks fail
+    at https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:154288:85
+    at tryCatcher (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:13212:23)
+    at Promise._settlePromiseFromHandler (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:11147:31)
+    at Promise._settlePromise (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:11204:18)
+    at Promise._settlePromise0 (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:11249:10)
+    at Promise._settlePromises (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:11329:18)
+    at _drainQueueStep (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:7919:12)
+    at _drainQueue (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:7912:9)
+    at Async.../../node_modules/bluebird/js/release/async.js.Async._drainQueues (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:7928:5)
+    at Async.drainQueues (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:7798:14)
+From Your Spec Code:
+    at Object.login (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/tests?p=tests/cypress/support/index.js:8108:8)
+    at Context.eval (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/tests?p=tests/cypress/support/index.js:8371:24)]]></failure>
+    </testcase>
+  </testsuite>
+</testsuites>

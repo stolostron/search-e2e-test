@@ -8,4 +8,7 @@ exports.tags = {
     env: ['@CANARY', '@ROSA'],
     modes: ['@BVT', '@SVT'],
     required: ['@REQUIRED'],
+    component: ['@Obs'],
+    status: ['@fresh-install', '@post-release', '@pre-upgrade', '@post-upgrade'],
+    type: ['@e2e', '@sanity', '@smoke']
 }
