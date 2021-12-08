@@ -13,6 +13,7 @@ pipeline {
         string(name:'BASE_USER', defaultValue: 'kubeadmin', description: 'Cluster IDP')
         string(name:'BASE_DOMAIN', defaultValue: '', description: 'Hub cluster base domain')
         string(name:'BASE_PASSWORD', defaultValue: '', description: 'Hub cluster password')
+        string(name:‘TEST_TAGS’, defaultValue:‘’,description: ‘grepTags parameter to use for test execution ’)
     }
     stages {
         stage('Build') {
@@ -33,6 +34,7 @@ pipeline {
                 export BASE_DOMAIN="${params.BASE_DOMAIN}"
                 export BASE_USER="${params.BASE_USER}"
                 export BASE_PASSWORD="${params.BASE_PASSWORD}"
+                export TEST_TAGS=“${params.TEST_TAGS}”
                 if [[ -z "${BASE_OC_IDP}" || -z "${BASE_DOMAIN}" || -z "${BASE_PASSWORD}" ]]; then
                     echo "Aborting test.. ACM connection details are required for the test execution"
                     exit 1
@@ -43,7 +45,9 @@ pipeline {
                     /usr/local/bin/yq e -i '.options.hub.user="'"\$BASE_USER"'"' resources/options.yaml
                     /usr/local/bin/yq e -i '.options.hub.password="'"\$BASE_PASSWORD"'"' resources/options.yaml
                     rm -rf results
-                    npm run test
+                    #npm run test
+                    npx cypress run --headless --env grepTags=\"\$TEST_TAGS\"
+
                 fi
                 """
             }

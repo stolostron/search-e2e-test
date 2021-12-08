@@ -1,0 +1,241 @@
+{
+  "stats": {
+    "suites": 3,
+    "tests": 2,
+    "passes": 0,
+    "pending": 6,
+    "failures": -4,
+    "start": "2021-12-08T18:25:57.687Z",
+    "end": "2021-12-08T18:26:03.389Z",
+    "duration": 5702,
+    "testsRegistered": 6,
+    "passPercent": null,
+    "pendingPercent": 100,
+    "other": 4,
+    "hasOther": true,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "87500527-ea9d-4a98-990b-755efa42b126",
+      "title": "",
+      "fullFile": "tests/cypress/tests/06-filter/01-filters.spec.js",
+      "file": "tests/cypress/tests/06-filter/01-filters.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "b731f4ce-978c-48e3-80d4-98e0e6c5fb00",
+          "title": "RHACM4K-537: Search: Search using filters",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [],
+          "suites": [
+            {
+              "uuid": "893bb728-6ecf-43dc-aa07-0c5eab4da5d8",
+              "title": "prereq: user should log into the ACM console",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "[P1][Sev1][observability-usa] should login",
+                  "fullTitle": "RHACM4K-537: Search: Search using filters prereq: user should log into the ACM console [P1][Sev1][observability-usa] should login",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "cd51e66d-042e-494e-86a3-5f0bed38337d",
+                  "parentUUID": "893bb728-6ecf-43dc-aa07-0c5eab4da5d8",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [],
+              "failures": [],
+              "pending": [
+                "cd51e66d-042e-494e-86a3-5f0bed38337d"
+              ],
+              "skipped": [],
+              "duration": 0,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            },
+            {
+              "uuid": "1d16fb93-7668-4d39-97b7-985883950155",
+              "title": "verify: broad spectrum of search result",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "[P1][Sev1][observability-usa] Search using \"name\" filter",
+                  "fullTitle": "RHACM4K-537: Search: Search using filters verify: broad spectrum of search result [P1][Sev1][observability-usa] Search using \"name\" filter",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "32d6d2ca-96d6-438b-8acf-41ed0df4ce5b",
+                  "parentUUID": "1d16fb93-7668-4d39-97b7-985883950155",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[P1][Sev1][observability-usa] Search using \"label\" filter",
+                  "fullTitle": "RHACM4K-537: Search: Search using filters verify: broad spectrum of search result [P1][Sev1][observability-usa] Search using \"label\" filter",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "c64e37d6-841d-4eb2-87c3-e00b97722240",
+                  "parentUUID": "1d16fb93-7668-4d39-97b7-985883950155",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[P1][Sev1][observability-usa] Search using \"kind\" filter",
+                  "fullTitle": "RHACM4K-537: Search: Search using filters verify: broad spectrum of search result [P1][Sev1][observability-usa] Search using \"kind\" filter",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "39fd09e2-3396-43f1-a961-cc330072fb99",
+                  "parentUUID": "1d16fb93-7668-4d39-97b7-985883950155",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[P1][Sev1][observability-usa] Search using \"role\" filter",
+                  "fullTitle": "RHACM4K-537: Search: Search using filters verify: broad spectrum of search result [P1][Sev1][observability-usa] Search using \"role\" filter",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "169d72c5-e49e-44c6-804f-1ce663819944",
+                  "parentUUID": "1d16fb93-7668-4d39-97b7-985883950155",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[P1][Sev1][observability-usa] Search using \"status\" filter",
+                  "fullTitle": "RHACM4K-537: Search: Search using filters verify: broad spectrum of search result [P1][Sev1][observability-usa] Search using \"status\" filter",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "d292a1bb-ab2e-45a0-9303-f2968edec6f2",
+                  "parentUUID": "1d16fb93-7668-4d39-97b7-985883950155",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [],
+              "failures": [],
+              "pending": [
+                "32d6d2ca-96d6-438b-8acf-41ed0df4ce5b",
+                "c64e37d6-841d-4eb2-87c3-e00b97722240",
+                "39fd09e2-3396-43f1-a961-cc330072fb99",
+                "169d72c5-e49e-44c6-804f-1ce663819944",
+                "d292a1bb-ab2e-45a0-9303-f2968edec6f2"
+              ],
+              "skipped": [],
+              "duration": 0,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            }
+          ],
+          "passes": [],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 0,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome-report.json",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.3.0"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "reportDir": "cypress/results/json",
+        "reportFilename": "mochawesome-report.json",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "5.2.0"
+    }
+  }
+}

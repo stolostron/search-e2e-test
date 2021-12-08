@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="0.0000" tests="6" failures="0" skipped="6">
+  <testsuite name="Root Suite" timestamp="2021-12-08T18:40:52" tests="0" file="tests/cypress/tests/10-suggested/01-suggested-searches.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="RHACM4K-411: Search: Verify the suggested search templates" timestamp="2021-12-08T18:40:57" tests="0" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="prereq: user should log into the ACM console" timestamp="2021-12-08T18:40:57" tests="1" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="verify: overview page link to search page" timestamp="2021-12-08T18:40:57" tests="2" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="verify: search page suggested search queries" timestamp="2021-12-08T18:40:57" tests="3" time="0.0000" failures="0">
+  </testsuite>
+</testsuites>

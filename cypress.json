@@ -17,7 +17,9 @@
   "env": {
     "OPTIONS_HUB_OC_IDP": "kube:admin",
     "OPTIONS_HUB_USER": "kubeadmin",
-    "OPTIONS_MANAGED_USER": "kubeadmin"
+    "OPTIONS_MANAGED_USER": "kubeadmin",
+    "grepFilterSpecs": true,
+    "grepOmitFiltered": true
   },
   "reporter": "cypress-multi-reporters",
   "reporterOptions": {
@@ -30,6 +32,7 @@
       "json": true
     },
     "mochaJunitReporterReporterOptions": {
+      "testCaseSwitchClassnameAndName": true,
       "mochaFile": "cypress/results/search-[hash].xml"
     }
   },

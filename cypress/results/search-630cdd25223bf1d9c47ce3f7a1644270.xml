@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="0.0000" tests="8" failures="0" skipped="8">
+  <testsuite name="Root Suite" timestamp="2021-12-08T18:41:13" tests="0" file="tests/cypress/tests/11-managed/02-multicluster-search-base.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="RHACM4K-1262 - Search: multiple managedclusters base tests" timestamp="2021-12-08T18:41:18" tests="0" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="prereq: user should log into the ACM console" timestamp="2021-12-08T18:41:18" tests="1" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="verify: multicluster managed base" timestamp="2021-12-08T18:41:18" tests="7" time="0.0000" failures="0">
+  </testsuite>
+</testsuites>

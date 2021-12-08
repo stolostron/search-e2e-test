@@ -17,7 +17,7 @@ describe('Search: Test resiliency', {tags: tags.component}, function () {
         cliHelper.findFullPodName('search-operator').as('pod')
     })
 
-    it(`RHACM4K-1694: Search resiliency verification`, {tags: ['@RHACM4K-1694', tags.status[1]]}, function () {
+    it(`RHACM4K-1694: Search resiliency verification`, {tags: ['@atif','@RHACM4K-1694', '@post-release']}, function () {
         /* Verify CR 'searchoperator' is created and search-operator pod is running */
         // Log in yo ACM
         cy.login()

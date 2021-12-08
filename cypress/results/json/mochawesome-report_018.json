@@ -1,0 +1,260 @@
+{
+  "stats": {
+    "suites": 4,
+    "tests": 2,
+    "passes": 0,
+    "pending": 6,
+    "failures": -4,
+    "start": "2021-12-08T18:38:05.941Z",
+    "end": "2021-12-08T18:38:12.121Z",
+    "duration": 6180,
+    "testsRegistered": 6,
+    "passPercent": null,
+    "pendingPercent": 100,
+    "other": 4,
+    "hasOther": true,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "e4e21cbb-d8dd-4c9c-9d80-dd45b9c1f9ff",
+      "title": "",
+      "fullFile": "tests/cypress/tests/02-search/02-pod-logs.spec.js",
+      "file": "tests/cypress/tests/02-search/02-pod-logs.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "a9af2bce-0223-49ba-964d-a6d747651a8f",
+          "title": "Search: Create resource in Local Cluster",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [],
+          "suites": [
+            {
+              "uuid": "4dfd03cd-4823-4ff9-a82e-a9534c235957",
+              "title": "prereq: create resource with oc command",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "[P1][Sev1][observability-usa] should log into local cluster",
+                  "fullTitle": "Search: Create resource in Local Cluster prereq: create resource with oc command [P1][Sev1][observability-usa] should log into local cluster",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "41370094-6594-47cf-b04e-4d5b751c6006",
+                  "parentUUID": "4dfd03cd-4823-4ff9-a82e-a9534c235957",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[P1][Sev1][observability-usa] should create namespace resource",
+                  "fullTitle": "Search: Create resource in Local Cluster prereq: create resource with oc command [P1][Sev1][observability-usa] should create namespace resource",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "73259025-15b5-4a8e-82c0-e799feb5dc2f",
+                  "parentUUID": "4dfd03cd-4823-4ff9-a82e-a9534c235957",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[P1][Sev1][observability-usa] should create deployment resource",
+                  "fullTitle": "Search: Create resource in Local Cluster prereq: create resource with oc command [P1][Sev1][observability-usa] should create deployment resource",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "f21b822f-6622-45df-9324-308338f00cce",
+                  "parentUUID": "4dfd03cd-4823-4ff9-a82e-a9534c235957",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [],
+              "failures": [],
+              "pending": [
+                "41370094-6594-47cf-b04e-4d5b751c6006",
+                "73259025-15b5-4a8e-82c0-e799feb5dc2f",
+                "f21b822f-6622-45df-9324-308338f00cce"
+              ],
+              "skipped": [],
+              "duration": 0,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            }
+          ],
+          "passes": [],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 0,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        },
+        {
+          "uuid": "f0853392-3a5a-4ad0-8e75-53384963b373",
+          "title": "Search: Create resource in Managed Cluster",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [],
+          "suites": [
+            {
+              "uuid": "a9849d43-b080-4525-815c-742da9b079dc",
+              "title": "prereq: create resource with oc command",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "[P1][Sev1][observability-usa] should log into managed cluster",
+                  "fullTitle": "Search: Create resource in Managed Cluster prereq: create resource with oc command [P1][Sev1][observability-usa] should log into managed cluster",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "fd4e243b-9d23-41b9-8586-1c484f387ed4",
+                  "parentUUID": "a9849d43-b080-4525-815c-742da9b079dc",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[P1][Sev1][observability-usa] should create namespace resource",
+                  "fullTitle": "Search: Create resource in Managed Cluster prereq: create resource with oc command [P1][Sev1][observability-usa] should create namespace resource",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "53a47c35-e9ef-42c8-9105-f13f4fa3476e",
+                  "parentUUID": "a9849d43-b080-4525-815c-742da9b079dc",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[P1][Sev1][observability-usa] should create deployment resource",
+                  "fullTitle": "Search: Create resource in Managed Cluster prereq: create resource with oc command [P1][Sev1][observability-usa] should create deployment resource",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "44a9a0f2-793e-43b0-a237-619f9a53b799",
+                  "parentUUID": "a9849d43-b080-4525-815c-742da9b079dc",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [],
+              "failures": [],
+              "pending": [
+                "fd4e243b-9d23-41b9-8586-1c484f387ed4",
+                "53a47c35-e9ef-42c8-9105-f13f4fa3476e",
+                "44a9a0f2-793e-43b0-a237-619f9a53b799"
+              ],
+              "skipped": [],
+              "duration": 0,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            }
+          ],
+          "passes": [],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 0,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome-report.json",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.3.0"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "reportDir": "cypress/results/json",
+        "reportFilename": "mochawesome-report.json",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "5.2.0"
+    }
+  }
+}

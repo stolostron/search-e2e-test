@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="0.0000" tests="15" failures="1" skipped="15">
+  <testsuite name="Root Suite" timestamp="2021-12-08T18:37:48" tests="0" file="tests/cypress/tests/02-search/01-search.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Search: Create resource in Local Cluster" timestamp="2021-12-08T18:37:53" tests="0" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="prereq: create resource with oc command" timestamp="2021-12-08T18:37:54" tests="3" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Search: Create resource in Managed Cluster" timestamp="2021-12-08T18:37:54" tests="0" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="prereq: create resource with oc command" timestamp="2021-12-08T18:37:54" tests="3" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Search: Search in Local Cluster" timestamp="2021-12-08T18:37:54" tests="0" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="prereq: user should log into the ACM console" timestamp="2021-12-08T18:37:54" tests="1" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="search resources: verify resource exist after creation" timestamp="2021-12-08T18:37:54" tests="4" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Search: Search in Managed Cluster" timestamp="2021-12-08T18:37:58" tests="0" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="search resources: verify resource exist after creation" timestamp="2021-12-08T18:37:59" tests="4" time="0.0000" failures="1">
+    <testcase name="&quot;after all&quot; hook for &quot;[P2][Sev2][observability-usa] should see pod logs&quot;" time="0.0000" classname="Search: Search in Managed Cluster search resources: verify resource exist after creation &quot;after all&quot; hook for &quot;[P2][Sev2][observability-usa] should see pod logs&quot;">
+      <failure message="`cy.exec(&apos;oc login --server=https://api.undefined:6443 -u kubeadmin -p undefined --insecure-skip-tls-verify&apos;)` failed because the command exited with a non-zero code.
+
+Pass `{failOnNonZeroExit: false}` to ignore exit code failures.
+
+Information about the failure:
+Code: 1
+
+Stderr:
+error: dial tcp: lookup api.undefined on 10.11.5.19:53: no such host - verify you have provided the correct host and port and that the server is currently running.
+
+https://on.cypress.io/exec
+
+Because this error occurred during a `after all` hook we are skipping the remaining tests in the current suite: `Search: Search in Managed C...`" type="CypressError"><![CDATA[CypressError: `cy.exec('oc login --server=https://api.undefined:6443 -u kubeadmin -p undefined --insecure-skip-tls-verify')` failed because the command exited with a non-zero code.
+
+Pass `{failOnNonZeroExit: false}` to ignore exit code failures.
+
+Information about the failure:
+Code: 1
+
+Stderr:
+error: dial tcp: lookup api.undefined on 10.11.5.19:53: no such host - verify you have provided the correct host and port and that the server is currently running.
+
+https://on.cypress.io/exec
+
+Because this error occurred during a `after all` hook we are skipping the remaining tests in the current suite: `Search: Search in Managed C...`
+    at https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:154288:85
+    at tryCatcher (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:13212:23)
+    at Promise._settlePromiseFromHandler (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:11147:31)
+    at Promise._settlePromise (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:11204:18)
+    at Promise._settlePromise0 (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:11249:10)
+    at Promise._settlePromises (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:11329:18)
+    at _drainQueueStep (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:7919:12)
+    at _drainQueue (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:7912:9)
+    at Async.../../node_modules/bluebird/js/release/async.js.Async._drainQueues (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:7928:5)
+    at Async.drainQueues (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:7798:14)
+From Your Spec Code:
+    at Object.login (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/tests?p=tests/cypress/tests/02-search/01-search.spec.js:215:8)
+    at Context.eval (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/tests?p=tests/cypress/tests/02-search/01-search.spec.js:337:30)]]></failure>
+    </testcase>
+  </testsuite>
+</testsuites>

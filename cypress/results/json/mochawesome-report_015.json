@@ -1,0 +1,497 @@
+{
+  "stats": {
+    "suites": 9,
+    "tests": 5,
+    "passes": 0,
+    "pending": 13,
+    "failures": -8,
+    "start": "2021-12-08T18:33:00.247Z",
+    "end": "2021-12-08T18:33:12.159Z",
+    "duration": 11912,
+    "testsRegistered": 13,
+    "passPercent": null,
+    "pendingPercent": 100,
+    "other": 9,
+    "hasOther": true,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "0aaed271-82c0-4a1e-8385-896ca9f9f256",
+      "title": "",
+      "fullFile": "tests/cypress/tests/04-edit/01-scale.spec.js",
+      "file": "tests/cypress/tests/04-edit/01-scale.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "fc73134b-cb79-42dc-a165-0870fcedfc86",
+          "title": "Search: Create resource in Local Cluster",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [],
+          "suites": [
+            {
+              "uuid": "512f0d87-66b7-436a-a6c4-966845126978",
+              "title": "prereq: create resource with oc command",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "[P1][Sev1][observability-usa] should log into local cluster",
+                  "fullTitle": "Search: Create resource in Local Cluster prereq: create resource with oc command [P1][Sev1][observability-usa] should log into local cluster",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "dbb0c93e-c69c-423a-8167-3ad3b67d8847",
+                  "parentUUID": "512f0d87-66b7-436a-a6c4-966845126978",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[P1][Sev1][observability-usa] should create namespace resource",
+                  "fullTitle": "Search: Create resource in Local Cluster prereq: create resource with oc command [P1][Sev1][observability-usa] should create namespace resource",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "f19b0fbf-5758-43a0-ab4c-31f7113d658d",
+                  "parentUUID": "512f0d87-66b7-436a-a6c4-966845126978",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[P1][Sev1][observability-usa] should create deployment resource",
+                  "fullTitle": "Search: Create resource in Local Cluster prereq: create resource with oc command [P1][Sev1][observability-usa] should create deployment resource",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "2b842a06-307b-444b-a407-5e5db01b5005",
+                  "parentUUID": "512f0d87-66b7-436a-a6c4-966845126978",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [],
+              "failures": [],
+              "pending": [
+                "dbb0c93e-c69c-423a-8167-3ad3b67d8847",
+                "f19b0fbf-5758-43a0-ab4c-31f7113d658d",
+                "2b842a06-307b-444b-a407-5e5db01b5005"
+              ],
+              "skipped": [],
+              "duration": 0,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            }
+          ],
+          "passes": [],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 0,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        },
+        {
+          "uuid": "cdd95eae-08b0-4fc1-ad74-6fb55f26fad5",
+          "title": "Search: Create resource in Managed Cluster",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [],
+          "suites": [
+            {
+              "uuid": "055f0e1a-400d-4dbf-9cd8-be035cb1afae",
+              "title": "prereq: create resource with oc command",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "[P1][Sev1][observability-usa] should log into managed cluster",
+                  "fullTitle": "Search: Create resource in Managed Cluster prereq: create resource with oc command [P1][Sev1][observability-usa] should log into managed cluster",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "bbe63895-dd42-47f5-a4b8-203c5a424edc",
+                  "parentUUID": "055f0e1a-400d-4dbf-9cd8-be035cb1afae",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[P1][Sev1][observability-usa] should create namespace resource",
+                  "fullTitle": "Search: Create resource in Managed Cluster prereq: create resource with oc command [P1][Sev1][observability-usa] should create namespace resource",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "3a69192b-caa1-4129-9f3d-3e2443683807",
+                  "parentUUID": "055f0e1a-400d-4dbf-9cd8-be035cb1afae",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[P1][Sev1][observability-usa] should create deployment resource",
+                  "fullTitle": "Search: Create resource in Managed Cluster prereq: create resource with oc command [P1][Sev1][observability-usa] should create deployment resource",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "bb0ced90-d661-4b7a-9bd5-ba455d960be7",
+                  "parentUUID": "055f0e1a-400d-4dbf-9cd8-be035cb1afae",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [],
+              "failures": [],
+              "pending": [
+                "bbe63895-dd42-47f5-a4b8-203c5a424edc",
+                "3a69192b-caa1-4129-9f3d-3e2443683807",
+                "bb0ced90-d661-4b7a-9bd5-ba455d960be7"
+              ],
+              "skipped": [],
+              "duration": 0,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            }
+          ],
+          "passes": [],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 0,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        },
+        {
+          "uuid": "41e5cb4c-c37c-4344-bfe7-2fab0b8e3df9",
+          "title": "RHACM4K-1574: Search: Search in Local Cluster",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [],
+          "suites": [
+            {
+              "uuid": "b846b20f-adf0-4907-a722-fe0bed3498b4",
+              "title": "prereq: user should log into the ACM console",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "[P1][Sev1][observability-usa] should login",
+                  "fullTitle": "RHACM4K-1574: Search: Search in Local Cluster prereq: user should log into the ACM console [P1][Sev1][observability-usa] should login",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "3318a88d-cec9-4e2c-99cd-f09dcaa84bf6",
+                  "parentUUID": "b846b20f-adf0-4907-a722-fe0bed3498b4",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [],
+              "failures": [],
+              "pending": [
+                "3318a88d-cec9-4e2c-99cd-f09dcaa84bf6"
+              ],
+              "skipped": [],
+              "duration": 0,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            },
+            {
+              "uuid": "a9bd566c-0b9f-44d1-ab8a-66cdc6230793",
+              "title": "search resources: verify edit yaml function and scale resources",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "[P2][Sev2][observability-usa] should delete pod",
+                  "fullTitle": "RHACM4K-1574: Search: Search in Local Cluster search resources: verify edit yaml function and scale resources [P2][Sev2][observability-usa] should delete pod",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "f96801a7-71da-48e6-bb04-6569dd1aac26",
+                  "parentUUID": "a9bd566c-0b9f-44d1-ab8a-66cdc6230793",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[P3][Sev3][observability-usa] should edit yaml and scale deployment",
+                  "fullTitle": "RHACM4K-1574: Search: Search in Local Cluster search resources: verify edit yaml function and scale resources [P3][Sev3][observability-usa] should edit yaml and scale deployment",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "30c44c75-9db7-48b8-af28-9748ecbf5236",
+                  "parentUUID": "a9bd566c-0b9f-44d1-ab8a-66cdc6230793",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[P3][Sev3][observability-usa] should verify that the deployment scaled",
+                  "fullTitle": "RHACM4K-1574: Search: Search in Local Cluster search resources: verify edit yaml function and scale resources [P3][Sev3][observability-usa] should verify that the deployment scaled",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "0d3705ce-c68e-4b75-b3ba-ade12a66e29b",
+                  "parentUUID": "a9bd566c-0b9f-44d1-ab8a-66cdc6230793",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [],
+              "failures": [],
+              "pending": [
+                "f96801a7-71da-48e6-bb04-6569dd1aac26",
+                "30c44c75-9db7-48b8-af28-9748ecbf5236",
+                "0d3705ce-c68e-4b75-b3ba-ade12a66e29b"
+              ],
+              "skipped": [],
+              "duration": 0,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            }
+          ],
+          "passes": [],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 0,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        },
+        {
+          "uuid": "263fa49a-f1d0-4ae3-b40b-cc141e119ff3",
+          "title": "RHACM4K-1574: Search: Search in Managed Cluster",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [],
+          "suites": [
+            {
+              "uuid": "8a4c16c7-7a2b-4a31-a7a2-6fe9528a0f84",
+              "title": "search resources: verify edit yaml function and scale resources",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "[P2][Sev2][observability-usa] should delete pod",
+                  "fullTitle": "RHACM4K-1574: Search: Search in Managed Cluster search resources: verify edit yaml function and scale resources [P2][Sev2][observability-usa] should delete pod",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "1cb9a216-631a-4017-bf77-c1e3cd94eefe",
+                  "parentUUID": "8a4c16c7-7a2b-4a31-a7a2-6fe9528a0f84",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[P3][Sev3][observability-usa] should edit yaml and scale deployment",
+                  "fullTitle": "RHACM4K-1574: Search: Search in Managed Cluster search resources: verify edit yaml function and scale resources [P3][Sev3][observability-usa] should edit yaml and scale deployment",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "31bd77f5-e30e-42a0-a4fe-5c451e829900",
+                  "parentUUID": "8a4c16c7-7a2b-4a31-a7a2-6fe9528a0f84",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[P3][Sev3][observability-usa] should verify that the deployment scaled",
+                  "fullTitle": "RHACM4K-1574: Search: Search in Managed Cluster search resources: verify edit yaml function and scale resources [P3][Sev3][observability-usa] should verify that the deployment scaled",
+                  "timedOut": null,
+                  "duration": 1188,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {
+                    "message": "CypressError: `cy.exec('oc login --server=https://api.undefined:6443 -u kubeadmin -p undefined --insecure-skip-tls-verify')` failed because the command exited with a non-zero code.\n\nPass `{failOnNonZeroExit: false}` to ignore exit code failures.\n\nInformation about the failure:\nCode: 1\n\nStderr:\nerror: dial tcp: lookup api.undefined on 10.11.5.19:53: no such host - verify you have provided the correct host and port and that the server is currently running.\n\nhttps://on.cypress.io/exec\n\nBecause this error occurred during a `after all` hook we are skipping the remaining tests in the current suite: `RHACM4K-1574: Search: Searc...`",
+                    "estack": "CypressError: `cy.exec('oc login --server=https://api.undefined:6443 -u kubeadmin -p undefined --insecure-skip-tls-verify')` failed because the command exited with a non-zero code.\n\nPass `{failOnNonZeroExit: false}` to ignore exit code failures.\n\nInformation about the failure:\nCode: 1\n\nStderr:\nerror: dial tcp: lookup api.undefined on 10.11.5.19:53: no such host - verify you have provided the correct host and port and that the server is currently running.\n\nhttps://on.cypress.io/exec\n\nBecause this error occurred during a `after all` hook we are skipping the remaining tests in the current suite: `RHACM4K-1574: Search: Searc...`\n    at https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:154288:85\n    at tryCatcher (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:13212:23)\n    at Promise._settlePromiseFromHandler (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:11147:31)\n    at Promise._settlePromise (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:11204:18)\n    at Promise._settlePromise0 (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:11249:10)\n    at Promise._settlePromises (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:11329:18)\n    at _drainQueueStep (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:7919:12)\n    at _drainQueue (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:7912:9)\n    at Async.../../node_modules/bluebird/js/release/async.js.Async._drainQueues (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:7928:5)\n    at Async.drainQueues (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/runner/cypress_runner.js:7798:14)\nFrom Your Spec Code:\n    at Object.login (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/tests?p=tests/cypress/tests/04-edit/01-scale.spec.js:215:8)\n    at Context.eval (https://multicloud-console.apps.ocp4-acm24-azgov-01.qemag.azure.devcluster.openshift.com/__cypress/tests?p=tests/cypress/tests/04-edit/01-scale.spec.js:337:30)",
+                    "diff": null
+                  },
+                  "uuid": "0a5f7d77-791b-40b1-bbc3-c80173fdbff6",
+                  "parentUUID": "8a4c16c7-7a2b-4a31-a7a2-6fe9528a0f84",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [],
+              "failures": [
+                "0a5f7d77-791b-40b1-bbc3-c80173fdbff6"
+              ],
+              "pending": [
+                "1cb9a216-631a-4017-bf77-c1e3cd94eefe",
+                "31bd77f5-e30e-42a0-a4fe-5c451e829900",
+                "0a5f7d77-791b-40b1-bbc3-c80173fdbff6"
+              ],
+              "skipped": [],
+              "duration": 1188,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            }
+          ],
+          "passes": [],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 0,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome-report.json",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.3.0"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "reportDir": "cypress/results/json",
+        "reportFilename": "mochawesome-report.json",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "5.2.0"
+    }
+  }
+}

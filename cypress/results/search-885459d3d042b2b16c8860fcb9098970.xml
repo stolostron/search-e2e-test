@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="0.0000" tests="3" failures="0" skipped="3">
+  <testsuite name="Root Suite" timestamp="2021-12-08T18:26:06" tests="0" file="tests/cypress/tests/07-link/01-cluster-page-search-link.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="RHACM4K-413: Search: Linked page" timestamp="2021-12-08T18:26:11" tests="0" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="prereq: user should log into the ACM console" timestamp="2021-12-08T18:26:11" tests="1" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="verify: cluster page link to search page" timestamp="2021-12-08T18:26:11" tests="2" time="0.0000" failures="0">
+  </testsuite>
+</testsuites>

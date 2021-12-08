@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="0.0000" tests="9" failures="0" skipped="9">
+  <testsuite name="Root Suite" timestamp="2021-12-08T18:40:39" tests="0" file="tests/cypress/tests/09-saved/01-saved-searches.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="RHACM4K-412 - Search: Saved searches" timestamp="2021-12-08T18:40:43" tests="0" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="prereq: user should log into the ACM console" timestamp="2021-12-08T18:40:43" tests="2" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="verify: saved searches resource actions" timestamp="2021-12-08T18:40:43" tests="7" time="0.0000" failures="0">
+  </testsuite>
+</testsuites>

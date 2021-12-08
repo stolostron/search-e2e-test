@@ -1,0 +1,222 @@
+{
+  "stats": {
+    "suites": 3,
+    "tests": 2,
+    "passes": 0,
+    "pending": 5,
+    "failures": -3,
+    "start": "2021-12-08T18:40:59.982Z",
+    "end": "2021-12-08T18:41:10.854Z",
+    "duration": 10872,
+    "testsRegistered": 5,
+    "passPercent": null,
+    "pendingPercent": 100,
+    "other": 3,
+    "hasOther": true,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "9b484e1f-7b8e-41ef-bc5d-9d9b2abb7367",
+      "title": "",
+      "fullFile": "tests/cypress/tests/11-managed/01-verify-managed-cluster.spec.js",
+      "file": "tests/cypress/tests/11-managed/01-verify-managed-cluster.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "5e7e5a8b-7b44-4e6c-8c82-791b7a03a090",
+          "title": "RHACM4K-912: Search: Verify the managed cluster info in the search page",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [],
+          "suites": [
+            {
+              "uuid": "2d9c20c9-5cea-4538-a846-e2464c1ee2e2",
+              "title": "prereq: user should log into the ACM console",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "[P1][Sev1][observability-usa] should login",
+                  "fullTitle": "RHACM4K-912: Search: Verify the managed cluster info in the search page prereq: user should log into the ACM console [P1][Sev1][observability-usa] should login",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "201c4b29-e9db-4b5c-9320-fe1db47f5432",
+                  "parentUUID": "2d9c20c9-5cea-4538-a846-e2464c1ee2e2",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [],
+              "failures": [],
+              "pending": [
+                "201c4b29-e9db-4b5c-9320-fe1db47f5432"
+              ],
+              "skipped": [],
+              "duration": 0,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            },
+            {
+              "uuid": "e8ff2934-1e47-4f44-aef7-dfa4de4e3a25",
+              "title": "verify: managed cluster resource endpoint",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "[P3][Sev3][observability-usa] should load the search page",
+                  "fullTitle": "RHACM4K-912: Search: Verify the managed cluster info in the search page verify: managed cluster resource endpoint [P3][Sev3][observability-usa] should load the search page",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "b67fb313-5e75-48a7-b766-d69909e715fe",
+                  "parentUUID": "e8ff2934-1e47-4f44-aef7-dfa4de4e3a25",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[P3][Sev3][observability-usa] should validate the endpoint version for the managed clusters are accurate",
+                  "fullTitle": "RHACM4K-912: Search: Verify the managed cluster info in the search page verify: managed cluster resource endpoint [P3][Sev3][observability-usa] should validate the endpoint version for the managed clusters are accurate",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "8a372739-6b51-4ff5-b118-8845c09d70ae",
+                  "parentUUID": "e8ff2934-1e47-4f44-aef7-dfa4de4e3a25",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[P3][Sev3][observability-usa] should verify endpoint pods are all in running state",
+                  "fullTitle": "RHACM4K-912: Search: Verify the managed cluster info in the search page verify: managed cluster resource endpoint [P3][Sev3][observability-usa] should verify endpoint pods are all in running state",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "0bfdfc15-4589-4abf-aaee-fa60ac22c6c3",
+                  "parentUUID": "e8ff2934-1e47-4f44-aef7-dfa4de4e3a25",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[P3][Sev3][observability-usa] should verify the yaml information is correct and there are no errors in the logs",
+                  "fullTitle": "RHACM4K-912: Search: Verify the managed cluster info in the search page verify: managed cluster resource endpoint [P3][Sev3][observability-usa] should verify the yaml information is correct and there are no errors in the logs",
+                  "timedOut": null,
+                  "duration": 0,
+                  "state": "pending",
+                  "speed": null,
+                  "pass": false,
+                  "fail": false,
+                  "pending": true,
+                  "context": null,
+                  "code": "",
+                  "err": {},
+                  "uuid": "125400a9-2218-42ca-9562-dd90332ea397",
+                  "parentUUID": "e8ff2934-1e47-4f44-aef7-dfa4de4e3a25",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [],
+              "failures": [],
+              "pending": [
+                "b67fb313-5e75-48a7-b766-d69909e715fe",
+                "8a372739-6b51-4ff5-b118-8845c09d70ae",
+                "0bfdfc15-4589-4abf-aaee-fa60ac22c6c3",
+                "125400a9-2218-42ca-9562-dd90332ea397"
+              ],
+              "skipped": [],
+              "duration": 0,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            }
+          ],
+          "passes": [],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 0,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome-report.json",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "6.3.0"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "reportDir": "cypress/results/json",
+        "reportFilename": "mochawesome-report.json",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "5.2.0"
+    }
+  }
+}

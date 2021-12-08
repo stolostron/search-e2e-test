@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="0.0000" tests="3" failures="0" skipped="3">
+  <testsuite name="Root Suite" timestamp="2021-12-08T18:37:34" tests="0" file="tests/cypress/tests/01-common/01-common-searches.spec.js" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="RHACM4K-913: Search - common filter and conditions" timestamp="2021-12-08T18:37:45" tests="0" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="prereq: create resource with oc command and log into the ACM console" timestamp="2021-12-08T18:37:45" tests="2" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="verify: search result with common filter and conditions" timestamp="2021-12-08T18:37:45" tests="1" time="0.0000" failures="0">
+  </testsuite>
+</testsuites>
