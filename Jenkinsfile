@@ -45,9 +45,8 @@ pipeline {
                     /usr/local/bin/yq e -i '.options.hub.user="'"\$BASE_USER"'"' resources/options.yaml
                     /usr/local/bin/yq e -i '.options.hub.password="'"\$BASE_PASSWORD"'"' resources/options.yaml
                     rm -rf results
-                    #npm run test
-                    npx cypress run --headless --env grepTags=\"\$TEST_TAGS\"
-
+                    npm run test
+                    #npx cypress run --headless --env grepTags=\"\$TEST_TAGS\"
                 fi
                 """
             }
