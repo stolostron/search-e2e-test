@@ -8,5 +8,5 @@ chromedriver.log
 tests/cypress/videos
 tests/cypress/screenshots
 junit.xml
-cypress/
-kube/
+/cypress
+/kube/
