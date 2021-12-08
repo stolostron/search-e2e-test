@@ -30,10 +30,10 @@ pipeline {
         stage('Test') {
             steps {
                 sh """
-                export BASE_OC_IDP="${params.BASE_OC_IDP}"
-                export BASE_DOMAIN="${params.BASE_DOMAIN}"
-                export BASE_USER="${params.BASE_USER}"
-                export BASE_PASSWORD="${params.BASE_PASSWORD}"
+                export CYPRESS_OPTIONS_HUB_OC_IDP="${params.BASE_OC_IDP}"
+                export CYPRESS_OPTIONS_HUB_BASEDOMAIN="${params.BASE_DOMAIN}"
+                export CYPRESS_OPTIONS_HUB_USER="${params.BASE_USER}"
+                export CYPRESS_OPTIONS_HUB_PASSWORD="${params.BASE_PASSWORD}"
                 export TEST_TAGS=“${params.TEST_TAGS}”
                 if [[ -z "${BASE_OC_IDP}" || -z "${BASE_DOMAIN}" || -z "${BASE_PASSWORD}" ]]; then
                     echo "Aborting test.. ACM connection details are required for the test execution"
