@@ -13,7 +13,7 @@ pipeline {
         string(name:'BASE_USER', defaultValue: 'kubeadmin', description: 'Cluster IDP')
         string(name:'BASE_DOMAIN', defaultValue: '', description: 'Hub cluster base domain')
         string(name:'BASE_PASSWORD', defaultValue: '', description: 'Hub cluster password')
-        string(name:'TEST_TAGS', defaultValue:'',description: 'grepTags parameter to use for test execution’)
+        string(name:'TEST_TAGS', defaultValue:'',description: 'grepTags parameter to use for test execution')
     }
     stages {
         stage('Build') {
