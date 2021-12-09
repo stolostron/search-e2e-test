@@ -29,9 +29,8 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-import { getOpt } from '../scripts/utils'
-
 import 'cypress-wait-until'
+import { getOpt } from '../scripts/utils'
 
 Cypress.Commands.add(
   'login',
@@ -39,7 +38,7 @@ Cypress.Commands.add(
     var user = OPTIONS_HUB_USER || Cypress.env('OPTIONS_HUB_USER')
     var password = OPTIONS_HUB_PASSWORD || Cypress.env('OPTIONS_HUB_PASSWORD')
     var idp = OPTIONS_HUB_OC_IDP || Cypress.env('OPTIONS_HUB_OC_IDP')
-    cy.visit('/multicloud/search')
+    cy.visit('/multicloud/home/search')
     cy.get('body').then((body) => {
       // Check if logged in
       if (body.find('#header').length === 0) {

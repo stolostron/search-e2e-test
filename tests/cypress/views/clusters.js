@@ -29,13 +29,11 @@ export const clustersPage = {
           .contains('Search cluster')
           .click()
           .then(() =>
-            cy
-              .url()
-              .should(
-                'include',
-                // TODO update to `/multicloud/search?filters={%22textsearch%22:%22cluster%3A${name}%22}` when clusters page is finished
-                `/search?filters={%22textsearch%22:%22cluster%3A${name}%22}`
-              )
+            cy.url().should(
+              'include',
+              // TODO update to `/multicloud/home/search?filters={%22textsearch%22:%22cluster%3A${name}%22}` when clusters page is finished
+              `/search?filters={%22textsearch%22:%22cluster%3A${name}%22}`
+            )
           )
       })
   },
