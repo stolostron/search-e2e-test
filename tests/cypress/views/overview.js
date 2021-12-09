@@ -6,7 +6,7 @@
 /// <reference types="cypress" />
 
 export const overviewPage = {
-  whenGoToOverviewPage: () => cy.visit('/overview'),
+  whenGoToOverviewPage: () => cy.visit('/multicloud/home/overview'),
   whenGotoSearchPage: () => {
     cy.get(`[aria-label="search-button"]`).click()
   },
