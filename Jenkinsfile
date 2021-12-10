@@ -10,6 +10,7 @@ pipeline {
     }
     parameters {
         string(name:'BASE_OC_IDP', defaultValue: 'kube:admin', description: 'Cluster IDP')
+        string(name:'BASE_URL', defaultValue: '', description: 'ACM URL')
         string(name:'BASE_USER', defaultValue: 'kubeadmin', description: 'Cluster IDP')
         string(name:'BASE_DOMAIN', defaultValue: '', description: 'Hub cluster base domain')
         string(name:'BASE_PASSWORD', defaultValue: '', description: 'Hub cluster password')
@@ -34,6 +35,7 @@ pipeline {
                 export CYPRESS_OPTIONS_HUB_BASEDOMAIN="${params.BASE_DOMAIN}"
                 export CYPRESS_OPTIONS_HUB_USER="${params.BASE_USER}"
                 export CYPRESS_OPTIONS_HUB_PASSWORD="${params.BASE_PASSWORD}"
+                export CYPRESS_BASE_URL="${params.BASE_URL}"
                 export TEST_TAGS="${params.TEST_TAGS}"
                 if [[ -z "${BASE_OC_IDP}" || -z "${BASE_DOMAIN}" || -z "${BASE_PASSWORD}" ]]; then
                     echo "Aborting test.. ACM connection details are required for the test execution"
