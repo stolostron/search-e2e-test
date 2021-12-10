@@ -15,7 +15,7 @@ const rbac_users = [
   'search-e2e-edit-ns',
 ]
 const password = Cypress.env('OPTIONS_HUB_PASSWORD')
-const IDP = 'search-e2e-htpasswd'
+const IDP = 'app-e2e-htpasswd'
 
 let ignore
 

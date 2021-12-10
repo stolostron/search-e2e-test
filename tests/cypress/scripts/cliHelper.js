@@ -59,16 +59,25 @@ export const cliHelper = {
             cy.log(res.stdout ? res.stdout : res.stderr)
         })
     },
-    updateSearchCustomizationCR: (persistence = 'true', strg_class = 'standard') => {
+    updateSearchCustomizationCR: (persistence = 'true', valid) => {
+        if (valid === true) {
+            // Get storage class
+            const sc = cliHelper.findDefaultStorageClass()
+        } else {
+            const sc = 'invalid'
+        }
         cy.readFile('tests/cypress/templates/search_customization_cr.yaml').then((cfg) => {
             let b64Cfg = btoa(
-                cfg.replaceAll('boolean', persistence).replaceAll('STRGCLASS', strg_class)
+                cfg.replaceAll('boolean', persistence).replaceAll('STRGCLASS', sc)
             )
             cy.exec(`echo ${b64Cfg} | base64 -d | oc apply -f -`)
-            cy.log(`Successfully updated "Persistence" to ${persistence}`)
         })
+        if (valid === true) {
+            cy.log(`Successfully updated "Persistence" to ${persistence}`)
+        } else {
+            cy.log(`Successfully created invalid sc`)
+        }
     },
-
     findFullPodName: (name, namespace = 'ocm') => {
         cliHelper.login('Local')
         return cy
@@ -81,6 +90,19 @@ export const cliHelper = {
                 }
             );
     },
+    findDefaultStorageClass: () => {
+        cliHelper.login('Local')
+        return cy
+            .exec(
+                `oc get sc | grep default`,
+                {failOnNonZeroExit: false}
+            ).then(result => {
+                    // Return 'default' name
+                    return cy.wrap(result.stdout.substr(0, result.stdout.indexOf(' ')))
+                }
+            );
+    },
+
     createApplication: (appName, namespace) => {
         cy.readFile('tests/cypress/templates/application.yaml').then((cfg) => {
             let b64Cfg = btoa(
