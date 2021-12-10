@@ -12,7 +12,6 @@ pipeline {
         string(name:'BASE_OC_IDP', defaultValue: 'kube:admin', description: 'Cluster IDP')
         string(name:'BASE_URL', defaultValue: '', description: 'ACM URL')
         string(name:'BASE_USER', defaultValue: 'kubeadmin', description: 'Cluster IDP')
-        string(name:'BASE_DOMAIN', defaultValue: '', description: 'Hub cluster base domain')
         string(name:'BASE_PASSWORD', defaultValue: '', description: 'Hub cluster password')
         string(name:'TEST_TAGS', defaultValue:'',description: 'grepTags parameter to use for test execution')
     }
@@ -32,7 +31,6 @@ pipeline {
             steps {
                 sh """
                 export CYPRESS_OPTIONS_HUB_OC_IDP="${params.BASE_OC_IDP}"
-                export CYPRESS_OPTIONS_HUB_BASEDOMAIN="${params.BASE_DOMAIN}"
                 export CYPRESS_OPTIONS_HUB_USER="${params.BASE_USER}"
                 export CYPRESS_OPTIONS_HUB_PASSWORD="${params.BASE_PASSWORD}"
                 export CYPRESS_BASE_URL="${params.BASE_URL}"
