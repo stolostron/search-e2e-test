@@ -35,13 +35,13 @@ pipeline {
                 export CYPRESS_OPTIONS_HUB_PASSWORD="${params.BASE_PASSWORD}"
                 export CYPRESS_BASE_URL="${params.BASE_URL}"
                 export TEST_TAGS="${params.TEST_TAGS}"
-                if [[ -z "${BASE_OC_IDP}" || -z "${BASE_DOMAIN}" || -z "${BASE_PASSWORD}" ]]; then
+                if [[ -z "${BASE_OC_IDP}" || -z "${BASE_URL}" || -z "${BASE_PASSWORD}" ]]; then
                     echo "Aborting test.. ACM connection details are required for the test execution"
                     exit 1
                 else
                     cp resources/options.yaml.template resources/options.yaml
                     /usr/local/bin/yq e -i '.options.identityProvider="'"\$BASE_OC_IDP"'"' resources/options.yaml
-                    /usr/local/bin/yq e -i '.options.hub.baseDomain="'"\$BASE_DOMAIN"'"' resources/options.yaml
+                    #/usr/local/bin/yq e -i '.options.hub.baseDomain="'"\$BASE_DOMAIN"'"' resources/options.yaml
                     /usr/local/bin/yq e -i '.options.hub.user="'"\$BASE_USER"'"' resources/options.yaml
                     /usr/local/bin/yq e -i '.options.hub.password="'"\$BASE_PASSWORD"'"' resources/options.yaml
                     rm -rf results
