@@ -7,7 +7,7 @@
 
 export const clustersPage = {
   whenGoToClusterPage: () => {
-    cy.visit('/multicloud/clusters')
+    cy.visit('/multicloud/infrastructure/clusters')
   },
   shouldLoad: () => {
     clustersPage.whenGoToClusterPage()
