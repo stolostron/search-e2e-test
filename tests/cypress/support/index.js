@@ -31,9 +31,9 @@ const err = 'Test taking too long! It has been running for 5 minutes.'
 
 // https://multicloud-console.apps.ocp4-aws-3.dev09.red-chesterfield.com/
 
-const baseDomain = Cypress.env("CYPRESS_BASE_URL").replace("https://multicloud-console.apps.", "")
-cy.log("#######Base Domain: " + baseDomain)
-Cypress.env('CYPRESS_OPTIONS_HUB_BASEDOMAIN', baseDomain)
+// const baseDomain = Cypress.env("CYPRESS_BASE_URL").replace("https://multicloud-console.apps.", "")
+// cy.log("#######Base Domain: " + baseDomain)
+// Cypress.env('CYPRESS_OPTIONS_HUB_BASEDOMAIN', baseDomain)
 
 
 before(() => {

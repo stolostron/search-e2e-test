@@ -11,6 +11,7 @@ pipeline {
     parameters {
         string(name:'BASE_OC_IDP', defaultValue: 'kube:admin', description: 'Cluster IDP')
         string(name:'BASE_URL', defaultValue: '', description: 'ACM URL')
+        string(name:'BASE_DOMAIN', defaultValue: '', description: 'Domain name')
         string(name:'BASE_USER', defaultValue: 'kubeadmin', description: 'Cluster IDP')
         string(name:'BASE_PASSWORD', defaultValue: '', description: 'Hub cluster password')
         string(name:'TEST_TAGS', defaultValue:'',description: 'grepTags parameter to use for test execution')
@@ -31,6 +32,7 @@ pipeline {
             steps {
                 sh """
                 export CYPRESS_OPTIONS_HUB_OC_IDP="${params.BASE_OC_IDP}"
+                export CYPRESS_OPTIONS_HUB_BASEDOMAIN="${params.BASE_DOMAIN}"
                 export CYPRESS_OPTIONS_HUB_USER="${params.BASE_USER}"
                 export CYPRESS_OPTIONS_HUB_PASSWORD="${params.BASE_PASSWORD}"
                 export CYPRESS_BASE_URL="${params.BASE_URL}"
@@ -41,7 +43,7 @@ pipeline {
                 else
                     cp resources/options.yaml.template resources/options.yaml
                     /usr/local/bin/yq e -i '.options.identityProvider="'"\$BASE_OC_IDP"'"' resources/options.yaml
-                    #/usr/local/bin/yq e -i '.options.hub.baseDomain="'"\$BASE_DOMAIN"'"' resources/options.yaml
+                    /usr/local/bin/yq e -i '.options.hub.baseDomain="'"\$BASE_DOMAIN"'"' resources/options.yaml
                     /usr/local/bin/yq e -i '.options.hub.user="'"\$BASE_USER"'"' resources/options.yaml
                     /usr/local/bin/yq e -i '.options.hub.password="'"\$BASE_PASSWORD"'"' resources/options.yaml
                     rm -rf results
