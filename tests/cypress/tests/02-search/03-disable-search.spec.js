@@ -10,20 +10,21 @@ import {searchBar, searchPage} from '../../views/search'
 import {podDetailPage} from "../../views/podDetailPage";
 import {cliHelper} from "../../scripts/cliHelper";
 
-
-describe('Search: Test resiliency', {tags: tags.component}, function () {
+// Under progress
+describe('Search: Test "Search" disability function', {tags: tags.component}, function () {
     before(() => {
-        // Get search-operator pod's full name
-        cliHelper.findFullPodName('search-operator').as('pod')
-        // Get default storage class
-        cliHelper.findDefaultStorageClass().as('sc')
+        // Get name of an imported cluster
+        cliHelper.getTargetManagedCluster().as('managedCluster')
+        if (this.managedCluster === 'local-cluster'){
+            Cypress.on('fail - No managed cluster found', (error, runnable) => { throw error; });
+        }
     })
 
-    it(`RHACM4K-1694: Search resiliency verification`, {tags: ['@RHACM4K-1694', '@post-release']}, function () {
+    it(`RHACM4K-3941: Search function can be disabled on the managed cluster`, {tags: ['@RHACM4K-3941', '@post-release']}, function () {
         /* Verify CR 'searchoperator' is created and search-operator pod is running */
         // Log in yo ACM
         cy.login()
-        //Go to 'search' page
+        // Update 'klusterletaddonconfigs' file
         searchPage.whenGoToSearchPage()
         // Verify 'search' page loads
         searchPage.shouldLoad()
