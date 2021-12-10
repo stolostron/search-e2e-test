@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="Mocha Tests" time="0.0000" tests="1" failures="0" skipped="1">
-  <testsuite name="Root Suite" timestamp="2021-12-08T18:32:48" tests="0" file="tests/cypress/tests/03-create/02-verify-invalid-sc.spec.js" time="0.0000" failures="0">
-  </testsuite>
-  <testsuite name="Search: Test resiliency" timestamp="2021-12-08T18:32:53" tests="1" time="0.0000" failures="0">
-  </testsuite>
-</testsuites>
