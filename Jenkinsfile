@@ -54,8 +54,8 @@ pipeline {
     }
     post {
         always {
-            archiveArtifacts artifacts: 'results/*', followSymlinks: false
-            junit 'results/*.xml'
+            archiveArtifacts artifacts: 'cypress/results/*', followSymlinks: false
+            junit 'cypress/results/*.xml'
         }
     }
 }
