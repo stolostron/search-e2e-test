@@ -11,7 +11,7 @@ import {podDetailPage} from "../../views/podDetailPage";
 import {cliHelper} from "../../scripts/cliHelper";
 
 
-describe('Search: Test resiliency', {tags: tags.component}, function () {
+describe('Search: Test resiliency', {tags: ['@e2e', '@Obs']}, function () {
     before(() => {
         // Get search-operator pod's full name
         cliHelper.findFullPodName('search-operator').as('pod')
