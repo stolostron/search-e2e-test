@@ -102,7 +102,22 @@ export const cliHelper = {
                 }
             );
     },
-
+    flagSearchCollector: (flag, managedCluster) => {
+        cliHelper.login('Local')
+        if (flag === 'true') {
+            // Generate yaml file
+            cy.exec(`oc get klusterletaddonconfigs.agent.open-cluster-management.io ${managedCluster} -n ${managedCluster} -o yaml |  sed '/searchCollector:/{n;s/enabled: false/enabled: true/;}' > tmp.yaml`)
+        } else if (flag === 'false') {
+            // Generate yaml file
+            cy.exec(`oc get klusterletaddonconfigs.agent.open-cluster-management.io ${managedCluster} -n ${managedCluster} -o yaml |  sed '/searchCollector:/{n;s/enabled: true/enabled: false/;}' > tmp.yaml`)
+        } else {
+            return 'Invalid flag provided'
+        }
+        // Apply the file
+        cy.exec(`oc apply -f tmp.yaml`)
+        // Delete tmp file
+        cy.exec(`rm tmp.yaml`)
+    },
     createApplication: (appName, namespace) => {
         cy.readFile('tests/cypress/templates/application.yaml').then((cfg) => {
             let b64Cfg = btoa(

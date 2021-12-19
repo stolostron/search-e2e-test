@@ -19,7 +19,7 @@ describe('Search: Test resiliency', {tags: ['@e2e', '@Obs']}, function () {
         cliHelper.findDefaultStorageClass().as('sc')
     })
 
-    it(`RHACM4K-1694: Search resiliency verification`, {tags: ['@RHACM4K-1694', '@post-release']}, function () {
+    it(`RHACM4K-1694: Search: Search resiliency verification`, {tags: ['@RHACM4K-1694', '@post-release']}, function () {
         /* Verify CR 'searchoperator' is created and search-operator pod is running */
         // Log in yo ACM
         cy.login()
