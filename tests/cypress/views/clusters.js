@@ -48,7 +48,7 @@ export const clustersPage = {
         } else if (flag === 'false') {
             cy.get('table').get('tbody').get('tr').contains(`${add_on}`).should('not.exist')
         } else {
-            return 'Invalid flag provided'
+            throw new Error("'Invalid flag provided'")
         }
     }
 }

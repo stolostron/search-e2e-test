@@ -229,6 +229,16 @@ export const searchPage = {
         searchPage.whenDeleteResourceDetailItem('application', appName)
         searchPage.shouldFindNoResults()
     },
+    whenSearchDisabledOnClusters: (flag) => {
+        cy.visit(`/search`)
+        if (flag === 'true') {
+            cy.get('.pf-c-card').get('button').contains(`Search is disabled on some clusters.`)
+        } else if (flag === 'false') {
+            cy.get('.pf-c-card').get('button').contains(`Search is disabled on some clusters.`).should('not.exist')
+        } else {
+            throw new Error("'Invalid flag provided'")
+        }
+    },
 }
 
 export const searchBar = {
