@@ -10,7 +10,7 @@ import {searchBar, searchPage} from '../../views/search'
 import {cliHelper} from "../../scripts/cliHelper";
 import {clustersPage} from "../../views/clusters";
 
-describe('Search: Test "search-collector" add-on function', {tags: tags.component}, function () {
+describe('Search: Test "search-collector" add-on function', {tags: [tags.component, '@test']}, function () {
     before(() => {
         // Get name of an imported cluster
         cliHelper.getTargetManagedCluster().as('managedCluster')
