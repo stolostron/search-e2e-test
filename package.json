@@ -62,7 +62,7 @@
     "mochawesome-merge": "^4.2.1",
     "prettier": "^2.5.1",
     "querystring": "^0.2.1",
-    "selenium-standalone": "^8.0.8"
+    "selenium-standalone": "^8.0.8
   },
   "husky": {
     "hooks": {
