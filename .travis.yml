@@ -48,8 +48,6 @@ jobs:
       language: node_js
       node_js:
         - 17
-      python: 
-        - 3
       script:
         - make build-test-image
         - make component/push
@@ -58,8 +56,6 @@ jobs:
       language: node_js
       node_js:
         - 17
-      python: 
-        - 3
       script:
         - make component/pull
         - make component/test/e2e
