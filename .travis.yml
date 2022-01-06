@@ -46,16 +46,12 @@ jobs:
     - stage: build
       name: 'Build the image and push it'
       language: node_js
-      node_js:
-        - 10
       script:
         - make build-test-image
         - make component/push
     - stage: test
       name: 'Run Search E2E tests'
       language: node_js
-      node_js:
-        - 10
       script:
         - make component/pull
         - make component/test/e2e
