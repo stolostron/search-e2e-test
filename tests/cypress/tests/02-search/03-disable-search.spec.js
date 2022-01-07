@@ -23,7 +23,6 @@ describe('Search: Test "search-collector" add-on function', {tags: [tags.compone
         }
     })
 
-
     // Reset 'search' component
     after(function () {
         // Flag search-collector to true
@@ -92,5 +91,4 @@ describe('Search: Test "search-collector" add-on function', {tags: [tags.compone
 
     })
 })
-
 
