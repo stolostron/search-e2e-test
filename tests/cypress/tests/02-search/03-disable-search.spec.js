@@ -23,6 +23,13 @@ describe('Search: Test "search-collector" add-on function', {tags: [tags.compone
         }
     })
 
+
+    // Reset 'search' component
+    after(function () {
+        // Flag search-collector to true
+        cliHelper.flagSearchCollector('true', this.managedCluster)
+    })
+
     it(`RHACM4K-3941: Search function can be disabled on the managed cluster`, {tags: ['@RHACM4K-3941', '@post-release']}, function () {
         /* Verify search-collector can be found on Add-ons page*/
         // Go to 'Add-on' page of a managed cluster and verify 'search-collector' is available
