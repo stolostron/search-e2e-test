@@ -12,6 +12,8 @@ import {clustersPage} from "../../views/clusters";
 
 describe('Search: Test "search-collector" add-on function', {tags: [tags.component, '@test']}, function () {
     before(() => {
+        // Log in yo ACM
+        cy.login()
         // Get name of an imported cluster
         cliHelper.getTargetManagedCluster().as('managedCluster')
         if (this.managedCluster === 'local-cluster') {
@@ -23,8 +25,6 @@ describe('Search: Test "search-collector" add-on function', {tags: [tags.compone
 
     it(`RHACM4K-3941: Search function can be disabled on the managed cluster`, {tags: ['@RHACM4K-3941', '@post-release']}, function () {
         /* Verify search-collector can be found on Add-ons page*/
-        // Log in yo ACM
-        cy.login()
         // Go to 'Add-on' page of a managed cluster and verify 'search-collector' is available
         clustersPage.whenAddonAvailable('true', this.managedCluster, 'search-collector')
 
@@ -51,8 +51,6 @@ describe('Search: Test "search-collector" add-on function', {tags: [tags.compone
 
     it(`RHACM4K-2882: search collector agent addon to reflect the status on hub post installed on managed cluster`, {tags: ['@RHACM4K-2882', '@post-release']}, function () {
         /* Verify search-collector can be found on Add-ons page*/
-        // Log in yo ACM
-        cy.login()
 
         /* Disable search-collector */
         // Flag search-collector to false
