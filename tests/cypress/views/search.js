@@ -232,9 +232,9 @@ export const searchPage = {
     whenSearchDisabledOnClusters: (flag) => {
         cy.visit(`/search`)
         if (flag === 'true') {
-            cy.get('.pf-c-card').get('button').contains(`Search is disabled on some clusters.`)
+            cy.get('.pf-c-card__body').get('button').contains(`Search is disabled on some clusters.`)
         } else if (flag === 'false') {
-            cy.get('.pf-c-card').get('button').contains(`Search is disabled on some clusters.`).should('not.exist')
+            cy.get('.pf-c-card__body').get('button').contains(`Search is disabled on some clusters.`).should('not.exist')
         } else {
             throw new Error("'Invalid flag provided'")
         }

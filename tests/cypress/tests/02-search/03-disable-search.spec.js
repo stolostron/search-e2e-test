@@ -68,6 +68,9 @@ describe('Search: Test "search-collector" add-on function', {tags: [tags.compone
         // Verify expected warning text exists
         searchPage.whenSearchDisabledOnClusters('true')
 
+        // Flag search-collector to true
+        cliHelper.flagSearchCollector('true', this.managedCluster)
+
         /* Verify addon */
         // Go to 'Add-on' page of a managed cluster and verify 'search-collector' is available
         clustersPage.whenAddonAvailable('true', this.managedCluster, 'search-collector')
@@ -75,6 +78,8 @@ describe('Search: Test "search-collector" add-on function', {tags: [tags.compone
         clustersPage.whenAddonAvailable('false', 'local-cluster', 'search-collector')
 
         /* Verify search-collector from search bar*/
+        // Go to search page
+        searchPage.whenGoToSearchPage()
         // Enter cluster name
         searchBar.whenFilterByCluster(this.managedCluster)
         // Enter kind 'lease'
@@ -88,7 +93,6 @@ describe('Search: Test "search-collector" add-on function', {tags: [tags.compone
             'Lease',
             'search-collector'
         )
-
     })
 })
 
