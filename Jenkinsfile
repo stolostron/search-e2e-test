@@ -26,6 +26,10 @@ pipeline {
                 npm ci
                 npx browserslist@latest --update-db
                 '''
+                script {
+                    def OCP_HUB_CLUSTER_API_URL = "${params.BASE_URL}".replace("multicloud-console.apps","api").concat(":6443")
+                    oc login --insecure-skip-tls-verify -u \$BASE_USER -p \$OCP_HUB_CLUSTER_PASSWORD \$OCP_HUB_CLUSTER_API_URL
+                }
             }
         }
         stage('Test') {
@@ -37,6 +41,9 @@ pipeline {
                 export CYPRESS_OPTIONS_HUB_PASSWORD="${params.BASE_PASSWORD}"
                 export CYPRESS_BASE_URL="${params.BASE_URL}"
                 export TEST_TAGS="${params.TEST_TAGS}"
+                export OCP_HUB_CLUSTER_API_URL=\$(echo \$CYPRESS_BASE_URL | sed -e 's/multicloud-console.apps/api/g')":6443"
+                oc login --insecure-skip-tls-verify -u \$CYPRESS_OPTIONS_HUB_USER -p \$CYPRESS_OPTIONS_HUB_PASSWORD \$OCP_HUB_CLUSTER_API_URL
+                python3 generate_managedclusters_data.py
                 if [[ -z "${BASE_OC_IDP}" || -z "${BASE_URL}" || -z "${BASE_PASSWORD}" ]]; then
                     echo "Aborting test.. ACM connection details are required for the test execution"
                     exit 1
