@@ -91,7 +91,7 @@ export const searchPage = {
     shouldLoad: () => {
         cy.get('.react-tags')
         cy.get('.react-tags__search-input')
-        cy.get('div.pc-f-skeleton').should('not.exist')
+        cy.get('div.pf-c-skeleton').should('not.exist')
     },
     whenToClickHelpIcon: () => {
         cy.get('[data-test="about-dropdown"]').click()
@@ -231,6 +231,7 @@ export const searchPage = {
     },
     whenSearchDisabledOnClusters: (flag) => {
         cy.visit(`/search`)
+        searchPage.shouldLoad()
         if (flag === 'true') {
             cy.get('.pf-c-card__body').get('button').contains(`Search is disabled on some clusters.`)
         } else if (flag === 'false') {
