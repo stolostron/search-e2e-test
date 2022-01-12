@@ -34,7 +34,7 @@ clusterModes.forEach((clusterMode) => {
     return
   }
 
-  describe('RHACKM4K-726: Search: Search in ' + clusterMode.label + ' Cluster', { tags: tags.env }, function () {
+  describe('RHACKM4K-726: Search: Search in ' + clusterMode.label + ' Cluster', { tags: ['@RHACKM4K-726'] }, function () {
       before(function () {
         clusterMode.valueFn().as('clusterName')
       })
