@@ -78,10 +78,5 @@ describe('RHACM4K-1419: Search: Overview page', { tags: [] }, function () {
     it(`[P2][Sev2][${squad}] should have link to credential page from left nav`, function () {
       overviewPage.shouldHaveLeftNavLinkToTargetedPage('Credentials')
     })
-
-    it(`[P2][Sev2][${squad}] should have link to resource creation page`, function () {
-      overviewPage.shouldLoad()
-      overviewPage.shouldHaveLinkToResourceCreationPage()
-    })
   })
 })

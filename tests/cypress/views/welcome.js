@@ -73,7 +73,7 @@ export const oauthIssuer = (token) => {
 }
 
 export const welcomePage = {
-  whenGoToWelcomePage: () => cy.visit('/multicloud/welcome'),
+  whenGoToWelcomePage: () => cy.visit('/multicloud/home/welcome'),
   shouldExist: () => {
     cy.get('.welcome--introduction').should(
       'contain',
@@ -88,20 +88,20 @@ export const welcomePage = {
   validateSvcs: () => {
     cy.contains('Go to Overview').click()
     overviewPage.shouldExist()
-    cy.visit('/multicloud/welcome')
+    cy.visit('/multicloud/home/welcome')
     cy.contains('Go to Clusters').click()
     cy.get('.pf-c-title').should('contain', 'Cluster management')
-    cy.visit('/multicloud/welcome')
+    cy.visit('/multicloud/home/welcome')
     cy.contains('Go to Applications').click()
     cy.get('.secondary-header-wrapper')
       .find('h1')
       .should('contain', 'Applications')
-    cy.visit('/multicloud/welcome')
+    cy.visit('/multicloud/home/welcome')
     cy.contains('Go to Governance and risk').click()
     cy.get('.secondary-header-wrapper')
       .find('h1')
       .should('contain', 'Governance and risk')
-    cy.visit('/multicloud/welcome')
+    cy.visit('/multicloud/home/welcome')
   },
   validateConnect: () => {
     cy.get('[target="dev-community"]').should(

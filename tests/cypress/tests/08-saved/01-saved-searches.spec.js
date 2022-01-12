@@ -32,6 +32,7 @@ describe('RHACM4K-412 - Search: Saved searches', { tags: tags.env }, function ()
   context('verify: saved searches resource actions', { tags: tags.modes },  function () {
     beforeEach(function () {
       searchPage.whenGoToSearchPage()
+      searchPage.shouldLoad()
     })
 
     after(function () {

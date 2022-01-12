@@ -5,9 +5,9 @@
 
 /// <reference types="cypress" />
 
-import { popupModal } from './popup'
 import { getOpt } from '../scripts/utils'
 import { podDetailPage } from './podDetailPage'
+import { popupModal } from './popup'
 
 const SEARCH_MESSAGES_INPUT_PLACE_HOLDER = 'Search items'
 const SEARCH_MESSAGES_NO_RESULTS =
@@ -16,8 +16,8 @@ const SEARCH_MESSAGES_FEW_SECONDS_AGO = 'a few seconds ago'
 const SEARCH_MESSAGES_LOADING_SUGGESTIONS = 'Loading...'
 
 export const searchPage = {
-  whenGoToSearchPage: () => cy.visit('/search'),
-  whenGoToWelcomePage: () => cy.visit('/multicloud/welcome'),
+  whenGoToSearchPage: () => cy.visit('/multicloud/home/search'),
+  whenGoToWelcomePage: () => cy.visit('/multicloud/home/welcome'),
   whenExpandRelationshipTiles: () => {
     cy.get('.pf-c-skeleton', { timeout: 2000 }).should('not.exist')
     cy.get('.pf-l-gallery', { timeout: 2000 })
@@ -91,7 +91,7 @@ export const searchPage = {
   shouldLoad: () => {
     cy.get('.react-tags')
     cy.get('.react-tags__search-input')
-    cy.get('div.pc-f-skeleton').should('not.exist')
+    cy.get('div.pf-c-skeleton').should('not.exist')
   },
   whenToClickHelpIcon: () => {
     cy.get('[data-test="about-dropdown"]').click()
