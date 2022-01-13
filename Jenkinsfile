@@ -40,13 +40,12 @@ pipeline {
                 export OCP_HUB_CLUSTER_API_URL=\$(echo \$CYPRESS_BASE_URL | sed -e 's/multicloud-console.apps/api/g')":6443"
                 oc login --insecure-skip-tls-verify -u \$CYPRESS_OPTIONS_HUB_USER -p \$CYPRESS_OPTIONS_HUB_PASSWORD \$OCP_HUB_CLUSTER_API_URL
                 python3 generate_managedclusters_data.py
-                if [[ jq '.managedClusters | length' managedClusters.json > 0 ]]; then
+                if [ jq '.managedClusters | length' managedClusters.json > 0 ]; then
                     export CYPRESS_OPTIONS_MANAGED_USER=\$(cat managedClusters.json |jq -r '.managedClusters[0].username')
                     export CYPRESS_OPTIONS_MANAGED_PASSWORD=\$(cat managedClusters.json |jq -r '.managedClusters[0].password')
                     export CYPRESS_OPTIONS_MANAGED_BASEDOMAIN=\$(cat managedClusters.json |jq -r '.managedClusters[0].base_domain')
                 else
                     echo 'No Managed cluster found'
-                    exit 1
                 if [[ -z "${BASE_OC_IDP}" || -z "${BASE_URL}" || -z "${BASE_PASSWORD}" ]]; then
                     echo "Aborting test.. ACM connection details are required for the test execution"
                     exit 1
