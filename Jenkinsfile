@@ -43,7 +43,7 @@ pipeline {
                 if jq '.managedClusters | length' managedClusters.json > 0; then
                     export CYPRESS_OPTIONS_MANAGED_USER=\$(cat managedClusters.json |jq -r '.managedClusters[0].username')
                     export CYPRESS_OPTIONS_MANAGED_PASSWORD=\$(cat managedClusters.json |jq -r '.managedClusters[0].password')
-                    export CYPRESS_OPTIONS_MANAGED_BASEDOMAIN=\$(cat managedClusters.json |jq -r '.managedClusters[0].api_url')
+                    export CYPRESS_OPTIONS_MANAGED_BASEDOMAIN=\$(cat managedClusters.json |jq -r '.managedClusters[0].base_domain')
                 else
                     echo 'No Managed cluster found'
                     exit 1
