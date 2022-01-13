@@ -19,6 +19,7 @@ for index,item in enumerate(managed_clusters['items']):
             cluster_status = condition['status']
     if cluster_status == "True":
         cluster_data["managedClusters"].append({"name" : item['metadata']['name']})
+        print(item['spec']['managedClusterClientConfigs'][0]['url'])
         cluster_data["managedClusters"][index]["base_domain"] = item['spec']['managedClusterClientConfigs'][0]['url'][12:].split(':')[0]
         secret_command = ['oc', 'get', 'secrets','--selector=hive.openshift.io/secret-type=kubeadmincreds', '-o', 'json', '-n']
         secret_command.append(item['metadata']['name'])
