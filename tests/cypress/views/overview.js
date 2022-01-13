@@ -6,7 +6,7 @@
 /// <reference types="cypress" />
 
 export const overviewPage = {
-  whenGoToOverviewPage: () => cy.visit('/overview'),
+  whenGoToOverviewPage: () => cy.visit('/multicloud/home/overview'),
   whenGotoSearchPage: () => {
     cy.get(`[aria-label="search-button"]`).click()
   },
@@ -38,22 +38,13 @@ export const overviewPage = {
     cy.get('p')
       .should('contain', 'Last update:')
       .and('not.contain', 'Invalid date')
-      .invoke('text')
-      .then((text) => {
-        var previous = text
 
-        cy.get(`[aria-label="refresh-icon"]`).click()
-        cy.get('p')
-          .should('contain', 'Last update:')
-          .and('not.contain', previous)
+    const intervals = ['30s', '1m', '5m', '30m', 'disable']
 
-        const intervals = ['30s', '1m', '5m', '30m', 'disable']
-
-        intervals.forEach((opt) => {
-          cy.get('#refresh-dropdown').click()
-          cy.get(`#refresh-${opt}`).click()
-        })
-      })
+    intervals.forEach((opt) => {
+      cy.get('#refresh-dropdown').click()
+      cy.get(`#refresh-${opt}`).click()
+    })
   },
   shouldHaveLinkToSearchPage: () => {
     cy.get('#clusters-summary a')
@@ -107,15 +98,7 @@ export const overviewPage = {
         .and('contain', path)
     } else {
       cy.get('li.pf-c-nav__item').contains(page).click()
-
-      if (page === 'Welcome') {
-        cy.get('.welcome--introduction').should('contain', 'Welcome')
-      } else {
-        cy.get('h1.pf-c-title').contains(page)
-      }
+      cy.get('h1.pf-c-title').contains(page)
     }
-  },
-  shouldHaveLinkToResourceCreationPage: () => {
-    cy.get(`[aria-label="create-button"]`).invoke('attr', 'href')
   },
 }
