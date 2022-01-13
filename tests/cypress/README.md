@@ -1,8 +1,8 @@
 # Search-UI Cypress Tests
 
-[![Build Status](https://travis-ci.com/open-cluster-management/search-e2e-test.svg?token=jzyyzQmWYBEu33MCMh9p&branch=main)](https://travis-ci.com/open-cluster-management/search-e2e-test)
+[![Build Status](https://travis-ci.com/stolostron/search-e2e-test.svg?token=jzyyzQmWYBEu33MCMh9p&branch=main)](https://travis-ci.com/stolostron/search-e2e-test)
 
-The Cypress tests for search within [Search-UI](https://github.com/open-cluster-management/search-ui)
+The Cypress tests for search within [Search-UI](https://github.com/stolostron/search-ui)
 
 ## Development
 

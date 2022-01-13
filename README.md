@@ -1,6 +1,6 @@
 # search-e2e-test
 
-[![Build Status](https://travis-ci.com/open-cluster-management/search-e2e-test.svg?token=jzyyzQmWYBEu33MCMh9p&branch=master)](https://travis-ci.com/open-cluster-management/search-e2e-test)
+[![Build Status](https://travis-ci.com/stolostron/search-e2e-test.svg?token=jzyyzQmWYBEu33MCMh9p&branch=master)](https://travis-ci.com/stolostron/search-e2e-test)
 
 End-to-end tests for the Open Cluster Management search component. The tests consist of the following user scenarios:
 
