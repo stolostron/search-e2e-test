@@ -4,23 +4,40 @@
 
 set -e
 
-echo -e "Shared Directory: $SHARED_DIR\n"
+# Test env
+BROWSER=chrome
 
-cat /tmp/secret/hub-1.json
+export OPTIONS_HUB_KUBECONFIG="${SHARED_DIR}/hub-1.kc"
+export OPTIONS_MANAGED_KUBECONFIG="${SHARED_DIR}/managed-1.kc"
 
-# Env variables
-export SKIP_API_TEST=true
+echo -e "$SHARED_DIR\n"
+
+# Hub cluster
+HUB_CREDS=$(cat ${SHARED_DIR}/hub-1.json)
+
+echo -e $HUB_CREDS
 
 export OPTIONS_HUB_BASEDOMAIN=$(echo $HUB_CREDS | jq -r '.api_url')
 export OPTIONS_HUB_USER=$(echo $HUB_CREDS | jq -r '.username')
 export OPTIONS_HUB_PASSWORD=$(echo $HUB_CREDS | jq -r '.password')
 
-# Cypress env variables
-export CYPRESS_TEST_MODE=BVT
+# Managed cluster
+MANAGED_CREDS=$(cat ${SHARED_DIR}/managed-1.json)
 
-echo -e "Environment Variables"
-env
+echo -e $MANAGED_CREDS
 
-echo -e "Running Search E2E tests in ${CYPRESS_TEST_MODE} test mode."
+export OPTIONS_MANAGED_BASEDOMAIN=$(echo $MANAGED_CREDS | jq -r '.api_url')
+export OPTIONS_MANAGED_USER=$(echo $MANAGED_CREDS | jq -r '.username')
+export OPTIONS_MANAGED_PASSWORD=$(echo $MANAGED_CREDS | jq -r '.password')
+
+# Env variables
+export SKIP_API_TEST=true
+export TEST_MODE=BVT
+
+env | grep "OPTIONS"
+
+echo -e "\nRunning Search E2E tests in ${CYPRESS_TEST_MODE} test mode."
 
 # npm run test
+
+exit 0
