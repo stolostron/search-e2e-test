@@ -23,7 +23,8 @@ for index,item in enumerate(managed_clusters['items']):
         if item['metadata']['annotations']["open-cluster-management/created-via"] == "hive":
             cluster_data["managedClusters"].append({"name" : item['metadata']['name']})
             cluster_data["managedClusters"][list_index]["api_url"] = item['spec']['managedClusterClientConfigs'][0]['url']
-            cluster_data["managedClusters"][list_index]["base_domain"] = item['spec']['managedClusterClientConfigs'][0]['url'].split(item['metadata']['name'])[-1].split(":")[0][1:]
+            print(item['spec']['managedClusterClientConfigs'][0]['url'].replace("https://api.", "").split(":")[0])
+            cluster_data["managedClusters"][list_index]["base_domain"] = item['spec']['managedClusterClientConfigs'][0]['url'].replace("https://api.", "").split(":")[0]
             secret_command = ['oc', 'get', 'secrets','--selector=hive.openshift.io/secret-type=kubeadmincreds', '-o', 'json', '-n']
             secret_command.append(item['metadata']['name'])
             secret_list = json.loads(run_command(secret_command))
