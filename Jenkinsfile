@@ -14,9 +14,6 @@ pipeline {
         string(name:'BASE_DOMAIN', defaultValue: '', description: 'Domain name')
         string(name:'BASE_USER', defaultValue: 'kubeadmin', description: 'Cluster IDP')
         string(name:'BASE_PASSWORD', defaultValue: '', description: 'Hub cluster password')
-        string(name:'MANAGED_USER', defaultValue: 'kubeadmin', description: 'Managed Cluster IDP')
-        string(name:'MANAGED_PASSWORD', defaultValue: '', description: 'Managed cluster password')
-        string(name:'MANAGED_BASEDOMAIN', defaultValue: '', description: 'Managed Base Domain name')
         string(name:'TEST_TAGS', defaultValue:'',description: 'grepTags parameter to use for test execution')
     }
     stages {
@@ -39,12 +36,18 @@ pipeline {
                 export CYPRESS_OPTIONS_HUB_USER="${params.BASE_USER}"
                 export CYPRESS_OPTIONS_HUB_PASSWORD="${params.BASE_PASSWORD}"
                 export CYPRESS_BASE_URL="${params.BASE_URL}"
-                export CYPRESS_OPTIONS_MANAGED_USER="${params.MANAGED_USER}"
-                export CYPRESS_OPTIONS_MANAGED_PASSWORD="${params.MANAGED_PASSWORD}"
-                export CYPRESS_OPTIONS_MANAGED_BASEDOMAIN="${params.MANAGED_BASEDOMAIN}"
                 export TEST_TAGS="${params.TEST_TAGS}"
                 export OCP_HUB_CLUSTER_API_URL=\$(echo \$CYPRESS_BASE_URL | sed -e 's/multicloud-console.apps/api/g')":6443"
                 oc login --insecure-skip-tls-verify -u \$CYPRESS_OPTIONS_HUB_USER -p \$CYPRESS_OPTIONS_HUB_PASSWORD \$OCP_HUB_CLUSTER_API_URL
+                python3 generate_managedclusters_data.py
+                if [ jq '.managedClusters | length' managedClusters.json > 0 ]; then
+                    export CYPRESS_OPTIONS_MANAGED_USER=\$(cat managedClusters.json |jq -r '.managedClusters[0].username')
+                    export CYPRESS_OPTIONS_MANAGED_PASSWORD=\$(cat managedClusters.json |jq -r '.managedClusters[0].password')
+                    export CYPRESS_OPTIONS_MANAGED_BASEDOMAIN=\$(cat managedClusters.json |jq -r '.managedClusters[0].base_domain')
+                else
+                    echo 'No Managed cluster found'
+                    exit 1
+                fi
                 if [[ -z "${BASE_OC_IDP}" || -z "${BASE_URL}" || -z "${BASE_PASSWORD}" ]]; then
                     echo "Aborting test.. ACM connection details are required for the test execution"
                     exit 1

@@ -22,11 +22,14 @@ for index,item in enumerate(managed_clusters['items']):
     if cluster_status == "True":
         if item['metadata']['annotations']["open-cluster-management/created-via"] == "hive":
             cluster_data["managedClusters"].append({"name" : item['metadata']['name']})
-            print(item['spec'])
-            cluster_data["managedClusters"][list_index]["api_url"] = item['spec']['managedClusterClientConfigs'][0]['url']
-            print('---')
-            print(item['spec']['managedClusterClientConfigs'][0]['url'].replace("https://api.", "").split(":")[0])
-            cluster_data["managedClusters"][list_index]["base_domain"] = item['spec']['managedClusterClientConfigs'][0]['url'].replace("https://api.", "").split(":")[0]
+            try:
+                cluster_data["managedClusters"][list_index]["api_url"] = item['spec']['managedClusterClientConfigs'][0]['url']
+                cluster_data["managedClusters"][list_index]["base_domain"] = item['spec']['managedClusterClientConfigs'][0]['url'].replace("https://api.","").split(":")[0]
+            except:
+                for kv_pair in item['status']['clusterClaims']:
+                    if kv_pair['name'] == 'consoleurl.cluster.open-cluster-management.io':
+                        cluster_data["managedClusters"][list_index]["console_url"] = kv_pair['value']
+                        cluster_data["managedClusters"][list_index]["base_domain"] = kv_pair['value'].replace("https://console-openshift-console.apps.", "")
             secret_command = ['oc', 'get', 'secrets','--selector=hive.openshift.io/secret-type=kubeadmincreds', '-o', 'json', '-n']
             secret_command.append(item['metadata']['name'])
             secret_list = json.loads(run_command(secret_command))
@@ -34,6 +37,5 @@ for index,item in enumerate(managed_clusters['items']):
             cluster_data["managedClusters"][list_index]["username"] = 'kubeadmin'
             cluster_data["managedClusters"][list_index]["password"] = password
             list_index += 1
-
 with open('managedClusters.json', 'w') as f:
     json.dump(cluster_data, f)
