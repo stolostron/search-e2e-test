@@ -16,8 +16,8 @@ lint:
 
 .PHONY: unit-test
 unit-test:
-	npm run test
+	npm run test:api
 
 .PHONY: test-e2e
 test-e2e:
-	sh build/e2e-test.sh $1
+	sh cicd-scripts/run-prow-e2e.sh $1
