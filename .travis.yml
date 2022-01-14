@@ -48,7 +48,7 @@ jobs:
       name: "Build the image and push it"
       language: node_js
       node_js:
-        - 7
+        - 14
       script:
         - make build-test-image
         - make component/push
@@ -56,7 +56,7 @@ jobs:
       name: "Run Search E2E tests"
       language: node_js
       node_js:
-        - 7
+        - 14
       script:
         - make component/pull
         - make component/test/e2e
