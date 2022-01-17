@@ -14,9 +14,8 @@ const rbac_users = [
   'search-e2e-view-ns',
   'search-e2e-edit-ns',
 ]
-const password = process.env.CYPRESS_RBAC_PASSWORD
+const password = Cypress.env(`RBAC_PASSWORD`)
 const IDP = 'grc-e2e-htpasswd'
-
 let ignore
 
 if (Cypress.env('TEST_ENV') === 'rosa') {
