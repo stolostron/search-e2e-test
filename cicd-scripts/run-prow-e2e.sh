@@ -37,6 +37,6 @@ env | grep "OPTIONS"
 
 echo -e "\nRunning Search E2E tests in ${CYPRESS_TEST_MODE} test mode."
 
-npm run test
+. ./start-tests.sh
 
 # exit 0
