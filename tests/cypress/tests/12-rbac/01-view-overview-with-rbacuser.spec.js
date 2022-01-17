@@ -23,7 +23,7 @@ if (Cypress.env('TEST_ENV') === 'rosa') {
   ignore = ['@RBAC']
 }
 
-describe('RBAC users to read the Overview page', { tags: tags.env, },
+describe('RBAC users to read the Overview page', { tags: ['@rbac']},
   function () {
     const overviewPagePolarionIDs = ['731', '921', '919', '920']
 

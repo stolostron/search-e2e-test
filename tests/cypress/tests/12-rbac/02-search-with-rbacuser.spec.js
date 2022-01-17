@@ -36,7 +36,7 @@ if (Cypress.env('TEST_ENV') === 'rosa') {
     ignore = ['@RBAC']
 }
 
-describe('RBAC users to use search page', {tags: tags.env,}, function () {
+describe('RBAC users to use search page', {tags: ['@rbac']}, function () {
     before(() => {
         // Get name of an imported cluster
         cliHelper.getTargetManagedCluster().as('managedCluster')
