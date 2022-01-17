@@ -39,7 +39,7 @@ pipeline {
                 export TEST_TAGS="${params.TEST_TAGS}"
                 export OCP_HUB_CLUSTER_API_URL=\$(echo \$CYPRESS_BASE_URL | sed -e 's/multicloud-console.apps/api/g')":6443"
                 oc login --insecure-skip-tls-verify -u \$CYPRESS_OPTIONS_HUB_USER -p \$CYPRESS_OPTIONS_HUB_PASSWORD \$OCP_HUB_CLUSTER_API_URL
-                sh('rbac-setup.sh')
+                sh('./rbac-setup.sh')
                 python3 generate_managedclusters_data.py
                 if [[ \$(jq '.managedClusters | length' managedClusters.json) > 0 ]]; then
                     export CYPRESS_OPTIONS_MANAGED_USER=\$(cat managedClusters.json |jq -r '.managedClusters[0].username')
