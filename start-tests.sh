@@ -389,7 +389,7 @@ if [[ "$SKIP_UI_TEST" == false ]]; then
   elif [ "$NODE_ENV" == "debug" ]; then
     cypress open --browser $BROWSER --config numTestsKeptInMemory=0 --env NODE_ENV=$NODE_ENV,grepTags=$CYPRESS_TAGS
   else
-    cypress run --browser $BROWSER $DISPLAY --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="${CYPRESS_TAGS:-}"
+    npx cypress run --browser $BROWSER $DISPLAY --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="${CYPRESS_TAGS:-}"
   fi
 else
   log_color "purple" "SKIP_UI_TEST" "was set to true. Skipping UI tests\n"
