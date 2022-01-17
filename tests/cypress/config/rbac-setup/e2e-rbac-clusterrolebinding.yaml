@@ -1,0 +1,86 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: e2e-cmgr-admin-clusterrolebinding
+subjects:
+- kind: User
+  name: e2e-cmgr-admin-cluster
+roleRef:
+  kind: ClusterRole
+  name: open-cluster-management:cluster-manager-admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: e2e-cluster-admin-clusterrolebinding
+subjects:
+- kind: User
+  name: e2e-cluster-admin-cluster
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: e2e-admin-clusterrolebinding
+subjects:
+- kind: User
+  name: e2e-admin-cluster
+roleRef:
+  kind: ClusterRole
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: e2e-edit-clusterrolebinding
+subjects:
+- kind: User
+  name: e2e-edit-cluster
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: e2e-view-clusterrolebinding
+subjects:
+- kind: User
+  name: e2e-view-cluster
+roleRef:
+  kind: ClusterRole
+  name: view
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: e2e-group-clusterrolebinding
+subjects:
+- kind: Group
+  name: e2e-cluster-group
+roleRef:
+  kind: ClusterRole
+  name: view
+  apiGroup: rbac.authorization.k8s.io
+---
+# This is required for the user to be considered a subscription admin. See:
+# https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.4/html/applications/managing-applications#granting-subscription-admin-privilege
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: 'open-cluster-management:subscription-admin'
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: 'open-cluster-management:subscription-admin'
+subjects:
+  - apiGroup: rbac.authorization.k8s.io
+    kind: User
+    name: e2e-cluster-admin-cluster
