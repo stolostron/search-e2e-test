@@ -37,6 +37,7 @@ pipeline {
                 export CYPRESS_OPTIONS_HUB_USER="${params.BASE_USER}"
                 export CYPRESS_OPTIONS_HUB_PASSWORD="${params.BASE_PASSWORD}"
                 export CYPRESS_BASE_URL="${params.BASE_URL}"
+                export CYPRESS_RBAC_PASSWORD="${params.RBAC_PASS}"
                 export TEST_TAGS="${params.TEST_TAGS}"
                 export OCP_HUB_CLUSTER_API_URL=\$(echo \$CYPRESS_BASE_URL | sed -e 's/multicloud-console.apps/api/g')":6443"
                 oc login --insecure-skip-tls-verify -u \$CYPRESS_OPTIONS_HUB_USER -p \$CYPRESS_OPTIONS_HUB_PASSWORD \$OCP_HUB_CLUSTER_API_URL

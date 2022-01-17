@@ -14,7 +14,7 @@ const rbac_users = [
   'search-e2e-view-ns',
   'search-e2e-edit-ns',
 ]
-const password = Cypress.env('RBAC_PASS')
+const password = process.env.CYPRESS_RBAC_PASSWORD
 const IDP = 'grc-e2e-htpasswd'
 
 let ignore
