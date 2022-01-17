@@ -35,7 +35,4 @@ export OPTIONS_MANAGED_USER=$(echo $MANAGED_CREDS | jq -r '.username')
 export OPTIONS_MANAGED_PASSWORD=$(echo $MANAGED_CREDS | jq -r '.password')
 
 echo -e "\nRunning Search E2E tests in ${CYPRESS_TEST_MODE} test mode."
-
-. ./start-tests.sh
-
-# exit 0
+./start-tests.sh
