@@ -19,7 +19,7 @@ export TEST_MODE=BVT
 
 # Hub cluster
 HUB_CREDS=$(cat ${SHARED_DIR}/hub-1.json)
-OPTIONS_HUB_CONSOLE_NAME=$(echo $HUB_CREDS | jq -r 'console_url')
+OPTIONS_HUB_CONSOLE_NAME=$(echo $HUB_CREDS | jq -r '.console_url')
 
 export OPTIONS_HUB_BASEDOMAIN=${OPTIONS_HUB_CONSOLE_NAME:39}
 # export OPTIONS_HUB_BASEDOMAIN=$(echo $HUB_CREDS | jq -r '.api_url')
