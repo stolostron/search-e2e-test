@@ -14,10 +14,14 @@ lint:
 check:
 	npm run check
 
-.PHONY: unit-test
-unit-test:
+.PHONY: test-api
+test-api:
 	npm run test:api
 
 .PHONY: test-e2e
 test-e2e:
 	sh cicd-scripts/run-e2e-test.sh $1
+
+.PHONY: unit-test
+unit-test:
+	sh cicd-scripts/run-unit-test.sh $1

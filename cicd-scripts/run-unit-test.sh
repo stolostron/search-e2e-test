@@ -34,5 +34,5 @@ export OPTIONS_MANAGED_BASEDOMAIN=$(echo $MANAGED_CREDS | jq -r '.api_url')
 export OPTIONS_MANAGED_USER=$(echo $MANAGED_CREDS | jq -r '.username')
 export OPTIONS_MANAGED_PASSWORD=$(echo $MANAGED_CREDS | jq -r '.password')
 
-echo -e "\nRunning Search-e2e tests in ${TEST_MODE} test mode. Preparing to run e2e tests."
-./start-tests.sh
+echo -e "\nRunning Search-e2e tests in ${TEST_MODE} test mode. Preparing to run unit tests."
+# ./start-tests.sh
