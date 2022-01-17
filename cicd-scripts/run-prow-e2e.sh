@@ -19,17 +19,15 @@ export TEST_MODE=BVT
 
 # Hub cluster
 HUB_CREDS=$(cat ${SHARED_DIR}/hub-1.json)
+OPTIONS_HUB_CONSOLE_NAME=$(echo $HUB_CREDS | jq -r 'console_url')
 
-echo -e $HUB_CREDS
-
-export OPTIONS_HUB_BASEDOMAIN=$(echo $HUB_CREDS | jq -r '.api_url')
+export OPTIONS_HUB_BASEDOMAIN=${OPTIONS_HUB_CONSOLE_NAME:39}
+# export OPTIONS_HUB_BASEDOMAIN=$(echo $HUB_CREDS | jq -r '.api_url')
 export OPTIONS_HUB_USER=$(echo $HUB_CREDS | jq -r '.username')
 export OPTIONS_HUB_PASSWORD=$(echo $HUB_CREDS | jq -r '.password')
 
 # Managed cluster
 MANAGED_CREDS=$(cat ${SHARED_DIR}/managed-1.json)
-
-echo -e $MANAGED_CREDS
 
 export OPTIONS_MANAGED_BASEDOMAIN=$(echo $MANAGED_CREDS | jq -r '.api_url')
 export OPTIONS_MANAGED_USER=$(echo $MANAGED_CREDS | jq -r '.username')
@@ -39,6 +37,6 @@ env | grep "OPTIONS"
 
 echo -e "\nRunning Search E2E tests in ${CYPRESS_TEST_MODE} test mode."
 
-# npm run test
+npm run test
 
 # exit 0
