@@ -13,6 +13,8 @@ import {cliHelper} from "../../scripts/cliHelper";
 
 describe('Search: Test resiliency', {tags: ['@e2e', '@Obs']}, function () {
     before(() => {
+        // Log in yo ACM
+        cy.login()
         // Get search-operator pod's full name
         cliHelper.findFullPodName('search-operator').as('pod')
         // Get default storage class
@@ -21,8 +23,6 @@ describe('Search: Test resiliency', {tags: ['@e2e', '@Obs']}, function () {
 
     it(`RHACM4K-1694: Search: Search resiliency verification`, {tags: ['@RHACM4K-1694', '@post-release']}, function () {
         /* Verify CR 'searchoperator' is created and search-operator pod is running */
-        // Log in yo ACM
-        cy.login()
         //Go to 'search' page
         searchPage.whenGoToSearchPage()
         // Verify 'search' page loads
