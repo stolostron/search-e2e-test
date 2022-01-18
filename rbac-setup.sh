@@ -47,7 +47,7 @@ rm ${RBAC_DIR}/htpasswd
 if [[ -z "$(oc -n openshift-config get oauth cluster -o jsonpath='{.spec.identityProviders}')" ]]; then
   oc patch -n openshift-config oauth cluster --type json --patch '[{"op":"add","path":"/spec/identityProviders","value":[]}]'
 fi
-if [ ! $(oc -n openshift-config get oauth cluster -o jsonpath='{.spec.identityProviders[*].name}' | grep -o 'grc-e2e-htpasswd') ]; then
+if [ ! $(oc -n openshift-config get oauth cluster -o jsonpath='{.spec.identityProviders[*].name}' | grep -o 'search-e2e-htpasswd') ]; then
   oc patch -n openshift-config oauth cluster --type json --patch "$(cat ${RBAC_DIR}/e2e-rbac-auth.json)"
 fi
 oc apply --validate=false -k ${RBAC_DIR}
@@ -56,4 +56,4 @@ set -e
 export OC_CLUSTER_USER=e2e-cluster-admin-cluster
 export OC_HUB_CLUSTER_PASS=${RBAC_PASS}
 export OC_CLUSTER_PASS=${RBAC_PASS}
-export OC_IDP=grc-e2e-htpasswd
+export OC_IDP=search-e2e-htpasswd

@@ -4,7 +4,7 @@
     "path": "/spec/identityProviders/-",
     "value":
       {
-        "name": "grc-e2e-htpasswd",
+        "name": "search-e2e-htpasswd",
         "mappingMethod": "claim",
         "type": "HTPasswd",
         "htpasswd": {
