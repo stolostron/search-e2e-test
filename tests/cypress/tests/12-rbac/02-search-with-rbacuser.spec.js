@@ -20,15 +20,15 @@ import {podDetailPage} from "../../views/podDetailPage";
 // ]
 
 const rbac_users = [
-    'test-mngd-cluster-admin'
+    'e2e-admin-cluster'
     // 'search-e2e-admin-ns',
     // 'search-e2e-view-ns',
     // 'search-e2e-edit-ns',
 ]
 
 // const password = Cypress.env('OPTIONS_HUB_PASSWORD')
-const password = 'test-RBAC-4-e2e'
-const IDP = 'htpasswd-grc'
+const password = 'acmqe'
+const IDP = 'grc-e2e-htpasswd'
 
 let ignore
 
