@@ -20,8 +20,8 @@ test-api:
 
 .PHONY: test-e2e
 test-e2e:
-	sh cicd-scripts/run-e2e-test.sh $1
+	sh cicd-scripts/run-prow-e2e.sh $1
 
 .PHONY: unit-test
 unit-test:
-	sh cicd-scripts/run-unit-test.sh $1
+	sh cicd-scripts/run-prow-unit.sh $1

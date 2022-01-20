@@ -31,12 +31,13 @@ export OPTIONS_HUB_PASSWORD=$(echo $HUB_CREDS | jq -r '.password')
 # Managed cluster
 MANAGED_CREDS=$(cat ${SHARED_DIR}/managed-1.json)
 
+cat "Hub: $HUB_CREDS"
+cat "Managed: $MANAGED_CREDS"
+
 export OPTIONS_MANAGED_BASEDOMAIN=$(echo $MANAGED_CREDS | jq -r '.api_url')
 export OPTIONS_MANAGED_USER=$(echo $MANAGED_CREDS | jq -r '.username')
 export OPTIONS_MANAGED_PASSWORD=$(echo $MANAGED_CREDS | jq -r '.password')
 
 echo -e "\nRunning Search-e2e tests in ${TEST_MODE} test mode. Preparing to run e2e tests."
-
-npm install
 
 ./start-tests.sh
