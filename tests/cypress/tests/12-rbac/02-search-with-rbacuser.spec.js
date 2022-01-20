@@ -12,18 +12,12 @@ import {searchBar, searchPage} from "../../views/search";
 import {podDetailPage} from "../../views/podDetailPage";
 
 // Under Progress
-// const rbac_users = [
-//   'search-e2e-admin-cluster',
-//   'search-e2e-admin-ns',
-//   'search-e2e-view-ns',
-//   'search-e2e-edit-ns',
-// ]
 
 const rbac_users = [
-    'e2e-admin-cluster'
-    // 'search-e2e-admin-ns',
-    // 'search-e2e-view-ns',
-    // 'search-e2e-edit-ns',
+  'e2e-admin-cluster',
+  'e2e-admin-ns',
+  'e2e-view-ns',
+  'e2e-edit-ns',
 ]
 
 // const password = Cypress.env('OPTIONS_HUB_PASSWORD')
