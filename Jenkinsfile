@@ -41,8 +41,33 @@ pipeline {
                 export TEST_TAGS="${params.TEST_TAGS}"
                 export OCP_HUB_CLUSTER_API_URL=\$(echo \$CYPRESS_BASE_URL | sed -e 's/multicloud-console.apps/api/g')":6443"
                 oc login --insecure-skip-tls-verify -u \$CYPRESS_OPTIONS_HUB_USER -p \$CYPRESS_OPTIONS_HUB_PASSWORD \$OCP_HUB_CLUSTER_API_URL
-                echo "Create RBAC users"
-                source rbac-setup.sh
+                # show all envs
+                printenv
+                echo "Creating RBAC users"
+                # setup RBAC roles
+                if [ -z ${RBAC_PASS} ]; then
+                    echo "RBAC_PASS not set. Skipping RBAC test"
+                else
+                    source rbac-setup.sh
+                fi
+                # test oauth server and see if idp has been setup
+                i=0
+                while true; do
+                  IDP=`curl -L -k ${CYPRESS_BASE_URL} | grep ${BASE_OC_IDP}` || true
+                  if [ -z ${IDP// /} ]; then
+                    echo "wait for idp ${BASE_OC_IDP} to take effect..."
+                    sleep 10
+                  else
+                    echo "idp ${BASE_OC_IDP} has taken effect..."
+                    echo ${IDP}
+                    break
+                  fi
+                  i=$[i + 1]
+                  if [[ "$i" == '24' ]]; then
+                    echo "timeout waiting for idp ${BASE_OC_IDP}..."
+                    exit 1
+                  fi
+                done
                 python3 generate_managedclusters_data.py
                 if [[ \$(jq '.managedClusters | length' managedClusters.json) > 0 ]]; then
                     export CYPRESS_OPTIONS_MANAGED_USER=\$(cat managedClusters.json |jq -r '.managedClusters[0].username')
