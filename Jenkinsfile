@@ -53,20 +53,20 @@ pipeline {
                 # test oauth server and see if idp has been setup
                 i=0
                 while true; do
-                  IDP=`curl -L -k ${CYPRESS_BASE_URL} | grep ${BASE_OC_IDP}` || true
-                  if [ -z ${IDP// /} ]; then
-                    echo "wait for idp ${BASE_OC_IDP} to take effect..."
-                    sleep 10
-                  else
-                    echo "idp ${BASE_OC_IDP} has taken effect..."
-                    echo ${IDP}
-                    break
-                  fi
-                  i=$[i + 1]
-                  if [[ "$i" == '24' ]]; then
-                    echo "timeout waiting for idp ${BASE_OC_IDP}..."
-                    exit 1
-                  fi
+                    IDP=`curl -L -k ${CYPRESS_BASE_URL} | grep ${BASE_OC_IDP}` || true
+                    if [ -z ${IDP// /} ]; then
+                        echo "wait for idp ${BASE_OC_IDP} to take effect..."
+                        sleep 10
+                    else
+                        echo "idp ${BASE_OC_IDP} has taken effect..."
+                        echo ${IDP}
+                        break
+                    fi
+                    i=$[i + 1]
+                    if [[ "$i" == '24' ]]; then
+                        echo "timeout waiting for idp ${BASE_OC_IDP}..."
+                        exit 1
+                    fi
                 done
                 python3 generate_managedclusters_data.py
                 if [[ \$(jq '.managedClusters | length' managedClusters.json) > 0 ]]; then
