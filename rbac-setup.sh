@@ -37,7 +37,7 @@ fi
 touch ${RBAC_DIR}/htpasswd
 for access in cluster ns; do
   for role in cmgr-admin cluster-admin admin edit view group; do
-    htpasswd -b ${RBAC_DIR}/htpasswd e2e-${role}-${access} ${RBAC_PASS}
+    htpasswd -b ${RBAC_DIR}/htpasswd search-e2e-${role}-${access} ${RBAC_PASS}
   done
 done
 
