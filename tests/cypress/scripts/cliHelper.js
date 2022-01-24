@@ -59,24 +59,14 @@ export const cliHelper = {
             cy.log(res.stdout ? res.stdout : res.stderr)
         })
     },
-    updateSearchCustomizationCR: (persistence = 'true', valid) => {
-        if (valid === true) {
-            // Get storage class
-            const sc = cliHelper.findDefaultStorageClass()
-        } else {
-            const sc = 'invalid'
-        }
+    updateSearchCustomizationCR: (persistence = 'true', default_sc) => {
         cy.readFile('tests/cypress/templates/search_customization_cr.yaml').then((cfg) => {
             let b64Cfg = btoa(
-                cfg.replaceAll('boolean', persistence).replaceAll('STRGCLASS', sc)
+                cfg.replaceAll('boolean', persistence).replaceAll('STRGCLASS', default_sc)
             )
             cy.exec(`echo ${b64Cfg} | base64 -d | oc apply -f -`)
         })
-        if (valid === true) {
-            cy.log(`Successfully updated "Persistence" to ${persistence}`)
-        } else {
-            cy.log(`Successfully created invalid sc`)
-        }
+        cy.log(`Successfully updated "Persistence" to ${persistence}`)
     },
     findFullPodName: (name, namespace = 'ocm') => {
         cliHelper.login('Local')
@@ -123,6 +113,7 @@ export const cliHelper = {
             let b64Cfg = btoa(
                 cfg.replaceAll('APPNAME', appName).replaceAll('NAMESPACE', namespace)
             )
+            cy.log(b64Cfg)
             cy.exec(`echo ${b64Cfg} | base64 -d | oc apply -f -`)
             cy.log(`Successfully created application (${appName})`)
         })
