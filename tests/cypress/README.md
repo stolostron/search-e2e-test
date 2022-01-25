@@ -1,6 +1,6 @@
 # Search-UI Cypress Tests
 
-The Cypress tests for search within [Console-UI](https://github.com/open-cluster-management/search)
+The Cypress tests for search within [Console-UI](https://github.com/stolostron/search)
 
 ---
 
@@ -22,7 +22,7 @@ The Cypress tests for search within [Console-UI](https://github.com/open-cluster
 
 #### Local Environment
 
-1. Follow steps in [Console-UI](https://github.com/open-cluster-management/console-ui) to get the application running locally.
-2. Follow the steps in [Console-API](https://github.com/open-cluster-management/console-api) to get the application running locally.
+1. Follow steps in [Console-UI](https://github.com/stolostron/console-ui) to get the application running locally.
+2. Follow the steps in [Console-API](https://github.com/stolostron/console-api) to get the application running locally.
 3. `oc login` to your hub cluster.
 4. From the root console-ui directory, run `npx cypress open`
