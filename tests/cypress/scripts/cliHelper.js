@@ -59,14 +59,22 @@ export const cliHelper = {
             cy.log(res.stdout ? res.stdout : res.stderr)
         })
     },
-    updateSearchCustomizationCR: (persistence = 'true', default_sc) => {
+    updateSearchCustomizationCR: (persistence = 'true', valid, sc) => {
+        if (valid === false) {
+            // Get storage class
+            sc = "invalid"
+        }
         cy.readFile('tests/cypress/templates/search_customization_cr.yaml').then((cfg) => {
             let b64Cfg = btoa(
-                cfg.replaceAll('boolean', persistence).replaceAll('STRGCLASS', default_sc)
+                cfg.replaceAll('boolean', persistence).replaceAll('STRGCLASS', sc)
             )
             cy.exec(`echo ${b64Cfg} | base64 -d | oc apply -f -`)
         })
-        cy.log(`Successfully updated "Persistence" to ${persistence}`)
+        if (valid === true) {
+            cy.log(`Successfully updated "Persistence" to ${persistence}`)
+        } else {
+            cy.log(`Successfully created invalid sc`)
+        }
     },
     findFullPodName: (name, namespace = 'ocm') => {
         cliHelper.login('Local')
@@ -86,16 +94,9 @@ export const cliHelper = {
             .exec(
                 `oc get sc | grep default`,
                 {failOnNonZeroExit: false}
-            ).then(result => {
+            ).then((result) => {
                     // Return 'default' name
-                    cy.log(result.stdout.substr(0, result.stdout.indexOf(' ')))
-                    cy.log(typeof(result.stdout.substr(0, result.stdout.indexOf(' '))))
-                    // cy.log(cy.wrap(result.stdout.substr(0, result.stdout.indexOf(' '))))
-                    // cy.log('-------------')
-                    // cy.log(Object.values(cy.wrap(result.stdout.substr(0, result.stdout.indexOf(' ')))))
-                    // cy.log('-------------')
-                    // return cy.wrap(result.stdout.substr(0, result.stdout.indexOf(' ')))
-                    return result.stdout.substr(0, result.stdout.indexOf(' '))
+                    return cy.wrap(result.stdout.substr(0, result.stdout.indexOf(' ')))
                 }
             );
     },
@@ -167,5 +168,5 @@ export const cliHelper = {
                 })
             }
         })
-    },
+    }
 }
