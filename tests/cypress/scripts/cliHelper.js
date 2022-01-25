@@ -88,7 +88,14 @@ export const cliHelper = {
                 {failOnNonZeroExit: false}
             ).then(result => {
                     // Return 'default' name
-                    return cy.wrap(result.stdout.substr(0, result.stdout.indexOf(' ')))
+                    cy.log(result.stdout.substr(0, result.stdout.indexOf(' ')))
+                    cy.log(typeof(result.stdout.substr(0, result.stdout.indexOf(' '))))
+                    // cy.log(cy.wrap(result.stdout.substr(0, result.stdout.indexOf(' '))))
+                    // cy.log('-------------')
+                    // cy.log(Object.values(cy.wrap(result.stdout.substr(0, result.stdout.indexOf(' ')))))
+                    // cy.log('-------------')
+                    // return cy.wrap(result.stdout.substr(0, result.stdout.indexOf(' ')))
+                    return result.stdout.substr(0, result.stdout.indexOf(' '))
                 }
             );
     },

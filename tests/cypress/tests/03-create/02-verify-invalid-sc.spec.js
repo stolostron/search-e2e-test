@@ -9,26 +9,30 @@ import {tags} from '../../config'
 import {searchBar, searchPage} from '../../views/search'
 import {podDetailPage} from "../../views/podDetailPage";
 import {cliHelper} from "../../scripts/cliHelper";
+var util = require('util')
 
-// Needs fixing - Do not use now
-// describe('Search: Test resiliency', {tags: ['@e2e', '@Obs']}, function () {
-//     before(() => {
-//         // Log in yo ACM
-//         cy.login()
-//         // Get search-operator pod's full name
-//         cliHelper.findFullPodName('search-operator').as('pod')
-//         // Get default storage class
-//         cliHelper.findDefaultStorageClass().as('sc')
-//         // Apply valid CR
-//         cliHelper.updateSearchCustomizationCR('true',this.sc)
-//     })
+// Needs fixing - Do not use now. SC is passing as 'Undefined'
+describe('Search: Test resiliency', {tags: ['@e2e', '@Obs']}, function () {
+    before(() => {
+        // Log in yo ACM
+        // cy.login()
+        // Get search-operator pod's full name
+        cliHelper.findFullPodName('search-operator').as('pod')
+        // Get default storage class
+        let sc = cliHelper.findDefaultStorageClass().as('sc')
+        cy.log(sc)
+        cy.log('------.......-----')
+        cy.wait(5)
+        // Apply valid CR
+        // cliHelper.updateSearchCustomizationCR('true',this.sc)
+    })
 //
 //     after(() => {
 //         // Apply valid CR
 //         cliHelper.updateSearchCustomizationCR('true',this.sc)
 //     })
 //
-//     it(`RHACM4K-1694: Search: Search resiliency verification`, {tags: ['@RHACM4K-1694', '@post-release']}, function () {
+    it(`RHACM4K-1694: Search: Search resiliency verification`, {tags: ['@RHACM4K-1694', '@post-release']}, function () {
 //         /* Verify CR 'searchoperator' is created and search-operator pod is running */
 //         //Go to 'search' page
 //         searchPage.whenGoToSearchPage()
@@ -112,7 +116,7 @@ import {cliHelper} from "../../scripts/cliHelper";
 //         // Check for logs
 //         podDetailPage.whenClickOnLogsTab()
 //         podDetailPage.shouldSeeLogs('PVC volume set up successfully')
-//     })
-// })
+    })
+})
 
 
