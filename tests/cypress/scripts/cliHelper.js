@@ -88,6 +88,30 @@ export const cliHelper = {
                 }
             );
     },
+    verifyPodLogs: (pod_name, namespace = 'ocm', expected_log) => {
+        cliHelper.login('Local')
+        // return cy
+        //     .exec(
+        //         `oc logs ${pod_name} -n ${namespace} | grep -c ${expected_log}`,
+        //         {failOnNonZeroExit: false}
+        //     ).then(result => {
+        //             // Check if it returns any data
+        //             if (result.stdout === '0') {
+        //                 return cy.wrap(false)
+        //             } else {
+        //                 return cy.wrap(true)
+        //             }
+        //
+        //         }
+        //     ).eq
+        cy.log('testing logs from the back-end')
+        cy
+            .exec(
+                `oc logs ${pod_name} -n ${namespace} | grep -c ${expected_log}`, {failOnNonZeroExit: false})
+            .its('stdout')
+            .should("not.contain", "0")
+
+    },
     findDefaultStorageClass: () => {
         cliHelper.login('Local')
         return cy

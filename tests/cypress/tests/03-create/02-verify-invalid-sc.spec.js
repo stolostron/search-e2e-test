@@ -48,18 +48,22 @@ describe('Search: Test resiliency', {tags: ['@e2e', '@Obs']}, function () {
         searchPage.whenGoToSearchPage()
         // Disable customization CR persistence flag
         cliHelper.updateSearchCustomizationCR('false',true, this.sc)
-        // Filter by 'pods'
-        searchBar.whenFilterByKind('pod')
-        // Filter by pod's name
-        searchBar.whenFilterByName(this.pod)
-        // Go to details page
-        searchPage.whenGoToResourceDetailItemPage(
-            'pod',
-            this.pod
-        )
-        // Check for logs
-        podDetailPage.whenClickOnLogsTab()
-        podDetailPage.shouldSeeLogs('RedisGraph Pod Running with Persistence disabled')
+        // Wait for 20s
+        cy.wait(20000)
+        // Verify pod logs from the back-end
+        cliHelper.verifyPodLogs(this.pod, 'ocm', 'RedisGraph Pod Running with Persistence disabled')
+        // // Filter by 'pods'
+        // searchBar.whenFilterByKind('pod')
+        // // Filter by pod's name
+        // searchBar.whenFilterByName(this.pod)
+        // // Go to details page
+        // searchPage.whenGoToResourceDetailItemPage(
+        //     'pod',
+        //     this.pod
+        // )
+        // // Check for logs
+        // podDetailPage.whenClickOnLogsTab()
+        // podDetailPage.shouldSeeLogs('RedisGraph Pod Running with Persistence disabled')
 
         /* Enable customization CR persistence flag and verify logs */
         // Enable customization CR persistence flag
@@ -67,16 +71,14 @@ describe('Search: Test resiliency', {tags: ['@e2e', '@Obs']}, function () {
 
         // Needs improvement
         /* Apply invalid customization CR, verify logs */
+        // Go to 'search' page
+        searchPage.whenGoToSearchPage()
+        // Apply invalid CR
+        cliHelper.updateSearchCustomizationCR('true',false, this.sc)
         // Wait for 20s
-        // cy.wait(2000)
-        // // Go to 'search' page
-        // searchPage.whenGoToSearchPage()
-        // // Apply invalid CR
-        // cliHelper.updateSearchCustomizationCR('true',false, this.sc)
-        // // Wait for 20s
-        // cy.wait(2000)
-        // // Filter by 'pods'
-        // // Need to do this part from the back-end -->
+        cy.wait(20000)
+        // Need to do this part from the back-end -->
+        cliHelper.verifyPodLogs(this.pod, 'ocm', 'RedisGraph Pod UnScheduleable - likely PVC mount problem')
         // searchBar.whenFilterByKind('pod')
         // // Filter by pod's name
         // searchBar.whenFilterByName(this.pod)
@@ -96,7 +98,7 @@ describe('Search: Test resiliency', {tags: ['@e2e', '@Obs']}, function () {
         // Apply valid CR
         cliHelper.updateSearchCustomizationCR('true', true, this.sc)
         // Wait for 20s
-        cy.wait(2000)
+        cy.wait(20000)
         // Filter by 'pods'
         searchBar.whenFilterByKind('pod')
         // Filter by pod's name
