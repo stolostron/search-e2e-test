@@ -17,8 +17,8 @@ COPY config ./config
 COPY tests ./tests
 COPY build/rbac-setup.sh .
 COPY build/rbac-clean.sh .
-COPY cicd-scripts/run-prow-e2e .
-COPY cicd-scripts/run-prow-unit .
+COPY cicd-scripts/run-prow-e2e.sh .
+COPY cicd-scripts/run-prow-unit.sh .
 RUN npm i
 
 RUN sh download-clis.sh
