@@ -5,6 +5,10 @@ FROM cypress/included:9.2.0 as production
 
 USER root
 
+RUN mkdir -p /search-e2e/cypress_cache
+ENV CYPRESS_CACHE_FOLDER=/search-e2e/cypress_cache
+WORKDIR /search-e2e
+
 COPY --from=builder /usr/bin/yq /usr/local/bin/yq
 
 COPY package.json .
@@ -22,6 +26,8 @@ COPY cicd-scripts/run-prow-unit.sh .
 RUN npm i
 
 RUN sh download-clis.sh
+
+RUN chmod -R go+w /search-e2e
 
 RUN ["chmod", "+x", "start-tests.sh"]
 
