@@ -57,7 +57,6 @@ pipeline {
                     export CYPRESS_OPTIONS_MANAGED_BASEDOMAIN=\$(cat managedClusters.json |jq -r '.managedClusters[0].base_domain')
                 else
                     echo 'No Managed cluster found'
-                    exit 1
                 fi
                 if [[ -z "${BASE_OC_IDP}" || -z "${BASE_URL}" || -z "${BASE_PASSWORD}" ]]; then
                     echo "Aborting test.. ACM connection details are required for the test execution"
