@@ -6,7 +6,7 @@ FROM cypress/included:9.2.0 as production
 USER root
 
 RUN mkdir -p /search-e2e/cypress_cache
-ENV CYPRESS_CACHE_FOLDER=/search-e2e/cypress_cache
+# ENV CYPRESS_CACHE_FOLDER=/search-e2e/cypress_cache
 WORKDIR /search-e2e
 
 COPY --from=builder /usr/bin/yq /usr/local/bin/yq
@@ -19,8 +19,8 @@ COPY start-tests.sh .
 COPY download-clis.sh .
 COPY config ./config
 COPY tests ./tests
-COPY build/rbac-setup.sh .
-COPY build/rbac-clean.sh .
+COPY build/rbac-setup.sh build/.
+COPY build/rbac-clean.sh build/.
 COPY cicd-scripts/run-prow-e2e.sh .
 COPY cicd-scripts/run-prow-unit.sh .
 RUN npm i
