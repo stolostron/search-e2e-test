@@ -5,7 +5,6 @@
 
 /// <reference types="cypress" />
 
-import {tags} from '../../config'
 import {searchBar, searchPage} from '../../views/search'
 import {podDetailPage} from "../../views/podDetailPage";
 import {cliHelper} from "../../scripts/cliHelper";

@@ -107,7 +107,7 @@ export const cliHelper = {
         cy.log('testing logs from the back-end')
         cy
             .exec(
-                `oc logs ${pod_name} -n ${namespace} | grep -c ${expected_log}`, {failOnNonZeroExit: false})
+                `oc logs ${pod_name} | grep -c ${expected_log}`, {failOnNonZeroExit: false})
             .its('stdout')
             .should("not.contain", "0")
 
