@@ -372,7 +372,7 @@ if [[ "$SKIP_UI_TEST" == false ]]; then
     chmod +x /rbac-setup.sh
     source /rbac-setup.sh
   else # DEV
-    chmod +x build/rbac-setup.sh
+    # chmod +x build/rbac-setup.sh
     source build/rbac-setup.sh
   fi
 
@@ -409,7 +409,7 @@ if [[ "$SKIP_UI_TEST" == false ]]; then
     chmod +x /rbac-clean.sh
     source /rbac-clean.sh
   else # DEV
-    chmod +x build/rbac-clean.sh
+    # chmod +x build/rbac-clean.sh
     source build/rbac-clean.sh
   fi
 fi

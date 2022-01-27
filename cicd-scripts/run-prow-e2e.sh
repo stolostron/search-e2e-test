@@ -8,6 +8,8 @@
 
 echo -e "Shared dir: $SHARED_DIR\n"
 
+ls -la
+
 # Test env
 export BROWSER=chrome
 export OPTIONS_HUB_KUBECONFIG=${SHARED_DIR}/hub-1.kc
