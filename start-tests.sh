@@ -367,14 +367,14 @@ if [[ "$SKIP_UI_TEST" == false ]]; then
   env | grep "cypress_" -i
   echo -e
 
-  # log_color "cyan" "Create RBAC users"
-  # if [[ -f /rbac-setup.sh ]]; then
-  #   chmod +x /rbac-setup.sh
-  #   source /rbac-setup.sh
-  # else # DEV
+  log_color "cyan" "Create RBAC users"
+  if [[ -f /rbac-setup.sh ]]; then
+    # chmod +x /rbac-setup.sh
+    source /rbac-setup.sh
+  else # DEV
     # chmod +x build/rbac-setup.sh
-    # source build/rbac-setup.sh
-  # fi
+    source build/rbac-setup.sh
+  fi
 
   echo -e
 
@@ -403,15 +403,15 @@ if [[ "$SKIP_UI_TEST" == false && "$SKIP_API_TEST" == false ]]; then
   ls -R results
 fi
 
-# if [[ "$SKIP_UI_TEST" == false ]]; then
-#   log_color "cyan" "Clean up RBAC setup"
-#   if [ -f /rbac-clean.sh ]; then
-#     chmod +x /rbac-clean.sh
-#     source /rbac-clean.sh
-  # else # DEV
+if [[ "$SKIP_UI_TEST" == false ]]; then
+  log_color "cyan" "Clean up RBAC setup"
+  if [ -f /rbac-clean.sh ]; then
+    # chmod +x /rbac-clean.sh
+    source /rbac-clean.sh
+  else # DEV
     # chmod +x build/rbac-clean.sh
-    # source build/rbac-clean.sh
-  # fi
-# fi
+    source build/rbac-clean.sh
+  fi
+fi
 
 exit $testCode

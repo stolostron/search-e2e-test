@@ -11,7 +11,7 @@
 # DIR="$( find $HOME -type d -name "search-e2e-test" )"
 # using abosolute path, relative path is not working in travis
 
-set -e
+# set -e
 RBAC_DIR=${TRAVIS_BUILD_DIR:-.}/tests/config/rbac_yaml
 
 if [ ! -d ${RBAC_DIR} ]; then
@@ -26,10 +26,12 @@ fi
 
 passwd=${OPTIONS_HUB_PASSWORD:-CYPRESS_OPTIONS_HUB_PASSWORD}
 
+echo "*** 1: Testing Testing ***"
 if ! which htpasswd &>/dev/null; then
+  echo "*** 2: Testing Testing ***"
   if which apt-get &>/dev/null; then
-    apt-get update
-    apt-get install -y apache2-utils
+    sudo apt-get update
+    sudo apt-get install -y apache2-utils
   else
     echo "Error: Package manager apt-get not found. Failed to find or install htpasswd."
     exit 1
