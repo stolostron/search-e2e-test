@@ -367,14 +367,14 @@ if [[ "$SKIP_UI_TEST" == false ]]; then
   env | grep "cypress_" -i
   echo -e
 
-  log_color "cyan" "Create RBAC users"
-  if [[ -f /rbac-setup.sh ]]; then
-    chmod +x /rbac-setup.sh
-    source /rbac-setup.sh
-  else # DEV
-    chmod +x build/rbac-setup.sh
-    source build/rbac-setup.sh
-  fi
+  # log_color "cyan" "Create RBAC users"
+  # if [[ -f /rbac-setup.sh ]]; then
+  #   chmod +x /rbac-setup.sh
+  #   source /rbac-setup.sh
+  # else # DEV
+  #   chmod +x build/rbac-setup.sh
+  #   source build/rbac-setup.sh
+  # fi
 
   echo -e
 
@@ -393,11 +393,11 @@ if [[ "$SKIP_UI_TEST" == false ]]; then
   log_color "cyan" "Running Search UI tests."
 
   if [ "$NODE_ENV" == "development" ]; then
-    ${BIN}cypress run --browser $BROWSER $DISPLAY --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="${CYPRESS_TAGS:-}"
+    cypress run --browser $BROWSER $DISPLAY --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="${CYPRESS_TAGS:-}"
   elif [ "$NODE_ENV" == "debug" ]; then
-    ${BIN}cypress open --browser $BROWSER --config numTestsKeptInMemory=0 --env NODE_ENV=$NODE_ENV,grepTags=$CYPRESS_TAGS
+    cypress open --browser $BROWSER --config numTestsKeptInMemory=0 --env NODE_ENV=$NODE_ENV,grepTags=$CYPRESS_TAGS
   else
-    ${BIN}cypress run --browser $BROWSER $DISPLAY --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="${CYPRESS_TAGS:-}"
+    cypress run --browser $BROWSER $DISPLAY --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="${CYPRESS_TAGS:-}"
   fi
 else
   log_color "purple" "SKIP_UI_TEST" "was set to true. Skipping UI tests\n"
@@ -411,15 +411,15 @@ if [[ "$SKIP_UI_TEST" == false && "$SKIP_API_TEST" == false ]]; then
   ls -R results
 fi
 
-if [[ "$SKIP_UI_TEST" == false ]]; then
-  log_color "cyan" "Clean up RBAC setup"
-  if [ -f /rbac-clean.sh ]; then
-    chmod +x /rbac-clean.sh
-    source /rbac-clean.sh
-  else # DEV
-    chmod +x build/rbac-clean.sh
-    source build/rbac-clean.sh
-  fi
-fi
+# if [[ "$SKIP_UI_TEST" == false ]]; then
+#   log_color "cyan" "Clean up RBAC setup"
+#   if [ -f /rbac-clean.sh ]; then
+#     chmod +x /rbac-clean.sh
+#     source /rbac-clean.sh
+#   else # DEV
+#     chmod +x build/rbac-clean.sh
+#     source build/rbac-clean.sh
+#   fi
+# fi
 
 exit $testCode
