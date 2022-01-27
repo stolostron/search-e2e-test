@@ -14,7 +14,7 @@ pipeline {
         string(name:'BASE_DOMAIN', defaultValue: '', description: 'Domain name')
         string(name:'BASE_USER', defaultValue: 'kubeadmin', description: 'Cluster IDP')
         string(name:'BASE_PASSWORD', defaultValue: '', description: 'Hub cluster password')
-        string(name:'RBAC_PASS', defaultValue: 'acmqe', description: 'RBAC password')
+        string(name:'RBAC_PASS', defaultValue: '', description: 'RBAC password')
         string(name:'TEST_TAGS', defaultValue:'',description: 'grepTags parameter to use for test execution')
     }
     stages {
