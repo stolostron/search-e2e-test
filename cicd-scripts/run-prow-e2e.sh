@@ -19,17 +19,21 @@ export PROW_MODE=true
 export SKIP_API_TEST=false
 export SKIP_UI_TEST=false
 export TEST_MODE=BVT
+export USE_MANAGED_KUBECONFIG=false
 
 # Hub cluster
 HUB_CREDS=$(cat ${SHARED_DIR}/hub-1.json)
-export OPTIONS_HUB_CONSOLE_NAME=$(yq e '.console_url' $SHARED_DIR/hub-1.json)
-export OPTIONS_HUB_BASEDOMAIN=${OPTIONS_HUB_CONSOLE_NAME:39}
+export OPTIONS_HUB_API_URL=$(yq e '.api_url' $SHARED_DIR/hub-1.json)
+export OPTIONS_HUB_CONSOLE_URL=$(yq e '.console_url' $SHARED_DIR/hub-1.json)
+export OPTIONS_HUB_BASEDOMAIN=${OPTIONS_HUB_CONSOLE_URL:39}
 export OPTIONS_HUB_USER=$(yq e '.username' $SHARED_DIR/hub-1.json)
 export OPTIONS_HUB_PASSWORD=$(yq e '.password' $SHARED_DIR/hub-1.json)
 
 # Managed cluster
 MANAGED_CREDS=$(cat ${SHARED_DIR}/managed-1.json)
-export OPTIONS_MANAGED_BASEDOMAIN=$(yq e '.api_url' $SHARED_DIR/managed-1.json)
+export OPTIONS_MANAGED_API_URL=$(yq e '.api_url' $SHARED_DIR/managed-1.json)
+export OPTIONS_MANAGED_CONSOLE_URL=$(yq e '.console_url' $SHARED_DIR/managed-1.json)
+export OPTIONS_MANAGED_BASEDOMAIN=${OPTIONS_MANAGED_CONSOLE_URL:39}
 export OPTIONS_MANAGED_USER=$(yq e '.username' $SHARED_DIR/managed-1.json)
 export OPTIONS_MANAGED_PASSWORD=$(yq e '.password' $SHARED_DIR/managed-1.json)
 
