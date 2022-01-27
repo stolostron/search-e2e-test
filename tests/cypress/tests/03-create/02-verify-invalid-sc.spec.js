@@ -8,9 +8,7 @@
 import {searchBar, searchPage} from '../../views/search'
 import {podDetailPage} from "../../views/podDetailPage";
 import {cliHelper} from "../../scripts/cliHelper";
-var util = require('util')
 
-// Needs fixing - Do not use now. SC is passing as 'Undefined'
 describe('Search: Test resiliency', {tags: ['@e2e', '@Obs']}, function () {
     before(() => {
         // Log in yo ACM
