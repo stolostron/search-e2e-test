@@ -14,3 +14,8 @@ mv ./clis-unpacked/oc /usr/local/bin/oc
 mv ./clis-unpacked/kubectl /usr/local/bin/kubectl
 
 echo 'oc and kubectl cli install completed.'
+
+# Install htpasswd utility
+apt-get update && apt-get install -y apache2-utils
+
+echo 'set up complete'
