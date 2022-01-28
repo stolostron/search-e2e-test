@@ -383,13 +383,6 @@ if [[ "$SKIP_UI_TEST" == false ]]; then
     cypress run --record --key $RECORD_KEY --browser $BROWSER $DISPLAY --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="${CYPRESS_TAGS:-}"
   fi
 
-  echo -e "Checking to see if PROW_MODE is enabled."
-
-  if [[ "$PROW_MODE" == true ]]; then
-    echo -e "PROW_MODE is set to true.\n"
-    BIN=$(npm bin)/
-  fi
-
   log_color "cyan" "Running Search UI tests."
 
   if [ "$NODE_ENV" == "development" ]; then
