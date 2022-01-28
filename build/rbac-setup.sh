@@ -30,8 +30,8 @@ echo "*** 1: Testing Testing ***"
 if ! which htpasswd &>/dev/null; then
   echo "*** 2: Testing Testing ***"
   if which apt-get &>/dev/null; then
-    sudo apt-get update
-    sudo apt-get install -y apache2-utils
+    apt-get update
+    apt-get install -y apache2-utils
   else
     echo "Error: Package manager apt-get not found. Failed to find or install htpasswd."
     exit 1
