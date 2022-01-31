@@ -169,6 +169,8 @@ elif [[ ! -z $USE_HUB_KUBECONFIG && "$USE_HUB_KUBCONFIG" == true ]]; then
   ADD_KUBECONFIG="--kubeconfig=$OPTIONS_HUB_KUBECONFIG"
 fi
 
+echo -e "Logged in as user: $(oc whoami)\n"
+
 export CYPRESS_ACM_VERSION=`oc get subscriptions.operators.coreos.com $ADD_KUBECONFIG -A -o yaml | grep currentCSV:\ advanced-cluster-management | awk '{$1=$1};1' | sed "s/currentCSV:\ advanced-cluster-management.v//"`
 log_color "green" "Testing with ACM Version": "$CYPRESS_ACM_VERSION\n"
 
@@ -363,8 +365,8 @@ if [[ -z $RECORD ]]; then
 fi
 
 if [[ "$SKIP_UI_TEST" == false ]]; then
-  # Displaying cypress environment variables, so we know all of the ones that are being passed successfully.
-  env | grep "cypress_" -i
+  # [DEBUG] Displaying cypress environment variables, so we know all of the ones that are being passed successfully.
+  # env | grep "cypress_" -i
   echo -e
 
   log_color "cyan" "Create RBAC users"
