@@ -10,7 +10,7 @@ const fs = require('fs')
 const clusterLogin = () => {
   if (!process.env.USE_HUB_KUBECONFIG) {
     execSync(
-      `oc login -u ${config.get('options:hub:user')} -p ${config.get('options:hub:password')} --server=https://api.${config.get('options:hub:baseDomain')}:6443`
+      `oc login -u ${config.get('options:hub:user')} -p ${config.get('options:hub:password')} --server=https://api.${config.get('options:hub:baseDomain')}:6443 --insecure-skip-tls-verify`
     )
   } else {
     execSync(
