@@ -5,8 +5,6 @@
 
 /// <reference types="cypress" />
 
-import {squad, tags} from '../../config'
-import {overviewPage} from '../../views/overview'
 import {cliHelper} from "../../scripts/cliHelper";
 import {searchBar, searchPage} from "../../views/search";
 import {podDetailPage} from "../../views/podDetailPage";
@@ -24,8 +22,7 @@ const rbac_users = [
 //   'search-e2e-admin-cluster'
 // ]
 
-// const password = Cypress.env('OPTIONS_HUB_PASSWORD')
-const password = 'acmqe'
+const password = Cypress.env('RBAC_PASSWORD')
 const IDP = 'grc-e2e-htpasswd'
 
 let ignore

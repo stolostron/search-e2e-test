@@ -2,7 +2,7 @@ apiVersion: search.open-cluster-management.io/v1alpha1
 kind: SearchCustomization
 metadata:
   name: searchcustomization
-  namespace: ocm
+  namespace: PH
 spec:
   persistence: boolean
   storageClass: STRGCLASS

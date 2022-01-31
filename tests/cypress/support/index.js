@@ -77,7 +77,7 @@ beforeEach(() => {
     timeoutID = setTimeout(() => {
         console.error(err)
         throw Error(err)
-    }, 60000 * 5)
+    }, 60000 * 8)
 })
 
 afterEach(() => {

@@ -59,14 +59,28 @@ export const cliHelper = {
             cy.log(res.stdout ? res.stdout : res.stderr)
         })
     },
-    updateSearchCustomizationCR: (persistence = 'true', valid, sc) => {
+    FindCorrectNsForOcm: () => {
+        return cy
+            .exec(
+                `oc get ns | grep ocm`, {failOnNonZeroExit: false}).then(result => {
+                // Check if it returns any data
+                if (result.stdout == 0) {
+                                        cy.log(result.stdout)
+                    return cy.wrap('open-cluster-management')
+                } else {
+                    return cy.wrap('ocm')
+                }
+            }
+        )
+    },
+    updateSearchCustomizationCR: (persistence = 'true', valid, sc, ns) => {
         if (valid === false) {
             // Get storage class
             sc = "invalid"
         }
         cy.readFile('tests/cypress/templates/search_customization_cr.yaml').then((cfg) => {
             let b64Cfg = btoa(
-                cfg.replaceAll('boolean', persistence).replaceAll('STRGCLASS', sc)
+                cfg.replaceAll('boolean', persistence).replaceAll('STRGCLASS', sc).replaceAll('PH', ns)
             )
             cy.exec(`echo ${b64Cfg} | base64 -d | oc apply -f -`)
         })
