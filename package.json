@@ -21,7 +21,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:open-cluster-management/search-e2e-test.git"
+    "url": "git@github.com:stolostron/search-e2e-test.git"
   },
   "author": "",
   "license": "SEE LICENSE IN LICENSE",
