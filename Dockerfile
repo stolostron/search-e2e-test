@@ -1,8 +1,11 @@
 # Copyright (c) 2020 Red Hat, Inc.
 FROM registry.ci.openshift.org/open-cluster-management/builder:nodejs14-linux AS builder
 FROM cypress/included:8.5.0 AS production
+FROM mikefarah/yq:4 as yq
 
 USER root
+
+COPY --from=yq /usr/bin/yq /usr/local/bin/yq
 
 RUN mkdir -p /search-e2e/cypress_cache
 ENV CYPRESS_CACHE_FOLDER=/search-e2e/cypress_cache
