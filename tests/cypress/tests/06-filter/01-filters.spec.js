@@ -46,30 +46,42 @@ filtersRegistry.createFilter('status', {
   strategies: [simple, multipleValues(2)],
 })
 
-describe('RHACM4K-537: Search: Search using filters', { tags: tags.env }, function () {
-  context('prereq: user should log into the ACM console', { tags: tags.required }, function () {
-    it(`[P1][Sev1][${squad}] should login`, function () {
-      cy.login()
-    })
-  })
+describe(
+  'RHACM4K-537: Search: Search using filters',
+  { tags: tags.env },
+  function () {
+    context(
+      'prereq: user should log into the ACM console',
+      { tags: tags.required },
+      function () {
+        it(`[P1][Sev1][${squad}] should login`, function () {
+          cy.login()
+        })
+      }
+    )
 
-  context(`verify: broad spectrum of search result`, { tags: tags.modes} , function() {
-    beforeEach(function () {
-      searchPage.whenGoToSearchPage()
-      searchBar.whenClearFilters()
-      searchBar.whenFocusSearchBar()
-    })
+    context(
+      `verify: broad spectrum of search result`,
+      { tags: tags.modes },
+      function () {
+        beforeEach(function () {
+          searchPage.whenGoToSearchPage()
+          searchBar.whenClearFilters()
+          searchBar.whenFocusSearchBar()
+        })
 
-    filtersRegistry.filters.forEach((filter) => {
-      if (filter.skip) {
-        return
-      }  
+        filtersRegistry.filters.forEach((filter) => {
+          if (filter.skip) {
+            return
+          }
 
-      it(`[P1][Sev1][${squad}] Search using "${filter.type}" filter`, function() { 
-        if (filter.strategies) {
-          filter.strategies.forEach((runner) => runner(filter))
-        }
-      })
-    })
-  })
-})
+          it(`[P1][Sev1][${squad}] Search using "${filter.type}" filter`, function () {
+            if (filter.strategies) {
+              filter.strategies.forEach((runner) => runner(filter))
+            }
+          })
+        })
+      }
+    )
+  }
+)
