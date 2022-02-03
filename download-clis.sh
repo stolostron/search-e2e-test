@@ -13,4 +13,7 @@ chmod 755 ./clis-unpacked/kubectl
 mv ./clis-unpacked/oc /usr/local/bin/oc
 mv ./clis-unpacked/kubectl /usr/local/bin/kubectl
 
+# Install htpasswd utility
+apt-get update && apt-get install -y apache2-utils
+
 echo 'oc and kubectl cli install completed.'
