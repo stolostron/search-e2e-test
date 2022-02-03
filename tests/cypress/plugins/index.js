@@ -18,7 +18,6 @@ const fs = require('fs')
 const { cleanReports } = require('../scripts/helpers')
 
 module.exports = (on, config) => {
-
   cleanReports()
 
   // `on` is used to hook into various events Cypress emits

@@ -17,16 +17,16 @@ describe('RHACM4K-913: Search - common filter and conditions', function () {
     cy.generateNamespace(postfix).as('namespace')
   })
 
-  beforeEach(function() {
+  beforeEach(function () {
     searchPage.whenGoToSearchPage()
   })
 
-  it(`[P1][Sev1][${squad}] should create namespace and application`, function() {
+  it(`[P1][Sev1][${squad}] should create namespace and application`, function () {
     cliHelper.createNamespace(this.namespace)
     cliHelper.createApplication(appName, this.namespace)
   })
 
-  it(`[P1][Sev1][${squad}] should login`, function() {
+  it(`[P1][Sev1][${squad}] should login`, function () {
     cy.login()
   })
 

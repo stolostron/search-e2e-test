@@ -8,5 +8,4 @@ Tests the search component through the search-api interface.
 
 ## Running this tests
 
-
 ## Developing the tests
