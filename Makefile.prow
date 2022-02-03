@@ -11,7 +11,7 @@ lint:
 	npm run lint
 
 .PHONY: check
-lint:
+check:
 	npm run check
 
 .PHONY: unit-test
