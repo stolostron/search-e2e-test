@@ -1,6 +1,6 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
-jest.retryTimes(global.retry);
+jest.retryTimes(global.retry)
 
 const squad = require('../../config').get('squadName')
 const {
@@ -39,9 +39,9 @@ describe('RHACM4K-1695: Search - verify managed cluster info in the search page'
     })
     var res = await sendRequest(query, token)
     if (_.get(res, 'body.data.searchResult[0].items[0]', '')) {
-      expect(res.body.data.searchResult[0].items[0].ManagedClusterJoined).toEqual(
-        'True'
-      )
+      expect(
+        res.body.data.searchResult[0].items[0].ManagedClusterJoined
+      ).toEqual('True')
 
       query = searchQueryBuilder({
         filters: [

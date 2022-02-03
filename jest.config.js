@@ -1,6 +1,6 @@
 module.exports = {
   globals: {
-    "retry": 2
+    retry: 2,
   },
   globalSetup: './globalSetup.js',
   globalTeardown: './globalTeardown.js',
@@ -18,5 +18,5 @@ module.exports = {
     ],
   ],
   testResultsProcessor: 'jest-junit',
-  testRunner: "jest-circus/runner"
+  testRunner: 'jest-circus/runner',
 }
