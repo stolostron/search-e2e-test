@@ -10,13 +10,9 @@ install:
 lint:
 	npm run lint
 
-.PHONY: check
-check:
-	npm run check
-
-.PHONY: unit-test
-unit-test:
-	npm run test
+.PHONY: lint-fix
+lint-fix:
+	npm run lint:fix
 
 .PHONY: test-e2e
 test-e2e:
