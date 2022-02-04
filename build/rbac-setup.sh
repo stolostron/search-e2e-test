@@ -11,7 +11,7 @@
 # DIR="$( find $HOME -type d -name "search-e2e-test" )"
 # using abosolute path, relative path is not working in travis
 
-# set -e
+set -e
 RBAC_DIR=${TRAVIS_BUILD_DIR:-.}/tests/config/rbac_yaml
 
 if [ ! -d ${RBAC_DIR} ]; then

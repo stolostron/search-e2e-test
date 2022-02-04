@@ -10,9 +10,9 @@ install:
 lint:
 	npm run lint
 
-.PHONY: check
-check:
-	npm run check
+.PHONY: lint-fix
+lint-fix:
+	npm run lint:fix
 
 .PHONY: unit-test
 unit-test:
