@@ -3,6 +3,6 @@
 const { getSearchApiRoute } = require('../common-lib/clusterAccess')
 
 module.exports = async () => {
-    await getSearchApiRoute()
-    console.log('Done with global setup.')
-};
+  await getSearchApiRoute()
+  console.log('Done with global setup.')
+}
