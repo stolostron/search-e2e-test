@@ -385,10 +385,7 @@ if [[ "$SKIP_UI_TEST" == false ]]; then
 
   log_color "cyan" "Running Search UI tests."
 
-  if [[ "$PROW_MODE" == true ]]; then
-    echo "PROW_MODE set to true."
-    npx cypress run --config-file "./cypress.json" --browser $BROWSER $DISPLAY --env NODE_ENV=$NODE_ENV,grepTags="${CYPRESS_TAGS:-}"
-  elif [ "$NODE_ENV" == "development" ]; then
+  if [ "$NODE_ENV" == "development" ]; then
     cypress run --browser $BROWSER $DISPLAY --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="${CYPRESS_TAGS:-}"
   elif [ "$NODE_ENV" == "debug" ]; then
     cypress open --browser $BROWSER --config numTestsKeptInMemory=0 --env NODE_ENV=$NODE_ENV,grepTags=$CYPRESS_TAGS
