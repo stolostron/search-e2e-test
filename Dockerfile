@@ -5,11 +5,11 @@ FROM cypress/included:8.5.0 AS production
 
 USER root
 
+COPY --from=builder /usr/bin/yq /usr/local/bin/yq
+
 RUN mkdir -p /search-e2e/cypress_cache
 ENV CYPRESS_CACHE_FOLDER=/search-e2e/cypress_cache
 WORKDIR /search-e2e
-
-COPY --from=builder /usr/bin/yq /usr/local/bin/yq
 
 COPY package.json .
 COPY package-lock.json .
