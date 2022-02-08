@@ -1,5 +1,4 @@
 # Copyright (c) 2020 Red Hat, Inc.
-# FROM registry.ci.openshift.org/open-cluster-management/builder:nodejs14-linux AS builder
 
 FROM mikefarah/yq:4 as builder
 FROM cypress/included:8.5.0 AS production
