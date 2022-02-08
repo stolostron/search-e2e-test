@@ -17,15 +17,14 @@ COPY package-lock.json .
 COPY cypress.json .
 COPY jest.config.js .
 COPY start-tests.sh .
-COPY download-clis.sh .
+COPY install-dependencies.sh .
 COPY config ./config
 COPY tests ./tests
 COPY build ./build
 COPY cicd-scripts/run-prow-e2e.sh .
-COPY cicd-scripts/run-prow-unit.sh .
 
 RUN npm ci
-RUN sh download-clis.sh
+RUN sh install-dependencies.sh
 
 RUN chmod -R go+w /search-e2e
 

@@ -8,8 +8,12 @@ import { squad, tags } from '../config'
 export const cliHelper = {
   getTargetManagedCluster: () => {
     if (Cypress.env('OPTIONS_MANAGED_CLUSTER_NAME')) {
-      cy.log(`Imported cluster name found: ${Cypress.env('OPTIONS_MANAGED_CLUSTER_NAME')}`)
-      return cy.wrap(Cypress.env("OPTIONS_MANAGED_CLUSTER_NAME"))
+      cy.log(
+        `Imported cluster name found: ${Cypress.env(
+          'OPTIONS_MANAGED_CLUSTER_NAME'
+        )}`
+      )
+      return cy.wrap(Cypress.env('OPTIONS_MANAGED_CLUSTER_NAME'))
     }
 
     return cy
@@ -18,9 +22,14 @@ export const cliHelper = {
         const managedClusters = result.stdout.split('\n').slice(1)
         var targetCluster
 
-        if (managedClusters.length === 1 && managedClusters.find((c) => c.includes('local-cluster'))) {
-          cy.log(`No imported cluster name found. Using local-cluster for testing.`)
-          return cy.wrap(targetCluster = 'local-cluster')
+        if (
+          managedClusters.length === 1 &&
+          managedClusters.find((c) => c.includes('local-cluster'))
+        ) {
+          cy.log(
+            `No imported cluster name found. Using local-cluster for testing.`
+          )
+          return cy.wrap((targetCluster = 'local-cluster'))
         }
 
         // In the canary tests, we only need to focus on the import-xxxx managed cluster.
@@ -28,7 +37,12 @@ export const cliHelper = {
           Cypress.env('NODE_ENV') !== 'development' &&
           Cypress.env('NODE_ENV') !== 'debug'
         ) {
-          targetCluster = managedClusters.find((c) => c.startsWith('canary-') || c.includes('canary') || c.startsWith('import-'))
+          targetCluster = managedClusters.find(
+            (c) =>
+              c.startsWith('canary-') ||
+              c.includes('canary') ||
+              c.startsWith('import-')
+          )
         }
 
         // When running locally or if the cluster is not available, try testing on an available managed cluster.
@@ -45,18 +59,24 @@ export const cliHelper = {
   generateNamespace: (prefix, postfix) => {
     return `${prefix ? prefix : 'search'}-${postfix ? postfix : Date.now()}`
   },
-  createNamespace: (name, kubeconfig='') => {
-    cy.exec(`${kubeconfig} oc get namespace ${name}`, { failOnNonZeroExit: false }).then((res) => {
+  createNamespace: (name, kubeconfig = '') => {
+    cy.exec(`${kubeconfig} oc get namespace ${name}`, {
+      failOnNonZeroExit: false,
+    }).then((res) => {
       if (!res.stderr) {
         cy.log(`Namespace: ${name} already exist within the cluster`)
       } else {
-        cy.log(`Namespace: ${name} does not exist within the cluster. Preparing to create namespace resource.`)
+        cy.log(
+          `Namespace: ${name} does not exist within the cluster. Preparing to create namespace resource.`
+        )
         cy.exec(`${kubeconfig} oc create namespace ${name}`)
       }
     })
   },
-  createDeployment: (name, namespace, image, kubeconfig='') => {
-    cy.exec(`${kubeconfig} oc create deployment ${name} --image=${image} -n ${namespace}`).then((res) => {
+  createDeployment: (name, namespace, image, kubeconfig = '') => {
+    cy.exec(
+      `${kubeconfig} oc create deployment ${name} --image=${image} -n ${namespace}`
+    ).then((res) => {
       cy.log(res.stdout ? res.stdout : res.stderr)
     })
   },
@@ -69,46 +89,60 @@ export const cliHelper = {
       cy.log(`Successfully created application (${appName})`)
     })
   },
-  deleteNamespace: (name, kubeconfig='') => {
-    cy.exec(`${kubeconfig} oc delete namespace ${name}`).then(
-      (res) => {
-        cy.log(res.stdout ? res.stdout : res.stderr)
-      }
-    )
+  deleteNamespace: (name, kubeconfig = '') => {
+    cy.exec(`${kubeconfig} oc delete namespace ${name}`).then((res) => {
+      cy.log(res.stdout ? res.stdout : res.stderr)
+    })
   },
   login: (mode) => {
     var mode = mode === 'Local' ? 'HUB' : 'MANAGED'
-    cy.exec(`oc login --server=https://api.${Cypress.env(`OPTIONS_${mode}_BASEDOMAIN`)}:6443 -u ${Cypress.env(`OPTIONS_${mode}_USER`)} -p ${Cypress.env(`OPTIONS_${mode}_PASSWORD`)} --insecure-skip-tls-verify`
+    cy.exec(
+      `oc login --server=https://api.${Cypress.env(
+        `OPTIONS_${mode}_BASEDOMAIN`
+      )}:6443 -u ${Cypress.env(`OPTIONS_${mode}_USER`)} -p ${Cypress.env(
+        `OPTIONS_${mode}_PASSWORD`
+      )} --insecure-skip-tls-verify`
     )
   },
   setup: (modes) => {
     modes.forEach((mode) => {
       if (!mode.skip) {
-        describe(`Search: Create resource in ${mode.label} Cluster`, { tags: tags.env }, function () {
-          // Log into the hub and managed cluster with the oc command to create the resources.
-          context(`prereq: create resource with oc command`, { tags: tags.required }, function () {
-            it(`[P1][Sev1][${squad}] should log into ${mode.label.toLocaleLowerCase()} cluster`, function () {
-              if (mode.label === 'Managed' && Cypress.env('USE_MANAGED_KUBECONFIG')) {
-                cy.log('Skipping login and using kubeconfig file')
-              } else {
-                cliHelper.login(mode.label)
-              }
-            })
+        describe(
+          `Search: Create resource in ${mode.label} Cluster`,
+          { tags: tags.env },
+          function () {
+            // Log into the hub and managed cluster with the oc command to create the resources.
+            context(
+              `prereq: create resource with oc command`,
+              { tags: tags.required },
+              function () {
+                it(`[P1][Sev1][${squad}] should log into ${mode.label.toLocaleLowerCase()} cluster`, function () {
+                  if (
+                    mode.label === 'Managed' &&
+                    Cypress.env('USE_MANAGED_KUBECONFIG')
+                  ) {
+                    cy.log('Skipping login and using kubeconfig file')
+                  } else {
+                    cliHelper.login(mode.label)
+                  }
+                })
 
-            it(`[P1][Sev1][${squad}] should create namespace resource`, function () {
-              cliHelper.createNamespace(mode.namespace, mode.kubeconfig)
-            })
-  
-            it(`[P1][Sev1][${squad}] should create deployment resource`, function () {
-              cliHelper.createDeployment(
-                mode.namespace + '-deployment',
-                mode.namespace,
-                'openshift/hello-openshift',
-                mode.kubeconfig
-              )
-            })
-          })
-        })
+                it(`[P1][Sev1][${squad}] should create namespace resource`, function () {
+                  cliHelper.createNamespace(mode.namespace, mode.kubeconfig)
+                })
+
+                it(`[P1][Sev1][${squad}] should create deployment resource`, function () {
+                  cliHelper.createDeployment(
+                    mode.namespace + '-deployment',
+                    mode.namespace,
+                    'openshift/hello-openshift',
+                    mode.kubeconfig
+                  )
+                })
+              }
+            )
+          }
+        )
       }
     })
   },

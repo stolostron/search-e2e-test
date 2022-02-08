@@ -10,9 +10,9 @@ install:
 lint:
 	npm run lint
 
-.PHONY: check
-check:
-	npm run check
+.PHONY: lint-fix
+lint-fix:
+	npm run lint:fix
 
 .PHONY: test-api
 test-api:
@@ -21,7 +21,3 @@ test-api:
 .PHONY: test-e2e
 test-e2e:
 	sh cicd-scripts/run-prow-e2e.sh $1
-
-.PHONY: unit-test
-unit-test:
-	sh cicd-scripts/run-prow-unit.sh $1
