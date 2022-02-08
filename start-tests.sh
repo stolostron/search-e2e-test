@@ -125,14 +125,12 @@ fi
 
 echo -e "Setting env to run in: $NODE_ENV\n"
 
-# echo -e "${CYAN}Create RBAC users${NC}"
-# if [ -f /rbac-setup.sh ]; then
-#   chmod +x /rbac-setup.sh
-#   source /rbac-setup.sh
-# else # DEV
-#   chmod +x build/rbac-setup.sh
-#   source build/rbac-setup.sh
-# fi
+echo -e "${CYAN}Create RBAC users${NC}"
+if [ -f /rbac-setup.sh ]; then
+  source /rbac-setup.sh
+else # DEV
+  source build/rbac-setup.sh
+fi
 
 if [[ -z $CYPRESS_TAGS_EXCLUDE ]]; then
   echo -e "\n${PURPLE}CYPRESS_TAGS_EXCLUDE${NC} not exported; running all test (set ${PURPLE}CYPRESS_TAGS_EXCLUDE${NC} to include a test tags i.e ${YELLOW}@critical${NC}, if you wish to exclude a test from the execution)"
@@ -158,6 +156,10 @@ if [ "$SKIP_UI_TEST" == false ]; then
     cypress run --record --key $RECORD_KEY --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="-$CYPRESS_TAGS_EXCLUDE"
   fi
 
+  # Displaying cypress environment variables, so we know all of the ones that are being passed successfully.
+  env | grep "cypress_" -i | grep -vi "password"
+  echo -e
+
   section_title "${CYAN}Running Search UI tests${NC}."
   if [ "$NODE_ENV" == "development" ]; then
     cypress run --browser $BROWSER $HEADLESS --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="-$CYPRESS_TAGS_EXCLUDE"
@@ -178,13 +180,11 @@ if [[ "$SKIP_UI_TEST" == false && "$SKIP_API_TEST" == false ]]; then
   ls -R results
 fi
 
-# echo "${CYAN}Clean up RBAC setup${NC}"
-# if [ -f /rbac-clean.sh ]; then
-#   chmod +x /rbac-clean.sh
-#   source /rbac-clean.sh
-# else # DEV
-#   chmod +x build/rbac-clean.sh
-#   source build/rbac-clean.sh
-# fi
+echo "${CYAN}Clean up RBAC setup${NC}"
+if [ -f /rbac-clean.sh ]; then
+  source /rbac-clean.sh
+else # DEV
+  source build/rbac-clean.sh
+fi
 
 exit $testCode
