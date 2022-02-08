@@ -15,14 +15,18 @@ const clusterModes = [
     valueFn: () => cy.wrap('local-cluster'),
     skip: false,
     namespace: cliHelper.generateNamespace(),
-    kubeconfig: Cypress.env('USE_HUB_KUBECONFIG') ? `KUBECONFIG=${Cypress.env('OPTIONS_HUB_KUBECONFIG')}` : ''
+    kubeconfig: Cypress.env('USE_HUB_KUBECONFIG')
+      ? `KUBECONFIG=${Cypress.env('OPTIONS_HUB_KUBECONFIG')}`
+      : '',
   },
   {
     label: 'Managed',
     valueFn: () => cliHelper.getTargetManagedCluster(),
     skip: Cypress.env('SKIP_MANAGED_CLUSTER_TEST'),
     namespace: cliHelper.generateNamespace('', `managed-${Date.now()}`),
-    kubeconfig: Cypress.env('USE_MANAGED_KUBECONFIG') ? `KUBECONFIG=${Cypress.env('OPTIONS_MANAGED_KUBECONFIG')}` : ''
+    kubeconfig: Cypress.env('USE_MANAGED_KUBECONFIG')
+      ? `KUBECONFIG=${Cypress.env('OPTIONS_MANAGED_KUBECONFIG')}`
+      : '',
   },
 ]
 
@@ -34,21 +38,30 @@ clusterModes.forEach((clusterMode) => {
     return
   }
 
-  describe('RHACKM4K-726: Search: Search in ' + clusterMode.label + ' Cluster', { tags: tags.env }, function () {
+  describe(
+    'RHACKM4K-726: Search: Search in ' + clusterMode.label + ' Cluster',
+    { tags: tags.env },
+    function () {
       before(function () {
         clusterMode.valueFn().as('clusterName')
       })
 
       // Logging into the hub cluster UI.
       if (clusterMode.label !== 'Managed') {
-        context('prereq: user should log into the ACM console', { tags: tags.required }, function () {
-          it(`[P1][Sev1][${squad}] should login`, function () {
-            cy.login()
-          })
-        })
+        context(
+          'prereq: user should log into the ACM console',
+          { tags: tags.required },
+          function () {
+            it(`[P1][Sev1][${squad}] should login`, function () {
+              cy.login()
+            })
+          }
+        )
       }
 
-      context('search resource: verify delete function in search result', { tags: tags.modes },
+      context(
+        'search resource: verify delete function in search result',
+        { tags: tags.modes },
         function () {
           beforeEach(function () {
             searchPage.whenGoToSearchPage()
@@ -59,7 +72,10 @@ clusterModes.forEach((clusterMode) => {
 
           // Log into cluster to clean up resources
           after(function () {
-            if (clusterMode.label === 'Managed' && Cypress.env('USE_MANAGED_KUBECONFIG')) {
+            if (
+              clusterMode.label === 'Managed' &&
+              Cypress.env('USE_MANAGED_KUBECONFIG')
+            ) {
               cy.log('Skipping login and using import-kubeconfig file')
             } else {
               // Log into cluster with oc command.

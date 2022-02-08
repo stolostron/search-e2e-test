@@ -3,11 +3,10 @@
   "version": "2.5.0",
   "description": "End to end test for Search component",
   "scripts": {
-    "lint": "concurrently npm:*:lint",
+    "lint": "prettier --check .",
+    "lint:fix": "prettier --write .",
     "rbac:clean": "./build/rbac-clean.sh",
     "rbac:setup": "./build/rbac-setup.sh",
-    "check": "prettier --check .",
-    "check:fix": "prettier --write .",
     "test": "npm run test:clean-reports && npm run test:headless && npm run test:merge-reports",
     "test:api": "jest --colors --verbose",
     "test:clean-reports": "rm -rf ./results",
