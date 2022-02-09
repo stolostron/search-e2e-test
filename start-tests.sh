@@ -138,6 +138,13 @@ else
   echo -e "\nExcluding tests that contain the following tags: ${YELLOW}$CYPRESS_TAGS_EXCLUDE${NC}\033[0m"
 fi
 
+echo -e "Checking pod status in $installNamespace:"
+oc get pods $ADD_KUBECONFIG -n $installNamespace
+echo -e
+
+echo -e "DEBUG: Sleeping for an additional 30 seconds to ensure that the pod is up and running."
+sleep 30
+
 if [ "$SKIP_API_TEST" == false ]; then 
   section_title "${CYAN}Running Search API tests${NC}."
   npm run test:api
