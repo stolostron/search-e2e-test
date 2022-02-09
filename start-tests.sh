@@ -350,6 +350,13 @@ if [[ ! -z $CYPRESS_TAGS_INCLUDE || ! -z $CYPRESS_TAGS_EXCLUDE ]]; then
   echo -e "Executing tests with the following tags: $CYPRESS_TAGS\n"
 fi
 
+echo -e "Checking pod status in $installNamespace:"
+oc get pods $ADD_KUBECONFIG -n $installNamespace
+echo -e
+
+echo -e "DEBUG: Sleeping for an additional 30 seconds to ensure that the pod is up and running."
+sleep 30
+
 if [[ "$SKIP_API_TEST" == false ]]; then 
   log_color "cyan" "Running Search API tests."
   npm run test:api
