@@ -350,12 +350,14 @@ if [[ ! -z $CYPRESS_TAGS_INCLUDE || ! -z $CYPRESS_TAGS_EXCLUDE ]]; then
   echo -e "Executing tests with the following tags: $CYPRESS_TAGS\n"
 fi
 
-echo -e "Checking pod status in $installNamespace:"
-oc get pods $ADD_KUBECONFIG -n $installNamespace
-echo -e
+if [[ $PROW_MODE == true ]]; then
+  echo -e "Checking pod status in $installNamespace:"
+  oc get pods $ADD_KUBECONFIG -n $installNamespace
+  echo -e
 
-echo -e "DEBUG: Sleeping for an additional 2 minutes to ensure that the pod is up and running."
-sleep 120
+  echo -e "Waiting for an additional 2 minutes to ensure that all pods are up and running in the cluster."
+  sleep 120
+fi
 
 if [[ "$SKIP_API_TEST" == false ]]; then 
   log_color "cyan" "Running Search API tests."
