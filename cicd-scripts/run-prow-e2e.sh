@@ -16,6 +16,7 @@ export OPTIONS_HUB_KUBECONFIG=${SHARED_DIR}/hub-1.kc
 export OPTIONS_KUBECONFIG_MOUNT_PATH=${SHARED_DIR}/managed-1.kc
 export OPTIONS_MANAGED_KUBECONFIG=${OPTIONS_KUBECONFIG_MOUNT_PATH}
 export PROW_MODE=true
+export PROW_BUILD_ID=${PROW_BUILD_ID:-"$(date +%s-%d-%-m-%y)"}
 export SKIP_API_TEST=false
 export SKIP_UI_TEST=false
 export TEST_MODE=BVT

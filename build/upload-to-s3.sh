@@ -2,12 +2,18 @@
 
 # Copyright (c) 2020 Red Hat, Inc
 
-
 function install_aws_cli() {
+    echo -e "Installing AWS CLI.\n"
+
     aws_dir=$(dirname $(readlink -f $0))
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
     unzip -q -o awscliv2.zip
-    ./aws/install -i $aws_dir/aws-cli -b /home/travis/bin
+
+    if [[ $PROW_MODE == true ]]; then
+        ./aws/install -i $aws_dir/aws-cli -b /usr/local/bin
+    else
+        ./aws/install -i $aws_dir/aws-cli -b /home/travis/bin
+    fi
 }
 
 # copies the test results to the search-e2e-test S3 bucket
