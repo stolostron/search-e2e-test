@@ -12,7 +12,12 @@ function install_aws_cli() {
 
 # copies the test results to the search-e2e-test S3 bucket
 function upload_s3() {
-    echo "Uploading files to AWS S3 bucket.  search-e2e-test/travis-${TRAVIS_BUILD_ID}"  
-
-    aws s3 sync ./search-test-results s3://search-e2e-results/travis-${TRAVIS_BUILD_ID}
+    echo -ne "Uploading test results to AWS S3 bucket..."
+    if [[ $PROW_MODE == true ]]; then
+        echo -e "search-e2e-test/prow-${PROW_BUILD_ID}"
+        aws s3 sync ./results s3://search-e2e-results/prow-${PROW_BUILD_ID}
+    else
+        echo -e "search-e2e-test/travis-${TRAVIS_BUILD_ID}"
+        aws s3 sync ./search-test-results s3://search-e2e-results/travis-${TRAVIS_BUILD_ID}
+    fi
 }
