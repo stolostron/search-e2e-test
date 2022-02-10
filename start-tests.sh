@@ -354,8 +354,8 @@ echo -e "Checking pod status in $installNamespace:"
 oc get pods $ADD_KUBECONFIG -n $installNamespace
 echo -e
 
-echo -e "DEBUG: Sleeping for an additional 30 seconds to ensure that the pod is up and running."
-sleep 30
+echo -e "DEBUG: Sleeping for an additional 2 minutes to ensure that the pod is up and running."
+sleep 120
 
 if [[ "$SKIP_API_TEST" == false ]]; then 
   log_color "cyan" "Running Search API tests."
