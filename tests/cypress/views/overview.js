@@ -11,10 +11,10 @@ export const overviewPage = {
     cy.get(`[aria-label="search-button"]`).click()
   },
   whenAddProviderConnectionAction: () => {
-    cy.get('#add-provider-connection')
+    cy.get('#add-credential')
       .should('have.attr', 'href')
-      .and('contain', 'credentials')
-    cy.get('#add-provider-connection').click()
+      .and('contain', 'credential')
+    cy.get('#add-credential').click()
   },
   shouldLoad: () => {
     cy.get('.pf-c-page').should('contain', 'Overview')
