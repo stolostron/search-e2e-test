@@ -14,6 +14,10 @@ lint:
 lint-fix:
 	npm run lint:fix
 
-.PHONY: unit-test
-unit-test:
-	npm run test
+.PHONY: test-api
+test-api:
+	npm run test:api
+
+.PHONY: test-e2e
+test-e2e:
+	sh cicd-scripts/run-prow-e2e.sh $1
