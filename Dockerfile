@@ -21,7 +21,6 @@ COPY config ./config
 COPY tests ./tests
 COPY build ./build
 COPY cicd-scripts/run-prow-e2e.sh .
-COPY cicd-scripts/run-prow-unit.sh .
 
 RUN npm ci
 RUN sh install-dependencies.sh

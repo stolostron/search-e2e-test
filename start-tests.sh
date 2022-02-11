@@ -169,6 +169,8 @@ elif [[ ! -z $USE_HUB_KUBECONFIG && "$USE_HUB_KUBCONFIG" == true ]]; then
   ADD_KUBECONFIG="--kubeconfig=$OPTIONS_HUB_KUBECONFIG"
 fi
 
+echo -e "Logged in as user: $(oc whoami)\n"
+
 export CYPRESS_ACM_VERSION=`oc get subscriptions.operators.coreos.com $ADD_KUBECONFIG -A -o yaml | grep currentCSV:\ advanced-cluster-management | awk '{$1=$1};1' | sed "s/currentCSV:\ advanced-cluster-management.v//"`
 log_color "green" "Testing with ACM Version": "$CYPRESS_ACM_VERSION\n"
 
@@ -348,6 +350,15 @@ if [[ ! -z $CYPRESS_TAGS_INCLUDE || ! -z $CYPRESS_TAGS_EXCLUDE ]]; then
   echo -e "Executing tests with the following tags: $CYPRESS_TAGS\n"
 fi
 
+if [[ $PROW_MODE == true ]]; then
+  echo -e "Checking pod status in $installNamespace:"
+  oc get pods $ADD_KUBECONFIG -n $installNamespace
+  echo -e
+
+  echo -e "Waiting for an additional 2 minutes to ensure that all pods are up and running in the cluster."
+  sleep 120
+fi
+
 if [[ "$SKIP_API_TEST" == false ]]; then 
   log_color "cyan" "Running Search API tests."
   npm run test:api
@@ -382,6 +393,7 @@ if [[ "$SKIP_UI_TEST" == false ]]; then
   fi
 
   log_color "cyan" "Running Search UI tests."
+
   if [ "$NODE_ENV" == "development" ]; then
     cypress run --browser $BROWSER $DISPLAY --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="${CYPRESS_TAGS:-}"
   elif [ "$NODE_ENV" == "debug" ]; then
