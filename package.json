@@ -43,7 +43,6 @@
   "devDependencies": {
     "@cypress/code-coverage": "^3.9.12",
     "chromedriver": "^97.0.4",
-    "concurrently": "^7.0.0",
     "cross-env": "^7.0.3",
     "cypress": "8.5.0",
     "cypress-grep": "^2.13.1",
