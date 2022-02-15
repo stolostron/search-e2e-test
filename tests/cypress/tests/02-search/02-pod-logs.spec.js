@@ -59,6 +59,10 @@ clusterModes.forEach((clusterMode) => {
           cliHelper.login(clusterMode.label)
         }
         cliHelper.deleteNamespace(clusterMode.namespace, clusterMode.kubeconfig)
+
+        cy.log(
+          'Disabling managed cluster test. The console API is fixing the managed cluster logs, which will allow us to re-enable the cluster test.'
+        )
       })
 
       // Logging into the hub cluster UI.
