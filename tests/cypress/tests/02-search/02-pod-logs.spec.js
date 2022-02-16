@@ -23,7 +23,7 @@ const clusterModes = [
   {
     label: 'Managed',
     valueFn: () => cliHelper.getTargetManagedCluster(),
-    skip: true, // Disabling the managed cluster tests until the console squad patches the issue for the logs action.
+  skip: Cypress.env('SKIP_MANAGED_CLUSTER_TEST'),
     namespace: cliHelper.generateNamespace('', `managed-${Date.now()}`),
     kubeconfig: Cypress.env('USE_MANAGED_KUBECONFIG')
       ? `KUBECONFIG=${Cypress.env('OPTIONS_MANAGED_KUBECONFIG')}`
@@ -59,10 +59,6 @@ clusterModes.forEach((clusterMode) => {
           cliHelper.login(clusterMode.label)
         }
         cliHelper.deleteNamespace(clusterMode.namespace, clusterMode.kubeconfig)
-
-        cy.log(
-          'Disabling managed cluster test. The console API is fixing the managed cluster logs, which will allow us to re-enable the cluster test.'
-        )
       })
 
       // Logging into the hub cluster UI.
