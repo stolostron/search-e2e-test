@@ -1,0 +1,3 @@
+Upgrading /home/runner/work/search-e2e-test/search-e2e-test/package.json
+
+All dependencies match the latest package versions :)
