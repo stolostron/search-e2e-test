@@ -78,11 +78,11 @@ jobs:
         run: |
           echo -e "#### Failed to update the outdated node package dependencies successfully. Manual update and install needed.\n---" >> .github/logs/update-log-$(date +%m-%d-%y).md
 
-      - name: Verify go modules dependencies updated to latest versions (succecss)
+      - name: Verify node modules dependencies updated to latest versions (succecss)
         id: verify-success
         if: steps.reinstall.outcome == 'success'
         run: |
-          echo -e "#### Successfully updated the go modules dependencies.\n---" >> .github/logs/update-log-$(date +%m-%d-%y).md
+          echo -e "#### Successfully updated the node modules dependencies.\n---" >> .github/logs/update-log-$(date +%m-%d-%y).md
 
       - name: Resolve node modules package vulnerabilities
         id: audit
