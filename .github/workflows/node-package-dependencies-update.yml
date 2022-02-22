@@ -2,12 +2,6 @@ name: Update node package dependencies versions
 
 # Set jobs to be configured and executed by schedule.
 on:
-  workflow_dispatch:
-    inputs:
-      environment:
-        required: false
-        description: Environment to run build against
-        type: environment
   push:
     branches:
       - 'main'
