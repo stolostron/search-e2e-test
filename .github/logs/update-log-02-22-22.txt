@@ -1,0 +1,6 @@
+Upgrading /home/runner/work/search-e2e-test/search-e2e-test/package.json
+
+ mocha  ^9.2.0  →  ^9.2.1     
+
+Run npm install to install new versions.
+
