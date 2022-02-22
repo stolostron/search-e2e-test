@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "axios": "^0.26.0",
+    "caniuse-lite": "^1.0.30001312",
     "del": "^6.0.0",
     "jest": "^27.5.1",
     "jest-junit": "^13.0.0",

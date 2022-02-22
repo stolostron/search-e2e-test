@@ -1,3 +1,4 @@
+
 /** *****************************************************************************
  * Licensed Materials - Property of Red Hat, Inc.
  * Copyright (c) 2020 Red Hat, Inc.
@@ -85,6 +86,7 @@ export const savedSearches = {
   },
 
   getSavedSearch: (queryName) => {
+    searchPage.shouldLoad()
     cy.get('h4.pf-c-title.pf-m-md').contains('Saved searches')
     cy.get('button.pf-c-dropdown__toggle')
       .contains('Saved searches')
@@ -96,6 +98,7 @@ export const savedSearches = {
   },
 
   whenDeleteSavedSearch: (queryName) => {
+    searchPage.shouldLoad()
     cy.get('h4.pf-c-title.pf-m-md').contains('Saved searches')
     cy.get('.pf-c-card__header')
       .contains(queryName)
