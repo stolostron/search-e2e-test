@@ -35,7 +35,7 @@ jobs:
       - name: Create log entry for github action results
         run: |
           mkdir -p .github/logs
-          echo -e "### Generated logs from GitHub Action: [${{ github.run_id }}](https://github.com/stolostron/search-e2e-test/actions/runs/${{ github.run_id }})" >> .github/logs/update-log-$(date +%m-%d-%y).md
+          echo -e "### Generated logs from GitHub Action: [${{ github.run_id }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> .github/logs/update-log-$(date +%m-%d-%y).md
 
       - name: Add updated log report to README # Once the PR has been merged, the link will be active and available for view.
         run: |
