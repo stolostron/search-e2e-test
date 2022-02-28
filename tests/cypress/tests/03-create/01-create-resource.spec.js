@@ -7,6 +7,7 @@
 
 import { squad, tags } from '../../config'
 import { searchPage } from '../../views/search'
+import { cliHelper } from '../../scripts/cliHelper'
 
 const clusterModes = [
   { label: 'Local', valueFn: () => cy.wrap('local-cluster'), skip: false },
@@ -37,6 +38,7 @@ clusterModes.forEach((clusterMode) => {
         { tags: [] },
         function () {
           beforeEach(function () {
+            cliHelper.checkIfLoggedIn()
             searchPage.whenGoToSearchPage()
           })
 

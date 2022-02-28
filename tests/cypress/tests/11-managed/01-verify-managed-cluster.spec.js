@@ -32,6 +32,7 @@ describe(
       { tags: tags.modes },
       () => {
         beforeEach(function () {
+          cliHelper.checkIfLoggedIn()
           searchPage.whenGoToSearchPage()
         })
 

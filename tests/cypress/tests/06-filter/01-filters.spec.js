@@ -14,6 +14,7 @@ import {
   simple,
   useText,
 } from '../../scripts/filters'
+import { cliHelper } from '../../scripts/cliHelper'
 
 // Filter Specification
 // - type: the filter name
@@ -65,6 +66,7 @@ describe(
       { tags: tags.modes },
       function () {
         beforeEach(function () {
+          cliHelper.checkIfLoggedIn()
           searchPage.whenGoToSearchPage()
           searchBar.whenClearFilters()
           searchBar.whenFocusSearchBar()
