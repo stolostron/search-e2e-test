@@ -11,6 +11,7 @@ const {
   getPods,
   deletePod,
 } = require('../common-lib/clusterAccess')
+const _ = require('lodash')
 
 describe('RHACM4K-1696: Search - Verify search result with common filter and conditions', () => {
   beforeAll(async () => {
@@ -95,15 +96,22 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
       filters: [{ property: 'kind', values: ['certpolicycontroller'] }],
     })
     var res = await sendRequest(query, token)
-    expect(res.body.data.searchResult[0].items[0].name).toEqual(
-      'klusterlet-addon-certpolicyctrl'
-    )
-    expect(res.body.data.searchResult[0].items[0].kind).toEqual(
-      'certpolicycontroller'
-    )
-    expect(res.body.data.searchResult[0].items[0].namespace).toEqual(
-      'open-cluster-management-agent-addon'
-    )
+
+    if (_.get(res, 'body.data.searchResult[0].items[0]', '')) {
+      expect(res.body.data.searchResult[0].items[0].name).toEqual(
+        'klusterlet-addon-certpolicyctrl'
+      )
+      expect(res.body.data.searchResult[0].items[0].kind).toEqual(
+        'certpolicycontroller'
+      )
+      expect(res.body.data.searchResult[0].items[0].namespace).toEqual(
+        'open-cluster-management-agent-addon'
+      )
+    } else {
+      console.log(
+        'Skipping test. No resources detected for certpolicycontroller on the cluster.'
+      )
+    }
   }, 20000)
 
   test(`[P2][Sev2][${squad}] Search kind:iampolicycontroller.`, async () => {
@@ -111,14 +119,21 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
       filters: [{ property: 'kind', values: ['iampolicycontroller'] }],
     })
     var res = await sendRequest(query, token)
-    expect(res.body.data.searchResult[0].items[0].name).toEqual(
-      'klusterlet-addon-iampolicyctrl'
-    )
-    expect(res.body.data.searchResult[0].items[0].kind).toEqual(
-      'iampolicycontroller'
-    )
-    expect(res.body.data.searchResult[0].items[0].namespace).toEqual(
-      'open-cluster-management-agent-addon'
-    )
+
+    if (_.get(res, 'body.data.searchResult[0].items[0]', '')) {
+      expect(res.body.data.searchResult[0].items[0].name).toEqual(
+        'klusterlet-addon-iampolicyctrl'
+      )
+      expect(res.body.data.searchResult[0].items[0].kind).toEqual(
+        'iampolicycontroller'
+      )
+      expect(res.body.data.searchResult[0].items[0].namespace).toEqual(
+        'open-cluster-management-agent-addon'
+      )
+    } else {
+      console.log(
+        'Skipping test. No resources detected for iampolicycontroller on the cluster.'
+      )
+    }
   }, 20000)
 })

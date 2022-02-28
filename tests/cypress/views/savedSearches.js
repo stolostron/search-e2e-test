@@ -19,17 +19,17 @@ export const savedSearches = {
     searchBar.whenEnterTextInSearchBar('kind', 'cluster')
     searchBar.whenEnterTextInSearchBar('ManagedClusterJoined', 'True')
 
-    cy.get('.pf-c-expandable-section__toggle', { timeout: 6000 }).then(
+    cy.get('.pf-c-expandable-section__toggle').then(
       ($btn) => {
         var fullText = $btn.text()
         var pattern = /[0-9]+/g
         var ManagedClustersCount = fullText.match(pattern)
         var expectedSearchClusterCount = Number(ManagedClustersCount)
 
-        // local-cluster is default show in some filter conditions
-        if (extraCluster == 'has_local-cluster') {
-          expectedSearchClusterCount = expectedSearchClusterCount + 1
-        }
+        // // local-cluster is default show in some filter conditions
+        // if (extraCluster == 'has_local-cluster') {
+        //   expectedSearchClusterCount = expectedSearchClusterCount + 1
+        // }
 
         searchPage.whenGoToSearchPage()
         for (var key in filterOptions) {
@@ -85,6 +85,7 @@ export const savedSearches = {
   },
 
   getSavedSearch: (queryName) => {
+    searchPage.shouldLoad()
     cy.get('h4.pf-c-title.pf-m-md').contains('Saved searches')
     cy.get('button.pf-c-dropdown__toggle')
       .contains('Saved searches')
@@ -96,6 +97,7 @@ export const savedSearches = {
   },
 
   whenDeleteSavedSearch: (queryName) => {
+    searchPage.shouldLoad()
     cy.get('h4.pf-c-title.pf-m-md').contains('Saved searches')
     cy.get('.pf-c-card__header')
       .contains(queryName)

@@ -16,7 +16,7 @@ const queryOcmaNamespaceName = 'open-cluster-management-agent search'
 const queryOcmaNamespaceDesc =
   'this is searching that each cluster should have open-cluster-management-agent'
 
-describe.skip(
+describe(
   'RHACM4K-1262 - Search: multiple managedclusters base tests',
   { tags: tags.env },
   function () {

@@ -6,6 +6,7 @@
 /// <reference types="cypress" />
 
 import { squad, tags } from '../../config'
+import { cliHelper } from '../../scripts/cliHelper'
 import { searchPage } from '../../views/search'
 import { savedSearches, searchBar } from '../../views/suggestedSearches'
 
@@ -28,6 +29,7 @@ describe(
       { tags: [] },
       function () {
         beforeEach(function () {
+          cliHelper.checkIfLoggedIn()
           searchPage.whenGoToSearchPage()
         })
 

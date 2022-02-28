@@ -15,6 +15,6 @@ export const podDetailPage = {
   shouldSeeLogs: (expected) => {
     cy.get('.pf-c-form__group-control .pf-c-select').click()
     cy.get('ul.pf-c-select__menu').click()
-    cy.contains('#log-window-lines-container', expected)
+    cy.contains('.pf-c-log-viewer__text', expected)
   },
 }
