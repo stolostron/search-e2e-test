@@ -91,49 +91,37 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
     })
   }, 20000)
 
-  test(`[P2][Sev2][${squad}] Search kind:certpolicycontroller.`, async () => {
+  test(`[P2][Sev2][${squad}] Search kind:configmap.`, async () => {
     var query = searchQueryBuilder({
-      filters: [{ property: 'kind', values: ['certpolicycontroller'] }],
+      filters: [{ property: 'kind', values: ['configmap'] }],
     })
-    var res = await sendRequest(query, token)
 
-    if (_.get(res, 'body.data.searchResult[0].items[0]', '')) {
-      expect(res.body.data.searchResult[0].items[0].name).toEqual(
-        'klusterlet-addon-certpolicyctrl'
-      )
-      expect(res.body.data.searchResult[0].items[0].kind).toEqual(
-        'certpolicycontroller'
-      )
-      expect(res.body.data.searchResult[0].items[0].namespace).toEqual(
-        'open-cluster-management-agent-addon'
-      )
-    } else {
-      console.log(
-        'Skipping test. No resources detected for certpolicycontroller on the cluster.'
-      )
-    }
+    var res = await sendRequest(query, token)
+    var configmap = _.get(res, 'body.data.searchResult[0].items', '')
+
+    expect(configmap[0].kind).toEqual('configmap')
+    expect(
+      configmap.find((el) => el.namespace === 'open-cluster-management')
+    ).toBeDefined()
+    expect(configmap.find((el) => el.name.includes('search'))).toBeDefined()
   }, 20000)
 
-  test(`[P2][Sev2][${squad}] Search kind:iampolicycontroller.`, async () => {
+  test(`[P2][Sev2][${squad}] Search kind:deployment.`, async () => {
     var query = searchQueryBuilder({
-      filters: [{ property: 'kind', values: ['iampolicycontroller'] }],
+      filters: [{ property: 'kind', values: ['deployment'] }],
     })
-    var res = await sendRequest(query, token)
 
-    if (_.get(res, 'body.data.searchResult[0].items[0]', '')) {
-      expect(res.body.data.searchResult[0].items[0].name).toEqual(
-        'klusterlet-addon-iampolicyctrl'
+    var res = await sendRequest(query, token)
+    var deployment = _.get(res, 'body.data.searchResult[0].items', '')
+
+    expect(deployment[0].kind).toEqual('deployment')
+    expect(
+      deployment.find(
+        (deploy) => deploy.namespace === 'open-cluster-management'
       )
-      expect(res.body.data.searchResult[0].items[0].kind).toEqual(
-        'iampolicycontroller'
-      )
-      expect(res.body.data.searchResult[0].items[0].namespace).toEqual(
-        'open-cluster-management-agent-addon'
-      )
-    } else {
-      console.log(
-        'Skipping test. No resources detected for iampolicycontroller on the cluster.'
-      )
-    }
+    ).toBeDefined()
+    expect(
+      deployment.find((deploy) => deploy.name.includes('search-prod'))
+    ).toBeDefined()
   }, 20000)
 })
