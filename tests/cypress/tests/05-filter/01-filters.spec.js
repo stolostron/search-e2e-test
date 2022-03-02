@@ -6,6 +6,7 @@
 /// <reference types="cypress" />
 
 import { squad, tags } from '../../config'
+import { cliHelper } from '../../scripts/cliHelper'
 import { searchPage, searchBar } from '../../views/search'
 import {
   filtersRegistry,
@@ -65,6 +66,7 @@ describe(
       { tags: tags.modes },
       function () {
         beforeEach(function () {
+          cliHelper.checkIfLoggedIn()
           searchPage.whenGoToSearchPage()
           searchBar.whenClearFilters()
           searchBar.whenFocusSearchBar()

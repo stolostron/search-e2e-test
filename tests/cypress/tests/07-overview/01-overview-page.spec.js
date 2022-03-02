@@ -6,6 +6,7 @@
 /// <reference types="cypress" />
 
 import { squad, tags } from '../../config'
+import { cliHelper } from '../../scripts/cliHelper'
 import { overviewPage } from '../../views/overview'
 
 describe('RHACM4K-1419: Search: Overview page', { tags: [] }, function () {
@@ -21,6 +22,7 @@ describe('RHACM4K-1419: Search: Overview page', { tags: [] }, function () {
 
   context('UI - overview page validation', { tags: [] }, function () {
     beforeEach(() => {
+      cliHelper.checkIfLoggedIn()
       overviewPage.whenGoToOverviewPage()
     })
 
@@ -52,6 +54,7 @@ describe('RHACM4K-1419: Search: Overview page', { tags: [] }, function () {
 
   context('UI - overview page link validation', { tags: [] }, function () {
     beforeEach(() => {
+      cliHelper.checkIfLoggedIn()
       overviewPage.whenGoToOverviewPage()
     })
 

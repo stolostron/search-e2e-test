@@ -78,6 +78,7 @@ clusterModes.forEach((clusterMode) => {
         { tags: tags.modes },
         function () {
           beforeEach(function () {
+            cliHelper.checkIfLoggedIn()
             searchPage.whenGoToSearchPage()
             searchBar.whenFilterByNamespace(clusterMode.namespace)
             searchBar.whenFilterByCluster(this.clusterName)

@@ -6,6 +6,18 @@
 import { squad, tags } from '../config'
 
 export const cliHelper = {
+  checkIfLoggedIn: () => {
+    cy.url().then((res) => {
+      if (res.includes('oauth-openshift')) {
+        cy.log(
+          'Detected that the user is logged out of the ACM console. Attempting to log in again.'
+        )
+        cy.login()
+      } else {
+        cy.log('Confirmed that the user is logged. Procceding with the test.')
+      }
+    })
+  },
   getTargetManagedCluster: () => {
     if (Cypress.env('OPTIONS_MANAGED_CLUSTER_NAME')) {
       cy.log(
