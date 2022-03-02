@@ -9,6 +9,7 @@ import { squad, tags } from '../../config'
 import { overviewPage } from '../../views/overview'
 import { searchPage } from '../../views/search'
 import { savedSearches, searchBar } from '../../views/suggestedSearches'
+import { cliHelper } from '../../scripts/cliHelper'
 
 describe(
   'RHACM4K-411: Search: Verify the suggested search templates',
@@ -43,6 +44,7 @@ describe(
       { tags: [] },
       function () {
         beforeEach(function () {
+          cliHelper.checkIfLoggedIn()
           searchPage.whenGoToSearchPage()
         })
 

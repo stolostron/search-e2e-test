@@ -7,6 +7,7 @@
 
 import { squad, tags } from '../../config'
 import { overviewPage } from '../../views/overview'
+import { cliHelper } from '../../scripts/cliHelper'
 
 describe('RHACM4K-1419: Search: Overview page', { tags: [] }, function () {
   context(
@@ -21,6 +22,7 @@ describe('RHACM4K-1419: Search: Overview page', { tags: [] }, function () {
 
   context('UI - overview page validation', { tags: [] }, function () {
     beforeEach(() => {
+      cliHelper.checkIfLoggedIn()
       overviewPage.whenGoToOverviewPage()
     })
 
@@ -52,6 +54,7 @@ describe('RHACM4K-1419: Search: Overview page', { tags: [] }, function () {
 
   context('UI - overview page link validation', { tags: [] }, function () {
     beforeEach(() => {
+      cliHelper.checkIfLoggedIn()
       overviewPage.whenGoToOverviewPage()
     })
 
