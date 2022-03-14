@@ -54,7 +54,7 @@
     "husky": "^7.0.4",
     "jest-circus": "^27.4.6",
     "junit-report-merger": "^3.0.5",
-    "mocha": "^9.2.0",
+    "mocha": "^9.2.2",
     "mocha-junit-reporter": "^2.0.2",
     "mochawesome": "^7.0.1",
     "mochawesome-merge": "^4.2.1",
