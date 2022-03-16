@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@cypress/code-coverage": "^3.9.12",
-    "chromedriver": "^98.0.1",
+    "chromedriver": "^99.0.0",
     "concurrently": "^7.0.0",
     "cross-env": "^7.0.3",
     "cypress": "8.5.0",
@@ -57,13 +57,13 @@
     "jest-circus": "^27.5.1",
     "jshint": "^2.13.4",
     "junit-report-merger": "^3.0.5",
-    "mocha": "^9.2.1",
+    "mocha": "^9.2.2",
     "mocha-junit-reporter": "^2.0.2",
-    "mochawesome": "^7.1.0",
+    "mochawesome": "^7.1.2",
     "mochawesome-merge": "^4.2.1",
-    "prettier": "^2.5.1",
+    "prettier": "^2.6.0",
     "querystring": "^0.2.1",
-    "selenium-standalone": "^8.0.9"
+    "selenium-standalone": "^8.0.10"
   },
   "husky": {
     "hooks": {
