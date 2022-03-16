@@ -47,7 +47,7 @@
     "cypress": "8.5.0",
     "cypress-grep": "^2.13.1",
     "cypress-multi-reporters": "^1.5.0",
-    "cypress-terminal-report": "^3.4.1",
+    "cypress-terminal-report": "^3.4.2",
     "cypress-wait-until": "^1.7.2",
     "eslint-plugin-cypress": "^2.12.1",
     "geckodriver": "^3.0.1",
@@ -60,7 +60,7 @@
     "mochawesome-merge": "^4.2.1",
     "prettier": "^2.5.1",
     "querystring": "^0.2.1",
-    "selenium-standalone": "^8.0.9"
+    "selenium-standalone": "^8.0.10"
   },
   "husky": {
     "hooks": {
