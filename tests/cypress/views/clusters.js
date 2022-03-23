@@ -11,8 +11,10 @@ export const clustersPage = {
   },
   shouldLoad: () => {
     clustersPage.whenGoToClusterPage()
-    cy.get('.pf-c-title').should('contain', 'Cluster')
-    cy.get('.pf-c-spinner').should('not.exist')
+    cy.get('.pf-c-empty-state__icon').within(() => {
+      cy.get('.pf-c-spinner').should('not.exist')
+    })
+    cy.get('.pf-c-title').filter(':contains(Cluster)')
   },
   shouldHaveLinkToSearchPage: () => {
     clustersPage.shouldLoad()

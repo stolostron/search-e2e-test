@@ -17,8 +17,10 @@ export const overviewPage = {
     cy.get('#add-credential').click()
   },
   shouldLoad: () => {
-    cy.get('.pf-c-page').should('contain', 'Overview')
-    cy.get('.pf-c-spinner').should('not.exist')
+    cy.get('.pf-c-empty-state__icon').within(() => {
+      cy.get('.pf-c-spinner').should('not.exist')
+    })
+    cy.get('.pf-c-title').filter(':contains(Overview)')
   },
   shouldLoadProviderConnectionPage: () => cy.get('.pf-c-page'), // Checking only for if the page loaded, since the page will either say cluster management or provider connection.
   shouldHaveClusterProviderCard: () => {
