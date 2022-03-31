@@ -43,17 +43,10 @@ export const searchPage = {
    * @param {string} name The name of the resource object.
    * @param {string} namespace The namespace that contains the resource object.
    */
-  shouldFindKindResourceInNamespace: (
-    kind,
-    name,
-    namespace
-  ) => {
+  shouldFindKindResourceInNamespace: (kind, name, namespace) => {
     searchBar.whenEnterTextInSearchBar('kind', kind)
     searchBar.whenEnterTextInSearchBar('name', name)
-    searchBar.whenEnterTextInSearchBar(
-      'namespace',
-      namespace
-    )
+    searchBar.whenEnterTextInSearchBar('namespace', namespace)
   },
   /**
    * Verify that the resource is available within the Search page from the specified cluster.
@@ -61,10 +54,7 @@ export const searchPage = {
    * @param {string} cluster The cluster that contains the namespace resource object.
    */
   shouldFindNamespaceInCluster: (namespace, cluster) => {
-    searchBar.whenEnterTextInSearchBar(
-      'namespace',
-      namespace
-    )
+    searchBar.whenEnterTextInSearchBar('namespace', namespace)
     searchBar.whenEnterTextInSearchBar('cluster', cluster)
   },
   /**
@@ -92,7 +82,8 @@ export const searchPage = {
       .within(() => {
         cy.get('.pf-c-tile')
           .filter(`:contains(Related ${kind})`)
-          .should('exist').and('contain', count)
+          .should('exist')
+          .and('contain', count)
       })
   },
   /**
