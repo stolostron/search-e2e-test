@@ -23,8 +23,7 @@ export const suggestedSearches = {
    */
   whenVerifyRelatedItemsDetails: () => {
     searchPage.shouldLoad()
-    searchPage.shouldLoadResults()
-    cy.get('.pf-l-gallery.pf-m-gutter').then(($related) => {
+    cy.get('.pf-l-gallery.pf-m-gutter').should('exist').then(($related) => {
       if ($related.children().length > 0) {
         cy.get('.pf-c-tile__body').first().click()
         cy.get('.pf-c-expandable-section__toggle-text').should(
