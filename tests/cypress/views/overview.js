@@ -5,37 +5,51 @@
 
 /// <reference types="cypress" />
 
+/**
+ * Overview page object for the ACM console.
+ */
 export const overviewPage = {
-  whenGoToOverviewPage: () => cy.visit('/multicloud/home/overview'),
-  whenGotoSearchPage: () => {
-    cy.get(`[aria-label="search-button"]`).click()
-  },
-  whenAddProviderConnectionAction: () => {
-    cy.get('#add-credential')
-      .should('have.attr', 'href')
-      .and('contain', 'credential')
-    cy.get('#add-credential').click()
-  },
+  /**
+   * Verify that the Overview page should be loaded correctly.
+   */
   shouldLoad: () => {
-    cy.get('.pf-c-empty-state__icon').within(() => {
-      cy.get('.pf-c-spinner').should('not.exist')
-    })
-    cy.get('.pf-c-title').filter(':contains(Overview)')
+    cy.get('.pf-c-empty-state__icon').should('not.exist')
+    cy.get('.pf-c-skeleton').should('not.exist')
+    cy.get('.pf-c-title').filter(':contains(Overview)').should('exist')
   },
-  shouldLoadProviderConnectionPage: () => cy.get('.pf-c-page'), // Checking only for if the page loaded, since the page will either say cluster management or provider connection.
+  /**
+   * Verify that the Add credential page should be loaded correctly.
+   */
+  shouldLoadAddCredentialPage: () => {
+    cy.get('.pf-c-empty-state__icon').should('not.exist')
+    cy.get('.pf-c-title').filter(':contains(credential)').should('exist')
+  },
+  /**
+   * Verify that the Overview page should have a cluster provider card panel.
+   */
   shouldHaveClusterProviderCard: () => {
-    cy.get('.pf-c-card__body.pf-c-skeleton').should('not.exist')
-    cy.get('.pf-l-gallery.pf-m-gutter').find('.pf-c-card.pf-m-selectable')
-    cy.get('.pf-c-card__footer').should('contain', 'Cluster')
+    cy.get('.pf-l-gallery.pf-m-gutter')
+      .find('.pf-c-card.pf-m-selectable')
+      .should('exist')
+    cy.get('.pf-c-card__footer').should('exist').and('contain', 'Cluster')
   },
+  /**
+   * Verify that the Overview page should have a summary of the test cluster environment.
+   */
   shouldHaveClusterSummary: () => {
-    cy.get('.pf-c-card__body.pf-c-skeleton').should('not.exist')
-    cy.get('article.pf-c-card').should('contain', 'Summary')
-    cy.get('.pf-c-card__body')
-      .should('contain', 'Application')
-      .and('contain', 'Cluster')
-      .and('contain', 'Pods')
+    cy.get('article.pf-c-card')
+      .filter(':contains(Summary)')
+      .should('exist')
+      .within(() => {
+        cy.get('.pf-c-card__body')
+          .should('contain', 'Application')
+          .and('contain', 'Cluster')
+          .and('contain', 'Pods')
+      })
   },
+  /**
+   * Verify that the Overview page should have different refresh limit for the test cluster environment.
+   */
   shouldHaveRefreshDropdown: () => {
     cy.get('p')
       .should('contain', 'Last update:')
@@ -48,6 +62,9 @@ export const overviewPage = {
       cy.get(`#refresh-${opt}`).click()
     })
   },
+  /**
+   * Verify that the Overview page should have accessible links to the Search page.
+   */
   shouldHaveLinkToSearchPage: () => {
     cy.get('#clusters-summary a')
       .contains(/[0-9]+/)
@@ -89,6 +106,12 @@ export const overviewPage = {
         })
     })
   },
+  /**
+   * Verify that the Overview page should have a left navigation panel that contain accessible links to a specified page.
+   * @param {string} page The page to check for within the left navigation panel.
+   * @param {bool} noClick Determine if the link should be clicked on within the test.
+   * @param {string} path The URL path of the targeted page.
+   */
   shouldHaveLeftNavLinkToTargetedPage: (page, noClick, path) => {
     overviewPage.shouldLoad()
     cy.get('.pf-c-nav__list').contains(page)
@@ -102,5 +125,21 @@ export const overviewPage = {
       cy.get('li.pf-c-nav__item').contains(page).click()
       cy.get('h1.pf-c-title').contains(page)
     }
+  },
+  /**
+   * Navigate the test user to the Add credential page within the ACM console.
+   */
+  whenAddCredentialAction: () => {
+    cy.get('#add-credential')
+      .should('have.attr', 'href')
+      .and('contain', 'credential')
+    cy.get('#add-credential').click()
+  },
+  /**
+   * Navigate the test user to the Overview page within the ACM console.
+   */
+  whenGoToOverviewPage: () => {
+    cy.visit('/multicloud/home/overview')
+    overviewPage.shouldLoad()
   },
 }

@@ -5,20 +5,15 @@
 
 /// <reference types="cypress" />
 
+/**
+ * Cluster page object for the ACM console.
+ */
 export const clustersPage = {
-  whenGoToClusterPage: () => {
-    cy.visit('/multicloud/infrastructure/clusters')
-  },
-  shouldLoad: () => {
-    clustersPage.whenGoToClusterPage()
-    cy.get('.pf-c-empty-state__icon').within(() => {
-      cy.get('.pf-c-spinner').should('not.exist')
-    })
-    cy.get('.pf-c-title').filter(':contains(Cluster)')
-  },
+  /**
+   * Verify that the Cluster page should have accessible links to the Search page.
+   */
   shouldHaveLinkToSearchPage: () => {
     clustersPage.shouldLoad()
-
     cy.get('.pf-c-table tbody')
       .find('tr')
       .first()
@@ -31,12 +26,28 @@ export const clustersPage = {
           .contains('Search cluster')
           .click()
           .then(() =>
-            cy.url().should(
-              'include',
-              // TODO update to `/multicloud/home/search?filters={%22textsearch%22:%22cluster%3A${name}%22}` when clusters page is finished
-              `/search?filters={%22textsearch%22:%22cluster%3A${name}%22}`
-            )
+            cy
+              .url()
+              .should(
+                'include',
+                `/multicloud/home/search?filters={%22textsearch%22:%22cluster%3A${name}%22}`
+              )
           )
       })
+  },
+  /**
+   * Verify that the Cluster page should have loaded correctly.
+   */
+  shouldLoad: () => {
+    clustersPage.whenGoToClusterPage()
+    cy.get('.pf-c-empty-state__icon').should('not.exist')
+    cy.get('.pf-c-skeleton').should('not.exist')
+    cy.get('.pf-c-title').filter(':contains(Clusters)').should('exist')
+  },
+  /**
+   * Navigate the test user to the Cluster page within the ACM console.
+   */
+  whenGoToClusterPage: () => {
+    cy.visit('/multicloud/infrastructure/clusters')
   },
 }

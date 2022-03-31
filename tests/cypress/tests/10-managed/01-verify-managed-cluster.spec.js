@@ -17,29 +17,16 @@ describe(
       cliHelper.getTargetManagedCluster().as('clusterName')
     })
 
-    context(
-      'prereq: user should log into the ACM console',
-      { tags: tags.required },
-      function () {
-        it(`[P1][Sev1][${squad}] should login`, function () {
-          cy.login()
-        })
-      }
-    )
+    beforeEach(function () {
+      // Log into the cluster ACM console.
+      cy.login()
+      searchPage.whenGoToSearchPage()
+    })
 
     context(
       'verify: managed cluster resource endpoint',
       { tags: tags.modes },
       () => {
-        beforeEach(function () {
-          cliHelper.checkIfLoggedIn()
-          searchPage.whenGoToSearchPage()
-        })
-
-        it(`[P3][Sev3][${squad}] should load the search page`, function () {
-          searchPage.shouldLoad()
-        })
-
         it(`[P3][Sev3][${squad}] should validate the endpoint version for the managed clusters are accurate`, function () {
           searchPage.shouldValidateManagedCluster()
         })

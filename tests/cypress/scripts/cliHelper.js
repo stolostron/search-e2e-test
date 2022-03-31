@@ -3,36 +3,202 @@
  * Copyright (c) 2021 Red Hat, Inc.
  ****************************************************************************** */
 
-import { squad, tags } from '../config'
+/**
+ * Return the captialized version of the string.
+ * @param {string} string The string to be capitalized.
+ * @return {string} Capitalized version of the string.
+ */
+export const capitalize = (string) =>
+  string.charAt(0).toUpperCase() + string.slice(1)
 
+/**
+ * Generate a new resource state for the kind objects that are required by the test environment.
+ * @param {object} state Target state to generate required resources from.
+ * @param {string} kubeconfig The kubeconfig file path to generate the resources state with. (Required: Managed cluster testing)
+ * @param {...any} args Additional optional parameters for the state object.
+ */
+export const generateNewResourceState = (state, kubeconfig, ...args) => {
+  if (!Cypress.env(state.kind)) {
+    cy.log(
+      `Required ${state.kind} has not been created within this test instance. Preparing to create them.`
+    )
+    cliHelper.createResource(state, kubeconfig)
+  } else {
+    cy.log(
+      `Detected that the required ${state.kind} resources has been created within this test instance.`
+    )
+  }
+}
+
+/**
+ * Generate multiple new resource state for the kind objects that are required by the test environment.
+ * @param {array} state Target state to generate required resources from.
+ * @param {string} kubeconfig The kubeconfig file path to generate the resources state with. (Required: Managed cluster testing)
+ * @param {...any} args Additional optional parameters for the state object.
+ */
+export const generateNewMultiResourceState = (state, kubeconfig, ...args) => {
+  state.forEach((s) => {
+    if (!Cypress.env(s.kind)) {
+      cy.log(
+        `Required ${s.kind} has not been created within this test instance. Preparing to create them.`
+      )
+      cliHelper.createResource(s, kubeconfig)
+    } else {
+      cy.log(
+        `Detected that the required ${s.kind} resources has been created within this test instance.`
+      )
+    }
+  })
+}
+
+/**
+ * Reset the state of the kind objects that are required by the test environment.
+ * @param {array} state Targeted state to reset.
+ * @param {...any} args Additional optional parameters for the state object.
+ */
+export const resetNewResourceState = (state, ...args) => {
+  Cypress.env(state.kind, false)
+}
+
+/**
+ * Reset the state of the kind objects that are required by the test environment.
+ * @param {array} state Targeted state to reset.
+ * @param {...any} args Additional optional parameters for the state object.
+ */
+export const resetNewMultiResourceState = (state, ...args) => {
+  state.forEach((s) => {
+    Cypress.env(s.kind, false)
+  })
+}
+
+/**
+ * Helper tool for managing resources created by the `oc` cli command.
+ */
 export const cliHelper = {
-  checkIfLoggedIn: () => {
-    cy.url().then((res) => {
-      if (res.includes('oauth-openshift')) {
+  /**
+   * Create new instance of the resource object within the test cluster environment.
+   * @param {object} resource The resource object to create. (Supported: application, deployment, namespace)
+   * @param {string} kubeconfig The kubeconfig file to create the resource object. (Only required for managed cluster testing)
+   */
+  createResource: (resource, kubeconfig = '') => {
+    // Build command line arguments for the resource creation.
+    var cmd = `${kubeconfig} oc get ${resource.kind} ${resource.name}`
+
+    // Check to see if the namespace was passed in the object.
+    if (resource.namespace) {
+      cmd += ` -n ${resource.namespace}`
+    }
+
+    cy.exec(cmd, { failOnNonZeroExit: false }).then((res) => {
+      if (!res.stderr) {
         cy.log(
-          'Detected that the user is logged out of the ACM console. Attempting to log in again.'
+          `${resource.kind}: ${resource.name} exist within the current cluster environment.`
         )
-        cy.login()
+        Cypress.env(resource.kind, true)
       } else {
-        cy.log('Confirmed that the user is logged. Procceding with the test.')
+        cy.log(
+          `${resource.kind}: ${resource.name} does not exist within the cluster environment. Preparing to create ${resource.kind} resource.`
+        )
+        Cypress.env(resource.kind, false)
+      }
+
+      if (!Cypress.env(resource.kind)) {
+        cmd = cmd.replace('oc get', 'oc create')
+
+        // Check to see if the image was passed in the object.
+        if (resource.image) {
+          cmd += ` --image ${resource.image}`
+        }
+
+        if (resource.kind == 'application') {
+          cy.readFile('tests/cypress/templates/application.yaml').then(
+            (cfg) => {
+              let b64Cfg = btoa(
+                cfg
+                  .replaceAll('APPNAME', resource.name)
+                  .replaceAll('NAMESPACE', resource.namespace)
+              )
+              cy.exec(`echo ${b64Cfg} | base64 -d | oc apply -f -`).then(
+                (res) => {
+                  cy.log(res.stdout)
+                  Cypress.env(resource.kind, true)
+                }
+              )
+            }
+          )
+        } else {
+          cy.exec(cmd).then((res) => {
+            cy.log(res.stdout)
+            Cypress.env(resource.kind, true)
+          })
+        }
       }
     })
   },
+
+  /**
+   * Delete instance of the resource object within the test cluster environment.
+   * @param {object} resource The resource object to delete.
+   * @param {string} kubeconfig The kubeconfig file to delete the resource object. (Only required for managed cluster testing)
+   */
+  deleteResource: (resource, kubeconfig = '') => {
+    cy.log(`Preparing to cleanup ${resource.kind} created during test run.`)
+
+    var resourceExist = false
+    var cmd = `${kubeconfig} oc get ${resource.kind} ${resource.name}`
+
+    if (resource.namespace) {
+      cmd += ` -n ${resource.namespace.toLowerCase()}`
+    }
+
+    cy.exec(cmd, { failOnNonZeroExit: false }).then((res) => {
+      if (!res.stderr) {
+        cy.log(
+          `${resource.kind}: ${resource.name} exist within the current cluster environment.`
+        )
+        resourceExist = true
+      } else {
+        cy.log(
+          `${resource.kind}: ${resource.name} does not exist within the cluster environment. Skipping resource deletion.`
+        )
+      }
+
+      if (resourceExist) {
+        cmd = cmd.replace('oc get', 'oc delete')
+
+        cy.exec(cmd).then((res) => {
+          cy.log(res.stdout)
+        })
+      }
+    })
+  },
+
+  /**
+   * Generate namespace name for cluster environment.
+   * @param {string} cluster The cluster environment to generate the namespace for.
+   */
+  generateNamespace: (cluster = 'hub') => {
+    return `auto-search-${cluster}`
+  },
+
+  /**
+   * Return the name of the managed test cluster environment that will be targeted during the test execution.
+   * @returns {string} `targetCluster` The name of the managed test cluster environment.
+   */
   getTargetManagedCluster: () => {
+    var targetCluster = 'local-cluster'
+
     if (Cypress.env('OPTIONS_MANAGED_CLUSTER_NAME')) {
-      cy.log(
-        `Imported cluster name found: ${Cypress.env(
-          'OPTIONS_MANAGED_CLUSTER_NAME'
-        )}`
-      )
-      return cy.wrap(Cypress.env('OPTIONS_MANAGED_CLUSTER_NAME'))
+      targetCluster = Cypress.env('OPTIONS_MANAGED_CLUSTER_NAME')
+
+      cy.log(`Imported cluster name found: ${targetCluster}`)
+      return cy.wrap(targetCluster)
     }
 
     return cy
       .exec('oc get managedclusters -o custom-columns=NAME:.metadata.name')
       .then((result) => {
         const managedClusters = result.stdout.split('\n').slice(1)
-        var targetCluster
 
         if (
           managedClusters.length === 1 &&
@@ -41,7 +207,7 @@ export const cliHelper = {
           cy.log(
             `No imported cluster name found. Using local-cluster for testing.`
           )
-          return cy.wrap((targetCluster = 'local-cluster'))
+          return cy.wrap(targetCluster)
         }
 
         // In the canary tests, we only need to focus on the import-xxxx managed cluster.
@@ -55,10 +221,7 @@ export const cliHelper = {
               c.includes('canary') ||
               c.startsWith('import-')
           )
-        }
-
-        // When running locally or if the cluster is not available, try testing on an available managed cluster.
-        if (targetCluster === undefined) {
+        } else {
           targetCluster = managedClusters.find(
             (c) => !c.includes('local-cluster')
           )
@@ -68,94 +231,19 @@ export const cliHelper = {
         return cy.wrap(targetCluster)
       })
   },
-  generateNamespace: (prefix, postfix) => {
-    return `${prefix ? prefix : 'search'}-${postfix ? postfix : Date.now()}`
-  },
-  createNamespace: (name, kubeconfig = '') => {
-    cy.exec(`${kubeconfig} oc get namespace ${name}`, {
-      failOnNonZeroExit: false,
-    }).then((res) => {
-      if (!res.stderr) {
-        cy.log(`Namespace: ${name} already exist within the cluster`)
-      } else {
-        cy.log(
-          `Namespace: ${name} does not exist within the cluster. Preparing to create namespace resource.`
-        )
-        cy.exec(`${kubeconfig} oc create namespace ${name}`)
-      }
-    })
-  },
-  createDeployment: (name, namespace, image, kubeconfig = '') => {
-    cy.exec(
-      `${kubeconfig} oc create deployment ${name} --image=${image} -n ${namespace}`
-    ).then((res) => {
-      cy.log(res.stdout ? res.stdout : res.stderr)
-    })
-  },
-  createApplication: (appName, namespace) => {
-    cy.readFile('tests/cypress/templates/application.yaml').then((cfg) => {
-      let b64Cfg = btoa(
-        cfg.replaceAll('APPNAME', appName).replaceAll('NAMESPACE', namespace)
-      )
-      cy.exec(`echo ${b64Cfg} | base64 -d | oc apply -f -`)
-      cy.log(`Successfully created application (${appName})`)
-    })
-  },
-  deleteNamespace: (name, kubeconfig = '') => {
-    cy.exec(`${kubeconfig} oc delete namespace ${name}`).then((res) => {
-      cy.log(res.stdout ? res.stdout : res.stderr)
-    })
-  },
-  login: (mode) => {
-    var mode = mode === 'Local' ? 'HUB' : 'MANAGED'
+
+  /**
+   * Login into the cluster environment with the `oc` cli command.
+   * @param {string} cluster The cluster environment to login into (Default: HUB).
+   * @param {*} args Additional optional parameters for the login.
+   */
+  login: (cluster = 'HUB', ...args) => {
     cy.exec(
       `oc login --server=https://api.${Cypress.env(
-        `OPTIONS_${mode}_BASEDOMAIN`
-      )}:6443 -u ${Cypress.env(`OPTIONS_${mode}_USER`)} -p ${Cypress.env(
-        `OPTIONS_${mode}_PASSWORD`
+        `OPTIONS_${cluster}_BASEDOMAIN`
+      )}:6443 -u ${Cypress.env(`OPTIONS_${cluster}_USER`)} -p ${Cypress.env(
+        `OPTIONS_${cluster}_PASSWORD`
       )} --insecure-skip-tls-verify`
     )
-  },
-  setup: (modes) => {
-    modes.forEach((mode) => {
-      if (!mode.skip) {
-        describe(
-          `Search: Create resource in ${mode.label} Cluster`,
-          { tags: tags.env },
-          function () {
-            // Log into the hub and managed cluster with the oc command to create the resources.
-            context(
-              `prereq: create resource with oc command`,
-              { tags: tags.required },
-              function () {
-                it(`[P1][Sev1][${squad}] should log into ${mode.label.toLocaleLowerCase()} cluster`, function () {
-                  if (
-                    mode.label === 'Managed' &&
-                    Cypress.env('USE_MANAGED_KUBECONFIG')
-                  ) {
-                    cy.log('Skipping login and using kubeconfig file')
-                  } else {
-                    cliHelper.login(mode.label)
-                  }
-                })
-
-                it(`[P1][Sev1][${squad}] should create namespace resource`, function () {
-                  cliHelper.createNamespace(mode.namespace, mode.kubeconfig)
-                })
-
-                it(`[P1][Sev1][${squad}] should create deployment resource`, function () {
-                  cliHelper.createDeployment(
-                    mode.namespace + '-deployment',
-                    mode.namespace,
-                    'openshift/hello-openshift',
-                    mode.kubeconfig
-                  )
-                })
-              }
-            )
-          }
-        )
-      }
-    })
   },
 }
