@@ -119,16 +119,14 @@ export const cliHelper = {
                   .replaceAll('NAMESPACE', resource.namespace)
               )
               cy.exec(`echo ${b64Cfg} | base64 -d | oc apply -f -`).then(
-                (res) => {
-                  cy.log(res.stdout)
+                () => {
                   Cypress.env(resource.kind, true)
                 }
               )
             }
           )
         } else {
-          cy.exec(cmd).then((res) => {
-            cy.log(res.stdout)
+          cy.exec(cmd).then(() => {
             Cypress.env(resource.kind, true)
           })
         }

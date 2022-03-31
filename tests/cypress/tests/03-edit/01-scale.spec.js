@@ -98,8 +98,9 @@ clusterModes.forEach((clusterMode) => {
           it(`[P3][Sev3][${squad}] should edit yaml and scale deployment`, function () {
             searchBar.whenFilterByKind('deployment')
             searchPage.whenGoToResourceDetailItemPage(
-              'deployment',
-              'auto-test-deploy'
+              resources[1].kind,
+              resources[1].name,
+              resources[1].namespace
             )
             deploymentDetailPage.whenScaleReplicasTo(2)
           })
@@ -107,8 +108,9 @@ clusterModes.forEach((clusterMode) => {
           it(`[P3][Sev3][${squad}] should verify that the deployment scaled`, function () {
             searchBar.whenFilterByKind('deployment')
             searchPage.shouldFindResourceDetailItem(
-              'deployment',
-              'auto-test-deploy'
+              resources[1].kind,
+              resources[1].name,
+              resources[1].namespace
             )
             searchPage.shouldFindRelationshipTile('pod', 2)
           })

@@ -15,8 +15,8 @@ export const podDetailPage = {
    */
   shouldSeeLogs: (expected) => {
     cy.get('.pf-c-form__group-control .pf-c-select').should('exist').click()
-    cy.get('ul.pf-c-select__menu').click()
-    cy.get('.pf-c-log-viewer__text').should('contain', expected)
+    cy.get('ul.pf-c-select__menu').should('exist').click()
+    cy.get('.pf-c-log-viewer__text').should('exist').and('contain', expected)
   },
   /**
    * Navigate the test user to the kind pod resource's detail logs page.
