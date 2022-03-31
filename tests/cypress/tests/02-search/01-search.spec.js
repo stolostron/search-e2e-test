@@ -21,9 +21,7 @@ const clusterModes = [
     label: 'Managed',
     valueFn: () => cliHelper.getTargetManagedCluster(),
     skip: Cypress.env('SKIP_MANAGED_CLUSTER_TEST'),
-    kubeconfig: Cypress.env('USE_MANAGED_KUBECONFIG')
-      ? `KUBECONFIG=${Cypress.env('OPTIONS_MANAGED_KUBECONFIG')}`
-      : '',
+    kubeconfig: `KUBECONFIG=${Cypress.env('OPTIONS_MANAGED_KUBECONFIG')}`,
   },
 ]
 

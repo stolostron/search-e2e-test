@@ -118,11 +118,9 @@ export const cliHelper = {
                   .replaceAll('APPNAME', resource.name)
                   .replaceAll('NAMESPACE', resource.namespace)
               )
-              cy.exec(`echo ${b64Cfg} | base64 -d | oc apply -f -`).then(
-                () => {
-                  Cypress.env(resource.kind, true)
-                }
-              )
+              cy.exec(`echo ${b64Cfg} | base64 -d | oc apply -f -`).then(() => {
+                Cypress.env(resource.kind, true)
+              })
             }
           )
         } else {

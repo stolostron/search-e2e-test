@@ -212,7 +212,6 @@ else
       export SKIP_MANAGED_CLUSTER_TEST=true
     else
       # Exporting this variable so cypress will know to use the kubeconfig file for the imported cluster.
-      export USE_MANAGED_KUBECONFIG=true
       export SKIP_MANAGED_CLUSTER_TEST=false
 
       echo -e "Kubeconfig file detected at: $OPTIONS_MANAGED_KUBECONFIG => ${YELLOW}copying to ./kube/config/import-kubeconfig${NC}\n"
@@ -241,7 +240,6 @@ else
 
     if [[ -f $OPTIONS_MANAGED_KUBECONFIG ]]; then
       echo -e "Successfully detected managed cluster kubeconfig.\n"
-      export USE_MANAGED_KUBECONFIG=true
     else
       echo -e "Failed to create or locate managed cluster kubeconfig.\n"
     fi
@@ -256,7 +254,6 @@ export CYPRESS_OPTIONS_MANAGED_KUBECONFIG=$OPTIONS_MANAGED_KUBECONFIG
 export CYPRESS_OPTIONS_MANAGED_PASSWORD=$OPTIONS_MANAGED_PASSWORD
 export CYPRESS_OPTIONS_MANAGED_USER=kubeadmin
 export CYPRESS_SKIP_MANAGED_CLUSTER_TEST=$SKIP_MANAGED_CLUSTER_TEST
-export CYPRESS_USE_MANAGED_KUBECONFIG=$USE_MANAGED_KUBECONFIG
 
 log_color "cyan" "Running tests with the following imported cluster environment:\n"
 log_color "purple" "\tCYPRESS_OPTIONS_MANAGED_BASEDOMAIN" "\t: $CYPRESS_OPTIONS_MANAGED_BASEDOMAIN"
@@ -351,7 +348,7 @@ if [[ ! -z $CYPRESS_TAGS_INCLUDE || ! -z $CYPRESS_TAGS_EXCLUDE ]]; then
   echo -e "Executing tests with the following tags: $CYPRESS_TAGS\n"
 fi
 
-if [[ $PROW_MODE == true ]]; then
+if [[ "$PROW_MODE" == true ]]; then
   echo -e "Checking pod status in $installNamespace:"
   oc get pods $ADD_KUBECONFIG -n $installNamespace
   echo -e
