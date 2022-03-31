@@ -241,6 +241,7 @@ else
 
     if [[ -f $OPTIONS_MANAGED_KUBECONFIG ]]; then
       echo -e "Successfully detected managed cluster kubeconfig.\n"
+      export USE_MANAGED_KUBECONFIG=true
     else
       echo -e "Failed to create or locate managed cluster kubeconfig.\n"
     fi
