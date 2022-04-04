@@ -9,6 +9,7 @@ const {
   searchQueryBuilder,
   sendRequest,
 } = require('../common-lib/clusterAccess')
+
 const _ = require('lodash')
 
 describe('RHACM4K-1695: Search - verify managed cluster info in the search page', () => {

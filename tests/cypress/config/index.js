@@ -6,7 +6,7 @@
 /**
  * Squad label displayed within the test metadata (Required by CICD).
  */
-export const squad = 'observability'
+export const squad = 'observability-usa'
 
 /**
  * Tags to determine the test environment.

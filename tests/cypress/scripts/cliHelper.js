@@ -16,14 +16,8 @@ export const capitalize = (string) =>
  * @param {object} state Target state to generate required resources from.
  * @param {string} kubeconfig The kubeconfig file path to generate the resources state with. (Required: Managed cluster testing)
  * @param {object} options Additional options for generating the new resources state.
- * @param {...any} args Additional argument parameters for the state object.
  */
-export const generateNewResourceState = (
-  state,
-  kubeconfig,
-  options,
-  ...args
-) => {
+export const generateNewResourceState = (state, kubeconfig, options = {}) => {
   if (!Cypress.env(state.kind)) {
     cy.log(
       `Required ${state.kind} has not been created within this test instance. Preparing to create them.`
@@ -48,13 +42,11 @@ export const generateNewResourceState = (
  * @param {array} state Target state to generate required resources from.
  * @param {string} kubeconfig The kubeconfig file path to generate the resources state with. (Required: Managed cluster testing)
  * @param {object} options Additional options for generating the new resources state.
- * @param {...any} args Additional optional parameters for the state object.
  */
 export const generateNewMultiResourceState = (
   state,
   kubeconfig,
-  options,
-  ...args
+  options = {}
 ) => {
   state.forEach((s) => {
     if (!Cypress.env(s.kind)) {
@@ -80,18 +72,18 @@ export const generateNewMultiResourceState = (
 /**
  * Reset the state of the kind objects that are required by the test environment.
  * @param {array} state Targeted state to reset.
- * @param {...any} args Additional optional parameters for the state object.
+ * @param {object} options Additional options for resetting the new resources state.
  */
-export const resetNewResourceState = (state, ...args) => {
+export const resetNewResourceState = (state, options = {}) => {
   Cypress.env(state.kind, false)
 }
 
 /**
  * Reset the state of the kind objects that are required by the test environment.
  * @param {array} state Targeted state to reset.
- * @param {...any} args Additional optional parameters for the state object.
+ * @param {object} options Additional options for resetting the new resources state.
  */
-export const resetNewMultiResourceState = (state, ...args) => {
+export const resetNewMultiResourceState = (state, options = {}) => {
   state.forEach((s) => {
     Cypress.env(s.kind, false)
   })
@@ -105,8 +97,9 @@ export const cliHelper = {
    * Create new instance of the resource object within the test cluster environment.
    * @param {object} resource The resource object to create. (Supported: application, deployment, namespace)
    * @param {string} kubeconfig The kubeconfig file to create the resource object. (Only required for managed cluster testing)
+   * @param {object} options Additional options for creating the new resources object.
    */
-  createResource: (resource, kubeconfig = '') => {
+  createResource: (resource, kubeconfig = '', options = {}) => {
     // Build command line arguments for the resource creation.
     var cmd = `${kubeconfig} oc get ${resource.kind} ${resource.name}`
 
@@ -162,8 +155,9 @@ export const cliHelper = {
    * Delete instance of the resource object within the test cluster environment.
    * @param {object} resource The resource object to delete.
    * @param {string} kubeconfig The kubeconfig file to delete the resource object. (Only required for managed cluster testing)
+   * @param {object} options Additional options for deleting the resource object.
    */
-  deleteResource: (resource, kubeconfig = '') => {
+  deleteResource: (resource, kubeconfig = '', options = {}) => {
     cy.log(`Preparing to cleanup ${resource.kind} created during test run.`)
 
     var resourceExist = false
@@ -198,16 +192,19 @@ export const cliHelper = {
   /**
    * Generate namespace name for cluster environment.
    * @param {string} cluster The cluster environment to generate the namespace for.
+   * @param {object} options Additional options for generating the name for the namespace instance.
+   * @return {string} The namespace name.
    */
-  generateNamespace: (cluster = 'hub') => {
+  generateNamespace: (cluster = 'hub', options = {}) => {
     return `auto-search-${cluster}`
   },
 
   /**
    * Return the name of the managed test cluster environment that will be targeted during the test execution.
    * @returns {string} `targetCluster` The name of the managed test cluster environment.
+   * @param {object} options Additional options for getting the target managed cluster.
    */
-  getTargetManagedCluster: () => {
+  getTargetManagedCluster: (options = {}) => {
     var targetCluster
 
     if (Cypress.env('OPTIONS_MANAGED_CLUSTER_NAME')) {
@@ -262,9 +259,9 @@ export const cliHelper = {
   /**
    * Login into the cluster environment with the `oc` cli command.
    * @param {string} cluster The cluster environment to login into (Default: HUB).
-   * @param {*} args Additional optional parameters for the login.
+   * @param {object} options Additional options for logging into the cluster environment.
    */
-  login: (cluster = 'HUB', ...args) => {
+  login: (cluster = 'HUB', options = {}) => {
     cy.exec(
       `oc login --server=https://api.${Cypress.env(
         `OPTIONS_${cluster}_BASEDOMAIN`

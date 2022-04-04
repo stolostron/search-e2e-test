@@ -71,7 +71,6 @@ End-to-end tests for the Open Cluster Management search component. The tests con
 | SKIP_UI_TEST                 | Optional          | Option to skip the UI/Cypress E2E test                                                                                              |
 | TEST_ENV                     | Optional          | Test environment to run the E2E test  (**Options**: `canary`, `rosa`)                                                               |
 | TEST_MODE                    | Optional          | Test mode to run the E2E test  (**Options**: `BVT`, `smoke`) (**Alt**: `CYPRESS_TEST_MODE`)                                         |
-| USE_HUB_KUBECONFIG           | Optional          | Option to use `hub-kubeconfig` in E2E test (**Alt**: `CYRESS_USE_HUB_KUBECONFIG`)                                                   |
 
 ## Links
 

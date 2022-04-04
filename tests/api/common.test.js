@@ -4,13 +4,14 @@ jest.retryTimes(global.retry)
 
 const squad = require('../../config').get('squadName')
 const {
-  getSearchApiRoute,
-  searchQueryBuilder,
-  getToken,
-  sendRequest,
-  getPods,
   deletePod,
+  getPods,
+  getSearchApiRoute,
+  getToken,
+  searchQueryBuilder,
+  sendRequest,
 } = require('../common-lib/clusterAccess')
+
 const _ = require('lodash')
 
 describe('RHACM4K-1696: Search - Verify search result with common filter and conditions', () => {
