@@ -182,7 +182,7 @@ export const cliHelper = {
    * @returns {string} `targetCluster` The name of the managed test cluster environment.
    */
   getTargetManagedCluster: () => {
-    var targetCluster = 'local-cluster'
+    var targetCluster
 
     if (Cypress.env('OPTIONS_MANAGED_CLUSTER_NAME')) {
       targetCluster = Cypress.env('OPTIONS_MANAGED_CLUSTER_NAME')
@@ -203,6 +203,8 @@ export const cliHelper = {
           cy.log(
             `No imported cluster name found. Using local-cluster for testing.`
           )
+
+          targetCluster = 'local-cluster'
           return cy.wrap(targetCluster)
         }
 
