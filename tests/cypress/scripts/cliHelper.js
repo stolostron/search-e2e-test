@@ -15,9 +15,10 @@ export const capitalize = (string) =>
  * Generate a new resource state for the kind objects that are required by the test environment.
  * @param {object} state Target state to generate required resources from.
  * @param {string} kubeconfig The kubeconfig file path to generate the resources state with. (Required: Managed cluster testing)
- * @param {...any} args Additional optional parameters for the state object.
+ * @param {object} options Additional options for generating the new resources state.
+ * @param {...any} args Additional argument parameters for the state object.
  */
-export const generateNewResourceState = (state, kubeconfig, ...args) => {
+export const generateNewResourceState = (state, kubeconfig, options, ...args) => {
   if (!Cypress.env(state.kind)) {
     cy.log(
       `Required ${state.kind} has not been created within this test instance. Preparing to create them.`
@@ -28,15 +29,23 @@ export const generateNewResourceState = (state, kubeconfig, ...args) => {
       `Detected that the required ${state.kind} resources has been created within this test instance.`
     )
   }
+
+  if (options) {
+    if (options.wait) {
+      cy.log(`Option for waiting enabled for ${options.wait / 1000} seconds`)
+      cy.wait(options.wait)
+    }
+  }
 }
 
 /**
  * Generate multiple new resource state for the kind objects that are required by the test environment.
  * @param {array} state Target state to generate required resources from.
  * @param {string} kubeconfig The kubeconfig file path to generate the resources state with. (Required: Managed cluster testing)
+ * @param {object} options Additional options for generating the new resources state.
  * @param {...any} args Additional optional parameters for the state object.
  */
-export const generateNewMultiResourceState = (state, kubeconfig, ...args) => {
+export const generateNewMultiResourceState = (state, kubeconfig, options, ...args) => {
   state.forEach((s) => {
     if (!Cypress.env(s.kind)) {
       cy.log(
@@ -49,6 +58,13 @@ export const generateNewMultiResourceState = (state, kubeconfig, ...args) => {
       )
     }
   })
+
+  if (options) {
+    if (options.wait) {
+      cy.log(`Option for waiting enabled for ${options.wait / 1000} seconds`)
+      cy.wait(opitions.wait)
+    }
+  }
 }
 
 /**

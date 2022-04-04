@@ -41,7 +41,7 @@ describe(
       cy.login()
 
       // Generate new resource state for the test environment.
-      generateNewResourceState(resource)
+      generateNewResourceState(resource, '', { wait: 5000 })
       searchPage.whenGoToSearchPage()
     })
 
