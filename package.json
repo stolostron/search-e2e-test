@@ -55,7 +55,7 @@
     "mocha-junit-reporter": "^2.0.2",
     "mochawesome": "^7.0.1",
     "mochawesome-merge": "^4.2.1",
-    "prettier": "^2.5.1",
+    "prettier": "^2.6.2",
     "querystring": "^0.2.1",
     "selenium-standalone": "^8.0.9"
   }
