@@ -18,7 +18,12 @@ export const capitalize = (string) =>
  * @param {object} options Additional options for generating the new resources state.
  * @param {...any} args Additional argument parameters for the state object.
  */
-export const generateNewResourceState = (state, kubeconfig, options, ...args) => {
+export const generateNewResourceState = (
+  state,
+  kubeconfig,
+  options,
+  ...args
+) => {
   if (!Cypress.env(state.kind)) {
     cy.log(
       `Required ${state.kind} has not been created within this test instance. Preparing to create them.`
@@ -45,7 +50,12 @@ export const generateNewResourceState = (state, kubeconfig, options, ...args) =>
  * @param {object} options Additional options for generating the new resources state.
  * @param {...any} args Additional optional parameters for the state object.
  */
-export const generateNewMultiResourceState = (state, kubeconfig, options, ...args) => {
+export const generateNewMultiResourceState = (
+  state,
+  kubeconfig,
+  options,
+  ...args
+) => {
   state.forEach((s) => {
     if (!Cypress.env(s.kind)) {
       cy.log(
