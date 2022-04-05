@@ -63,13 +63,18 @@ export const searchPage = {
   shouldFindNoResults: () => {
     cy.reloadUntil(
       () => {
-        cy.get('.pf-c-alert.pf-m-inline.pf-m-info')
-          .filter(`:contains(${SEARCH_MESSAGES_NO_RESULTS})`)
-          .should('exist')
+        searchPage.shouldFindNoSkeleton()
         return cy.ifContains('.pf-c-alert__title', SEARCH_MESSAGES_NO_RESULTS)
       },
       { interval: 5 }
     )
+  },
+  /**
+   * Verify that the search page should contain no skeleton placeholder elements.
+   */
+  shouldFindNoSkeleton: () => {
+    cy.get('.pf-c-empty-state__icon').should('not.exist')
+    cy.get('.pf-c-skeleton').should('not.exist')
   },
   /**
    * Verify that the Search page should contain the related kind resource tile with the correct resource count.
@@ -129,8 +134,7 @@ export const searchPage = {
    * Verify that the Search page is loaded correctly.
    */
   shouldLoad: () => {
-    cy.get('.pf-c-empty-state__icon').should('not.exist')
-    cy.get('.pf-c-skeleton').should('not.exist')
+    searchPage.shouldFindNoSkeleton()
     cy.get('.pf-c-title').filter(':contains(Search)').should('exist')
     cy.get('.react-tags').should('exist')
     cy.get('.react-tags__search-input').should('exist')
