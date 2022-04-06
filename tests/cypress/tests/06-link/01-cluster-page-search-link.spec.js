@@ -9,15 +9,10 @@ import { squad, tags } from '../../config'
 import { clustersPage } from '../../views/clusters'
 
 describe('RHACM4K-413: Search: Linked page', { tags: [] }, function () {
-  context(
-    'prereq: user should log into the ACM console',
-    { tags: tags.required },
-    function () {
-      it(`[P1][Sev1][${squad}] should login`, function () {
-        cy.login()
-      })
-    }
-  )
+  beforeEach(function () {
+    // Log into the cluster ACM console.
+    cy.visitAndLogin('/multicloud/home/welcome')
+  })
 
   context(
     'verify: cluster page link to search page',

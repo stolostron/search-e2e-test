@@ -2,15 +2,16 @@
 
 jest.retryTimes(global.retry)
 
+const { exec, execSync } = require('child_process')
+
 const squad = require('../../config').get('squadName')
 const {
+  getKubeConfig,
   getSearchApiRoute,
   getToken,
-  getKubeConfig,
   searchQueryBuilder,
   sendRequest,
 } = require('../common-lib/clusterAccess')
-const { exec, execSync } = require('child_process')
 
 describe('RHACM4K-913: Search - Verify search results with different queries', () => {
   // Get kubeconfig for imported clusters

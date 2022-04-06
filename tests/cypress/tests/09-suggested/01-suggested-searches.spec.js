@@ -6,54 +6,44 @@
 /// <reference types="cypress" />
 
 import { squad, tags } from '../../config'
-import { cliHelper } from '../../scripts/cliHelper'
-import { searchPage } from '../../views/search'
-import { savedSearches, searchBar } from '../../views/suggestedSearches'
+import { searchPage, searchBar } from '../../views/search'
+import { suggestedSearches } from '../../views/suggestedSearches'
 
 describe(
   'RHACM4K-411: Search: Verify the suggested search templates',
-  { tags: [] },
+  { tags: tags.required },
   function () {
-    context(
-      'prereq: user should log into the ACM console',
-      { tags: tags.required },
-      function () {
-        it(`[P1][Sev1][${squad}] should login`, function () {
-          cy.login()
-        })
-      }
-    )
+    beforeEach(function () {
+      // Log into the cluster ACM console.
+      cy.visitAndLogin('/multicloud/home/welcome')
+      searchPage.whenGoToSearchPage()
+    })
 
     context(
       'verify: search page suggested search queries',
       { tags: [] },
       function () {
-        beforeEach(function () {
-          cliHelper.checkIfLoggedIn()
-          searchPage.whenGoToSearchPage()
-        })
-
         it(`[P3][Sev3][${squad}] should see the workloads template & search tag in search items`, function () {
-          savedSearches.whenSelectCardWithTitle('Workloads')
+          suggestedSearches.whenSelectCardWithTitle('Workloads')
           searchBar.shouldContainTag(
             'kind:daemonset,deployment,job,statefulset,replicaset'
           )
-          savedSearches.whenVerifyRelatedItemsDetails()
+          suggestedSearches.whenVerifyRelatedItemsDetails()
         })
 
         it(`[P3][Sev3][${squad}] should see the unhealthy pods template & search tag in search items`, function () {
-          savedSearches.whenSelectCardWithTitle('Unhealthy pods')
+          suggestedSearches.whenSelectCardWithTitle('Unhealthy pods')
           searchBar.shouldContainTag('kind:pod')
           searchBar.shouldContainTag(
             'status:Pending,Error,Failed,Terminating,ImagePullBackOff,CrashLoopBackOff,RunContainerError,ContainerCreating'
           )
-          savedSearches.whenVerifyRelatedItemsDetails()
+          suggestedSearches.whenVerifyRelatedItemsDetails()
         })
 
         it(`[P3][Sev3][${squad}] should see the created last hour template & search tag in search items`, function () {
-          savedSearches.whenSelectCardWithTitle('Created last hour')
+          suggestedSearches.whenSelectCardWithTitle('Created last hour')
           searchBar.shouldContainTag('created:hour')
-          savedSearches.whenVerifyRelatedItemsDetails()
+          suggestedSearches.whenVerifyRelatedItemsDetails()
         })
       }
     )

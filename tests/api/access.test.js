@@ -4,6 +4,7 @@ jest.retryTimes(global.retry)
 
 const squad = require('../../config').get('squadName')
 const { getSearchApiRoute, getToken } = require('../common-lib/clusterAccess')
+
 const request = require('supertest')
 
 let searchApiRoute = ''

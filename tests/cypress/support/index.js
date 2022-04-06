@@ -31,7 +31,7 @@ const err = 'Test taking too long! It has been running for 5 minutes.'
 
 before(() => {
   // Log into cluster with oc command.
-  cliHelper.login('Local')
+  cliHelper.login('HUB', { useInsecure: true })
 
   // This is needed for search to deploy RedisGraph upstream. Without this search won't be operational.
   cy.exec(`oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`, {
