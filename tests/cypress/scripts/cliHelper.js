@@ -23,17 +23,15 @@ export const generateNewResourceState = (state, kubeconfig, options = {}) => {
       `Required ${state.kind} has not been created within this test instance. Preparing to create them.`
     )
     cliHelper.createResource(state, kubeconfig)
+
+    if (options.wait) {
+      cy.log(`Option for waiting enabled for ${options.wait / 1000} seconds. Waiting to ensure resource is properly indexed.`)
+      cy.wait(options.wait)
+    }
   } else {
     cy.log(
       `Detected that the required ${state.kind} resources has been created within this test instance.`
     )
-  }
-
-  if (options) {
-    if (options.wait) {
-      cy.log(`Option for waiting enabled for ${options.wait / 1000} seconds`)
-      cy.wait(options.wait)
-    }
   }
 }
 
@@ -49,24 +47,8 @@ export const generateNewMultiResourceState = (
   options = {}
 ) => {
   state.forEach((s) => {
-    if (!Cypress.env(s.kind)) {
-      cy.log(
-        `Required ${s.kind} has not been created within this test instance. Preparing to create them.`
-      )
-      cliHelper.createResource(s, kubeconfig)
-    } else {
-      cy.log(
-        `Detected that the required ${s.kind} resources has been created within this test instance.`
-      )
-    }
+    generateNewResourceState(s, kubeconfig, options)
   })
-
-  if (options) {
-    if (options.wait) {
-      cy.log(`Option for waiting enabled for ${options.wait / 1000} seconds`)
-      cy.wait(opitions.wait)
-    }
-  }
 }
 
 /**
@@ -85,7 +67,7 @@ export const resetNewResourceState = (state, options = {}) => {
  */
 export const resetNewMultiResourceState = (state, options = {}) => {
   state.forEach((s) => {
-    Cypress.env(s.kind, false)
+    resetNewResourceState(s, options)
   })
 }
 

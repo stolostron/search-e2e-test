@@ -41,7 +41,7 @@ describe(
       cy.visitAndLogin('/multicloud/home/welcome')
 
       // Generate new resource state for the test environment.
-      generateNewResourceState(resource, '', { wait: 5000 })
+      generateNewResourceState(resource, '', { wait: 3000 })
       searchPage.whenGoToSearchPage()
     })
 
