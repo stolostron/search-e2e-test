@@ -47,7 +47,7 @@ describe(
 
     after(function () {
       // Attempt to cleanup resources that were created during the test run execution.
-      cliHelper.deleteResource(resource)
+      cliHelper.deleteResource(resource, { failOnNonZeroExit: false })
     })
 
     context('verify: saved searches resource actions', function () {

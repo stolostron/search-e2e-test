@@ -85,6 +85,7 @@ export const searchPage = {
     cy.get('.pf-l-gallery.pf-m-gutter')
       .should('exist')
       .within(() => {
+        cy.get('.pf-c-skeleton').should('not.exist')
         cy.get('.pf-c-tile')
           .filter(`:contains(Related ${kind})`)
           .should('exist')

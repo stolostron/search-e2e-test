@@ -55,13 +55,18 @@ clusterModes.forEach((clusterMode) => {
         cy.visitAndLogin('/multicloud/home/welcome')
 
         // Generate new resource state for the test environment.
-        generateNewMultiResourceState(resources, clusterMode.kubeconfig)
+        generateNewMultiResourceState(resources, {
+          kubeconfig: clusterMode.kubeconfig,
+        })
         searchPage.whenGoToSearchPage()
       })
 
       after(function () {
         // Attempt to cleanup resources that were created during the test run execution.
-        cliHelper.deleteResource(resources[0], clusterMode.kubeconfig)
+        cliHelper.deleteResource(resources[0], {
+          failOnNonZeroExit: false,
+          kubeconfig: clusterMode.kubeconfig,
+        })
       })
 
       context(

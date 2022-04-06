@@ -14,15 +14,14 @@ export const capitalize = (string) =>
 /**
  * Generate a new resource state for the kind objects that are required by the test environment.
  * @param {object} state Target state to generate required resources from.
- * @param {string} kubeconfig The kubeconfig file path to generate the resources state with. (Required: Managed cluster testing)
  * @param {object} options Additional options for generating the new resources state.
  */
-export const generateNewResourceState = (state, kubeconfig, options = {}) => {
+export const generateNewResourceState = (state, options = {}) => {
   if (!Cypress.env(state.kind)) {
     cy.log(
       `Required ${state.kind} has not been created within this test instance. Preparing to create them.`
     )
-    cliHelper.createResource(state, kubeconfig)
+    cliHelper.createResource(state, options)
 
     if (options.wait) {
       cy.log(
@@ -42,16 +41,11 @@ export const generateNewResourceState = (state, kubeconfig, options = {}) => {
 /**
  * Generate multiple new resource state for the kind objects that are required by the test environment.
  * @param {array} state Target state to generate required resources from.
- * @param {string} kubeconfig The kubeconfig file path to generate the resources state with. (Required: Managed cluster testing)
  * @param {object} options Additional options for generating the new resources state.
  */
-export const generateNewMultiResourceState = (
-  state,
-  kubeconfig,
-  options = {}
-) => {
+export const generateNewMultiResourceState = (state, options = {}) => {
   state.forEach((s) => {
-    generateNewResourceState(s, kubeconfig, options)
+    generateNewResourceState(s, options)
   })
 }
 
@@ -82,12 +76,17 @@ export const cliHelper = {
   /**
    * Create new instance of the resource object within the test cluster environment.
    * @param {object} resource The resource object to create. (Supported: application, deployment, namespace)
-   * @param {string} kubeconfig The kubeconfig file to create the resource object. (Only required for managed cluster testing)
    * @param {object} options Additional options for creating the new resources object.
    */
-  createResource: (resource, kubeconfig = '', options = {}) => {
+  createResource: (resource, options = {}) => {
+    // Check to see if the kubeconfig file is required for creating the test resource.
+    if (!options.kubeconfig) {
+      cy.log('[INFO] No kubeconfig file specified for command.')
+      options.kubeconfig = ''
+    }
+
     // Build command line arguments for the resource creation.
-    var cmd = `${kubeconfig} oc get ${resource.kind} ${resource.name}`
+    var cmd = `${options.kubeconfig} oc get ${resource.kind} ${resource.name}`
 
     // Check to see if the namespace was passed in the object.
     if (resource.namespace) {
@@ -140,14 +139,18 @@ export const cliHelper = {
   /**
    * Delete instance of the resource object within the test cluster environment.
    * @param {object} resource The resource object to delete.
-   * @param {string} kubeconfig The kubeconfig file to delete the resource object. (Only required for managed cluster testing)
    * @param {object} options Additional options for deleting the resource object.
    */
-  deleteResource: (resource, kubeconfig = '', options = {}) => {
+  deleteResource: (resource, options = { failOnNonZeroExit: true }) => {
     cy.log(`Preparing to cleanup ${resource.kind} created during test run.`)
-
     var resourceExist = false
-    var cmd = `${kubeconfig} oc get ${resource.kind} ${resource.name}`
+
+    if (!options.kubeconfig) {
+      cy.log('[INFO] No kubeconfig file specified for command.')
+      options.kubeconfig = ''
+    }
+
+    var cmd = `${options.kubeconfig} oc get ${resource.kind} ${resource.name}`
 
     if (resource.namespace) {
       cmd += ` -n ${resource.namespace}`
@@ -168,9 +171,15 @@ export const cliHelper = {
       if (resourceExist) {
         cmd = cmd.replace('oc get', 'oc delete')
 
-        cy.exec(cmd).then((res) => {
-          cy.log(res.stdout)
-        })
+        cy.exec(cmd, { failOnNonZeroExit: options.failOnNonZeroExit }).then(
+          (res) => {
+            if (res.stderr) {
+              cy.log('[ERROR]', res.stderr)
+            } else {
+              cy.log(res.stdout)
+            }
+          }
+        )
       }
     })
   },
@@ -255,9 +264,7 @@ export const cliHelper = {
     )}`
 
     if (options.useInsecure) {
-      cy.log(
-        '[INFO] Using insecure options was set to true. Using insecure login.'
-      )
+      cy.log('[INFO] useInsecure was set to true. Using insecure login.')
       cmd += ` --insecure-skip-tls-verify`
     }
 

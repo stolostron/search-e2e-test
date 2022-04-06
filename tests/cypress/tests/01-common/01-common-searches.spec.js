@@ -40,7 +40,7 @@ describe(
 
     after(function () {
       // Attempt to cleanup resources that were created during the test run execution.
-      cliHelper.deleteResource(resources[0])
+      cliHelper.deleteResource(resources[0], { failOnNonZeroExit: false })
     })
 
     context(

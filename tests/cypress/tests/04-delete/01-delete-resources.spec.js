@@ -59,7 +59,9 @@ clusterModes.forEach((clusterMode) => {
         cy.visitAndLogin('/multicloud/home/welcome')
 
         // Generate new resource state for the test environment.
-        generateNewMultiResourceState(resources, clusterMode.kubeconfig)
+        generateNewMultiResourceState(resources, {
+          kubeconfig: clusterMode.kubeconfig,
+        })
         searchPage.whenGoToSearchPage()
       })
 
@@ -94,7 +96,6 @@ clusterModes.forEach((clusterMode) => {
               this.clusterName,
               resources[1].namespace
             )
-            cy.waitUsingSLA() // WORKAROUND to wait for resource to get indexed. Better solution is to retry instead of a hard wait.
           })
 
           it(`[P2][Sev2][${squad}] should validate namespace was deleted`, function () {
