@@ -164,13 +164,13 @@ export const cliHelper = {
     var cmd = `${kubeconfig} oc get ${resource.kind} ${resource.name}`
 
     if (resource.namespace) {
-      cmd += ` -n ${resource.namespace.toLowerCase()}`
+      cmd += ` -n ${resource.namespace}`
     }
 
     cy.exec(cmd, { failOnNonZeroExit: false }).then((res) => {
       if (!res.stderr) {
         cy.log(
-          `${resource.kind}: ${resource.name} exist within the current cluster environment.`
+          `${resource.kind}: ${resource.name} exist within the current cluster environment. Deleting it now.`
         )
         resourceExist = true
       } else {
@@ -262,12 +262,19 @@ export const cliHelper = {
    * @param {object} options Additional options for logging into the cluster environment.
    */
   login: (cluster = 'HUB', options = {}) => {
-    cy.exec(
-      `oc login --server=https://api.${Cypress.env(
-        `OPTIONS_${cluster}_BASEDOMAIN`
-      )}:6443 -u ${Cypress.env(`OPTIONS_${cluster}_USER`)} -p ${Cypress.env(
-        `OPTIONS_${cluster}_PASSWORD`
-      )} --insecure-skip-tls-verify`
-    )
+    var cmd = `oc login --server=https://api.${Cypress.env(
+      `OPTIONS_${cluster}_BASEDOMAIN`
+    )}:6443 -u ${Cypress.env(`OPTIONS_${cluster}_USER`)} -p ${Cypress.env(
+      `OPTIONS_${cluster}_PASSWORD`
+    )}`
+
+    if (options.useInsecure) {
+      cy.log(
+        '[INFO] Using insecure options was set to true. Using insecure login.'
+      )
+      cmd += ` --insecure-skip-tls-verify`
+    }
+
+    cy.exec(cmd)
   },
 }

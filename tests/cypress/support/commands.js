@@ -33,13 +33,13 @@ import 'cypress-wait-until'
 import { getOpt } from '../scripts/utils'
 
 Cypress.Commands.add(
-  'login',
-  (OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OPTIONS_HUB_OC_IDP) => {
+  'visitAndLogin',
+  (URL, OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OPTIONS_HUB_OC_IDP) => {
     var user = OPTIONS_HUB_USER || Cypress.env('OPTIONS_HUB_USER')
     var password = OPTIONS_HUB_PASSWORD || Cypress.env('OPTIONS_HUB_PASSWORD')
     var idp = OPTIONS_HUB_OC_IDP || Cypress.env('OPTIONS_HUB_OC_IDP')
 
-    cy.visit('/multicloud/home/welcome')
+    cy.visit(URL)
 
     cy.url().then((res) => {
       if (res.includes('oauth-openshift')) {

@@ -16,6 +16,9 @@ const clusterLogin = (options = { useInsecure: true }) => {
   )} --server=https://api.${config.get('options:hub:baseDomain')}:6443`
 
   if (options.useInsecure) {
+    console.log(
+      '[INFO] Using insecure options was set to true. Using insecure login.'
+    )
     cmd += ` --insecure-skip-tls-verify`
   }
 
@@ -23,13 +26,14 @@ const clusterLogin = (options = { useInsecure: true }) => {
 }
 
 /**
- * Delete a pod resourcec from a specified namespace within the cluster environment.
- * @param {*} pod The pod of the resource object.
- * @param {object} options Additional options for deleting the pod resource from the cluster environment.
- * @param {*} ns Teh namespace of the pod resource object.
+ * Delete a kind resource from a specified namespace within the cluster environment.
+ * @param {string} kind The kind of the resource object.
+ * @param {string} name The name of the resource object.
+ * @param {string} ns The namespace of the kind resource object.
+ * @param {object} options Additional options for deleting the kind resource from the cluster environment.
  */
-async function deletePod(pod, ns, options = {}) {
-  execSync(`oc delete pod ${pod} -n ${ns} --wait=true`)
+async function deleteResource(kind, name, ns, options = {}) {
+  execSync(`oc delete ${kind} ${name} -n ${ns} --wait=true`)
 }
 
 /**
@@ -49,13 +53,14 @@ const getKubeConfig = (options = {}) => {
 }
 
 /**
- * Get the pods within a specified namespace using the `oc get pods` cli command.
- * @param {*} ns The namespace to get the pods from.
+ * Get the kind resource within a specified namespace using the `oc get <kind>` cli command.
+ * @param {string} kind The kind of the resource object.
+ * @param {string} ns The namespace of the kind resource object.
  * @param {object} options Additional options for getting the pod resources from the cluster environment.
- * @returns {array} A list of the pods within the specified namespace.
+ * @returns {array} A list of the kind resources within the specified namespace.
  */
-function getPods(ns, options = {}) {
-  var stdout = execSync(`oc get pods -n ${ns} --no-headers`).toString()
+function getResource(kind, ns, options = {}) {
+  var stdout = execSync(`oc get ${kind} -n ${ns} --no-headers`).toString()
   const pods = stdout.split('\n').map((pod) => pod.split(/ +/))
   const filteredPods = pods.filter((item) => {
     return item[0] !== undefined
@@ -141,9 +146,9 @@ function sendRequest(query, token, options = {}) {
 }
 
 exports.clusterLogin = clusterLogin
-exports.deletePod = deletePod
+exports.deleteResource = deleteResource
 exports.getKubeConfig = getKubeConfig
-exports.getPods = getPods
+exports.getResource = getResource
 exports.getSearchApiRoute = getSearchApiRoute
 exports.getToken = getToken
 exports.searchQueryBuilder = searchQueryBuilder

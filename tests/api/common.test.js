@@ -4,8 +4,8 @@ jest.retryTimes(global.retry)
 
 const squad = require('../../config').get('squadName')
 const {
-  deletePod,
-  getPods,
+  deleteResource,
+  getResource,
   getSearchApiRoute,
   getToken,
   searchQueryBuilder,
@@ -39,8 +39,8 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
     })
     var res = await sendRequest(query, token)
     expect(res.body.data.searchResult[0].items[0].current).toEqual(2)
-    var pods = getPods(namespace)
-    deletePod(pods[0][0], namespace)
+    var pods = getResource('pod', namespace)
+    deleteResource('pod', pods[0][0], namespace)
       .then(() => {
         var res = sendRequest(query, token)
         expect(res.body.data.searchResult[0].items[0].current).toEqual(2)

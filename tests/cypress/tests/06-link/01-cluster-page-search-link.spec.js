@@ -11,7 +11,7 @@ import { clustersPage } from '../../views/clusters'
 describe('RHACM4K-413: Search: Linked page', { tags: [] }, function () {
   beforeEach(function () {
     // Log into the cluster ACM console.
-    cy.login()
+    cy.visitAndLogin('/multicloud/home/welcome')
   })
 
   context(

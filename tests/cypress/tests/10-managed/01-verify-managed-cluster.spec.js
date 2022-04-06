@@ -19,7 +19,7 @@ describe(
 
     beforeEach(function () {
       // Log into the cluster ACM console.
-      cy.login()
+      cy.visitAndLogin('/multicloud/home/welcome')
       searchPage.whenGoToSearchPage()
     })
 
