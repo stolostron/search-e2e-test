@@ -25,7 +25,11 @@ export const generateNewResourceState = (state, kubeconfig, options = {}) => {
     cliHelper.createResource(state, kubeconfig)
 
     if (options.wait) {
-      cy.log(`Option for waiting enabled for ${options.wait / 1000} seconds. Waiting to ensure resource is properly indexed.`)
+      cy.log(
+        `Option for waiting enabled for ${
+          options.wait / 1000
+        } seconds. Waiting to ensure resource is properly indexed.`
+      )
       cy.wait(options.wait)
     }
   } else {
