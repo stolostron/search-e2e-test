@@ -158,19 +158,23 @@ export const searchPage = {
     searchPage.shouldLoadResults()
   },
   shouldVerifyPodsLogsInResourceTable: () => {
-    cy.get(`td[data-label="Name"]`).should('exist').each(($td) => {
-      searchPage.whenGoToResourceDetailItemPage('pod', $td.text())
-      podDetailPage.whenClickOnLogsTab()
-      podDetailPage.shouldSeeLogs()
-      cy.go('back')
-    })
+    cy.get(`td[data-label="Name"]`)
+      .should('exist')
+      .each(($td) => {
+        searchPage.whenGoToResourceDetailItemPage('pod', $td.text())
+        podDetailPage.whenClickOnLogsTab()
+        podDetailPage.shouldSeeLogs()
+        cy.go('back')
+      })
   },
   shouldValidatePodsInResourceTableRunning: () => {
-    cy.get('table.pf-c-table').should('exist').within(() => {
-      cy.get('td[data-label="Status"]').each(($td) => {
-        cy.wrap($td).should('contain.text', 'Running')
+    cy.get('table.pf-c-table')
+      .should('exist')
+      .within(() => {
+        cy.get('td[data-label="Status"]').each(($td) => {
+          cy.wrap($td).should('contain.text', 'Running')
+        })
       })
-    })
   },
   shouldValidateSearchQuery: () => {
     searchPage.shouldLoadResults()

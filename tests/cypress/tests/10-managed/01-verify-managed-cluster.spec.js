@@ -31,8 +31,7 @@ describe(
       'verify: managed cluster resource endpoint',
       { tags: tags.modes },
       () => {
-
-        beforeEach(function() {
+        beforeEach(function () {
           searchPage.shouldFindKindInCluster('pod', this.clusterName)
           searchBar.whenEnterTextInSearchBar('namespace')
           searchPage.shouldSelectFirstSuggestionValue()
