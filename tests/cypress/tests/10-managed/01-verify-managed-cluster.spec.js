@@ -42,7 +42,7 @@ describe(
           searchPage.shouldVerifyManagedClusterPodsAreRunning()
         })
 
-        it.only(`[P3][Sev3][${squad}] should verify the yaml information is correct and there are no errors in the logs`, function () {
+        it(`[P3][Sev3][${squad}] should verify the yaml information is correct and there are no errors in the logs`, function () {
           searchPage.shouldVerifyManagedClusterPodsAreRunning()
           searchPage.shouldVerifyPodsLogsInResourceTable()
         })
