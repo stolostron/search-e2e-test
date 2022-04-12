@@ -4,10 +4,28 @@
 
 mkdir clis-unpacked
 
+# Check to see if CURL is installed on the current machine.
+if ! command -v curl &> /dev/null; then
+    apt-get update && apt-get install curl
+fi
+
+# Set operating system.
+OS=$(uname)
+
+# Set default installation.
+VERSION=linux
+
 # Install OpenShift and Kubectl CLI.
 echo 'Installing oc and kubectl clis...'
-curl -kLo oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/ocp/4.6.4/openshift-client-linux-4.6.4.tar.gz
+
+if [[ "$OS" == 'Darwin' ]]; then
+    VERSION=mac
+fi
+
+echo "Preparing to install OpenShift and Kubectl CLI for $(uname)."
+curl -kLo oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/ocp/4.9.9/openshift-client-$VERSION-4.9.9.tar.gz
 tar -xzf oc.tar.gz -C clis-unpacked
+
 chmod 755 ./clis-unpacked/oc
 chmod 755 ./clis-unpacked/kubectl
 mv ./clis-unpacked/oc /usr/local/bin/oc

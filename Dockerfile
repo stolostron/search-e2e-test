@@ -1,7 +1,7 @@
 # Copyright (c) 2020 Red Hat, Inc.
 
 FROM mikefarah/yq:4 as builder
-FROM cypress/included:9.5.4 AS production
+FROM cypress/included:8.5.0 AS production
 
 USER root
 
@@ -23,8 +23,7 @@ COPY build ./build
 COPY cicd-scripts/run-prow-e2e.sh .
 
 RUN npm ci
-RUN sh install-dependencies.sh
-
+RUN bash install-dependencies.sh
 RUN chmod -R go+w /search-e2e
 
 RUN ["chmod", "+x", "start-tests.sh"]
