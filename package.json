@@ -3,11 +3,13 @@
   "version": "2.5.0",
   "description": "End to end test for Search component",
   "scripts": {
+    "jshint": "jshint tests/**/*.js --verbose",
     "lint": "prettier --check .",
     "lint:fix": "prettier --write .",
     "rbac:clean": "./build/rbac-clean.sh",
     "rbac:setup": "./build/rbac-setup.sh",
     "test": "npm run test:clean-reports && npm run test:headless && npm run test:merge-reports",
+    "test:ui": "cross-env NODE=development cypress run --headless --reporter cypress-multi-reporters",
     "test:api": "jest --colors --verbose",
     "test:clean-reports": "rm -rf ./results",
     "test:debug": "cross-env NODE_ENV=debug ./start-tests.sh",
@@ -25,34 +27,27 @@
   "author": "",
   "license": "SEE LICENSE IN LICENSE",
   "engines": {
-    "node": "14.18.2",
-    "npm": "6.14.15"
+    "node": "16.14.0",
+    "npm": ">=8.3.0"
   },
   "dependencies": {
-    "axios": "^0.26.1",
     "del": "^6.0.0",
     "jest": "^27.5.1",
-    "jest-junit": "^13.0.0",
+    "jest-junit": "^13.1.0",
     "lodash": "^4.17.21",
     "log4js": "^6.4.4",
-    "nconf": "^0.11.3",
+    "nconf": "^0.11.4",
     "nconf-yaml": "^1.0.2",
-    "nvm": "^0.0.4",
-    "supertest": "^6.2.2",
-    "xml2json": "^0.12.0"
+    "supertest": "^6.2.2"
   },
   "devDependencies": {
-    "@cypress/code-coverage": "^3.9.12",
-    "browserlist": "^1.0.1",
     "chromedriver": "^100.0.0",
-    "concurrently": "^7.0.0",
     "cross-env": "^7.0.3",
-    "cypress": "8.5.0",
+    "cypress": "9.5.4",
     "cypress-grep": "^2.13.1",
     "cypress-multi-reporters": "^1.5.0",
-    "cypress-terminal-report": "^3.4.2",
+    "cypress-terminal-report": "^3.5.1",
     "cypress-wait-until": "^1.7.2",
-    "eslint-plugin-cypress": "^2.12.1",
     "geckodriver": "^3.0.1",
     "husky": "^7.0.4",
     "jest-circus": "^27.5.1",
@@ -62,8 +57,7 @@
     "mocha-junit-reporter": "^2.0.2",
     "mochawesome": "^7.1.3",
     "mochawesome-merge": "^4.2.1",
-    "prettier": "^2.6.1",
-    "querystring": "^0.2.1",
+    "prettier": "^2.6.2",
     "selenium-standalone": "^8.0.10"
   },
   "husky": {

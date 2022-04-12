@@ -1,7 +1,7 @@
 # Copyright (c) 2020 Red Hat, Inc.
 
 FROM mikefarah/yq:4 as builder
-FROM cypress/included:8.5.0 AS production
+FROM cypress/included:9.5.4 AS production
 
 USER root
 
