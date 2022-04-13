@@ -120,7 +120,6 @@ if [[ -z $OPTIONS_HUB_BASEDOMAIN || -z $OPTIONS_HUB_USER || -z $OPTIONS_HUB_PASS
     log_color "cyan" "Switching context to log into Kube API server"
     oc config use-context --kubeconfig=$OPTIONS_HUB_KUBECONFIG $OPTIONS_HUB_KUBECONTEXT
     
-    export USE_HUB_KUBECONFIG=true
     export OPTIONS_HUB_BASEDOMAIN=$(oc whoami --show-server=true | cut -d'.' -f2- | cut -d':' -f1)
 
     log_color "purple" "HUB CLUSTER:" "$OPTIONS_HUB_BASEDOMAIN"
@@ -135,7 +134,6 @@ export CYPRESS_OPTIONS_HUB_KUBECONTEXT=$OPTIONS_HUB_KUBECONTEXT
 export CYPRESS_OPTIONS_HUB_OC_IDP=$OPTIONS_HUB_OC_IDP
 export CYPRESS_OPTIONS_HUB_PASSWORD=$OPTIONS_HUB_PASSWORD
 export CYPRESS_OPTIONS_HUB_USER=$OPTIONS_HUB_USER
-export CYPRESS_USE_HUB_KUBECONFIG=$USE_HUB_KUBECONFIG
 
 # Export base url for cluster.
 export BASE_URL=https://multicloud-console.apps.$OPTIONS_HUB_BASEDOMAIN
@@ -164,28 +162,25 @@ if [[ ! -z $CYPRESS_OPTIONS_HUB_PASSWORD && "$CYPRESS_OPTIONS_HUB_PASSWORD" != "
   else
     echo -e "Failed to create or locate hub cluster kubeconfig.\n"
   fi
-
-elif [[ ! -z $USE_HUB_KUBECONFIG && "$USE_HUB_KUBCONFIG" == true ]]; then
-  ADD_KUBECONFIG="--kubeconfig=$OPTIONS_HUB_KUBECONFIG"
 fi
 
-export CYPRESS_ACM_VERSION=`oc get subscriptions.operators.coreos.com $ADD_KUBECONFIG -A -o yaml | grep currentCSV:\ advanced-cluster-management | awk '{$1=$1};1' | sed "s/currentCSV:\ advanced-cluster-management.v//"`
+export CYPRESS_ACM_VERSION=`oc get subscriptions.operators.coreos.com -A -o yaml | grep currentCSV:\ advanced-cluster-management | awk '{$1=$1};1' | sed "s/currentCSV:\ advanced-cluster-management.v//"`
 log_color "green" "Testing with ACM Version": "$CYPRESS_ACM_VERSION\n"
 
 log_color "cyan" "Checking RedisGraph deployment."
-installNamespace=`oc get subscriptions.operators.coreos.com $ADD_KUBECONFIG --all-namespaces | grep advanced-cluster-management | awk '{print $1}'`
-rgstatus=`oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}" $ADD_KUBECONFIG -n $installNamespace`
+installNamespace=`oc get subscriptions.operators.coreos.com --all-namespaces | grep advanced-cluster-management | awk '{print $1}'`
+rgstatus=`oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}" -n $installNamespace`
 
 if [[ "$rgstatus" == "true" ]]; then
   echo -e "RedisGraph deployment is enabled.\n"
 else
   echo -e "RedisGraph deployment disabled, enabling and waiting 60 seconds for the search-redisgraph-0 pod.\n"
-  oc set env deploy search-operator DEPLOY_REDISGRAPH="true" $ADD_KUBECONFIG -n $installNamespace
+  oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n $installNamespace
   sleep 60
 fi
 
 # Search for managed clusters.
-MANAGED_CLUSTERS=($(oc get managedclusters $ADD_KUBECONFIG -o custom-columns='name:.metadata.name' --no-headers))
+MANAGED_CLUSTERS=($(oc get managedclusters -o custom-columns='name:.metadata.name' --no-headers))
 
 # Check to see if there are any managed cluster available.
 if [[ ${#MANAGED_CLUSTERS[@]} == "1" && ${MANAGED_CLUSTERS[0]} =~ "local-cluster" ]]; then
@@ -348,9 +343,9 @@ if [[ ! -z $CYPRESS_TAGS_INCLUDE || ! -z $CYPRESS_TAGS_EXCLUDE ]]; then
   echo -e "Executing tests with the following tags: $CYPRESS_TAGS\n"
 fi
 
-if [[ $PROW_MODE == true ]]; then
+if [[ "$PROW_MODE" == true ]]; then
   echo -e "Checking pod status in $installNamespace:"
-  oc get pods $ADD_KUBECONFIG -n $installNamespace
+  oc get pods -n $installNamespace
   echo -e
 
   echo -e "Waiting for an additional 2 minutes to ensure that all pods are up and running in the cluster."

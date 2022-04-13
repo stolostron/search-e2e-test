@@ -1,10 +1,11 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
-jest.retryTimes(global.retry)
+const request = require('supertest')
 
 const squad = require('../../config').get('squadName')
 const { getSearchApiRoute, getToken } = require('../common-lib/clusterAccess')
-const request = require('supertest')
+
+jest.retryTimes(global.retry)
 
 let searchApiRoute = ''
 let token = ''

@@ -6,29 +6,77 @@ const { execSync } = require('child_process')
 const request = require('supertest')
 const fs = require('fs')
 
-// Login to the cluster
-const clusterLogin = () => {
-  if (!process.env.USE_HUB_KUBECONFIG) {
-    execSync(
-      `oc login -u ${config.get('options:hub:user')} -p ${config.get(
-        'options:hub:password'
-      )} --server=https://api.${config.get('options:hub:baseDomain')}:6443`
+/**
+ * Login into the cluster environment with the `oc` cli command.
+ * @param {object} options Additional options for logging into the cluster environment.
+ */
+const clusterLogin = (options = { useInsecure: true }) => {
+  var cmd = `oc login -u ${config.get('options:hub:user')} -p ${config.get(
+    'options:hub:password'
+  )} --server=https://api.${config.get('options:hub:baseDomain')}:6443`
+
+  if (options.useInsecure) {
+    console.log(
+      '[INFO] Using insecure options was set to true. Using insecure login.'
     )
-  } else {
-    execSync(
-      `oc config use-context --kubeconfig=${process.env.OPTIONS_HUB_KUBECONFIG} ${process.env.OPTIONS_HUB_KUBECONTEXT}`
-    )
+    cmd += ` --insecure-skip-tls-verify`
+  }
+
+  execSync(cmd)
+}
+
+/**
+ * Delete a kind resource from a specified namespace within the cluster environment.
+ * @param {string} kind The kind of the resource object.
+ * @param {string} name The name of the resource object.
+ * @param {string} ns The namespace of the kind resource object.
+ * @param {object} options Additional options for deleting the kind resource from the cluster environment.
+ */
+async function deleteResource(kind, name, ns, options = {}) {
+  execSync(`oc delete ${kind} ${name} -n ${ns} --wait=true`)
+}
+
+/**
+ * Return a list of all kubeconfigs available for the given test environment.
+ * @param {object} options Additional options for getting the kubeconfig files.
+ * @returns {array} List of kubeconfig files that contain the cluster configurations for the test execution.
+ */
+const getKubeConfig = (options = {}) => {
+  const kubeconfigs = []
+  const dir = './kube/config'
+  fs.readdirSync(dir).forEach((file) => {
+    if (file[0] !== '.') {
+      kubeconfigs.push(`${dir}/${file}`)
+    }
+  })
+  return kubeconfigs
+}
+
+/**
+ * Get the kind resource within a specified namespace using the `oc get <kind>` cli command.
+ * @param {string} kind The kind of the resource object.
+ * @param {string} ns The namespace of the kind resource object.
+ * @param {object} options Additional options for getting the pod resources from the cluster environment.
+ * @returns {array} A list of the kind resources within the specified namespace.
+ */
+function getResource(kind, ns, options = {}) {
+  var stdout = execSync(`oc get ${kind} -n ${ns} --no-headers`).toString()
+  const pods = stdout.split('\n').map((pod) => pod.split(/ +/))
+  const filteredPods = pods.filter((item) => {
+    return item[0] !== undefined
+  })
+
+  if (filteredPods[0] !== undefined) {
+    return filteredPods
   }
 }
 
-// Login and get access token
-const getToken = () => {
-  clusterLogin()
-  return execSync('oc whoami -t').toString().replace('\n', '')
-}
-
-// Check if the route to Search API exist and create a new route if needed.
-const getSearchApiRoute = async () => {
+/**
+ * Return the endpoint route for the cluster environment Search API.
+ * @param {object} options Additional options for getting the endpoint route of the Search API server.
+ * @returns {string} The route of the cluster's Search API.
+ */
+const getSearchApiRoute = async (options = {}) => {
   const namespace = execSync(
     `oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`
   ).toString()
@@ -45,18 +93,25 @@ const getSearchApiRoute = async () => {
   )}`
 }
 
-const getKubeConfig = () => {
-  const kubeconfigs = []
-  const dir = './kube/config'
-  fs.readdirSync(dir).forEach((file) => {
-    if (file[0] !== '.') {
-      kubeconfigs.push(`${dir}/${file}`)
-    }
-  })
-  return kubeconfigs
+/**
+ * Get the current authorization token for the cluster environment.
+ * @param {object} options Additional options for getting the cluster's authorization token.
+ * @returns {string} The cluster environment authorization token.
+ */
+const getToken = (options = {}) => {
+  return execSync('oc whoami -t').toString().replace('\n', '')
 }
 
-function searchQueryBuilder({ keywords = [], filters = [], limit = 1000 }) {
+/**
+ * Builds and returns a query object for a HTTP request. (Current supported input keys: `keywords`, `filters`, and `limit`)
+ * @param {object} {} The input keys that will be used to build the query object.
+ * @param {object} options Additional options for building the query object..
+ * @returns {object} The query object.
+ */
+function searchQueryBuilder(
+  { keywords = [], filters = [], limit = 1000 },
+  options = {}
+) {
   // Return query built from passed arguments.
   const query = {
     operationName: 'searchResult',
@@ -75,7 +130,14 @@ function searchQueryBuilder({ keywords = [], filters = [], limit = 1000 }) {
   return query
 }
 
-function sendRequest(query, token) {
+/**
+ * Send a HTTP request to the API server and return the results. Expects the response to have a 200 status code.
+ * @param {*} query The query to send.
+ * @param {*} token The validation token to use for the request.
+ * @param {object} options Additional options for sending the request.
+ * @returns
+ */
+function sendRequest(query, token, options = {}) {
   return request(searchApiRoute)
     .post('/searchapi/graphql')
     .send(query)
@@ -83,27 +145,11 @@ function sendRequest(query, token) {
     .expect(200)
 }
 
-function getPods(ns) {
-  var stdout = execSync(`oc get pods -n ${ns} --no-headers`).toString()
-  const pods = stdout.split('\n').map((pod) => pod.split(/ +/))
-  const filteredPods = pods.filter((item) => {
-    return item[0] !== undefined
-  })
-
-  if (filteredPods[0] !== undefined) {
-    return filteredPods
-  }
-}
-
-async function deletePod(pod, ns) {
-  execSync(`oc delete pod ${pod} -n ${ns} --wait=true`)
-}
-
 exports.clusterLogin = clusterLogin
-exports.getToken = getToken
-exports.getSearchApiRoute = getSearchApiRoute
+exports.deleteResource = deleteResource
 exports.getKubeConfig = getKubeConfig
+exports.getResource = getResource
+exports.getSearchApiRoute = getSearchApiRoute
+exports.getToken = getToken
 exports.searchQueryBuilder = searchQueryBuilder
 exports.sendRequest = sendRequest
-exports.getPods = getPods
-exports.deletePod = deletePod

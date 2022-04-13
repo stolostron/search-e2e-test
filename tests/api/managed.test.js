@@ -1,6 +1,6 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
-jest.retryTimes(global.retry)
+const _ = require('lodash')
 
 const squad = require('../../config').get('squadName')
 const {
@@ -9,7 +9,8 @@ const {
   searchQueryBuilder,
   sendRequest,
 } = require('../common-lib/clusterAccess')
-const _ = require('lodash')
+
+jest.retryTimes(global.retry)
 
 describe('RHACM4K-1695: Search - verify managed cluster info in the search page', () => {
   beforeAll(async () => {

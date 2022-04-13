@@ -1,6 +1,6 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
-jest.retryTimes(global.retry)
+const { execSync } = require('child_process')
 
 const squad = require('../../config').get('squadName')
 const {
@@ -9,7 +9,8 @@ const {
   searchQueryBuilder,
   sendRequest,
 } = require('../common-lib/clusterAccess')
-const { execSync } = require('child_process')
+
+jest.retryTimes(global.retry)
 
 describe('RHACM4K-1709: Search - Search using filters', () => {
   beforeAll(async () => {

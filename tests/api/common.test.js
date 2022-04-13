@@ -1,17 +1,18 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
-jest.retryTimes(global.retry)
+const _ = require('lodash')
 
 const squad = require('../../config').get('squadName')
 const {
+  deleteResource,
+  getResource,
   getSearchApiRoute,
-  searchQueryBuilder,
   getToken,
+  searchQueryBuilder,
   sendRequest,
-  getPods,
-  deletePod,
 } = require('../common-lib/clusterAccess')
-const _ = require('lodash')
+
+jest.retryTimes(global.retry)
 
 describe('RHACM4K-1696: Search - Verify search result with common filter and conditions', () => {
   beforeAll(async () => {
@@ -38,8 +39,8 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
     })
     var res = await sendRequest(query, token)
     expect(res.body.data.searchResult[0].items[0].current).toEqual(2)
-    var pods = getPods(namespace)
-    deletePod(pods[0][0], namespace)
+    var pods = getResource('pod', namespace)
+    deleteResource('pod', pods[0][0], namespace)
       .then(() => {
         var res = sendRequest(query, token)
         expect(res.body.data.searchResult[0].items[0].current).toEqual(2)
