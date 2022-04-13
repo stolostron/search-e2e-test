@@ -6,12 +6,18 @@
 # Test Setup
 ###############################################################################
 
+if [[ -z $SHARED_DIR ]]; then
+    echo "SHARED_DIR not set. (Setting shared directory to current directory)"
+    SHARED_DIR=$(pwd)
+fi
+
 echo -e "Shared dir: $SHARED_DIR\n"
 
 ls -la
 
 # Test env
 export BROWSER=chrome
+export BUILD_ID=$(date +%s-%m-%d-%Y)
 export OPTIONS_HUB_KUBECONFIG=${SHARED_DIR}/hub-1.kc
 export OPTIONS_KUBECONFIG_MOUNT_PATH=${SHARED_DIR}/managed-1.kc
 export OPTIONS_MANAGED_KUBECONFIG=${OPTIONS_KUBECONFIG_MOUNT_PATH}
@@ -39,9 +45,9 @@ export OPTIONS_MANAGED_PASSWORD=$(yq e '.password' $SHARED_DIR/managed-1.json)
 echo -e "\nRunning Search-e2e tests in ${TEST_MODE} test mode. Preparing to run e2e tests."
 ./start-tests.sh
 
-echo "TODO: Uploading test results to AWS S3 bucket."
-# source ./build/upload-to-s3.sh
-# install_aws_cli
-# upload_s3
+echo "Uploading test results to AWS S3 bucket."
+source ./build/upload-to-s3.sh
+install_aws_cli
+upload_s3
 
-# echo "Test results uploaded to: https://s3.console.aws.amazon.com/s3/buckets/search-e2e-results?region=us-east-1&prefix=prow-${PROW_BUILD_ID}/&showversions=false"
+echo "Test results uploaded to: https://s3.console.aws.amazon.com/s3/buckets/search-e2e-results?region=us-east-1&prefix=prow-${BUILD_ID}/&showversions=false"
