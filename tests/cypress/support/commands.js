@@ -42,9 +42,13 @@ Cypress.Commands.add(
     cy.visit('/search', { failOnStatusCode: false })
     cy.url().then((url) => {
       if (!url.includes('oauth-openshift')) {
-        // handle provider button
-        cy.log("Clicking 'Log in with OpenShift' button")
-        cy.get('.panel-login').get('button').click()
+        // check for and handle provider button
+        cy.get('body').then((body) => {
+          if (body.find('#header').length === 0) {
+            cy.log("Clicking 'Log in with OpenShift' button")
+            cy.get('.panel-login').get('button').click()
+          }
+        })
       }
     })
     cy.get('body').then((body) => {
