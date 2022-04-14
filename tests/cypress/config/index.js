@@ -3,7 +3,7 @@
  * Copyright (c) 2021 Red Hat, Inc.
  ****************************************************************************** */
 
-exports.squad = 'observability-usa'
+exports.squad = 'observability'
 exports.tags = {
   env: ['@CANARY', '@ROSA'],
   modes: ['@BVT', '@SVT'],

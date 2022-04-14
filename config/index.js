@@ -30,7 +30,7 @@ nconf
     CLUSTER_VIEWER_USR: 'user-viewer',
     CLUSTER_VIEWER_PWD: 'pass-viewer',
     contextPath: '/multicloud',
-    squadName: 'observability-usa',
+    squadName: 'observability',
   })
 
 // Hack to deal with camelCase when using env OPTIONS_HUB_BASEDOMAIN OPTIONS_HUB_USER OPTIONS_HUB_PASSWORD
