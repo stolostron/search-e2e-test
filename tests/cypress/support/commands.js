@@ -44,7 +44,7 @@ Cypress.Commands.add(
       if (!url.includes('oauth-openshift')) {
         // check for and handle provider button
         cy.get('body').then((body) => {
-          if (body.find('#header').length === 0) {
+          if (body.find('.pf-c-page__header').length === 0) {
             cy.log("Clicking 'Log in with OpenShift' button")
             cy.get('.panel-login').get('button').click()
           }
@@ -53,7 +53,7 @@ Cypress.Commands.add(
     })
     cy.get('body').then((body) => {
       // Check if logged in
-      if (body.find('#header').length === 0) {
+      if (body.find('.pf-c-page__header').length === 0) {
         // Check if identity providers are configured
         if (body.find('form').length === 0) cy.contains(idp).click()
         cy.get('#inputUsername').click().focused().type(user)
