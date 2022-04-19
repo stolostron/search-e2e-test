@@ -39,10 +39,21 @@ Cypress.Commands.add(
     var user = OPTIONS_HUB_USER || Cypress.env('OPTIONS_HUB_USER')
     var password = OPTIONS_HUB_PASSWORD || Cypress.env('OPTIONS_HUB_PASSWORD')
     var idp = OPTIONS_HUB_OC_IDP || Cypress.env('OPTIONS_HUB_OC_IDP')
-    cy.visit('/search')
+    cy.visit('/search', { failOnStatusCode: false })
+    cy.url().then((url) => {
+      if (!url.includes('oauth-openshift')) {
+        // check for and handle provider button
+        cy.get('body').then((body) => {
+          if (body.find('.pf-c-page__header').length === 0) {
+            cy.log("Clicking 'Log in with OpenShift' button")
+            cy.get('.panel-login').get('button').click()
+          }
+        })
+      }
+    })
     cy.get('body').then((body) => {
       // Check if logged in
-      if (body.find('#header').length === 0) {
+      if (body.find('.pf-c-page__header').length === 0) {
         // Check if identity providers are configured
         if (body.find('form').length === 0) cy.contains(idp).click()
         cy.get('#inputUsername').click().focused().type(user)
