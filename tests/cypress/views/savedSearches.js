@@ -8,53 +8,8 @@
 import { searchPage, searchBar } from './search'
 
 export const savedSearches = {
-  whenGotoSearchPage: () => {
-    cy.get(`[aria-label="search-button"]`).click()
-  },
-
-  validateClusterNamespace: (filterOptions, extraCluster) => {
-    //get managed clusters count
-    searchPage.whenGoToSearchPage()
-    searchBar.whenFocusSearchBar()
-    searchBar.whenEnterTextInSearchBar('kind', 'cluster')
-    searchBar.whenEnterTextInSearchBar('ManagedClusterJoined', 'True')
-
-    cy.get('.pf-c-expandable-section__toggle', { timeout: 6000 }).then(
-      ($btn) => {
-        var fullText = $btn.text()
-        var pattern = /[0-9]+/g
-        var ManagedClustersCount = fullText.match(pattern)
-        var expectedSearchClusterCount = Number(ManagedClustersCount)
-
-        // local-cluster is default show in some filter conditions
-        if (extraCluster == 'has_local-cluster') {
-          expectedSearchClusterCount = expectedSearchClusterCount + 1
-        }
-
-        searchPage.whenGoToSearchPage()
-        for (var key in filterOptions) {
-          searchBar.whenEnterTextInSearchBar(key, filterOptions[key])
-        }
-
-        cy.contains(expectedSearchClusterCount)
-        cy.contains('Related cluster')
-      }
-    )
-  },
-
-  saveClusterNamespaceSearch: (filterOptions, queryName, queryDesc) => {
-    searchPage.whenGoToSearchPage()
-    for (var key in filterOptions) {
-      searchBar.whenEnterTextInSearchBar(key, filterOptions[key])
-    }
-    cy.get('.pf-c-button.pf-m-primary').contains('Save search').focus().click()
-    cy.get('#add-query-name').type(queryName)
-    cy.get('#add-query-desc').type(queryDesc)
-    cy.get('.pf-c-modal-box__footer').contains('Save').focus().click()
-  },
-
   editSavedSearch: (queryName, editedName, editedDesc) => {
-    cy.get('h4.pf-c-title.pf-m-md').contains('Saved searches')
+    savedSearches.shouldExist(queryName)
     cy.get('.pf-c-card__header')
       .contains(queryName)
       .parent()
@@ -66,9 +21,24 @@ export const savedSearches = {
     cy.get('#add-query-desc').clear().type(editedDesc)
     cy.get('.pf-c-modal-box__footer').contains('Save').focus().click()
   },
-
+  getSavedSearch: (queryName) => {
+    savedSearches.shouldExist(queryName)
+    cy.get('button.pf-c-dropdown__toggle')
+      .contains('Saved searches')
+      .click({ force: true })
+    cy.get('ul.pf-c-dropdown__menu.pf-m-align-right')
+      .contains(queryName)
+      .click()
+  },
+  saveClusterNamespaceSearch: (cluster, namespace, queryName, queryDesc) => {
+    searchPage.shouldFindNamespaceInCluster(namespace, cluster)
+    cy.get('.pf-c-button.pf-m-primary').contains('Save search').focus().click()
+    cy.get('#add-query-name').type(queryName)
+    cy.get('#add-query-desc').type(queryDesc)
+    cy.get('.pf-c-modal-box__footer').contains('Save').focus().click()
+  },
   shareSavedSearch: (queryName) => {
-    cy.get('h4.pf-c-title.pf-m-md').contains('Saved searches')
+    savedSearches.shouldExist(queryName)
     cy.get('.pf-c-card__header')
       .contains(queryName)
       .parent()
@@ -83,20 +53,37 @@ export const savedSearches = {
         cy.visit(urlText.toString())
       })
   },
-
-  getSavedSearch: (queryName) => {
-    cy.get('h4.pf-c-title.pf-m-md').contains('Saved searches')
-    cy.get('button.pf-c-dropdown__toggle')
-      .contains('Saved searches')
-      .click({ force: true })
-    cy.get('ul.pf-c-dropdown__menu.pf-m-align-right')
-      .contains(queryName)
-      .click()
-    cy.go('back')
+  shouldExist: (queryName) => {
+    cy.get('h4.pf-c-title.pf-m-md')
+      .should('contain', 'Saved searches')
+      .should('exist')
+    cy.get('.pf-c-card__title').contains(queryName).should('exist')
   },
+  shouldNotExist: (queryName) => {
+    cy.get('.pf-c-card__title').contains(queryName).should('not.exist')
+  },
+  validateClusterNamespace: (filterOptions) => {
+    searchPage.shouldValidateManagedCluster()
+    cy.get('.pf-c-expandable-section__toggle').then(($btn) => {
+      var fullText = $btn.text()
+      var pattern = /[0-9]+/g
+      var ManagedClustersCount = fullText.match(pattern)
+      var expectedSearchClusterCount = Number(ManagedClustersCount)
 
+      searchPage.whenGoToSearchPage()
+      for (var key in filterOptions) {
+        searchBar.whenEnterTextInSearchBar(key, filterOptions[key])
+      }
+
+      cy.get('.pf-c-skeleton').should('not.exist')
+      cy.get('.pf-c-tile')
+        .should('exist')
+        .filter(':contains(Related cluster)')
+        .and('contain', expectedSearchClusterCount)
+    })
+  },
   whenDeleteSavedSearch: (queryName) => {
-    cy.get('h4.pf-c-title.pf-m-md').contains('Saved searches')
+    savedSearches.shouldExist(queryName)
     cy.get('.pf-c-card__header')
       .contains(queryName)
       .parent()

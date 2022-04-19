@@ -7,7 +7,7 @@
 
 import { squad, tags } from '../../config'
 import { cliHelper } from '../../scripts/cliHelper'
-import { searchPage } from '../../views/search'
+import { searchBar, searchPage } from '../../views/search'
 
 describe(
   'RHACM4K-912: Search: Verify the managed cluster info in the search page',
@@ -17,42 +17,33 @@ describe(
       cliHelper.getTargetManagedCluster().as('clusterName')
     })
 
-    context(
-      'prereq: user should log into the ACM console',
-      { tags: tags.required },
-      function () {
-        it(`[P1][Sev1][${squad}] should login`, function () {
-          cy.login()
-        })
-      }
-    )
+    beforeEach(function () {
+      // Log into the cluster ACM console.
+      cy.visitAndLogin('/multicloud/welcome')
+      searchPage.whenGoToSearchPage()
+    })
+
+    it(`[P3][Sev3][${squad}] should validate the endpoint version for the managed clusters are accurate`, function () {
+      searchPage.shouldValidateManagedCluster()
+    })
 
     context(
       'verify: managed cluster resource endpoint',
       { tags: tags.modes },
       () => {
         beforeEach(function () {
-          cliHelper.checkIfLoggedIn()
-          searchPage.whenGoToSearchPage()
-        })
-
-        it(`[P3][Sev3][${squad}] should load the search page`, function () {
-          searchPage.shouldLoad()
-        })
-
-        it(`[P3][Sev3][${squad}] should validate the endpoint version for the managed clusters are accurate`, function () {
-          searchPage.shouldValidateManagedCluster()
+          searchPage.shouldFindKindInCluster('pod', this.clusterName)
+          searchBar.whenEnterTextInSearchBar('namespace')
+          searchPage.shouldSelectFirstSuggestionValue()
         })
 
         it(`[P3][Sev3][${squad}] should verify endpoint pods are all in running state`, function () {
-          searchPage.shouldVerifyManagedClusterPodsAreRunning(this.clusterName)
+          searchPage.shouldVerifyManagedClusterPodsAreRunning()
         })
 
         it(`[P3][Sev3][${squad}] should verify the yaml information is correct and there are no errors in the logs`, function () {
-          searchPage.shouldVerifyManagedClusterPodsAreRunning(
-            this.clusterName,
-            true
-          )
+          searchPage.shouldVerifyManagedClusterPodsAreRunning()
+          searchPage.shouldVerifyPodsLogsInResourceTable()
         })
       }
     )

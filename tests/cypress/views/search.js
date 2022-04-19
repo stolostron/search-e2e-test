@@ -5,53 +5,246 @@
 
 /// <reference types="cypress" />
 
+import { capitalize } from '../scripts/cliHelper'
 import { popupModal } from './popup'
 import { getOpt } from '../scripts/utils'
 import { podDetailPage } from './podDetailPage'
 
-const SEARCH_MESSAGES_INPUT_PLACE_HOLDER = 'Search items'
 const SEARCH_MESSAGES_NO_RESULTS =
   'No results found for the current search criteria.'
 const SEARCH_MESSAGES_FEW_SECONDS_AGO = 'a few seconds ago'
-const SEARCH_MESSAGES_LOADING_SUGGESTIONS = 'Loading...'
 
+/**
+ * Search page object for the ACM console.
+ */
 export const searchPage = {
-  whenGoToSearchPage: () => cy.visit('/search'),
-  whenGoToWelcomePage: () => cy.visit('/multicloud/welcome'),
-  whenExpandRelationshipTiles: () => {
-    cy.get('.pf-c-skeleton', { timeout: 2000 }).should('not.exist')
-    cy.get('.pf-l-gallery', { timeout: 2000 })
-      .children()
-      .should('have.length.above', 1)
-      .then(() => {
-        cy.get('button.pf-c-button.pf-m-secondary').focus().click()
+  /**
+   * Verify that the resource is deleted within the Search page from the specified namespace.
+   * @param {string} kind The kind of the resource object.
+   * @param {string} name The name of the resource object.
+   * @param {string} namespace The namespace that contains the resource object.
+   */
+  shouldDeleteKindResourceInNameSpace: (kind, name, namespace) => {
+    searchPage.whenDeleteResourceDetailItem(kind, name, namespace)
+    searchPage.shouldFindNoResults()
+  },
+  /**
+   * Verify that the resource is available within the Search page from the specified namespace.
+   * @param {string} kind The kind of the resource object.
+   * @param {string} name The name of the resource object.
+   * @param {string} namespace The namespace that contains the resource object.
+   */
+  shouldFindKindInCluster: (kind, cluster) => {
+    searchBar.whenEnterTextInSearchBar('kind', kind)
+    searchBar.whenEnterTextInSearchBar('cluster', cluster)
+  },
+  /**
+   * Verify that the resource is available within the Search page from the specified namespace.
+   * @param {string} kind The kind of the resource object.
+   * @param {string} name The name of the resource object.
+   * @param {string} namespace The namespace that contains the resource object.
+   */
+  shouldFindKindResourceInNamespace: (kind, name, namespace) => {
+    searchBar.whenEnterTextInSearchBar('kind', kind)
+    searchBar.whenEnterTextInSearchBar('name', name)
+    searchBar.whenEnterTextInSearchBar('namespace', namespace)
+  },
+  /**
+   * Verify that the resource is available within the Search page from the specified cluster.
+   * @param {string} namespace The namespace of the resource object.
+   * @param {string} cluster The cluster that contains the namespace resource object.
+   */
+  shouldFindNamespaceInCluster: (namespace, cluster) => {
+    searchBar.whenEnterTextInSearchBar('namespace', namespace)
+    searchBar.whenEnterTextInSearchBar('cluster', cluster)
+  },
+  /**
+   * Verify that the Search page should not find any results for the query entered within the search input.
+   */
+  shouldFindNoResults: () => {
+    searchPage.shouldFindNoSkeleton()
+    cy.get('.pf-c-alert__title', { timeout: 30000 }).should(
+      'contain',
+      SEARCH_MESSAGES_NO_RESULTS
+    )
+
+    // cy.reloadUntil(
+    //   () => {
+    //     searchPage.shouldFindNoSkeleton()
+    //     return cy.ifContains('.pf-c-alert__title', SEARCH_MESSAGES_NO_RESULTS)
+    //   },
+    //   { interval: 5 }
+    // )
+  },
+  /**
+   * Verify that the search page should contain no skeleton placeholder elements.
+   */
+  shouldFindNoSkeleton: () => {
+    cy.get('.pf-c-empty-state__icon').should('not.exist')
+    cy.get('.pf-c-skeleton').should('not.exist')
+  },
+  /**
+   * Verify that the Search page should contain the related kind resource tile with the correct resource count.
+   * @param {string} kind
+   * @param {int} count
+   */
+  shouldFindRelationshipTile: (kind, count) => {
+    cy.get('.pf-l-gallery.pf-m-gutter')
+      .should('exist')
+      .within(() => {
+        cy.get('.pf-c-skeleton').should('not.exist')
+        cy.get('.pf-c-tile')
+          .filter(`:contains(Related ${kind})`)
+          .should('exist')
+          .and('contain', count)
       })
   },
-  whenGetResourceTableRow: (resource, name) => {
-    return cy.get('tr').filter(`:contains("${name}")`)
+  /**
+   * Verify that the Search page should contain the resource table containing the details of the specified resource object.
+   * @param {*} kind The kind of the resource object.
+   * @param {*} name The name of the resource object.
+   * @param {*} namespace TThe namespace that contains the kind resource object.
+   */
+  shouldFindResourceDetailItem: (kind, name, namespace) => {
+    searchPage.whenGetResourceTableRow(kind, name, namespace)
   },
-  whenCreateResourceObject: () => {
-    cy.get(`[aria-label="create-button"]`).click()
+  /**
+   * Verify that the resource is available within the Search page from the specified cluster.
+   * @param {string} kind The namespace of the resource object.
+   * @param {string} name The cluster that contains the namespace resource object.
+   */
+  shouldFindResourceInKind: (kind, name) => {
+    searchBar.whenEnterTextInSearchBar('kind', kind)
+    searchBar.whenEnterTextInSearchBar('name', name)
   },
+  /**
+   * Verify that the search page should contain a search bar to input the search query.
+   */
+  shouldFindSearchInputBar: () => {
+    cy.get('.react-tags').should('exist')
+    cy.get('.react-tags__search-input').should('exist')
+  },
+  /**
+   * Verify that the Search page should contain a kind resource object that was created a few seconds ago withting the specified resource table.
+   * @param {*} kind The kind of the resource object.
+   * @param {*} name The name of the resource object.
+   * @param {*} namespace TThe namespace that contains the kind resource object.
+   */
+  shouldFindResourceDetailItemCreatedFewSecondsAgo: (kind, name, namespace) => {
+    cy.reloadUntil(
+      () => {
+        cy.get('.pf-c-expandable-section')
+          .filter(`:contains(${capitalize(kind)})`)
+          .should('exist')
+          .then(() => {
+            searchPage.shouldLoadResults()
+          })
+        cy.get('tr').filter(`:contains(${name})`).should('contain', namespace)
+        return cy.ifContains('td', SEARCH_MESSAGES_FEW_SECONDS_AGO)
+      },
+      { interval: 5 }
+    )
+  },
+  /**
+   * Verify that the resource is available within the Search page from the specified cluster.
+   * @param {string} kind The namespace of the resource object.
+   * @param {string} name The cluster that contains the namespace resource object.
+   */
+  shouldFindResourceInKind: (kind, name) => {
+    searchBar.whenEnterTextInSearchBar('kind', kind)
+    searchBar.whenEnterTextInSearchBar('name', name)
+  },
+  /**
+   * Verify that the Search page is loaded correctly.
+   */
+  shouldLoad: () => {
+    searchPage.shouldLoadPageHeader()
+    searchPage.shouldFindNoSkeleton()
+    cy.get('.pf-c-title').filter(':contains(Search)').should('exist')
+    searchPage.shouldFindSearchInputBar()
+  },
+  /**
+   * Verify that the page header should be loaded correctly.
+   */
+  shouldLoadPageHeader: () => {
+    cy.get('.pf-c-page__header').should('be.visible')
+  },
+  /**
+   * Verify that the Search page should have loaded the resource table.
+   */
+  shouldLoadResults: () => {
+    cy.get('table.pf-c-table').should('exist')
+  },
+  /**
+   * Verify that the first suggested value is selected from the suggested tags within the Search page.
+   */
+  shouldSelectFirstSuggestionValue: () => {
+    cy.get('.react-tags__suggestions ul#ReactTags')
+      .should('exist')
+      .children()
+      .should('have.length.above', 1)
+    cy.get('li#ReactTags-1').click()
+  },
+  /**
+   * Verify that the current search query is valid within the Search page.
+   */
+  shouldValidateSearchQuery: () => {
+    searchPage.shouldLoadResults()
+    cy.get('.pf-c-alert pf-m-inline pf-m-danger').should('not.exist')
+  },
+  /**
+   * Verify that the managed cluster endpoint is available within the Search page.
+   */
+  shouldValidateManagedCluster: () => {
+    searchBar.whenEnterTextInSearchBar('ManagedClusterJoined', 'True')
+    searchPage.shouldLoadResults()
+  },
+  shouldVerifyPodsLogsInResourceTable: () => {
+    cy.get(`td[data-label="Name"]`)
+      .should('exist')
+      .each(($td) => {
+        searchPage.whenGoToResourceDetailItemPage('pod', $td.text())
+        podDetailPage.whenClickOnLogsTab()
+        podDetailPage.shouldSeeLogs()
+        cy.go('back')
+      })
+  },
+  shouldValidatePodsInResourceTableRunning: () => {
+    cy.get('table.pf-c-table')
+      .should('exist')
+      .within(() => {
+        cy.get('td[data-label="Status"]').each(($td) => {
+          cy.wrap($td).should('contain.text', 'Running')
+        })
+      })
+  },
+  /**
+   * Verify that the managed cluster pods should be in the running state.
+   */
+  shouldVerifyManagedClusterPodsAreRunning: () => {
+    searchPage.shouldValidatePodsInResourceTableRunning()
+  },
+  /**
+   * Get the resource table row of the specified kind resource object and deletes the resource within the Search page.
+   * @param {string} kind The kind of the test resource object that will be deleted.
+   * @param {string} name The name of the test resource object that will be deleted.
+   * @param {string} namespace The namespace from which the resource object will be deleted.
+   */
   whenDeleteResourceDetailItem: (resource, name) => {
     searchPage
       .whenGetResourceTableRow(resource, name)
-      .find('.pf-c-dropdown__toggle', { timeout: 2000 })
+      .find('.pf-c-dropdown__toggle')
       .click({ force: true })
-    cy.get('button.pf-c-dropdown__menu-item', { timeout: 2000 })
+    cy.get('button.pf-c-dropdown__menu-item')
       .should('contain', `Delete ${resource}`)
       .click()
-      .wait(1000)
     popupModal.whenAccept()
   },
-  whenGoToResourceDetailItemPage: (resource, name) => {
-    searchPage
-      .whenGetResourceTableRow(resource, name)
-      .find('td')
-      .eq(0)
-      .find('a')
-      .click({ force: true })
-  },
+  /**
+   *
+   * @param {string} cluster The test cluster environment from which the resource object will be deleted.
+   * @param {string} name The namespace that will be deleted from the test cluster environment.
+   */
   whenDeleteNamespace: (namespace, options) => {
     var ignoreIfDoesNotExist = getOpt(options, 'ignoreIfDoesNotExist', true)
     var deleteFn = () =>
@@ -71,171 +264,86 @@ export const searchPage = {
       deleteFn()
     }
   },
-
-  shouldPageBeReady: () =>
-    cy.waitUntilAttrIs(
-      '.react-tags__search-input',
-      'placeholder',
-      SEARCH_MESSAGES_INPUT_PLACE_HOLDER
-    ),
-
-  whenReloadUntilFindResults: (options) => {
-    cy.reloadUntil(async () => {
-      cy.get('.pf-c-table', { timeout: 30000 })
-    }, options)
-  },
-
-  shouldLoadResults: () =>
-    cy.get('.pf-c-spinner', { timeout: 30000 }).should('not.exist'),
-
-  shouldLoad: () => {
-    cy.get('.react-tags')
-    cy.get('.react-tags__search-input')
-    cy.get('div.pc-f-skeleton').should('not.exist')
-  },
-  whenToClickHelpIcon: () => {
-    cy.get('[data-test="about-dropdown"]').click()
-  },
-  whenToClickTabInHelpIcon: (tab) => {
-    cy.get('.pf-c-app-launcher__menu.pf-m-align-right')
-
-    if (tab === 'About') {
-      cy.get('button.pf-c-app-launcher__menu-item')
-        .should('contain', tab)
-        .click()
-      cy.get('.pf-c-about-modal-box')
-
-      cy.get('.pf-c-about-modal-box__body')
-      cy.get('.pf-c-spinner.pf-m-md').should('not.exist')
-
-      cy.get('.version-details__no')
-        .invoke('text')
-        .then(() => {
-          cy.get('.version-details__no').should(
-            'contain',
-            Cypress.env('ACM_VERSION') ? Cypress.env('ACM_VERSION') : '2.4'
-          )
-        })
-
-      cy.get('.pf-c-about-modal-box__close')
-      cy.get(`[aria-label="Close Dialog"]`).click()
-    } else {
-      cy.get('li a.pf-c-app-launcher__menu-item')
-        .should('contain', tab)
-        .and('have.attr', 'href')
-        .should('contain', 'documentation')
-    }
-  },
-  shouldFindNoResults: () => {
-    cy.get('.pf-c-alert__title', { timeout: 30000 }).should(
-      'contain',
-      SEARCH_MESSAGES_NO_RESULTS
-    )
-  },
-  shouldValidateSearchQuery: () => {
-    searchPage.shouldLoadResults()
-    cy.get('.pf-c-alert pf-m-inline pf-m-danger').should('not.exist')
-  },
-  shouldValidateManagedCluster: () => {
-    searchBar.whenFocusSearchBar()
-    searchBar.whenEnterTextInSearchBar('ManagedClusterJoined', 'True')
-  },
-  shouldSelectFirstSuggestionValue: () => {
-    cy.get('.react-tags__suggestions ul#ReactTags')
+  /**
+   * Expands the related resources tiles located within the Search page.
+   */
+  whenExpandRelationshipTiles: () => {
+    cy.get('.pf-c-skeleton').should('not.exist')
+    cy.get('.pf-l-gallery')
       .children()
       .should('have.length.above', 1)
-    cy.get('li#ReactTags-1').click()
-  },
-  shouldVerifyManagedClusterPodsAreRunning: (name, checkLogs) => {
-    searchBar.whenFilterByKind('pod')
-    searchBar.whenFilterByCluster(name)
-    searchBar.whenEnterTextInSearchBar('namespace')
-    cy.wait(2500) // Adding a delay to ensure that the namespace suggestion values are indeed populated and returned for the test to use.
-
-    cy.get('.react-tags__suggestions ul#ReactTags')
-      .children()
-      .then((elem) => {
-        if (elem.length <= 1) {
-          // If the namespaces aren't returned, there's a good chance the cluster resources has been deleted.
-          cy.log(`Cluster: ${name} has not returned any namespace values...`) // Adding this test condition case for the canary.
-        } else {
-          searchPage.shouldSelectFirstSuggestionValue()
-          searchPage.shouldLoadResults()
-          cy.get(`[data-label="Status"]`).should('contain', 'Running')
-
-          if (checkLogs) {
-            cy.get(`td[data-label="Name"]`).each(($el) => {
-              searchPage.whenGoToResourceDetailItemPage('pod', $el.text())
-              podDetailPage.whenClickOnLogsTab()
-              cy.go('back')
-            })
-          }
-        }
+      .then(() => {
+        cy.get('button.pf-c-button.pf-m-secondary').focus().click()
       })
   },
-  shouldFindRelationshipTile: (resource, count) => {
-    cy.get('.pf-c-page__main-section').should('contain', `${count}`)
-    cy.get('.pf-c-page__main-section').should('contain', `Related ${resource}`)
-  },
+  /**
+   * Returns the resource table row for a resource that contains the targeted name within a given namespace.
+   * @param {string} kind The kind of the test resource object
+   * @param {string} name The name of the test resource object
+   * @param {string} namespace The namespace of the test resource object.
+   * @returns {Cypress.Chainable} Table row of the targeted test resource.
+   */
+  whenGetResourceTableRow: (kind, name, namespace) => {
+    cy.get('.pf-c-expandable-section')
+      .filter(`:contains(${capitalize(kind)})`)
+      .should('exist')
+    cy.get('table.pf-c-table').should('exist')
 
-  shouldFindResourceDetail: (resource) => {
-    cy.contains('.search--resource-table-header-button', resource, {
-      timeout: 6000,
-    })
+    if (namespace) {
+      return cy.get('tr').filter(`:contains(${name})`).and('contain', namespace)
+    } else {
+      return cy.get('tr').filter(`:contains(${name})`)
+    }
   },
-  shouldFindAnyResourceDetail: () => {
-    cy.get('.search--resource-table-header-button', { timeout: 6000 })
+  /**
+   * Navigate the test user to the details page of the resource object.
+   * @param {string} kind The kind of the test resource object
+   * @param {string} name The name of the test resource object
+   * @param {string} namespace The namespace of the test resource object.
+   */
+  whenGoToResourceDetailItemPage: (kind, name, namespace) => {
+    searchPage
+      .whenGetResourceTableRow(kind, name, namespace)
+      .find('td[data-label="Name"]')
+      .click()
   },
-  shouldFindResourceDetailItem: (resource, name) => {
-    searchPage.whenGetResourceTableRow(resource, name)
-  },
-  shouldBeResourceDetailItemCreatedFewSecondsAgo: (resource, name) => {
-    cy.reloadUntil(() => {
-      cy.wait(500)
-      searchPage.shouldLoadResults()
-      return cy.ifContains('td', SEARCH_MESSAGES_FEW_SECONDS_AGO)
-    })
-  },
-  shouldHaveCorrectNumberOfRunningPodsInNSByCluster: (
-    count,
-    ns,
-    clusterName
-  ) => {
-    searchBar.whenClearFilters()
-    searchBar.whenEnterTextInSearchBar('kind', 'pod')
-    searchBar.whenEnterTextInSearchBar('namespace', ns)
-    searchBar.whenEnterTextInSearchBar('status', 'Running')
-    searchBar.whenEnterTextInSearchBar('cluster', clusterName)
-    cy.get('.pf-c-expandable-section__toggle').contains(`Pod (${count})`)
-  },
-  shouldFindApplicationInNS: (appName, ns) => {
-    searchBar.whenClearFilters()
-    searchBar.whenEnterTextInSearchBar('namespace', ns)
-    searchBar.whenEnterTextInSearchBar('kind', 'application')
-    searchBar.whenEnterTextInSearchBar('name', appName)
-    searchPage.shouldLoadResults()
-  },
-  shouldDeleteApplicationInNS: (appName, ns) => {
-    searchPage.whenDeleteResourceDetailItem('application', appName)
-    searchPage.shouldFindNoResults()
+  /**
+   * Navigate the test user to the Search page within the ACM console.
+   */
+  whenGoToSearchPage: () => {
+    cy.visit('/search')
+    searchPage.shouldLoad()
   },
 }
 
+/**
+ * Search bar object for the Search page within the ACM console.
+ */
 export const searchBar = {
-  whenFocusSearchBar: () => {
-    cy.get('.react-tags').click()
+  /**
+   * Verify that the search page should specified tags within the search input field.
+   * @param {string} filter The search filter that should be used to filter the search results.
+   */
+  shouldContainTag: (filter) => {
+    cy.get('.react-tags__selected-tag-name').should('contain', filter)
   },
-  whenClearFilters: () => {
-    cy.get('#clear-all-search-tags-button').click({ force: true })
+  /**
+   * Verify that the search page should suggest values for the search query to add values within the search input field.
+   * @param {string} value The value that will be entered trigger the suggested values filers to appear.
+   */
+  shouldSuggestValues: (value) => {
+    cy.get('.react-tags__search-input').click().type(value).type(' ')
+    cy.get('.react-tags__suggestions ul#ReactTags')
+      .should('exist')
+      .children()
+      .should('have.length.above', 1)
   },
-  whenSuggestionsAreAvailable: (value, ignoreIfDoesNotExist) => {
-    if (!ignoreIfDoesNotExist) {
-      cy.get('.react-tags__suggestions ul#ReactTags')
-        .children()
-        .should('have.length.above', 1)
-    }
-    cy.get('.react-tags__search-input').click().type(value)
-  },
+  /**
+   * Enter specified input value into the search bar on the Search page.
+   * @param {string} property
+   * @param {string} value
+   * @param {bool} ignoreIfDoesNotExist
+   */
   whenEnterTextInSearchBar: (property, value, ignoreIfDoesNotExist) => {
     cy.get('.react-tags__search-input').click()
     searchBar.whenSuggestionsAreAvailable(property, ignoreIfDoesNotExist)
@@ -247,27 +355,41 @@ export const searchBar = {
       cy.get('.react-tags__search-input').type(' ')
     }
   },
+  /**
+   * Sets the page focus to the search bar input field element.
+   */
+  whenFocusSearchBar: () => {
+    cy.get('.react-tags').click()
+  },
+  /**
+   * Filter for the specified cluster within the search bar on the Search page.
+   * @param {string} cluster The cluster of the resource object to query for within the search input bar.
+   * @param {bool} ignoreIfDoesNotExist Option to ignore the Search page prompts (No results found...) if resource is not found.
+   */
   whenFilterByCluster: (cluster, ignoreIfDoesNotExist) => {
     searchBar.whenEnterTextInSearchBar('cluster', cluster, ignoreIfDoesNotExist)
   },
-  whenFilterByClusterAndNamespace: (
-    cluster,
-    namespace,
-    ignoreIfDoesNotExist
-  ) => {
-    searchBar.whenFilterByCluster(cluster, ignoreIfDoesNotExist)
-    searchBar.whenEnterTextInSearchBar(
-      'namespace',
-      namespace,
-      ignoreIfDoesNotExist
-    )
-  },
+  /**
+   * Filter for the specified kind within the search bar on the Search page.
+   * @param {string} kind The kind of the resource object to query for within the search input bar.
+   * @param {bool} ignoreIfDoesNotExist Option to ignore the Search page prompts (No results found...) if resource is not found.
+   */
   whenFilterByKind: (kind, ignoreIfDoesNotExist) => {
     searchBar.whenEnterTextInSearchBar('kind', kind, ignoreIfDoesNotExist)
   },
+  /**
+   * Filter for the specified name within the search bar on the Search page.
+   * @param {string} name The name of the resource object to query for within the search input bar.
+   * @param {bool} ignoreIfDoesNotExist Option to ignore the Search page prompts (No results found...) if resource is not found.
+   */
   whenFilterByName: (name, ignoreIfDoesNotExist) => {
     searchBar.whenEnterTextInSearchBar('name', name, ignoreIfDoesNotExist)
   },
+  /**
+   * Filter for the specified namespace within the search bar on the Search page.
+   * @param {string} namespace The namespace of the resource object to query for within the search input bar.
+   * @param {bool} ignoreIfDoesNotExist Option to ignore the Search page prompts (No results found...) if resource is not found.
+   */
   whenFilterByNamespace: (namespace, ignoreIfDoesNotExist) => {
     searchBar.whenEnterTextInSearchBar(
       'namespace',
@@ -275,16 +397,28 @@ export const searchBar = {
       ignoreIfDoesNotExist
     )
   },
-  whenSelectFirstSuggestedValue: () => {
-    searchBar.shouldSuggestValues()
-
-    cy.get('.react-tags__suggestions li[role="option"]').eq(1).click()
+  /**
+   * Select the first suggested value from the suggested filters when entering a search query in the input field.
+   * @param {string} filter The filter from which the suggested value will be selected from.
+   */
+  whenSelectFirstSuggestedValue: (filter) => {
+    searchBar.shouldSuggestValues(filter)
+    cy.get('.react-tags__suggestions ul#ReactTags').within(() => {
+      cy.get('li').not('.is-disabled').first().click()
+    })
+    searchPage.shouldLoadResults()
   },
-  shouldSuggestValues: () => {
-    cy.waitUntilNotContains(
-      '.react-tags__suggestions',
-      SEARCH_MESSAGES_LOADING_SUGGESTIONS,
-      { timeout: 60000, interval: 100 }
-    )
+  /**
+   * Verify that the suggested filters and values are available within the Search page when entering input into the search bar.
+   * @param {string} value
+   * @param {bool} ignoreIfDoesNotExist
+   */
+  whenSuggestionsAreAvailable: (value, ignoreIfDoesNotExist) => {
+    if (!ignoreIfDoesNotExist) {
+      cy.get('.react-tags__suggestions ul#ReactTags')
+        .children()
+        .should('have.length.above', 1)
+    }
+    cy.get('.react-tags__search-input').click().type(value)
   },
 }

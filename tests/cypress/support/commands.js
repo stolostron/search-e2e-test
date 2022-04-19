@@ -34,21 +34,34 @@ import { getOpt } from '../scripts/utils'
 import 'cypress-wait-until'
 
 Cypress.Commands.add(
-  'login',
-  (OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OPTIONS_HUB_OC_IDP) => {
+  'visitAndLogin',
+  (URL, OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OPTIONS_HUB_OC_IDP) => {
     var user = OPTIONS_HUB_USER || Cypress.env('OPTIONS_HUB_USER')
     var password = OPTIONS_HUB_PASSWORD || Cypress.env('OPTIONS_HUB_PASSWORD')
     var idp = OPTIONS_HUB_OC_IDP || Cypress.env('OPTIONS_HUB_OC_IDP')
-    cy.visit('/search')
-    cy.get('body').then((body) => {
-      // Check if logged in
-      if (body.find('#header').length === 0) {
-        // Check if identity providers are configured
-        if (body.find('form').length === 0) cy.contains(idp).click()
-        cy.get('#inputUsername').click().focused().type(user)
-        cy.get('#inputPassword').click().focused().type(password)
-        cy.get('button[type="submit"]').click()
-        cy.get('.pf-c-page__header', { timeout: 30000 })
+
+    cy.visit(URL)
+
+    cy.url().then((res) => {
+      if (res.includes('oauth-openshift')) {
+        cy.log(
+          'The current user is logged out of the ACM console. Attempting to log into the console.'
+        )
+
+        cy.get('body').then((body) => {
+          // Check if logged in
+          if (body.find('#header').length === 0) {
+            // Check if identity providers are configured
+            if (body.find('form').length === 0) cy.contains(idp).click()
+
+            cy.get('#inputUsername').click().focused().type(user)
+            cy.get('#inputPassword').click().focused().type(password)
+            cy.get('button[type="submit"]').click()
+            cy.get('.pf-c-page__header')
+          }
+        })
+      } else {
+        cy.log('Confirmed that the user is logged. Procceding with the test.')
       }
     })
   }

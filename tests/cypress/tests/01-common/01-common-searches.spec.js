@@ -6,46 +6,57 @@
 /// <reference types="cypress" />
 
 import { squad, tags } from '../../config'
-import { cliHelper } from '../../scripts/cliHelper'
+import { application, namespace } from '../../../common-lib/resources'
+import {
+  cliHelper,
+  generateNewMultiResourceState,
+  resetNewMultiResourceState,
+} from '../../scripts/cliHelper'
 import { searchPage } from '../../views/search'
 
-const postfix = Date.now()
-const appName = `auto-test-app-${postfix}`
+// Generate namespace for resource instances.
+const ns = cliHelper.generateNamespace()
 
-const namespace = cliHelper.generateNamespace()
+// Generate resource for test instances.
+const resources = [namespace(ns), application(ns)]
 
 describe(
   'RHACM4K-913: Search - common filter and conditions',
   { tags: tags.env },
   function () {
-    context(
-      'prereq: create resource with oc command and log into the ACM console',
-      { tags: tags.required },
-      function () {
-        it(`[P1][Sev1][${squad}] should create namespace and application`, function () {
-          cliHelper.createNamespace(namespace)
-          cliHelper.createApplication(appName, namespace)
-        })
+    before(function () {
+      // Resetting test state to new state.
+      resetNewMultiResourceState(resources)
+    })
 
-        it(`[P1][Sev1][${squad}] should login`, function () {
-          cy.login()
-        })
-      }
-    )
+    beforeEach(function () {
+      // Log into the cluster ACM console.
+      cy.visitAndLogin('/multicloud/welcome')
+
+      // Generate new resource state for the test environment.
+      generateNewMultiResourceState(resources)
+      searchPage.whenGoToSearchPage()
+    })
+
+    after(function () {
+      cliHelper.deleteResource(resources[0], { failOnNonZeroExit: false })
+    })
 
     context(
       'verify: search result with common filter and conditions',
       { tags: tags.modes },
       function () {
-        beforeEach(function () {
-          cliHelper.checkIfLoggedIn()
-          searchPage.whenGoToSearchPage()
-        })
-
         it(`[P2][Sev2][${squad}] should find expected application and delete application`, function () {
-          searchPage.shouldFindApplicationInNS(appName, namespace)
-          searchPage.shouldDeleteApplicationInNS(appName, namespace)
-          cliHelper.deleteNamespace(namespace)
+          searchPage.shouldFindKindResourceInNamespace(
+            resources[1].kind,
+            resources[1].name,
+            resources[1].namespace
+          )
+          searchPage.shouldDeleteKindResourceInNameSpace(
+            resources[1].kind,
+            resources[1].name,
+            resources[1].namespace
+          )
         })
       }
     )

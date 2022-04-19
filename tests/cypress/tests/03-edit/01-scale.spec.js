@@ -13,10 +13,14 @@ import {
   resetNewMultiResourceState,
 } from '../../scripts/cliHelper'
 import { searchPage, searchBar } from '../../views/search'
-import { podDetailPage } from '../../views/podDetailPage'
+import { deploymentDetailPage } from '../../views/deploymentDetailPage'
 
 const clusterModes = [
-  { label: 'Local', valueFn: () => cy.wrap('local-cluster'), skip: false },
+  {
+    label: 'Local',
+    valueFn: () => cy.wrap('local-cluster'),
+    skip: false,
+  },
   {
     label: 'Managed',
     valueFn: () => cliHelper.getTargetManagedCluster(),
@@ -40,7 +44,7 @@ clusterModes.forEach((clusterMode) => {
   const resources = [namespace(ns), deployment(ns)]
 
   describe(
-    `Search: Search in ${clusterMode.label} Cluster`,
+    `RHACM4K-1574: Search: Search in ${clusterMode.label} Cluster`,
     { tags: tags.env },
     function () {
       before(function () {
@@ -56,9 +60,7 @@ clusterModes.forEach((clusterMode) => {
         cy.visitAndLogin('/multicloud/welcome')
 
         // Generate new resource state for the test environment.
-        generateNewMultiResourceState(resources, {
-          kubeconfig: clusterMode.kubeconfig,
-        })
+        generateNewMultiResourceState(resources)
         searchPage.whenGoToSearchPage()
       })
 
@@ -71,7 +73,7 @@ clusterModes.forEach((clusterMode) => {
       })
 
       context(
-        'search resources: verify resource deployment pod logs',
+        'search resources: verify edit yaml function and scale resources',
         { tags: tags.modes },
         function () {
           beforeEach(function () {
@@ -81,15 +83,28 @@ clusterModes.forEach((clusterMode) => {
             )
           })
 
-          it(`[P2][Sev2][${squad}] should see pod logs`, function () {
+          it(`[P2][Sev2][${squad}] should delete pod`, function () {
             searchBar.whenFilterByKind('pod')
-            searchPage.whenGoToResourceDetailItemPage(
+            searchPage.whenDeleteResourceDetailItem('pod', 'auto-test-deploy')
+            searchPage.shouldFindResourceDetailItemCreatedFewSecondsAgo(
               'pod',
-              'auto-test-deploy',
-              resources[1].namespace
+              'auto-test-deploy'
             )
-            podDetailPage.whenClickOnLogsTab()
-            podDetailPage.shouldSeeLogs('serving on')
+          })
+
+          it(`[P3][Sev3][${squad}] should edit yaml and scale deployment`, function () {
+            searchBar.whenFilterByKind('deployment')
+            searchPage.whenGoToResourceDetailItemPage(
+              'deployment',
+              'auto-test-deploy'
+            )
+            deploymentDetailPage.whenScaleReplicasTo(2)
+          })
+
+          it(`[P3][Sev3][${squad}] should verify that the deployment scaled`, function () {
+            searchBar.whenFilterByKind('deployment')
+            searchPage.whenGetResourceTableRow('deployment', 'auto-test-deploy')
+            searchPage.shouldFindRelationshipTile('pod', '2')
           })
         }
       )

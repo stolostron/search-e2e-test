@@ -5,30 +5,41 @@
 
 /// <reference types="cypress" />
 
-// import { popupModal } from '../views/popup'
-
+/**
+ * Deployment resource details page that is accessible through the ACM Search page.
+ */
 export const deploymentDetailPage = {
+  /**
+   * Navigate to the kind deployment resource yaml details from Search and edit the replica count so pod resources can scale.
+   * @param {string} expected The expected string within the logs returned inside of the pod container.
+   */
   whenScaleReplicasTo: (replicas) => {
-    cy.wait(2000) // DOM element tends to detach within cypress at this point. Adding a slight delay to avoid that scenario.
-    cy.get('button.pf-m-primary').click({ force: true }).wait(1000)
+    cy.get('.pf-c-page__main-section').should('exist')
+    cy.get('p').filter(':contains(Read only)').should('exist')
+    cy.get('button.pf-c-button.pf-m-primary[aria-disabled="false"]')
+      .should('exist')
+      .click()
+    cy.get('p').filter(':contains(Editing mode)').should('exist')
     cy.get('.react-monaco-editor-container')
+      .should('exist')
       .click()
       .type(Cypress.platform !== 'darwin' ? '{ctrl}f' : '{meta}f')
       .get('.find-widget .monaco-inputbox textarea:first')
-      .focus()
       .click()
       .type('replicas: 1')
     cy.get('.react-monaco-editor-container .view-line > span')
-      .filter(':contains("replicas:")')
-      .contains('1')
-      .parent()
-      .find('span:last')
+      .should('exist')
+      .filter(':contains(replicas:)')
+      .contains(1)
+      .should('exist')
       .click()
       .focused()
       .type('{del}' + replicas)
     cy.get('button.pf-m-primary')
       .filter(':contains("Save")')
-      .click({ timeout: 10000, force: true })
-    // popupModal.whenAccept() // FIXME: Code bug? We don't have a confirmation modal.
+      .should('exist')
+      .click()
+    cy.get('p').filter(':contains(Read only)').should('exist')
+    cy.reload()
   },
 }
