@@ -31,17 +31,17 @@ describe(
       'verify: managed cluster resource endpoint',
       { tags: tags.modes },
       () => {
-        beforeEach(function () {
+        it(`[P3][Sev3][${squad}] should verify endpoint pods are all in running state`, function () {
           searchPage.shouldFindKindInCluster('pod', this.clusterName)
           searchBar.whenEnterTextInSearchBar('namespace')
           searchPage.shouldSelectFirstSuggestionValue()
-        })
-
-        it(`[P3][Sev3][${squad}] should verify endpoint pods are all in running state`, function () {
           searchPage.shouldVerifyManagedClusterPodsAreRunning()
         })
 
         it(`[P3][Sev3][${squad}] should verify the yaml information is correct and there are no errors in the logs`, function () {
+          searchPage.shouldFindKindInCluster('pod', this.clusterName)
+          searchBar.whenEnterTextInSearchBar('namespace')
+          searchPage.shouldSelectFirstSuggestionValue()
           searchPage.shouldVerifyManagedClusterPodsAreRunning()
           searchPage.shouldVerifyPodsLogsInResourceTable()
         })
