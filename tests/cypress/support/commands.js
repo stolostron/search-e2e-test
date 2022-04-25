@@ -161,11 +161,8 @@ Cypress.Commands.add('logout', () => {
     if (Cypress.config().baseUrl.includes('localhost')) {
       cy.contains('Logout').click().clearCookies()
     } else {
-      cy.contains('Logout').click()
-      cy.wait(4000)
-      cy.location('pathname')
-        .should('match', new RegExp('/oauth/authorize(\\?.*)?$'))
-        .clearCookies()
+      cy.contains('Logout').click().clearCookies()
+      cy.wait(4000) // Wait for the user to log out the console successfully.
     }
   })
 })
