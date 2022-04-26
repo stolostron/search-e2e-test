@@ -20,15 +20,9 @@ describe(
   'RHACM4K-1262 - Search: multiple managedclusters base tests',
   { tags: tags.env },
   function () {
-    context(
-      'prereq: user should log into the ACM console',
-      { tags: tags.required },
-      function () {
-        it(`[P1][Sev1][${squad}] should login`, function () {
-          cy.login()
-        })
-      }
-    )
+    beforeEach(function () {
+      cy.visitAndLogin('/multicloud/home/welcome')
+    })
 
     context(
       'verify: multicluster managed base',
@@ -69,10 +63,6 @@ describe(
 
         it(`[P2][Sev2][${squad}] should logout`, function () {
           cy.logout()
-        })
-
-        it(`[P2][Sev2][${squad}] should login`, function () {
-          cy.login()
         })
 
         it(`[P2][Sev2][${squad}] should be able to find the saved searches after logging back in`, function () {

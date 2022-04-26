@@ -12,7 +12,7 @@ export const cliHelper = {
         cy.log(
           'Detected that the user is logged out of the ACM console. Attempting to log in again.'
         )
-        cy.login()
+        cy.visitAndLogin('/multicloud/home/welcome')
       } else {
         cy.log('Confirmed that the user is logged. Procceding with the test.')
       }

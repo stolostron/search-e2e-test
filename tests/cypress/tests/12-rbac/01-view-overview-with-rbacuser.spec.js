@@ -40,7 +40,7 @@ describe(
             `[P1][Sev1][${squad}] Login: ${user} user`,
             { tags: tags.required },
             function () {
-              cy.login(user, password, IDP)
+              cy.visitAndLogin('/multicloud/home/welcome', user, password, IDP)
             }
           )
 

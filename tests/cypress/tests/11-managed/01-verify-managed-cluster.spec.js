@@ -22,7 +22,7 @@ describe(
       { tags: tags.required },
       function () {
         it(`[P1][Sev1][${squad}] should login`, function () {
-          cy.login()
+          cy.visitAndLogin('/multicloud/home/welcome')
         })
       }
     )
