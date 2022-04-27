@@ -14,7 +14,7 @@ describe('RHACM4K-413: Search: Linked page', { tags: [] }, function () {
     { tags: tags.required },
     function () {
       it(`[P1][Sev1][${squad}] should login`, function () {
-        cy.login()
+        cy.visitAndLogin('/multicloud/home/welcome')
       })
     }
   )
