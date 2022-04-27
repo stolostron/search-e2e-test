@@ -23,7 +23,7 @@ if (Cypress.env('TEST_ENV') === 'rosa') {
   ignore = ['@RBAC']
 }
 
-describe.skip(
+describe(
   'RBAC users to read the Overview page',
   { tags: tags.env },
   function () {
@@ -46,7 +46,6 @@ describe.skip(
 
           it(`[P2][Sev2][${squad}] As an user with name ${user} with ${roleAccess[3]}-role-binding of default ${roleAccess[2]} role, the user can read the Overview page.`, function () {
             overviewPage.whenGoToOverviewPage()
-            overviewPage.shouldLoad()
             overviewPage.shouldHaveLinkToSearchPage()
           })
 
