@@ -246,7 +246,7 @@ export const searchPage = {
     searchPage
       .whenGetResourceTableRow(kind, name, namespace)
       .find('td[data-label="Name"]')
-      .click()
+      .click({ force: true })
   },
   /**
    * Navigate the test user to the Search page within the ACM console.
