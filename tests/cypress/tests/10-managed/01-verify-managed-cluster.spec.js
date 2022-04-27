@@ -37,14 +37,6 @@ describe(
           searchPage.shouldSelectFirstSuggestionValue()
           searchPage.shouldVerifyManagedClusterPodsAreRunning()
         })
-
-        it(`[P3][Sev3][${squad}] should verify the yaml information is correct and there are no errors in the logs`, function () {
-          searchPage.shouldFindKindInCluster('pod', this.clusterName)
-          searchBar.whenEnterTextInSearchBar('namespace')
-          searchPage.shouldSelectFirstSuggestionValue()
-          searchPage.shouldVerifyManagedClusterPodsAreRunning()
-          searchPage.shouldVerifyPodsLogsInResourceTable()
-        })
       }
     )
   }
