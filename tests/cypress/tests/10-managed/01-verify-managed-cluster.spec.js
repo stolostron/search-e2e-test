@@ -7,7 +7,7 @@
 
 import { squad, tags } from '../../config'
 import { cliHelper } from '../../scripts/cliHelper'
-import { searchPage } from '../../views/search'
+import { searchBar, searchPage } from '../../views/search'
 
 describe(
   'RHACM4K-912: Search: Verify the managed cluster info in the search page',
@@ -23,23 +23,19 @@ describe(
       searchPage.whenGoToSearchPage()
     })
 
+    it(`[P3][Sev3][${squad}] should validate the endpoint version for the managed clusters are accurate`, function () {
+      searchPage.shouldValidateManagedCluster()
+    })
+
     context(
       'verify: managed cluster resource endpoint',
       { tags: tags.modes },
       () => {
-        it(`[P3][Sev3][${squad}] should validate the endpoint version for the managed clusters are accurate`, function () {
-          searchPage.shouldValidateManagedCluster()
-        })
-
         it(`[P3][Sev3][${squad}] should verify endpoint pods are all in running state`, function () {
-          searchPage.shouldVerifyManagedClusterPodsAreRunning(this.clusterName)
-        })
-
-        it(`[P3][Sev3][${squad}] should verify the yaml information is correct and there are no errors in the logs`, function () {
-          searchPage.shouldVerifyManagedClusterPodsAreRunning(
-            this.clusterName,
-            true
-          )
+          searchPage.shouldFindKindInCluster('pod', this.clusterName)
+          searchBar.whenEnterTextInSearchBar('namespace')
+          searchPage.shouldSelectFirstSuggestionValue()
+          searchPage.shouldVerifyManagedClusterPodsAreRunning()
         })
       }
     )

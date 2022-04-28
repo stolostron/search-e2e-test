@@ -157,24 +157,31 @@ export const searchPage = {
     searchBar.whenEnterTextInSearchBar('ManagedClusterJoined', 'True')
     searchPage.shouldLoadResults()
   },
+  shouldVerifyPodsLogsInResourceTable: () => {
+    cy.get(`td[data-label="Name"]`)
+      .should('exist')
+      .each(($td) => {
+        searchPage.whenGoToResourceDetailItemPage('pod', $td.text())
+        podDetailPage.whenClickOnLogsTab()
+        podDetailPage.shouldSeeLogs()
+        cy.go('back')
+      })
+  },
+  shouldValidatePodsInResourceTableRunning: () => {
+    cy.get('table.pf-c-table')
+      .should('exist')
+      .within(() => {
+        cy.get('td[data-label="Status"]').each(($td) => {
+          cy.wrap($td).should('contain.text', 'Running')
+        })
+      })
+  },
   shouldValidateSearchQuery: () => {
     searchPage.shouldLoadResults()
     cy.get('.pf-c-alert pf-m-inline pf-m-danger').should('not.exist')
   },
-  shouldVerifyManagedClusterPodsAreRunning: (cluster, checkLogs) => {
-    searchPage.shouldFindKindInCluster('pod', cluster)
-    searchBar.whenEnterTextInSearchBar('namespace')
-    searchPage.shouldSelectFirstSuggestionValue()
-    searchPage.shouldLoadResults()
-    cy.get(`[data-label="Status"]`).should('contain', 'Running')
-
-    if (checkLogs) {
-      cy.get(`td[data-label="Name"]`).each(($el) => {
-        searchPage.whenGoToResourceDetailItemPage('pod', $el.text())
-        podDetailPage.whenClickOnLogsTab()
-        cy.go('back')
-      })
-    }
+  shouldVerifyManagedClusterPodsAreRunning: () => {
+    searchPage.shouldValidatePodsInResourceTableRunning()
   },
   /**
    * Expands the related resources tiles located within the Search page.
@@ -238,8 +245,7 @@ export const searchPage = {
   whenGoToResourceDetailItemPage: (kind, name, namespace) => {
     searchPage
       .whenGetResourceTableRow(kind, name, namespace)
-      .find('td')
-      .first()
+      .find('td[data-label="Name"]')
       .click()
   },
   /**
