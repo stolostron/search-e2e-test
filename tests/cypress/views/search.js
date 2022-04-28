@@ -243,9 +243,10 @@ export const searchPage = {
     searchPage.whenDeleteResourceDetailItem('namespace', name)
   },
   whenGoToResourceDetailItemPage: (kind, name, namespace) => {
-    searchPage.whenGetResourceTableRow(kind, name, namespace)
-    .find('td[data-label="Name"]')
-    .click()
+    searchPage
+      .whenGetResourceTableRow(kind, name, namespace)
+      .find('td[data-label="Name"]')
+      .click()
   },
   /**
    * Navigate the test user to the Search page within the ACM console.
