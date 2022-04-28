@@ -78,11 +78,3 @@ These are a few useful links that will help provide technical reference and best
 
 - [Cypress Docs](https://docs.cypress.io/guides/overview/why-cypress.html)
 - [NPM Docs](https://docs.npmjs.com)
-
-Created automated PR: 41-17-02-22
-
-Generated auto rebuild. View log file created: [update-log-02-18-22](https://github.com/stolostron/search-e2e-test/blob/main/.github/logs/update-log-02-18-22.txt)
-
-Generated auto rebuild. View log file created: [update-log-02-22-22](https://github.com/stolostron/search-e2e-test/blob/main/.github/logs/update-log-02-22-22.txt)
-
-Generated auto rebuild. View log file created: [update-log-02-28-22](https://github.com/stolostron/search-e2e-test/blob/main/.github/logs/update-log-02-28-22.md)
