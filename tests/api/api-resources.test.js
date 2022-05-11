@@ -2,7 +2,7 @@
 
 jest.retryTimes(global.retry)
 
-const { exec, execSync } = require('child_process')
+const { execSync } = require('child_process')
 const lodash = require('lodash')
 
 const squad = require('../../config').get('squadName')
@@ -14,12 +14,81 @@ const {
   sendRequest,
 } = require('../common-lib/clusterAccess')
 
-// Generate list of resources to be tested.
-const testList = ['configmap', 'deployment', 'pod', 'secret']
+// Set list to ignore resources that aren't being collected by Search.
+const ignoreKindResourceList = ['event']
 
-// Error
-const REQUESTED_RESOURCE_NOT_FOUND_ERROR =
-  'server could not find the requested resource'
+// Set list of resources that require filtering by api group.
+const requireAPIGroup = []
+
+/**
+ * Format filters for search queries.
+ * @param {*} kind The kind of resource to filter.
+ * @param {*} group The API group to filter the resources against.
+ * @param {*} namespace The namespace to filter the resources against.
+ * @param {*} cluster The cluster to filter the resources against.
+ * @returns `filter` Formatted array of object filters.
+ */
+function formatFilters(kind, group, namespace = '--all-namespaces', cluster = 'local-cluster') {
+  const filter = []
+
+  // Add namespace filter
+  if (namespace !== '--all-namespaces')
+    filter.push({ property: 'namespace', values: [namespace] })
+
+  // Add kind filter
+  filter.push({ property: 'kind', values: [kind] })
+
+  // Add group filter
+  if (group.useAPIGroup && group.name != 'v1')
+    filter.push({ property: 'apigroup', values: [group.name] })
+
+  // Add cluster filter
+  filter.push({ property: 'cluster', values: [cluster.name] })
+
+  return filter
+}
+
+/**
+ * Fetches all namespaced resources that has methods list and watch.
+ ** When fetching the api-resources, the data will be returned with the following format: [0]: NAME, [1]: SHORTNAMES, [2]: APIVERSIONS, [3]: NAMESPACED, [4]: KIND
+ ** If there are no short names, the array will be returned with the following format: [0]: NAME, [1]: APIVERSIONS, [2]: NAMESPACED, [3]: KIND
+ * @returns `resourceList` List of resource kinds that contains the following methods: (list, watch)
+ */
+function fetchAPIResourcesWithListWatchMethods() {
+  const resourceList = []
+
+  try {
+    execSync(
+      "oc api-resources --namespaced -o wide --sort-by=kind | grep -E 'list.*watch|watch.*list'"
+    )
+      .toLocaleString()
+      .split('\n')
+      .filter((resources) => resources)
+      .forEach((res) => {
+        var obj = { apigroup: '', kind: '' }
+
+        // We need to start off with slicing the string before the methods are listed. (i.e [get, list, watch])
+        // After the string is sliced, we need to split the string and filter out any empty data or whitespace.
+        const item = res
+          .slice(0, res.indexOf('['))
+          .split(' ')
+          .filter((data) => data)
+
+        if (item) {
+          obj.apigroup =
+            item.length < 5 ? item[1].split('/')[0] : item[2].split('/')[0]
+          obj.kind =
+            item.length < 5 ? item[3].toLowerCase() : item[4].toLowerCase()
+
+          resourceList.push(obj)
+        }
+      })
+  } catch (e) {
+    console.error(e)
+  }
+
+  return resourceList
+}
 
 /**
  * Base test for kubernetes
@@ -53,7 +122,7 @@ function baseTest(
     cmd += `--field-selector='metadata.namespace!=${process.env.OPTIONS_MANAGED_CLUSTER_NAME}'`
 
   // Uncomment the following line for debugging purposes.
-  console.debug(cmd)
+  // console.debug(cmd)
 
   try {
     res = removeEmptyEntries(
@@ -63,33 +132,32 @@ function baseTest(
     runTest = test.skip
   }
 
-  runTest(`[P2][Sev2][${squad}] verify data integrity for resource property: ${
-    apigroup.useAPIGroup ? kind : `${kind}.${apigroup.name}`
-  }`, async () => {
-    const filters = [
-      { property: 'cluster', values: [cluster.name] },
-      { property: 'kind', values: [kind] },
-    ]
+  runTest(
+    `[P2][Sev2][${squad}] verify data integrity for resource property: ${!apigroup.useAPIGroup ? kind : `${kind}.${apigroup.name}`}`,
+    async () => {
+      const filters = formatFilters(kind, apigroup, namespace, cluster)
 
-    if (namespace !== '--all-namespaces')
-      filters.push({ property: 'namespace', values: [namespace] })
+      // Fetch data from the search api.
+      var query = searchQueryBuilder({ filters })
 
-    if (apigroup.useAPIGroup && apigroup.name != 'v1')
-      filters.push({ property: 'apigroup', values: [apigroup.name] })
+      console.time(`search: ${kind}`)
+      var resp = await sendRequest(query, token)
+      console.timeEnd(`search: ${kind}`)
 
-    console.log(filters)
+      var searchResult = lodash
+        .get(resp, 'body.data.searchResult[0].items')
+        .filter((items) => items.namespace) // We're only interested in resources that have a namespace.
+        .map((item) => ({
+          cluster: item.cluster,
+          kind: item.kind,
+          name: item.name,
+          namespace: item.namespace,
+        }))
 
-    // Fetch data from the search api.
-    var query = searchQueryBuilder({ filters })
-    var resp = await sendRequest(query, token)
-
-    var searchResult = lodash.get(resp, 'body.data.searchResult[0].items')
-      .filter((items) => items.namespace)
-      .map((item) => ({ cluster: item.cluster, kind: item.kind, name: item.name, namespace: item.namespace }))
-
-    console.log(searchResult)
-    expect(searchResult.length).toEqual(res.length)
-  }, 20000)
+      expect(searchResult.length).toEqual(res.length)
+    },
+    20000
+  )
 }
 
 function getTargetManagedCluster() {
@@ -97,13 +165,11 @@ function getTargetManagedCluster() {
 
   try {
     // Fetch imported clusters attached to the hub cluster.
-    var managedClusters = removeEmptyEntries(
-      execSync(
-        'oc get managedclusters -o custom-columns=NAME:.metadata.name --no-headers'
-      )
-        .toString()
-        .split('\n')
+    var managedClusters = execSync(
+      'oc get managedclusters -o custom-columns=NAME:.metadata.name --no-headers'
     )
+      .toString()
+      .split('\n').filter((cluster) => cluster)
 
     console.info('Found the following clusters:', managedClusters)
 
@@ -118,8 +184,6 @@ function getTargetManagedCluster() {
           c.includes(process.env.OPTIONS_MANAGED_CLUSTER_NAME)
         )
       ) {
-        process.env.USE_OPTIONS_MANAGED_CLUSTER_NAME = true
-
         targetCluster = process.env.OPTIONS_MANAGED_CLUSTER_NAME
         return targetCluster
       }
@@ -171,56 +235,7 @@ function removeEmptyEntries(array) {
   return array.filter((val) => val.replace(/\s+/g, ' '))
 }
 
-// DONE
-/**
- * Fetches all namespaced resources.
- * When fetching the api-resources, the data will be returned with the following format: [0]: NAME, [1]: SHORTNAMES, [2]: APIVERSIONS, [3]: NAMESPACED, [4]: KIND
- * If there are no short names, the array will be returned with the following format: [0]: NAME, [1]: APIVERSIONS, [2]: NAMESPACED, [3]: KIND
- * @param {Array} resources
- * @returns
- */
-function fetchAllAPIResources(
-  user,
-  cluster = { type: 'hub', name: 'local-cluster' }
-) {
-  var resourceList = []
-  var cmd = `oc api-resources --no-headers --namespaced --sort-by=name`
-
-  if (cluster.type !== 'hub') {
-    console.log(
-      `Using managed cluster kubeconfig located at: ${process.env.OPTIONS_MANAGED_KUBECONFIG}`
-    )
-    cmd += `--kubeconfig=${process.env.OPTIONS_MANAGED_KUBECONFIG}`
-  }
-
-  try {
-    const resources = execSync(cmd).toLocaleString().split('\n')
-    resources.forEach((res) => {
-      var obj = { apigroup: '', kind: '' }
-
-      // Remove extra spaces from the string and split the string into smaller consumable parts.
-      const item = res.replace(/\s+/g, ' ').split(' ')
-
-      // Set the apigroup and kind properties of the resource object.
-      if (lodash.get(item, '[0]')) {
-        obj.apigroup =
-          item.length < 5 ? item[1].split('/')[0] : item[2].split('/')[0]
-        obj.kind =
-          item.length < 5 ? item[3].toLowerCase() : item[4].toLowerCase()
-
-        resourceList.push(obj)
-      }
-    })
-  } catch (err) {
-    console.error(
-      `Failed to fetch api resources from the cluster: ${cluster} with user ${user}`
-    )
-  }
-  return resourceList
-}
-
-// DONE
-describe('Search: api resources', () => {
+describe('Search: API Resources', () => {
   beforeAll(async () => {
     // Log in and get access token
     token = getToken()
@@ -232,29 +247,38 @@ describe('Search: api resources', () => {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
   })
 
+  // Generate list of clusters.
+  const clusterList = [{ type: 'hub', name: 'local-cluster', skip: false }]
+
   // Get managed cluster.
   const managedCluster = getTargetManagedCluster()
 
-  if (managedCluster && !process.env.OPTIONS_MANAGED_CLUSTER_NAME) {
-    console.info(`Setting OPTIONS_MANAGED_CLUSTER_NAME to: ${managedCluster}`)
-    process.env.OPTIONS_MANAGED_CLUSTER_NAME = managedCluster
+  if (managedCluster) {
+    // Set the managed cluster name within the environemnt.
+    if (!process.env.OPTIONS_MANAGED_CLUSTER_NAME || (managedCluster != process.env.OPTIONS_MANAGED_CLUSTER_NAME))
+      process.env.OPTIONS_MANAGED_CLUSTER_NAME = managedCluster
+
+    clusterList.push({
+      type: 'managed',
+      name: managedCluster,
+      skip: true,
+    })
   }
 
-  // Generate list of cluster to be tested.
-  const clusterList = [{ type: 'hub', name: 'local-cluster', skip: false }]
-  clusterList.push({ type: 'managed', name: managedCluster, skip: true })
+  // Fetch API resources and filter out the kinds that aren't collected by search.
+  var resourceList = fetchAPIResourcesWithListWatchMethods()
+    .filter((resource) => !ignoreKindResourceList.includes(resource.kind))
 
+  // Run tests for each test cluster environment.
   clusterList.forEach((cluster) => {
     if (!cluster.skip) {
-      var resourceList = fetchAllAPIResources('kubeamdin', cluster)
-
       resourceList.forEach((resource) => {
         // There can multiple occurrences of the same resource kind with different API groups; therefore
         // if we detect multiple we will then test based upon API groups.
-        const _ = resourceList.filter((res) => res.kind === resource.kind)
         var useAPIGroup = false
+        const _ = resourceList.filter((res) => res.kind === resource.kind)
 
-        if (_.length > 1) useAPIGroup = true
+        if (_.length > 1 || requireAPIGroup.includes(resource.kind)) useAPIGroup = true
 
         baseTest(
           resource.kind,
