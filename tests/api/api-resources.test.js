@@ -61,10 +61,6 @@ function baseTest(kind, apigroup, cluster = { type: 'hub', name: 'local-cluster'
       var endTime = performance.now()
       var totalElapsedTime = endTime - startTime
 
-      if (kind === 'pod') {
-        console.log('restarted here')
-      }
-
       var searchResources = formatResourcesFromSearch(resp)
       
       if (totalElapsedTime > 30000) {
