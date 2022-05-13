@@ -109,7 +109,7 @@ const getToken = (options = {}) => {
  * @returns {object} The query object.
  */
 function searchQueryBuilder(
-  { keywords = [], filters = [], limit = 2000 },
+  { keywords = [], filters = [], limit = 10000 },
   options = {}
 ) {
   // Return query built from passed arguments.
