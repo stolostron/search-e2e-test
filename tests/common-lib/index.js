@@ -3,14 +3,12 @@
 const { execSync } = require('child_process')
 const lodash = require('lodash')
 
-const squad = require('../../config').get('squadName')
-
 /**
  * Format filters for search queries.
- * @param {*} kind The kind of resource to filter.
- * @param {*} group The API group to filter the resources against.
- * @param {*} namespace The namespace to filter the resources against.
- * @param {*} cluster The cluster to filter the resources against.
+ * @param {string} kind The kind of resource to filter.
+ * @param {Object} group The API group to filter the resources against.
+ * @param {string} namespace The namespace to filter the resources against.
+ * @param {Object} cluster The cluster to filter the resources against.
  * @returns `filter` Formatted array of object filters.
  */
 function formatFilters(
@@ -253,20 +251,15 @@ function removeEmptyEntries(array) {
 }
 
 /**
- *
- * @param {*} kind
- * @param {*} resourceList
- * @param {*} requiredList
- * @returns
+ * Determines whether the api resource is required to use the specified api group for its kind.
+ * @param {string} kind The api resource kind.
+ * @param {Array} resourceList List of api resources.
+ * @param {Array} requiredList List of api resources that are required to use their respective api group.
+ * @returns `bool` The status of whether the api resource is required for usage.
  */
 function shouldUseAPIGroup(kind, resourceList, requiredList = []) {
-  // Set useAPIGroup to false by default.
-  var useAPIGroup = false
-
   const _ = resourceList.filter((res) => res.kind === kind)
-  if (_.length > 1 || requiredList.includes(kind)) useAPIGroup = true
-
-  return useAPIGroup
+  return _.length > 1 || requiredList.includes(kind)
 }
 
 exports.fetchAPIResourcesWithListWatchMethods =
