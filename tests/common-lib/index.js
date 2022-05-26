@@ -13,7 +13,12 @@ const squad = require('../../config').get('squadName')
  * @param {*} cluster The cluster to filter the resources against.
  * @returns `filter` Formatted array of object filters.
  */
- function formatFilters(kind, group, namespace = '--all-namespaces', cluster = 'local-cluster') {
+function formatFilters(
+  kind,
+  group,
+  namespace = '--all-namespaces',
+  cluster = 'local-cluster'
+) {
   const filter = []
 
   // Add namespace filter
@@ -38,15 +43,15 @@ const squad = require('../../config').get('squadName')
  * @param {*} resources A list of resources that will be formated as an object containing name and namespace.
  * @returns `formatedResources` Formatted array of resource object.
  */
- function formatResources(resources) {
+function formatResources(resources) {
   var formattedResources = resources.map((res) => {
     const item = res.split(' ').filter((property) => property)
     return {
       namespace: item[0],
-      name: item[1]
+      name: item[1],
     }
   })
-  
+
   return formattedResources
 }
 /**
@@ -54,8 +59,9 @@ const squad = require('../../config').get('squadName')
  * @param {*} resources A list of resources that will be formated as an object containing name and namespace.
  * @returns `formatedResources` Formatted array of resource object.
  */
- function formatResourcesFromSearch(resources) {
-  var searchResources = lodash.get(resources, 'body.data.searchResult[0].items')
+function formatResourcesFromSearch(resources) {
+  var searchResources = lodash
+    .get(resources, 'body.data.searchResult[0].items')
     .filter((items) => items.namespace) // We're only interested in resources that have a namespace.
     .map((item) => ({
       cluster: item.cluster,
@@ -63,7 +69,7 @@ const squad = require('../../config').get('squadName')
       name: item.name,
       namespace: item.namespace,
     }))
-  
+
   return searchResources
 }
 
@@ -73,14 +79,14 @@ const squad = require('../../config').get('squadName')
  ** If there are no short names, the array will be returned with the following format: [0]: NAME, [1]: APIVERSIONS, [2]: NAMESPACED, [3]: KIND
  * @returns `resourceList` List of resource kinds that contains the following methods: (list, watch)
  */
- function fetchAPIResourcesWithListWatchMethods() {
+function fetchAPIResourcesWithListWatchMethods() {
   const resourceList = []
 
   try {
     execSync(
       "oc api-resources --namespaced -o wide --sort-by=kind | grep -E 'list.*watch|watch.*list'"
     )
-      .toLocaleString()
+      .toString()
       .split('\n')
       .filter((resources) => resources)
       .forEach((res) => {
@@ -109,6 +115,10 @@ const squad = require('../../config').get('squadName')
   return resourceList
 }
 
+/**
+ * Generates and returns a list of cluster environments.
+ * @returns clusters List of clusters environemnt.
+ */
 function getClusterList() {
   const clusters = [{ type: 'hub', name: 'local-cluster', skip: false }]
 
@@ -117,7 +127,10 @@ function getClusterList() {
 
   if (managedCluster) {
     // Set the managed cluster name within the environemnt.
-    if (!process.env.OPTIONS_MANAGED_CLUSTER_NAME || (managedCluster != process.env.OPTIONS_MANAGED_CLUSTER_NAME))
+    if (
+      !process.env.OPTIONS_MANAGED_CLUSTER_NAME ||
+      managedCluster != process.env.OPTIONS_MANAGED_CLUSTER_NAME
+    )
       process.env.OPTIONS_MANAGED_CLUSTER_NAME = managedCluster
 
     clusters.push({
@@ -130,17 +143,22 @@ function getClusterList() {
   return clusters
 }
 
-function getResourcesFromOC(kind, apigroup, namespace = '--all-namespaces', cluster = { type: 'hub', name: 'local-cluster' }) {
+function getResourcesFromOC(
+  kind,
+  apigroup,
+  namespace = '--all-namespaces',
+  cluster = { type: 'hub', name: 'local-cluster' }
+) {
   var property = kind
 
   // Check to see if the test needs to include the apigroup name within the query. For kind resources with v1 versions, no apigroup is needed.
   if (apigroup.useAPIGroup && apigroup.name != 'v1')
     property += `.${apigroup.name}`
-  
+
   var cmd = `oc get ${property.toLowerCase()} ${
     namespace === '--all-namespaces' ? namespace : `-n ${namespace}`
   } --no-headers `
-  
+
   // Uncomment the following line for debugging purposes.
   // console.debug(cmd)
 
@@ -167,7 +185,8 @@ function getTargetManagedCluster() {
       'oc get managedclusters -o custom-columns=NAME:.metadata.name --no-headers'
     )
       .toString()
-      .split('\n').filter((cluster) => cluster)
+      .split('\n')
+      .filter((cluster) => cluster)
 
     console.info('Found the following clusters:', managedClusters)
 
@@ -229,16 +248,16 @@ function getTargetManagedCluster() {
  * @param {Array} array The array to filter the values from.
  * @returns `array` The filtered array.
  */
- function removeEmptyEntries(array) {
+function removeEmptyEntries(array) {
   return array.filter((val) => val.replace(/\s+/g, ' '))
 }
 
 /**
- * 
- * @param {*} kind 
- * @param {*} resourceList 
- * @param {*} requiredList 
- * @returns 
+ *
+ * @param {*} kind
+ * @param {*} resourceList
+ * @param {*} requiredList
+ * @returns
  */
 function shouldUseAPIGroup(kind, resourceList, requiredList = []) {
   // Set useAPIGroup to false by default.
@@ -250,7 +269,8 @@ function shouldUseAPIGroup(kind, resourceList, requiredList = []) {
   return useAPIGroup
 }
 
-exports.fetchAPIResourcesWithListWatchMethods = fetchAPIResourcesWithListWatchMethods
+exports.fetchAPIResourcesWithListWatchMethods =
+  fetchAPIResourcesWithListWatchMethods
 exports.formatFilters = formatFilters
 exports.formatResources = formatResources
 exports.formatResourcesFromSearch = formatResourcesFromSearch

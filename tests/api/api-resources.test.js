@@ -2,8 +2,8 @@
 
 jest.retryTimes(global.retry)
 
-const { fail } = require('assert');
-const { performance } = require('perf_hooks');
+const { fail } = require('assert')
+const { performance } = require('perf_hooks')
 
 const squad = require('../../config').get('squadName')
 const {
@@ -20,7 +20,7 @@ const {
   formatFilters,
   getResourcesFromOC,
   getClusterList,
-  shouldUseAPIGroup
+  shouldUseAPIGroup,
 } = require('../common-lib/index')
 
 const { sleep } = require('../common-lib/sleep')
@@ -39,17 +39,29 @@ const requireAPIGroup = []
  * @param {*} user
  * @param {*} namespace
  */
-function baseTest(kind, apigroup, cluster = { type: 'hub', name: 'local-cluster' }, user = 'kubeadmin', namespace = '--all-namespaces') {
+function baseTest(
+  kind,
+  apigroup,
+  cluster = { type: 'hub', name: 'local-cluster' },
+  user = 'kubeadmin',
+  namespace = '--all-namespaces'
+) {
   var runTest = test
+  var expectedResources = []
 
   try {
-    var expectedResources = getResourcesFromOC(kind, apigroup, namespace, cluster)
+    expectedResources = getResourcesFromOC(kind, apigroup, namespace, cluster)
   } catch (err) {
+    console.error(
+      `Skipping test because there was an error getting the expected resources from OC command. kind=${kind} apigroup=${apigroup.name} namespace=${namespace} cluster=${cluster.name} Error: ${err}`
+    )
     runTest = test.skip
   }
 
   runTest(
-    `[P2][Sev2][${squad}] verify data integrity for resource property: ${!apigroup.useAPIGroup ? kind : `${kind}.${apigroup.name}`}`,
+    `[P2][Sev2][${squad}] verify data integrity for resource property: ${
+      !apigroup.useAPIGroup ? kind : `${kind}.${apigroup.name}`
+    }`,
     async () => {
       const filters = formatFilters(kind, apigroup, namespace, cluster)
 
@@ -62,25 +74,40 @@ function baseTest(kind, apigroup, cluster = { type: 'hub', name: 'local-cluster'
       var totalElapsedTime = endTime - startTime
 
       var searchResources = formatResourcesFromSearch(resp)
-      
+
       if (totalElapsedTime > 30000) {
-        fail(`Search required more than 30 second to return resources for ${kind}. (TotalElapsedTime: ${totalElapsedTime})`)
+        fail(
+          `Search required more than 30 second to return resources for ${kind}. (TotalElapsedTime: ${totalElapsedTime})`
+        )
       } else if (totalElapsedTime > 1000) {
-        console.warn(`Search required more than 1 second to return resources for ${kind}. (TotalElapsedTime: ${totalElapsedTime})`)
+        console.warn(
+          `Search required more than 1 second to return resources for ${kind}. (TotalElapsedTime: ${totalElapsedTime})`
+        )
       }
 
       if (searchResources.length != expectedResources.length) {
-        console.warn(`Detected incorrect amount of data matches for (${kind}) resources. Retrying test within 5 seconds.`)
+        console.warn(
+          `Detected incorrect amount of data matches for (${kind}) resources. Retrying test within 5 seconds.`
+        )
         await sleep(5000)
 
         // Refresh the list of resources. There's a chance that more resources were created after the previous fetch.
-        expectedResources = getResourcesFromOC(kind, apigroup, namespace, cluster)
+        expectedResources = getResourcesFromOC(
+          kind,
+          apigroup,
+          namespace,
+          cluster
+        )
         resp = await sendRequest(query, token)
-        
-        searchResources = formatResourcesFromSearch(resp)
-        console.info(`Fetched total expected resources: ${expectedResources.length}, total search resources: ${searchResources.length}`)
 
-        const mismatchResources = searchResources.filter((res) => !expectedResources.find((obj) => obj.name === res.name))
+        searchResources = formatResourcesFromSearch(resp)
+        console.info(
+          `Fetched total expected resources: ${expectedResources.length}, total search resources: ${searchResources.length}`
+        )
+
+        const mismatchResources = searchResources.filter(
+          (res) => !expectedResources.find((obj) => obj.name === res.name)
+        )
         console.log('mismatch', mismatchResources)
       }
 
@@ -109,9 +136,13 @@ describe('Search: API Resources', () => {
   const clusterList = getClusterList()
 
   // Fetch API resources and filter out the kinds that aren't collected by search.
-  console.info("Ignoring resources that aren't collected by Search:", ignoreKindResourceList)
-  const resourceList = fetchAPIResourcesWithListWatchMethods()
-    .filter((resource) => !ignoreKindResourceList.includes(resource.kind))
+  console.info(
+    "Ignoring resources that aren't collected by Search:",
+    ignoreKindResourceList
+  )
+  const resourceList = fetchAPIResourcesWithListWatchMethods().filter(
+    (resource) => !ignoreKindResourceList.includes(resource.kind)
+  )
 
   // Run tests for each test cluster environment.
   clusterList.forEach((cluster) => {
@@ -119,11 +150,18 @@ describe('Search: API Resources', () => {
       resourceList.forEach((resource) => {
         // There can be multiple occurrences of the same resource kind with different API groups; therefore
         // if we detect multiple versions of the same resource we will then test based upon API groups.
-        var group = { name: resource.apigroup, useAPIGroup: shouldUseAPIGroup(resource.kind, resourceList, requireAPIGroup) }
+        var group = {
+          name: resource.apigroup,
+          useAPIGroup: shouldUseAPIGroup(
+            resource.kind,
+            resourceList,
+            requireAPIGroup
+          ),
+        }
         baseTest(resource.kind, group, cluster, user)
       })
     } else {
-      console.info(
+      console.warn(
         `Detected skip option set to ${cluster.skip}. Proceeding to skip the API test for the ${cluster.type} cluster.`
       )
     }
