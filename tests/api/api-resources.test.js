@@ -18,9 +18,11 @@ const {
   fetchAPIResourcesWithListWatchMethods,
   formatResourcesFromSearch,
   formatFilters,
+  getMismatchedResources,
   getResourcesFromOC,
   getClusterList,
   shouldUseAPIGroup,
+  verifyMissingResourcesFound,
 } = require('../common-lib/index')
 
 const { sleep } = require('../common-lib/sleep')
@@ -33,11 +35,11 @@ const requireAPIGroup = []
 
 /**
  * Base test for kubernetes
- * @param {*} kind
- * @param {*} apigroup
- * @param {*} cluster
- * @param {*} user
- * @param {*} namespace
+ * @param {*} kind The resource object kind that will be used for testing.
+ * @param {*} apigroup The apigroup of the object kind.
+ * @param {*} cluster The cluster of the object kind.
+ * @param {*} user The user that will be used to test the resource.
+ * @param {*} namespace The namespace of the object kind.
  */
 function baseTest(
   kind,
@@ -64,16 +66,16 @@ function baseTest(
     }`,
     async () => {
       const filters = formatFilters(kind, apigroup, namespace, cluster)
+      var mismatchResources = []
 
       // Fetch data from the search api.
       var query = searchQueryBuilder({ filters })
 
+      // Monitor how long search took to return results.
       var startTime = performance.now()
       var resp = await sendRequest(query, token)
       var endTime = performance.now()
       var totalElapsedTime = endTime - startTime
-
-      var searchResources = formatResourcesFromSearch(resp)
 
       if (totalElapsedTime > 30000) {
         fail(
@@ -81,34 +83,36 @@ function baseTest(
         )
       } else if (totalElapsedTime > 1000) {
         console.warn(
-          `Search required more than 1 second to return resources for ${kind}. (TotalElapsedTime: ${totalElapsedTime})`
+          `Search required more than 1 second to return resources for ${kind}. (TotalElapsedTime: ${totalElapsedTime.toFixed(
+            2
+          )})`
         )
       }
 
+      var searchResources = formatResourcesFromSearch(resp)
+
+      // Verify if the resources returned for both APIs are correct.
       if (searchResources.length != expectedResources.length) {
         console.warn(
-          `Detected incorrect amount of data matches for (${kind}) resources. Retrying test within 5 seconds.`
+          `Detected incorrect amount of data matches for (${kind}) resources (search/expected) - (${searchResources.length}/${expectedResources.length}). Retrying test within 5 seconds.`
         )
+
+        // Check to see which API returned more resources than the other.
+        mismatchResources = getMismatchedResources(searchResources, expectedResources)
+        console.info('mismatchResources', mismatchResources)
         await sleep(5000)
 
         // Refresh the list of resources. There's a chance that more resources were created after the previous fetch.
-        expectedResources = getResourcesFromOC(
-          kind,
-          apigroup,
-          namespace,
-          cluster
-        )
-        resp = await sendRequest(query, token)
+        expectedResources,
+          (resp = Promise.all(
+            getResourcesFromOC(kind, apigroup, namespace, cluster),
+            sendRequest(query, token)
+          ))
 
-        searchResources = formatResourcesFromSearch(resp)
         console.info(
-          `Fetched total expected resources: ${expectedResources.length}, total search resources: ${searchResources.length}`
+          `Fetched total resources on retry: (${searchResources.length}/${expectedResources.length}), verifying if resources are available or removed from APIs.`
         )
-
-        const mismatchResources = searchResources.filter(
-          (res) => !expectedResources.find((obj) => obj.name === res.name)
-        )
-        console.log('mismatch', mismatchResources)
+        verifyMissingResourcesFound(mismatchResources, resp, expectedResources)
       }
 
       expect(searchResources.length).toEqual(expectedResources.length)
@@ -128,6 +132,9 @@ describe('Search: API Resources', () => {
     // Temporary workaround. TODO: Get SSL cert from cluster.
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
   })
+
+  // Get kubeconfig for imported clusters
+  var kubeconfigs = getKubeConfig()
 
   // Set the default user for testing.
   var user = process.env.OPTIONS_HUB_USER || 'kubeadmin'

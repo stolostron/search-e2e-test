@@ -15,7 +15,7 @@ function formatFilters(
   kind,
   group,
   namespace = '--all-namespaces',
-  cluster = 'local-cluster'
+  cluster = { type: 'hub', name: 'local-cluster' }
 ) {
   const filter = []
 
@@ -38,13 +38,17 @@ function formatFilters(
 
 /**
  * Format resources for search queries.
+ * @param {Object} cluster The cluster of the resource objects.
+ * @param {string} kind The kind of the resource objects.
  * @param {*} resources A list of resources that will be formated as an object containing name and namespace.
  * @returns `formatedResources` Formatted array of resource object.
  */
-function formatResources(resources) {
+function formatResources(cluster, kind, resources) {
   var formattedResources = resources.map((res) => {
     const item = res.split(' ').filter((property) => property)
     return {
+      cluster: cluster.name,
+      kind,
       namespace: item[0],
       name: item[1],
     }
@@ -141,6 +145,19 @@ function getClusterList() {
   return clusters
 }
 
+function getMismatchedResources(receivedList, expectedList) {
+  if (receivedList.length > expectedList.length) {
+    return receivedList.filter((resource) => !expectedList.find((obj) => {
+      obj.name === resource.name && obj.namespace === resource.namespace
+    }))
+
+  } else {
+    return expectedList.filter((resource) => !receivedList.find((obj) => {
+      obj.name === resource.name && obj.namespace === resource.namespace
+    }))
+  }
+}
+
 function getResourcesFromOC(
   kind,
   apigroup,
@@ -161,8 +178,10 @@ function getResourcesFromOC(
   // console.debug(cmd)
 
   var resources = formatResources(
+    cluster,
+    kind,
     execSync(cmd, { stdio: [] })
-      .toLocaleString()
+      .toString()
       .split('\n')
       .filter((res) => res)
   )
@@ -262,13 +281,37 @@ function shouldUseAPIGroup(kind, resourceList, requiredList = []) {
   return _.length > 1 || requiredList.includes(kind)
 }
 
+/**
+ * Determines whether the api resource is required to use the specified api group for its kind.
+ * @param {string} kind The api resource kind.
+ * @param {Array} resourceList List of api resources.
+ * @param {Array} requiredList List of api resources that are required to use their respective api group.
+ * @returns `bool` The status of whether the api resource is required for usage.
+ */
+function verifyMissingResourcesFound(
+  missingResourceList,
+  resourceList,
+  expectedResourceList
+) {
+  var presentInResourceLists = false
+
+  console.log('verifying missing resources')
+  missingResourceList.map((resource) => {
+    console.log(resource)
+  })
+
+  return
+}
+
 exports.fetchAPIResourcesWithListWatchMethods =
   fetchAPIResourcesWithListWatchMethods
 exports.formatFilters = formatFilters
 exports.formatResources = formatResources
 exports.formatResourcesFromSearch = formatResourcesFromSearch
 exports.getClusterList = getClusterList
+exports.getMismatchedResources = getMismatchedResources
 exports.getResourcesFromOC = getResourcesFromOC
 exports.getTargetManagedCluster = getTargetManagedCluster
 exports.removeEmptyEntries = removeEmptyEntries
 exports.shouldUseAPIGroup = shouldUseAPIGroup
+exports.verifyMissingResourcesFound = verifyMissingResourcesFound
