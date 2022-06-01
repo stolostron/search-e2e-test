@@ -16,18 +16,13 @@ const clusterModes = [
     valueFn: () => cy.wrap('local-cluster'),
     skip: false,
     namespace: cliHelper.generateNamespace(),
-    kubeconfig: Cypress.env('USE_HUB_KUBECONFIG')
-      ? `KUBECONFIG=${Cypress.env('OPTIONS_HUB_KUBECONFIG')}`
-      : '',
   },
   {
     label: 'Managed',
     valueFn: () => cliHelper.getTargetManagedCluster(),
     skip: Cypress.env('SKIP_MANAGED_CLUSTER_TEST'),
     namespace: cliHelper.generateNamespace('', `managed-${Date.now()}`),
-    kubeconfig: Cypress.env('USE_MANAGED_KUBECONFIG')
-      ? `KUBECONFIG=${Cypress.env('OPTIONS_MANAGED_KUBECONFIG')}`
-      : '',
+    kubeconfig: `KUBECONFIG=${Cypress.env('OPTIONS_MANAGED_KUBECONFIG')}`
   },
 ]
 
