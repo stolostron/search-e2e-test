@@ -20,7 +20,6 @@ export PROW_BUILD_ID=${PROW_BUILD_ID:-"$(date +%s-%d-%-m-%y)"}
 export SKIP_API_TEST=false
 export SKIP_UI_TEST=false
 export TEST_MODE=BVT
-export USE_MANAGED_KUBECONFIG=false
 
 # Hub cluster
 HUB_CREDS=$(cat ${SHARED_DIR}/hub-1.json)

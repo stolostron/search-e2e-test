@@ -29,20 +29,20 @@
     "npm": "6.14.15"
   },
   "dependencies": {
-    "axios": "^0.27.0",
-    "del": "^6.0.0",
-    "jest": "^28.0.0",
+    "axios": "^0.27.2",
+    "del": "^6.1.1",
+    "jest": "^28.1.0",
     "jest-junit": "^13.2.0",
     "lodash": "^4.17.21",
-    "log4js": "^6.4.6",
+    "log4js": "^6.5.2",
     "nconf": "^0.12.0",
     "nconf-yaml": "^1.0.2",
-    "supertest": "^6.2.2",
+    "supertest": "^6.2.3",
     "xml2json": "^0.12.0"
   },
   "devDependencies": {
-    "@cypress/code-coverage": "^3.9.12",
-    "chromedriver": "^100.0.0",
+    "@cypress/code-coverage": "^3.10.0",
+    "chromedriver": "^101.0.0",
     "cross-env": "^7.0.3",
     "cypress": "8.5.0",
     "cypress-grep": "^2.13.1",
@@ -51,16 +51,16 @@
     "cypress-wait-until": "^1.7.2",
     "eslint-plugin-cypress": "^2.12.1",
     "geckodriver": "^3.0.1",
-    "husky": "^7.0.4",
-    "jest-circus": "^28.0.0",
+    "husky": "^8.0.1",
+    "jest-circus": "^28.1.0",
     "junit-report-merger": "^3.0.5",
-    "mocha": "^9.2.2",
+    "mocha": "^10.0.0",
     "mocha-junit-reporter": "^2.0.2",
     "mochawesome": "^7.1.3",
     "mochawesome-merge": "^4.2.1",
     "prettier": "^2.6.2",
     "querystring": "^0.2.1",
-    "selenium-standalone": "^8.0.11"
+    "selenium-standalone": "^8.1.4"
   },
   "husky": {
     "hooks": {
