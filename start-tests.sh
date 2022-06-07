@@ -354,7 +354,14 @@ fi
 
 if [[ "$SKIP_API_TEST" == false ]]; then 
   log_color "cyan" "Running Search API tests."
-  npm run test:api
+
+  # Added a test mode for prow. This will help will the output being shown within the prow logs.
+  if [[ "$PROW_MODE" == true ]]; then
+    npm run test:api:prow
+  else
+    npm run test:api
+  fi
+
 else
   log_color "purple" "SKIP_API_TEST" "was set to true. Skipping API tests"
 fi

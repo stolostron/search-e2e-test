@@ -119,10 +119,21 @@ function fetchAPIResourcesWithListWatchMethods() {
 
 /**
  * Generates and returns a list of cluster environments.
+ * @param {Array} kubeconfigs List of kubeconfig files.
  * @returns clusters List of clusters environemnt.
  */
-function getClusterList() {
-  const clusters = [{ type: 'hub', name: 'local-cluster', skip: false }]
+function getClusterList(kubeconfigs = []) {
+  const clusters = [
+    {
+      kubeconfig: kubeconfigs.find((conf) => conf.includes('hub')),
+      name: 'local-cluster',
+      skip: false,
+      type: 'hub',
+    },
+  ]
+
+  // Set kubeconfig for hub cluster.
+  clusters[0].kubeconfig = kubeconfigs.find((conf) => conf.includes('hub'))
 
   // Get managed cluster.
   const managedCluster = getTargetManagedCluster()
@@ -135,10 +146,14 @@ function getClusterList() {
     )
       process.env.OPTIONS_MANAGED_CLUSTER_NAME = managedCluster
 
+    // TODO: Implement a better method to consume less resources for the managed cluster test.
+    // The managed cluster will not contain the same api resources at the hub cluster, so we need to improve this behavior.
+    // Skipping the managed cluster test until a future PR is implemented.
     clusters.push({
-      type: 'managed',
+      kubeconfig: kubeconfigs.find((conf) => conf.includes('import')),
       name: managedCluster,
       skip: true,
+      type: 'managed',
     })
   }
 
@@ -147,14 +162,19 @@ function getClusterList() {
 
 function getMismatchedResources(receivedList, expectedList) {
   if (receivedList.length > expectedList.length) {
-    return receivedList.filter((resource) => !expectedList.find((obj) => {
-      obj.name === resource.name && obj.namespace === resource.namespace
-    }))
-
+    return receivedList.filter(
+      (resource) =>
+        !expectedList.find((obj) => {
+          obj.name === resource.name && obj.namespace === resource.namespace
+        })
+    )
   } else {
-    return expectedList.filter((resource) => !receivedList.find((obj) => {
-      obj.name === resource.name && obj.namespace === resource.namespace
-    }))
+    return expectedList.filter(
+      (resource) =>
+        !receivedList.find((obj) => {
+          obj.name === resource.name && obj.namespace === resource.namespace
+        })
+    )
   }
 }
 
@@ -173,6 +193,11 @@ function getResourcesFromOC(
   var cmd = `oc get ${property.toLowerCase()} ${
     namespace === '--all-namespaces' ? namespace : `-n ${namespace}`
   } --no-headers `
+
+  // Add kubeconfig filter if the option is set within the cluster object.
+  if (cluster.kubeconfig) {
+    cmd += `--kubeconfig ${cluster.kubeconfig}`
+  }
 
   // Uncomment the following line for debugging purposes.
   // console.debug(cmd)
@@ -281,28 +306,6 @@ function shouldUseAPIGroup(kind, resourceList, requiredList = []) {
   return _.length > 1 || requiredList.includes(kind)
 }
 
-/**
- * Determines whether the api resource is required to use the specified api group for its kind.
- * @param {string} kind The api resource kind.
- * @param {Array} resourceList List of api resources.
- * @param {Array} requiredList List of api resources that are required to use their respective api group.
- * @returns `bool` The status of whether the api resource is required for usage.
- */
-function verifyMissingResourcesFound(
-  missingResourceList,
-  resourceList,
-  expectedResourceList
-) {
-  var presentInResourceLists = false
-
-  console.log('verifying missing resources')
-  missingResourceList.map((resource) => {
-    console.log(resource)
-  })
-
-  return
-}
-
 exports.fetchAPIResourcesWithListWatchMethods =
   fetchAPIResourcesWithListWatchMethods
 exports.formatFilters = formatFilters
@@ -314,4 +317,3 @@ exports.getResourcesFromOC = getResourcesFromOC
 exports.getTargetManagedCluster = getTargetManagedCluster
 exports.removeEmptyEntries = removeEmptyEntries
 exports.shouldUseAPIGroup = shouldUseAPIGroup
-exports.verifyMissingResourcesFound = verifyMissingResourcesFound

@@ -12,6 +12,7 @@ const {
   getToken,
   searchQueryBuilder,
   sendRequest,
+  clusterLogin,
 } = require('../common-lib/clusterAccess')
 
 const {
@@ -28,6 +29,7 @@ const {
 const { sleep } = require('../common-lib/sleep')
 
 // Set list to ignore resources that aren't being collected by Search.
+// When using the oc command clusterclaim doesn't include the namespace, therefore, for testing purposes, we will omit that resource object.
 const ignoreKindResourceList = ['clusterclaim', 'event']
 
 // Set list of resources that require filtering by api group.
@@ -38,14 +40,12 @@ const requireAPIGroup = []
  * @param {*} kind The resource object kind that will be used for testing.
  * @param {*} apigroup The apigroup of the object kind.
  * @param {*} cluster The cluster of the object kind.
- * @param {*} user The user that will be used to test the resource.
  * @param {*} namespace The namespace of the object kind.
  */
 function baseTest(
   kind,
   apigroup,
   cluster = { type: 'hub', name: 'local-cluster' },
-  user = 'kubeadmin',
   namespace = '--all-namespaces'
 ) {
   var runTest = test
@@ -98,21 +98,21 @@ function baseTest(
         )
 
         // Check to see which API returned more resources than the other.
-        mismatchResources = getMismatchedResources(searchResources, expectedResources)
-        console.info('mismatchResources', mismatchResources)
-        await sleep(5000)
-
-        // Refresh the list of resources. There's a chance that more resources were created after the previous fetch.
-        expectedResources,
-          (resp = Promise.all(
-            getResourcesFromOC(kind, apigroup, namespace, cluster),
-            sendRequest(query, token)
-          ))
-
-        console.info(
-          `Fetched total resources on retry: (${searchResources.length}/${expectedResources.length}), verifying if resources are available or removed from APIs.`
+        mismatchResources = getMismatchedResources(
+          searchResources,
+          expectedResources
         )
-        verifyMissingResourcesFound(mismatchResources, resp, expectedResources)
+        console.info('mismatchResources', mismatchResources)
+        await sleep(7000)
+
+        // TODO: Update tests to run asynchronously. (Currently, adding an async callback will make the test run longer)
+        // For now, we will use the jest retry logic for test progression.
+        // Refresh the list of resources. There's a chance that more resources were created after the previous fetch.
+        // expectedResources,
+        //   (resp = Promise.all(
+        //     getResourcesFromOC(kind, apigroup, namespace, cluster),
+        //     sendRequest(query, token)
+        //   ))
       }
 
       expect(searchResources.length).toEqual(expectedResources.length)
@@ -133,14 +133,19 @@ describe('Search: API Resources', () => {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
   })
 
-  // Get kubeconfig for imported clusters
+  // Get kubeconfig for cluster environments.
   var kubeconfigs = getKubeConfig()
 
-  // Set the default user for testing.
-  var user = process.env.OPTIONS_HUB_USER || 'kubeadmin'
+  // TODO: (implement RBAC testing) Set the default user for testing.
+  // var user = process.env.OPTIONS_HUB_USER || 'kubeadmin'
+
+  // Verify if the user needs to be authenticated as another user.
+  // if (user !== 'kubeadmin') {
+  //   clusterLogin()
+  // }
 
   // Generate list of clusters.
-  const clusterList = getClusterList()
+  const clusterList = getClusterList(kubeconfigs)
 
   // Fetch API resources and filter out the kinds that aren't collected by search.
   console.info(
@@ -165,7 +170,7 @@ describe('Search: API Resources', () => {
             requireAPIGroup
           ),
         }
-        baseTest(resource.kind, group, cluster, user)
+        baseTest(resource.kind, group, cluster)
       })
     } else {
       console.warn(

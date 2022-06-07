@@ -44,11 +44,17 @@ async function deleteResource(kind, name, ns, options = {}) {
 const getKubeConfig = (options = {}) => {
   const kubeconfigs = []
   const dir = './kube/config'
-  fs.readdirSync(dir).forEach((file) => {
-    if (file[0] !== '.') {
-      kubeconfigs.push(`${dir}/${file}`)
-    }
-  })
+
+  try {
+    fs.readdirSync(dir).forEach((file) => {
+      if (file[0] !== '.') {
+        kubeconfigs.push(`${dir}/${file}`)
+      }
+    })
+  } catch (err) {
+    console.warn(`Error: ${err}`)
+  }
+
   return kubeconfigs
 }
 
