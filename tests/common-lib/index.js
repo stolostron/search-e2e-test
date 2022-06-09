@@ -125,15 +125,11 @@ function fetchAPIResourcesWithListWatchMethods() {
 function getClusterList(kubeconfigs = []) {
   const clusters = [
     {
-      kubeconfig: kubeconfigs.find((conf) => conf.includes('hub')),
       name: 'local-cluster',
       skip: false,
       type: 'hub',
     },
   ]
-
-  // Set kubeconfig for hub cluster.
-  clusters[0].kubeconfig = kubeconfigs.find((conf) => conf.includes('hub'))
 
   // Get managed cluster.
   const managedCluster = getTargetManagedCluster()
