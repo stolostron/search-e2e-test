@@ -44,11 +44,17 @@ async function deleteResource(kind, name, ns, options = {}) {
 const getKubeConfig = (options = {}) => {
   const kubeconfigs = []
   const dir = './kube/config'
-  fs.readdirSync(dir).forEach((file) => {
-    if (file[0] !== '.') {
-      kubeconfigs.push(`${dir}/${file}`)
-    }
-  })
+
+  try {
+    fs.readdirSync(dir).forEach((file) => {
+      if (file[0] !== '.') {
+        kubeconfigs.push(`${dir}/${file}`)
+      }
+    })
+  } catch (err) {
+    console.warn(`Error: ${err}`)
+  }
+
   return kubeconfigs
 }
 
@@ -109,7 +115,7 @@ const getToken = (options = {}) => {
  * @returns {object} The query object.
  */
 function searchQueryBuilder(
-  { keywords = [], filters = [], limit = 1000 },
+  { keywords = [], filters = [], limit = 10000 },
   options = {}
 ) {
   // Return query built from passed arguments.
