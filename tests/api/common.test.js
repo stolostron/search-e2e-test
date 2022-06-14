@@ -42,10 +42,10 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
     var pods = getResource('pod', namespace)
     deleteResource('pod', pods[0][0], namespace)
       .then(() => {
-        var res = sendRequest(query, token)
+        var res = await sendRequest(query, token)
         expect(res.body.data.searchResult[0].items[0].current).toEqual(2)
       })
-      .catch(() => {})
+      // .catch(() => {})
   }, 20000)
 
   test(`[P2][Sev2][${squad}] Search kind application on specific namespace.`, async () => {

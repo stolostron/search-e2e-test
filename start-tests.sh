@@ -367,6 +367,8 @@ else
 fi
 
 echo -e
+API_TEST_EXIT_CODE=$?
+echo "API_TEST_EXIT_CODE is ${API_TEST_EXIT_CODE}"
 
 if [[ -z $RECORD ]]; then
   log_color "purple" "RECORD" "not exported; setting to false (set ${PURPLE}RECORD${NC} to true, if you wish to view results within dashboard)\n"
@@ -405,7 +407,8 @@ else
   log_color "purple" "SKIP_UI_TEST" "was set to true. Skipping UI tests\n"
 fi
 
-testCode=$?
+UI_TEST_EXIT_CODE=$?
+echo "UI_TEST_EXIT_CODE is ${UI_TEST_EXIT_CODE}"
 
 if [[ "$SKIP_UI_TEST" == false && "$SKIP_API_TEST" == false ]]; then
   log_color "cyan" "Merging XML and JSON reports..."
@@ -422,4 +425,25 @@ if [[ "$SKIP_UI_TEST" == false ]]; then
   fi
 fi
 
-exit $testCode
+
+# Log API and UI tests exit code.
+if [[ $API_TEST_EXIT_CODE -ne 0 ]]; then
+  echo "API tests failed. Exit code: ${API_TEST_EXIT_CODE}"
+else
+  echo "API tests passed. Exit code: ${API_TEST_EXIT_CODE}"
+fi
+if [[ $UI_TEST_EXIT_CODE -ne 0 ]]; then
+  echo "UI tests failed. Exit code: ${UI_TEST_EXIT_CODE}"
+else
+  echo "UI tests passed. Exit code: ${UI_TEST_EXIT_CODE}"
+fi
+
+
+
+# Exit with error if either API or UI tests had errors.
+if [[ $API_TEST_EXIT_CODE -ne 0 ]]; then
+  exit $API_TEST_EXIT_CODE
+elif [[ $UI_TEST_EXIT_CODE -ne 0 ]]; then
+  exit $UI_TEST_EXIT_CODE
+fi
+exit 0
