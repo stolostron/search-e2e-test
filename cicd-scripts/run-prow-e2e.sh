@@ -40,7 +40,6 @@ echo -e "\nRunning Search-e2e tests in ${TEST_MODE} test mode. Preparing to run 
 ./start-tests.sh
 TESTS_EXIT_CODE=$? # Capture exit code to use in exit after precessing results.
 
-
 echo "TODO: Uploading test results to AWS S3 bucket."
 # source ./build/upload-to-s3.sh
 # install_aws_cli

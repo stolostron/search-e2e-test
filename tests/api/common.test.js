@@ -11,7 +11,7 @@ const {
   searchQueryBuilder,
   sendRequest,
 } = require('../common-lib/clusterAccess')
-const { baseTest } = require('./api-resources.test.js')
+// const { baseTest } = require('./api-resources.test.js')
 
 const _ = require('lodash')
 
@@ -44,7 +44,7 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
     await deleteResource('pod', pods[0][0], namespace)
 
     // Validate search data.
-    baseTest('pod', '')
+    // baseTest('pod', '')
   }, 20000)
 
   test(`[P2][Sev2][${squad}] Search kind application on specific namespace.`, async () => {
