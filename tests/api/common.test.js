@@ -30,7 +30,9 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
   const app = 'console'
   const namespace = 'openshift-console'
 
-  test(`[P2][Sev2][${squad}] Verify search data is correct after a pod is deleted and recreated.`, async () => {
+  // Skipping this test because it causes baseTest() to become unreliable.
+  // Need to rewrite this test to vaidate the search state without depending on kubernetes logic.
+  test.skip(`[P2][Sev2][${squad}] Verify search data is correct after a pod is deleted and recreated.`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['deployment'] },
