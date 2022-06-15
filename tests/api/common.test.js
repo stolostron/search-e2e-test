@@ -11,6 +11,9 @@ const {
   searchQueryBuilder,
   sendRequest,
 } = require('../common-lib/clusterAccess')
+const {
+  baseTest
+} = require('./api-resources.test.js')
 
 const _ = require('lodash')
 
@@ -29,7 +32,7 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
   const app = 'console'
   const namespace = 'openshift-console'
 
-  test(`[P2][Sev2][${squad}] Verify a deleted pod is recreated.`, async () => {
+  test(`[P2][Sev2][${squad}] Verify search data is correct after a pod is deleted and recreated.`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['deployment'] },
@@ -37,15 +40,13 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
         { property: 'namespace', values: [namespace] },
       ],
     })
-    var res = await sendRequest(query, token)
-    expect(res.body.data.searchResult[0].items[0].current).toEqual(2)
+    
+    // Change state
     var pods = getResource('pod', namespace)
     await deleteResource('pod', pods[0][0], namespace)
-    // .then(() => {
-    var res2 = await sendRequest(query, token)
-    expect(res2.body.data.searchResult[0].items[0].current).toEqual(2)
-    // })
-    // .catch(() => {})
+    
+    // Validate search data.
+    baseTest('pod', '')
   }, 20000)
 
   test(`[P2][Sev2][${squad}] Search kind application on specific namespace.`, async () => {
