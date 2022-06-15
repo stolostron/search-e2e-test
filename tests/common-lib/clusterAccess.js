@@ -105,6 +105,7 @@ const getSearchApiRoute = async (options = {}) => {
  * @returns {string} The cluster environment authorization token.
  */
 const getToken = (options = {}) => {
+  clusterLogin()
   return execSync('oc whoami -t').toString().replace('\n', '')
 }
 
