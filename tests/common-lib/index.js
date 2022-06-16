@@ -102,10 +102,9 @@ function fetchAPIResourcesWithListWatchMethods() {
           .filter((data) => data)
 
         if (item) {
+          obj.kind = item[item.length - 1].toLowerCase() // Kind is the last item.
           obj.apigroup =
             item.length < 5 ? item[1].split('/')[0] : item[2].split('/')[0]
-          obj.kind =
-            item.length < 5 ? item[3].toLowerCase() : item[4].toLowerCase()
 
           resourceList.push(obj)
         }

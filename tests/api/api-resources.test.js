@@ -12,7 +12,6 @@ const {
   getToken,
   searchQueryBuilder,
   sendRequest,
-  clusterLogin,
 } = require('../common-lib/clusterAccess')
 
 const {
@@ -23,7 +22,6 @@ const {
   getResourcesFromOC,
   getClusterList,
   shouldUseAPIGroup,
-  verifyMissingResourcesFound,
 } = require('../common-lib/index')
 
 const { sleep } = require('../common-lib/sleep')
