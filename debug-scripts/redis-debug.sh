@@ -74,9 +74,6 @@ redis-cli --csv graph.query search-db "MATCH (c:Cluster)-[]-(n) WHERE size(n.lab
 
 printf "\n\n>>> Kubernetes label counts by cluster:\n"
 redis-cli --csv graph.query search-db "MATCH (c:Cluster)-[]-(n) RETURN ID(c), count(n) as num_nodes, size(n.label) ORDER BY size(n.label) DESC"
-# printf "\nReadable format:\n"
-# redis-cli --no-raw graph.query search-db "MATCH (c:Cluster)-[]-(n) RETURN ID(c), count(n) as num_nodes, size(n.label) ORDER BY size(n.label) DESC"
-
 
 printf "\n\n----- COLLECT EDGES STATISTICS -----\n"
 printf "\n\n>>> Total Edges count:\n"
@@ -102,5 +99,3 @@ printf "\n\n----- COLLECT NODE STATISTICS (Slow queries or queries that could po
 
 printf "\n\n>>> Resource count by cluster and namespace:\n"
 redis-cli --csv graph.query search-db "MATCH (c:Cluster)-[]-(ns:Namespace) WITH c.name AS c_name, ID(c) AS c_id, ID(ns) AS ns_id, ns.name AS ns_name MATCH (r) WHERE r.cluster=c_name AND r.namespace = ns_name RETURN DISTINCT c_id, ns_id, count(r) ORDER BY count(r) DESC"
-# printf "\nReadable format:\n"
-# redis-cli --no-raw graph.query search-db "MATCH (c:Cluster)-[]-(ns:Namespace) WITH c.name AS c_name, ID(c) AS c_id, ID(ns) AS ns_id, ns.name AS ns_name MATCH (r) WHERE r.cluster=c_name AND r.namespace = ns_name RETURN DISTINCT c_id, ns_id, count(r) ORDER BY count(r) DESC"
