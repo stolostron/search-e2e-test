@@ -80,7 +80,8 @@ export const overviewPage = {
               .should('eq', 'kind:cluster')
             if (cluster !== '0') {
               cy.wrap(p)
-                .get('.pf-c-expandable-section__toggle-text')
+                .get('.pf-c-card__title')
+                .should('exist')
                 .invoke('text')
                 .should('contain', 'Cluster')
             }
@@ -99,7 +100,8 @@ export const overviewPage = {
             .should('eq', 'kind:pod')
           if (pod !== '0') {
             cy.wrap(p)
-              .get('.pf-c-expandable-section__toggle-text')
+              .get('.pf-c-card__title')
+              .should('exist')
               .invoke('text')
               .should('contain', 'Pod')
           }

@@ -28,10 +28,7 @@ export const suggestedSearches = {
       .then(($related) => {
         if ($related.children().length > 0) {
           cy.get('.pf-c-tile__body').first().click()
-          cy.get('.pf-c-expandable-section__toggle-text').should(
-            'contain.text',
-            'Related'
-          )
+          cy.get('.pf-c-card__title').should('contain.text', 'Related')
         }
       })
   },

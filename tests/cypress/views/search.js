@@ -110,7 +110,7 @@ export const searchPage = {
   shouldFindResourceDetailItemCreatedFewSecondsAgo: (kind, name, namespace) => {
     cy.reloadUntil(
       () => {
-        cy.get('.pf-c-expandable-section')
+        cy.get('.pf-c-card__header')
           .filter(`:contains(${capitalize(kind)})`)
           .should('exist')
           .then(() => {
@@ -144,6 +144,12 @@ export const searchPage = {
    * Verify that the Search page should have loaded the resource table.
    */
   shouldLoadResults: () => {
+    cy.get('.pf-c-card__header').should('exist')
+  },
+  /**
+   * Verify that the Search page should have loaded the resource table.
+   */
+  shouldLoadResultsTable: () => {
     cy.get('table.pf-c-table').should('exist')
   },
   shouldSelectFirstSuggestionValue: () => {
@@ -203,7 +209,7 @@ export const searchPage = {
    * @returns {Cypress.Chainable} Table row of the targeted test resource.
    */
   whenGetResourceTableRow: (kind, name, namespace) => {
-    cy.get('.pf-c-expandable-section')
+    cy.get('.pf-c-card__header')
       .filter(`:contains(${capitalize(kind)})`)
       .should('exist')
     cy.get('table.pf-c-table').should('exist')
