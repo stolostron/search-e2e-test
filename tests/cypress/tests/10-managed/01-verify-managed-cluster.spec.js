@@ -9,7 +9,7 @@ import { squad, tags } from '../../config'
 import { cliHelper } from '../../scripts/cliHelper'
 import { searchBar, searchPage } from '../../views/search'
 
-describe(
+describe.skip(
   'RHACM4K-912: Search: Verify the managed cluster info in the search page',
   { tags: tags.env },
   function () {

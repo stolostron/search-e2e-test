@@ -20,7 +20,7 @@ const ns = cliHelper.generateNamespace()
 // Generate resources for the test instance.
 const resources = [namespace(ns), application(ns)]
 
-describe(
+describe.skip(
   'RHACM4K-913: Search - Common filter and conditions',
   { tags: tags.env },
   function () {
