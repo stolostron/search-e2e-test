@@ -23,7 +23,7 @@ if (Cypress.env('TEST_ENV') === 'rosa') {
   ignore = ['@RBAC']
 }
 
-describe(
+describe.skip(
   'RBAC users to read the Overview page',
   { tags: tags.env },
   function () {

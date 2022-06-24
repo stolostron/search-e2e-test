@@ -43,7 +43,7 @@ clusterModes.forEach((clusterMode) => {
   // Generate resources for the test instance.
   const resources = [namespace(ns), deployment(ns)]
 
-  describe(
+  describe.skip(
     `Search: Search in ${clusterMode.label} Cluster`,
     { tags: tags.env },
     function () {

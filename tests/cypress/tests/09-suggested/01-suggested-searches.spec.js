@@ -9,7 +9,7 @@ import { squad, tags } from '../../config'
 import { searchPage, searchBar } from '../../views/search'
 import { suggestedSearches } from '../../views/suggestedSearches'
 
-describe(
+describe.skip(
   'RHACM4K-411: Search: Verify the suggested search templates',
   { tags: tags.required },
   function () {

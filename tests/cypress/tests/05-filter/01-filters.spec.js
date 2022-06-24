@@ -18,7 +18,7 @@ const filters = [
   { type: 'status', skip: false },
 ]
 
-describe(
+describe.skip(
   'RHACM4K-537: Search: Search using filters',
   { tags: tags.env },
   function () {

@@ -8,7 +8,7 @@
 import { squad, tags } from '../../config'
 import { clustersPage } from '../../views/clusters'
 
-describe('RHACM4K-413: Search: Linked page', { tags: [] }, function () {
+describe.skip('RHACM4K-413: Search: Linked page', { tags: [] }, function () {
   beforeEach(function () {
     // Log into the cluster ACM console.
     cy.visitAndLogin('/multicloud/home/welcome')

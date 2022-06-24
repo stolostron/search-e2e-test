@@ -8,7 +8,7 @@
 import { squad, tags } from '../../config'
 import { overviewPage } from '../../views/overview'
 
-describe(
+describe.skip(
   'RHACM4K-1419: Search: Overview page',
   { tags: tags.required },
   function () {

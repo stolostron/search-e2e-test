@@ -119,7 +119,7 @@ function baseTest(
   )
 }
 
-describe('Search: API Resources', () => {
+describe.skip('Search: API Resources', () => {
   beforeAll(async () => {
     // Log in and get access token
     token = getToken()

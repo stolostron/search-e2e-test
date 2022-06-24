@@ -27,7 +27,7 @@ const queryDefaultNamespaceDesc = `This is searching that the cluster should hav
 const queryEditNamespaceName = `[E2E] ${resource.name}-edit`
 const queryEditNamespaceDesc = `[Created by Search E2E automation] This is searching that the cluster should have ${resource.name} namespace.`
 
-describe(
+describe.skip(
   'RHACM4K-412 - Search: Saved searches',
   { tags: tags.env },
   function () {
