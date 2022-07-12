@@ -143,7 +143,7 @@ describe('RHACM4K-913: Search - Verify search results with different queries', (
     expect(pods.length.toString()).toEqual(cliRes.toString().trim())
   }, 20000)
 
-  test(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent-addon on imported cluster.`, async () => {
+  test.skip(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent-addon on imported cluster.`, async () => {
     if (import_kubeconfig) {
       var query = searchQueryBuilder({
         filters: [
