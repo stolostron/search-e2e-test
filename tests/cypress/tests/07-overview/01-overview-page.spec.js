@@ -19,10 +19,6 @@ describe.skip(
     })
 
     context('UI - overview page validation', { tags: [] }, function () {
-      it(`[P3][Sev3][${squad}] should have refresh options`, function () {
-        overviewPage.shouldHaveRefreshDropdown()
-      })
-
       it(`[P2][Sev2][${squad}] should have clusters provider card`, function () {
         overviewPage.shouldHaveClusterProviderCard()
       })
