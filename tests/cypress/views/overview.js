@@ -48,21 +48,6 @@ export const overviewPage = {
       })
   },
   /**
-   * Verify that the Overview page should have different refresh limit for the test cluster environment.
-   */
-  shouldHaveRefreshDropdown: () => {
-    cy.get('p')
-      .should('contain', 'Last update:')
-      .and('not.contain', 'Invalid date')
-
-    const intervals = ['30s', '1m', '5m', '30m', 'disable']
-
-    intervals.forEach((opt) => {
-      cy.get('#refresh-dropdown').click()
-      cy.get(`#refresh-${opt}`).click()
-    })
-  },
-  /**
    * Verify that the Overview page should have accessible links to the Search page.
    */
   shouldHaveLinkToSearchPage: () => {
