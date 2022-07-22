@@ -47,9 +47,10 @@ describe(
         overviewPage.shouldHaveLeftNavLinkToTargetedPage('Clusters')
       })
 
-      it(`[P2][Sev2][${squad}] should have link to host inventory page from left nav`, function () {
-        overviewPage.shouldHaveLeftNavLinkToTargetedPage('Host inventory')
-      })
+      // TODO: Re-enable when a later build is available within prow.
+      // it(`[P2][Sev2][${squad}] should have link to host inventory page from left nav`, function () {
+      //   overviewPage.shouldHaveLeftNavLinkToTargetedPage('Host inventory')
+      // })
 
       it(`[P2][Sev2][${squad}] should have link to automation page from left nav`, function () {
         overviewPage.shouldHaveLeftNavLinkToTargetedPage('Automation')
