@@ -5,21 +5,21 @@
 
 /// <reference types="cypress" />
 
-import { squad, tags } from '../../config'
-import { deployment, namespace } from '../../../common-lib/resources'
+import { squad, tags } from '../config'
+import { deployment, namespace } from '../../common-lib/resources'
 import {
   cliHelper,
   generateNewMultiResourceState,
   resetNewMultiResourceState,
-} from '../../scripts/cliHelper'
-import { searchPage, searchBar } from '../../views/search'
+} from '../scripts/cliHelper'
+import { searchPage, searchBar } from '../views/search'
 
 const clusterModes = [
   { label: 'Local', valueFn: () => cy.wrap('local-cluster'), skip: false },
   {
     label: 'Managed',
     valueFn: () => cliHelper.getTargetManagedCluster(),
-    skip: Cypress.env('SKIP_MANAGED_CLUSTER_TEST'),
+    skip: true,
     kubeconfig: `KUBECONFIG=${Cypress.env('OPTIONS_MANAGED_KUBECONFIG')}`,
   },
 ]
@@ -38,7 +38,7 @@ clusterModes.forEach((clusterMode) => {
   // Generate resources for the test instance.
   const resources = [namespace(ns), deployment(ns)]
 
-  describe.skip(
+  describe(
     `Search: Search in ${clusterMode.label} Cluster`,
     { tags: tags.env },
     function () {
@@ -51,14 +51,13 @@ clusterModes.forEach((clusterMode) => {
       })
 
       beforeEach(function () {
-        // Log into the cluster ACM console.
-        cy.visitAndLogin('/multicloud/home/welcome')
-
         // Generate new resource state for the test environment.
         generateNewMultiResourceState(resources, {
           kubeconfig: clusterMode.kubeconfig,
         })
-        searchPage.whenGoToSearchPage()
+
+        // Log into the cluster ACM console.
+        cy.visitAndLogin('/multicloud/home/search')
       })
 
       after(function () {
@@ -69,8 +68,17 @@ clusterModes.forEach((clusterMode) => {
         })
       })
 
+      context('UI - Search page validation', { tags: tags.modes }, function () {
+        it(`[P1][Sev1][${squad}] should load and render the search page`, function () {
+          searchPage.shouldLoad()
+          searchPage.shouldRenderSavedSearchesTab()
+          searchPage.shouldRenderSearchBar()
+          searchPage.shouldRenderSuggestedSearches()
+        })
+      })
+
       context(
-        'search resources: verify resource exist after creation',
+        'Verify: search results with common filter and condition',
         { tags: tags.modes },
         function () {
           beforeEach(function () {
@@ -80,14 +88,7 @@ clusterModes.forEach((clusterMode) => {
             )
           })
 
-          it(`[P3][Sev3][${squad}] should have expected count of relationships`, function () {
-            searchPage.whenExpandRelationshipTiles()
-            searchPage.shouldFindRelationshipTile('cluster', 1)
-            searchPage.shouldFindRelationshipTile('deployment', 1)
-            searchPage.shouldFindRelationshipTile('pod', 1)
-          })
-
-          it(`[P1][Sev1][${squad}] should work kind filter for deployment`, function () {
+          it(`[P2][Sev2][${squad}] should work kind filter for deployment`, function () {
             searchBar.whenFilterByKind('deployment')
             searchPage.shouldFindResourceDetailItem(
               resources[1].kind,
@@ -96,13 +97,20 @@ clusterModes.forEach((clusterMode) => {
             )
           })
 
-          it(`[P1][Sev1][${squad}] should work kind filter for pod`, function () {
+          it(`[P2][Sev2][${squad}] should work kind filter for pod`, function () {
             searchBar.whenFilterByKind('pod')
             searchPage.shouldFindResourceDetailItem(
               'pod',
               'auto-test-deploy',
               resources[1].namespace
             )
+          })
+
+          it(`[P3][Sev3][${squad}] should have expected count of relationships`, function () {
+            searchPage.whenExpandRelationshipTiles()
+            searchPage.shouldFindRelationshipTile('cluster', 1)
+            searchPage.shouldFindRelationshipTile('deployment', 1)
+            searchPage.shouldFindRelationshipTile('pod', 1)
           })
         }
       )

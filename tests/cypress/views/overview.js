@@ -5,6 +5,8 @@
 
 /// <reference types="cypress" />
 
+import { searchPage } from '../views/search'
+
 /**
  * Overview page object for the ACM console.
  */
@@ -52,44 +54,31 @@ export const overviewPage = {
    */
   shouldHaveLinkToSearchPage: () => {
     cy.get('#clusters-summary a')
-      .contains(/[0-9]+/)
-      .then((c) => {
-        let cluster = c.text()
-        cy.wrap(c)
-          .click()
-          .then((p) => {
-            cy.wrap(p)
-              .get('.react-tags__selected')
-              .should('have.length', 1)
-              .invoke('text')
-              .should('eq', 'kind:cluster')
-            if (cluster !== '0') {
-              cy.wrap(p)
-                .get('.pf-c-expandable-section__toggle-text')
-                .invoke('text')
-                .should('contain', 'Cluster')
-            }
-          })
+      .should('exist')
+      .and('be.visible')
+      .then((clusters) => {
+        const numOfCluster = clusters.text()
+
+        if (numOfCluster > 0) {
+          cy.wrap(clusters).click()
+        } else {
+          cy.log(`${numOfCluster} detected within the overview cluster summary`)
+        }
       })
+
+    cy.get('.react-tags__selected')
+      .should('have.length', 1)
+      .invoke('text')
+      .should('eq', 'kind:cluster')
+
+    searchPage.shouldLoadResults()
+    cy.get('.pf-c-expandable-section__toggle-text').filter(':contains(Cluster)')
     cy.go('back')
-    cy.get('#pods-summary a').then((a) => {
-      let pod = a.text()
-      cy.wrap(a)
-        .click()
-        .then((p) => {
-          cy.wrap(p)
-            .get('.react-tags__selected')
-            .should('have.length', 1)
-            .invoke('text')
-            .should('eq', 'kind:pod')
-          if (pod !== '0') {
-            cy.wrap(p)
-              .get('.pf-c-expandable-section__toggle-text')
-              .invoke('text')
-              .should('contain', 'Pod')
-          }
-        })
-    })
+
+    cy.get('#pods-summary a').should('exist').and('be.visible').click()
+
+    searchPage.shouldLoadResults()
+    cy.get('.pf-c-expandable-section__toggle-text').filter(':contains(Pod)')
   },
   /**
    * Verify that the Overview page should have a left navigation panel that contain accessible links to a specified page.

@@ -5,8 +5,8 @@
 
 /// <reference types="cypress" />
 
+import { namespace } from '../../common-lib/resources'
 import { capitalize } from '../scripts/cliHelper'
-import { podDetailPage } from './podDetailPage'
 import { popupModal } from './popup'
 
 const SEARCH_MESSAGES_NO_RESULTS =
@@ -144,55 +144,67 @@ export const searchPage = {
    * Verify that the Search page should have loaded the resource table.
    */
   shouldLoadResults: () => {
-    cy.get('table.pf-c-table').should('exist')
+    cy.get('.pf-c-card__header').should('exist').and('be.visible')
+
+    cy.get('body').then((body) => {
+      if (body.find('table.pf-c-table').length === 0) {
+        searchPage.whenOpenFirstResourceTableTile()
+      }
+    })
   },
-  shouldSelectFirstSuggestionValue: () => {
-    cy.get('.react-tags__suggestions ul#ReactTags')
+  /**
+   * Verify that the saved search tab is rendered on the Search page.
+   */
+  shouldRenderSavedSearchesTab: () => {
+    cy.get('.pf-c-dropdown__toggle-text')
+      .filter(':contains(Saved searches)')
       .should('exist')
-      .children()
-      .should('have.length.above', 1)
-    cy.get('li#ReactTags-1').click()
   },
-  shouldValidateManagedCluster: () => {
-    searchBar.whenEnterTextInSearchBar('ManagedClusterJoined', 'True')
-    searchPage.shouldLoadResults()
+  /**
+   * Verify that the search bar is rendered on the Search page.
+   */
+  shouldRenderSearchBar: () => {
+    cy.get('.searchbar-container').should('exist')
   },
-  shouldVerifyPodsLogsInResourceTable: () => {
-    cy.get(`td[data-label="Name"]`)
-      .should('exist')
-      .each(($td) => {
-        searchPage.whenGoToResourceDetailItemPage('pod', $td.text())
-        podDetailPage.whenClickOnLogsTab()
-        podDetailPage.shouldSeeLogs()
-        cy.go('back')
-      })
-  },
-  shouldValidatePodsInResourceTableRunning: () => {
-    cy.get('table.pf-c-table')
-      .should('exist')
-      .within(() => {
-        cy.get('td[data-label="Status"]').each(($td) => {
-          cy.wrap($td).should('contain.text', 'Running')
-        })
-      })
-  },
-  shouldValidateSearchQuery: () => {
-    searchPage.shouldLoadResults()
-    cy.get('.pf-c-alert pf-m-inline pf-m-danger').should('not.exist')
-  },
-  shouldVerifyManagedClusterPodsAreRunning: () => {
-    searchPage.shouldValidatePodsInResourceTableRunning()
+  /**
+   * Verify that the suggested searches header and tiles are rendered on the Search page.
+   */
+  shouldRenderSuggestedSearches: () => {
+    cy.get('.pf-c-title').filter(':contains(Suggested)').should('exist')
+    cy.get('.pf-c-card.pf-m-selectable').should('exist')
   },
   /**
    * Expands the related resources tiles located within the Search page.
    */
   whenExpandRelationshipTiles: () => {
     cy.get('.pf-c-skeleton').should('not.exist')
+    cy.get('.pf-c-expandable-section__toggle-text')
+      .contains('related resources')
+      .should('exist')
+      .click()
     cy.get('.pf-l-gallery')
       .children()
       .should('have.length.above', 1)
       .then(() => {
         cy.get('button.pf-c-button.pf-m-secondary').focus().click()
+      })
+  },
+  whenOpenFirstResourceTableTile: () => {
+    cy.get('.pf-c-card__header')
+      .should('exist')
+      .and('be.visible')
+      .first()
+      .within(() => {
+        cy.get('.pf-c-expandable-section__toggle-text').click()
+      })
+  },
+  whenOpenResourceTableTile: (kind) => {
+    cy.get('.pf-c-expandable-section')
+      .should('have.lengthOf.at.most', 2)
+      .then(() => {
+        cy.get('.pf-c-expandable-section__toggle-text')
+          .contains(capitalize(kind))
+          .click()
       })
   },
   /**
@@ -203,10 +215,11 @@ export const searchPage = {
    * @returns {Cypress.Chainable} Table row of the targeted test resource.
    */
   whenGetResourceTableRow: (kind, name, namespace) => {
-    cy.get('.pf-c-expandable-section')
-      .filter(`:contains(${capitalize(kind)})`)
-      .should('exist')
-    cy.get('table.pf-c-table').should('exist')
+    cy.get('body').then((body) => {
+      if (body.find('table.pf-c-table').length === 0) {
+        searchPage.whenOpenResourceTableTile(kind)
+      }
+    })
 
     if (namespace) {
       return cy.get('tr').filter(`:contains(${name})`).and('contain', namespace)
@@ -245,7 +258,7 @@ export const searchPage = {
   whenGoToResourceDetailItemPage: (kind, name, namespace) => {
     searchPage
       .whenGetResourceTableRow(kind, name, namespace)
-      .find('td[data-label="Name"]')
+      .find('td[data-label="Name"] a')
       .click()
   },
   /**
@@ -263,16 +276,6 @@ export const searchPage = {
 export const searchBar = {
   shouldContainTag: (filter) => {
     cy.get('.react-tags__selected-tag-name').should('contain', filter)
-  },
-  shouldSuggestValues: (value) => {
-    cy.get('.react-tags__search-input').click().type(value).type(' ')
-    cy.get('.react-tags__suggestions ul#ReactTags')
-      .should('exist')
-      .children()
-      .should('have.length.above', 1)
-  },
-  whenFocusSearchBar: () => {
-    cy.get('.react-tags').click()
   },
   whenSuggestionsAreAvailable: (value, ignoreIfDoesNotExist) => {
     if (!ignoreIfDoesNotExist) {
@@ -328,12 +331,5 @@ export const searchBar = {
       namespace,
       ignoreIfDoesNotExist
     )
-  },
-  whenSelectFirstSuggestedValue: (value) => {
-    searchBar.shouldSuggestValues(value)
-    cy.get('.react-tags__suggestions ul#ReactTags').within(() => {
-      cy.get('li').not('.is-disabled').first().click()
-    })
-    searchPage.shouldLoadResults()
   },
 }

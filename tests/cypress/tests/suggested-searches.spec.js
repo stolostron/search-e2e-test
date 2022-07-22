@@ -5,18 +5,17 @@
 
 /// <reference types="cypress" />
 
-import { squad, tags } from '../../config'
-import { searchPage, searchBar } from '../../views/search'
-import { suggestedSearches } from '../../views/suggestedSearches'
+import { squad, tags } from '../config'
+import { searchBar, searchPage } from '../views/search'
+import { suggestedSearches } from '../views/suggestedSearches'
 
-describe.skip(
+describe(
   'RHACM4K-411: Search: Verify the suggested search templates',
   { tags: tags.required },
   function () {
     beforeEach(function () {
       // Log into the cluster ACM console.
-      cy.visitAndLogin('/multicloud/home/welcome')
-      searchPage.whenGoToSearchPage()
+      cy.visitAndLogin('/multicloud/home/search')
     })
 
     context(

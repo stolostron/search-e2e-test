@@ -5,15 +5,15 @@
 
 /// <reference types="cypress" />
 
-import { squad, tags } from '../../config'
-import { namespace } from '../../../common-lib/resources'
-import { savedSearches } from '../../views/savedSearches'
+import { squad, tags } from '../config'
+import { namespace } from '../../common-lib/resources'
+import { savedSearches } from '../views/savedSearches'
 import {
   cliHelper,
   generateNewResourceState,
   resetNewResourceState,
-} from '../../scripts/cliHelper'
-import { searchBar, searchPage } from '../../views/search'
+} from '../scripts/cliHelper'
+import { searchBar, searchPage } from '../views/search'
 
 // Generate namespace for test resources.
 const ns = cliHelper.generateNamespace()
@@ -27,7 +27,7 @@ const queryDefaultNamespaceDesc = `This is searching that the cluster should hav
 const queryEditNamespaceName = `[E2E] ${resource.name}-edit`
 const queryEditNamespaceDesc = `[Created by Search E2E automation] This is searching that the cluster should have ${resource.name} namespace.`
 
-describe.skip(
+describe(
   'RHACM4K-412 - Search: Saved searches',
   { tags: tags.env },
   function () {
@@ -37,12 +37,11 @@ describe.skip(
     })
 
     beforeEach(function () {
-      // Log into the cluster ACM console.
-      cy.visitAndLogin('/multicloud/home/welcome')
-
       // Generate new resource state for the test environment.
-      generateNewResourceState(resource, { wait: 3000 })
-      searchPage.whenGoToSearchPage()
+      generateNewResourceState(resource)
+
+      // Log into the cluster ACM console.
+      cy.visitAndLogin('/multicloud/home/search')
     })
 
     after(function () {
@@ -51,12 +50,12 @@ describe.skip(
     })
 
     context('verify: saved searches resource actions', function () {
-      it(`[P2][Sev2][${squad}] should verify that the namespace is available`, function () {
+      it(`[P3][Sev3][${squad}] should verify that the namespace is available`, function () {
         searchBar.whenFilterByNamespace(resource.name)
         searchPage.shouldLoadResults()
       })
 
-      it(`[P2][Sev2][${squad}] should be able to save current search`, function () {
+      it(`[P3][Sev3][${squad}] should be able to save current search`, function () {
         savedSearches.saveClusterNamespaceSearch(
           'local-cluster',
           resource.name,
@@ -65,11 +64,11 @@ describe.skip(
         )
       })
 
-      it(`[P2][Sev2][${squad}] should be able to find the saved search`, function () {
+      it(`[P3][Sev3][${squad}] should be able to find the saved search`, function () {
         savedSearches.getSavedSearch(queryDefaultNamespaceName)
       })
 
-      it(`[P2][Sev2][${squad}] should be able to edit the saved searches`, function () {
+      it(`[P3][Sev3][${squad}] should be able to edit the saved searches`, function () {
         savedSearches.editSavedSearch(
           resource.name,
           queryEditNamespaceName,
@@ -77,7 +76,7 @@ describe.skip(
         )
       })
 
-      it(`[P2][Sev2][${squad}] should be able to revert back the edited saved searches`, function () {
+      it(`[P3][Sev3][${squad}] should be able to revert back the edited saved searches`, function () {
         savedSearches.editSavedSearch(
           queryEditNamespaceName,
           queryDefaultNamespaceName,
@@ -85,15 +84,15 @@ describe.skip(
         )
       })
 
-      it(`[P2][Sev2][${squad}] should be able to share the saved searches`, function () {
+      it(`[P3][Sev3][${squad}] should be able to share the saved searches`, function () {
         savedSearches.shareSavedSearch(queryDefaultNamespaceName)
       })
 
-      it(`[P2][Sev2][${squad}] should be able to delete the saved searches ${queryDefaultNamespaceName}`, function () {
+      it(`[P3][Sev3][${squad}] should be able to delete the saved searches ${queryDefaultNamespaceName}`, function () {
         savedSearches.whenDeleteSavedSearch(queryDefaultNamespaceName)
       })
 
-      it(`[P2][Sev2][${squad}] should be able to verify the delete saved searches ${queryDefaultNamespaceName}`, function () {
+      it(`[P3][Sev3][${squad}] should be able to verify the delete saved searches ${queryDefaultNamespaceName}`, function () {
         savedSearches.shouldNotExist(queryDefaultNamespaceName)
       })
     })

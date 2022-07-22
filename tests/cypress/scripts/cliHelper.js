@@ -22,15 +22,6 @@ export const generateNewResourceState = (state, options = {}) => {
       `Required ${state.kind} has not been created within this test instance. Preparing to create them.`
     )
     cliHelper.createResource(state, options)
-
-    if (options.wait) {
-      cy.log(
-        `Option for waiting enabled for ${
-          options.wait / 1000
-        } seconds. Waiting to ensure resource is properly indexed.`
-      )
-      cy.wait(options.wait)
-    }
   } else {
     cy.log(
       `Detected that the required ${state.kind} resources has been created within this test instance.`
@@ -252,15 +243,14 @@ export const cliHelper = {
   },
 
   /**
-   * Login into the cluster environment with the `oc` cli command.
-   * @param {string} cluster The cluster environment to login into (Default: HUB).
+   * Login into the hub cluster environment with the `oc` cli command.
    * @param {object} options Additional options for logging into the cluster environment.
    */
-  login: (cluster = 'HUB', options = {}) => {
+  login: (options = { useInsecure: true }) => {
     var cmd = `oc login --server=https://api.${Cypress.env(
-      `OPTIONS_${cluster}_BASEDOMAIN`
-    )}:6443 -u ${Cypress.env(`OPTIONS_${cluster}_USER`)} -p ${Cypress.env(
-      `OPTIONS_${cluster}_PASSWORD`
+      'OPTIONS_HUB_BASEDOMAIN'
+    )}:6443 -u ${Cypress.env('OPTIONS_HUB_USER')} -p ${Cypress.env(
+      'OPTIONS_HUB_PASSWORD'
     )}`
 
     if (options.useInsecure) {

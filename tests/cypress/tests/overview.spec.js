@@ -5,20 +5,23 @@
 
 /// <reference types="cypress" />
 
-import { squad, tags } from '../../config'
-import { overviewPage } from '../../views/overview'
+import { squad, tags } from '../config'
+import { overviewPage } from '../views/overview'
 
-describe.skip(
+describe(
   'RHACM4K-1419: Search: Overview page',
   { tags: tags.required },
   function () {
     beforeEach(function () {
       // Log into the cluster ACM console.
-      cy.visitAndLogin('/multicloud/home/welcome')
-      overviewPage.whenGoToOverviewPage()
+      cy.visitAndLogin('/multicloud/home/overview')
     })
 
-    context('UI - overview page validation', { tags: [] }, function () {
+    context('UI - Overview page validation', { tags: [] }, function () {
+      it(`[P1][Sev1][${squad}] should load and render the overview page`, function () {
+        overviewPage.shouldLoad()
+      })
+
       it(`[P2][Sev2][${squad}] should have clusters provider card`, function () {
         overviewPage.shouldHaveClusterProviderCard()
       })
@@ -44,8 +47,8 @@ describe.skip(
         overviewPage.shouldHaveLeftNavLinkToTargetedPage('Clusters')
       })
 
-      it(`[P2][Sev2][${squad}] should have link to bare metal assets page from left nav`, function () {
-        overviewPage.shouldHaveLeftNavLinkToTargetedPage('Bare metal assets')
+      it(`[P2][Sev2][${squad}] should have link to host inventory page from left nav`, function () {
+        overviewPage.shouldHaveLeftNavLinkToTargetedPage('Host inventory')
       })
 
       it(`[P2][Sev2][${squad}] should have link to automation page from left nav`, function () {
