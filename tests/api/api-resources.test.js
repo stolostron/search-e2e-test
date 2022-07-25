@@ -101,7 +101,10 @@ function baseTest(
         )
 
         const match = matchPerc(searchResources, expectedResources)
-        const mismatch = getMismatchResources(searchResources, expectedResources)
+        const mismatch = getMismatchResources(
+          searchResources,
+          expectedResources
+        )
 
         // Log the mismatched resources.
         console.warn('Mismatched resources found:', mismatch)
@@ -112,7 +115,7 @@ function baseTest(
             expect(closeMatch(searchResources, expectedResources)).toBeTruthy()
           }
         } else {
-          expect(parseFloat(match)).toBeGreaterThanOrEqual(100.00)
+          expect(parseFloat(match)).toBeGreaterThanOrEqual(100.0)
         }
       } else {
         expect(searchResources.length).toEqual(expectedResources.length)
