@@ -101,13 +101,17 @@ function baseTest(
         )
 
         const match = matchPerc(searchResources, expectedResources)
+        console.log(`(${kind}) - Match Percentage (${match})`)
+
         const mismatch = getMismatchResources(
           searchResources,
           expectedResources
         )
 
         // Log the mismatched resources.
-        console.warn('Mismatched resources found:', mismatch)
+        if (mismatch.length !== 0) {
+          console.warn('Mismatched resources found:', mismatch)
+        }
 
         // If the match percentage is below 100%, we will verify if the amount of resources returned are contained within a targeted range (default: 3)
         if (parseFloat(match) < 100.0) {
