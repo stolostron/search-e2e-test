@@ -4,6 +4,26 @@ const { execSync } = require('child_process')
 const lodash = require('lodash')
 
 /**
+ * Compares the length of two arrays and determine if the
+ * @param {*} receieved The target array.
+ * @param {*} expected The source array.
+ * @param {*} range The accepted range of difference between the arrays.
+ * @returns
+ */
+function closeMatch(receieved, expected, range = 3) {
+  if (receieved.length === 0) {
+    return false
+  } else if (
+    receieved.length <= expected.length + range &&
+    receieved.length >= expected.length - range
+  ) {
+    return true
+  }
+
+  return false
+}
+
+/**
  * Format filters for search queries.
  * @param {string} kind The kind of resource to filter.
  * @param {Object} group The API group to filter the resources against.
@@ -155,22 +175,35 @@ function getClusterList(kubeconfigs = []) {
   return clusters
 }
 
-function getMismatchedResources(receivedList, expectedList) {
-  if (receivedList.length > expectedList.length) {
-    return receivedList.filter(
-      (resource) =>
-        !expectedList.find((obj) => {
-          obj.name === resource.name && obj.namespace === resource.namespace
-        })
+/**
+ * Return the match percentage been both object arrays.
+ * @param {Array} received An array of resources received from the target API.
+ * @param {Array} expected An array of resources expected from the source API.
+ * @returns
+ */
+function matchPerc(received, expected) {
+  var matches = received.filter((res) =>
+    expected.find(
+      (resp) => res.name == resp.name && res.namespace == resp.namespace
     )
-  } else {
-    return expectedList.filter(
-      (resource) =>
-        !receivedList.find((obj) => {
-          obj.name === resource.name && obj.namespace === resource.namespace
-        })
-    )
-  }
+  ).length
+
+  return ((matches / expected.length) * 100).toFixed(2) + '%'
+}
+
+/**
+ * Return an array of mismatched api resources
+ * @param {*} received An array of resources received from the target API.
+ * @param {*} expected An array of resources expected from the source API.
+ * @returns
+ */
+function getMismatchResources(received, expected) {
+  return received.filter(
+    (res) =>
+      !expected.find(
+        (resp) => res.name == resp.name && res.namespace == resp.namespace
+      )
+  )
 }
 
 function getResourcesFromOC(
@@ -301,14 +334,16 @@ function shouldUseAPIGroup(kind, resourceList, requiredList = []) {
   return _.length > 1 || requiredList.includes(kind)
 }
 
+exports.closeMatch = closeMatch
 exports.fetchAPIResourcesWithListWatchMethods =
   fetchAPIResourcesWithListWatchMethods
 exports.formatFilters = formatFilters
 exports.formatResources = formatResources
 exports.formatResourcesFromSearch = formatResourcesFromSearch
 exports.getClusterList = getClusterList
-exports.getMismatchedResources = getMismatchedResources
+exports.getMismatchResources = getMismatchResources
 exports.getResourcesFromOC = getResourcesFromOC
 exports.getTargetManagedCluster = getTargetManagedCluster
+exports.matchPerc = matchPerc
 exports.removeEmptyEntries = removeEmptyEntries
 exports.shouldUseAPIGroup = shouldUseAPIGroup

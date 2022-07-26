@@ -15,12 +15,14 @@ const {
 } = require('../common-lib/clusterAccess')
 
 const {
+  closeMatch,
   fetchAPIResourcesWithListWatchMethods,
   formatResourcesFromSearch,
   formatFilters,
-  getMismatchedResources,
+  getMismatchResources,
   getResourcesFromOC,
   getClusterList,
+  matchPerc,
   shouldUseAPIGroup,
 } = require('../common-lib/index')
 
@@ -28,7 +30,11 @@ const { sleep } = require('../common-lib/sleep')
 
 // Set list to ignore resources that aren't being collected by Search.
 // When using the oc command clusterclaim doesn't include the namespace, therefore, for testing purposes, we will omit that resource object.
-const ignoreKindResourceList = ['clusterclaim', 'event']
+const ignoreKindResourceList = [
+  'clusterclaim',
+  'event',
+  'networkattachmentdefinition',
+]
 
 // Set list of resources that require filtering by api group.
 const requireAPIGroup = []
@@ -64,7 +70,6 @@ function baseTest(
     }`,
     async () => {
       const filters = formatFilters(kind, apigroup, namespace, cluster)
-      var mismatchResources = []
 
       // Fetch data from the search api.
       var query = searchQueryBuilder({ filters })
@@ -92,34 +97,39 @@ function baseTest(
       // Verify if the resources returned for both APIs are correct.
       if (searchResources.length != expectedResources.length) {
         console.warn(
-          `Detected incorrect amount of data matches for (${kind}) resources (search/expected) - (${searchResources.length}/${expectedResources.length}). Retrying test within 5 seconds.`
+          `Detected incorrect amount of data matches for (${kind}) resources (search/expected) - (${searchResources.length}/${expectedResources.length}).`
         )
 
-        // Check to see which API returned more resources than the other.
-        mismatchResources = getMismatchedResources(
+        const match = matchPerc(searchResources, expectedResources)
+        console.log(`(${kind}) - Match Percentage (${match})`)
+
+        const mismatch = getMismatchResources(
           searchResources,
           expectedResources
         )
-        console.info('mismatchResources', mismatchResources)
-        await sleep(7000)
 
-        // TODO: Update tests to run asynchronously. (Currently, adding an async callback will make the test run longer)
-        // For now, we will use the jest retry logic for test progression.
-        // Refresh the list of resources. There's a chance that more resources were created after the previous fetch.
-        // expectedResources,
-        //   (resp = Promise.all(
-        //     getResourcesFromOC(kind, apigroup, namespace, cluster),
-        //     sendRequest(query, token)
-        //   ))
+        // Log the mismatched resources.
+        if (mismatch.length !== 0) {
+          console.warn('Mismatched resources found:', mismatch)
+        }
+
+        // If the match percentage is below 100%, we will verify if the amount of resources returned are contained within a targeted range (default: 3)
+        if (parseFloat(match) < 100.0) {
+          if (closeMatch(searchResources, expectedResources)) {
+            expect(closeMatch(searchResources, expectedResources)).toBeTruthy()
+          }
+        } else {
+          expect(parseFloat(match)).toBeGreaterThanOrEqual(100.0)
+        }
+      } else {
+        expect(searchResources.length).toEqual(expectedResources.length)
       }
-
-      expect(searchResources.length).toEqual(expectedResources.length)
     },
     20000
   )
 }
 
-describe.skip('Search: API Resources', () => {
+describe('Search: API Resources', () => {
   beforeAll(async () => {
     // Log in and get access token
     token = getToken()
@@ -133,14 +143,6 @@ describe.skip('Search: API Resources', () => {
 
   // Get kubeconfig for cluster environments.
   var kubeconfigs = getKubeConfig()
-
-  // TODO: (implement RBAC testing) Set the default user for testing.
-  // var user = process.env.OPTIONS_HUB_USER || 'kubeadmin'
-
-  // Verify if the user needs to be authenticated as another user.
-  // if (user !== 'kubeadmin') {
-  //   clusterLogin()
-  // }
 
   // Generate list of clusters.
   const clusterList = getClusterList(kubeconfigs)

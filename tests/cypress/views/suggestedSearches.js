@@ -16,22 +16,35 @@ export const suggestedSearches = {
    * @param {string} title The title of the suggested filter panel.
    */
   whenSelectCardWithTitle: (title) => {
-    cy.get('.pf-c-card__title').filter(`:contains(${title})`).click()
+    cy.get('.pf-c-card__title')
+      .filter(`:contains(${title})`)
+      .should('exist')
+      .and('be.visible')
+      .click()
   },
   /**
    * Verify the related resource item details within the Search page.
    */
   whenVerifyRelatedItemsDetails: () => {
     searchPage.shouldLoad()
+
+    cy.get('.pf-c-expandable-section__toggle')
+      .filter(':contains(related resource)')
+      .should('exist')
+      .click()
+
     cy.get('.pf-l-gallery.pf-m-gutter')
       .should('exist')
       .then(($related) => {
         if ($related.children().length > 0) {
-          cy.get('.pf-c-tile__body').first().click()
-          cy.get('.pf-c-expandable-section__toggle-text').should(
-            'contain.text',
-            'Related'
-          )
+          cy.get('.pf-c-tile__body .pf-c-skeleton')
+            .should('not.exist')
+            .then(() => {
+              cy.get('.pf-c-tile__body').first().click()
+              cy.get('.pf-c-expandable-section__toggle-text')
+                .should('exist')
+                .and('contain', 'Related')
+            })
         }
       })
   },
