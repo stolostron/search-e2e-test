@@ -5,6 +5,7 @@
   "scripts": {
     "lint": "prettier --check .",
     "lint:fix": "prettier --write .",
+    "prepare": "husky install",
     "rbac:clean": "./build/rbac-clean.sh",
     "rbac:setup": "./build/rbac-setup.sh",
     "test": "npm run test:clean-reports && npm run test:headless && npm run test:merge-reports",
