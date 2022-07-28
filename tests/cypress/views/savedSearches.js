@@ -32,7 +32,8 @@ export const savedSearches = {
   },
   saveClusterNamespaceSearch: (cluster, namespace, queryName, queryDesc) => {
     searchPage.shouldFindNamespaceInCluster(namespace, cluster)
-    cy.get('.pf-c-button.pf-m-primary').contains('Save search').focus().click()
+    searchBar.whenRunSearchQuery()
+    cy.get('.pf-c-button.pf-m-link').contains('Save search').focus().click()
     cy.get('#add-query-name').type(queryName)
     cy.get('#add-query-desc').type(queryDesc)
     cy.get('.pf-c-modal-box__footer').contains('Save').focus().click()
