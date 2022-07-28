@@ -64,11 +64,6 @@
     "querystring": "^0.2.1",
     "selenium-standalone": "^8.2.0"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint"
-    }
-  },
   "prettier": {
     "semi": false,
     "singleQuote": true
