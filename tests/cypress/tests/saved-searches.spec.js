@@ -26,53 +26,57 @@ describe(
       cy.visitAndLogin('/multicloud/home/search')
     })
 
-    context('verify: saved searches resource actions', function () {
-      it(`[P3][Sev3][${squad}] should verify that the namespace is available`, function () {
-        searchBar.whenFilterByNamespace(namespace)
-        searchBar.whenRunSearchQuery()
-        searchPage.shouldLoadResults()
-      })
+    context(
+      'verify: saved searches resource actions',
+      { tags: tags.modes },
+      function () {
+        it(`[P3][Sev3][${squad}] should verify that the namespace is available`, function () {
+          searchBar.whenFilterByNamespace(namespace)
+          searchBar.whenRunSearchQuery()
+          searchPage.shouldLoadResults()
+        })
 
-      it(`[P3][Sev3][${squad}] should be able to save current search`, function () {
-        savedSearches.saveClusterNamespaceSearch(
-          'local-cluster',
-          namespace,
-          queryDefaultNamespaceName,
-          queryDefaultNamespaceDesc
-        )
-      })
+        it(`[P3][Sev3][${squad}] should be able to save current search`, function () {
+          savedSearches.saveClusterNamespaceSearch(
+            'local-cluster',
+            namespace,
+            queryDefaultNamespaceName,
+            queryDefaultNamespaceDesc
+          )
+        })
 
-      it(`[P3][Sev3][${squad}] should be able to find the saved search`, function () {
-        savedSearches.getSavedSearch(queryDefaultNamespaceName)
-      })
+        it(`[P3][Sev3][${squad}] should be able to find the saved search`, function () {
+          savedSearches.getSavedSearch(queryDefaultNamespaceName)
+        })
 
-      it(`[P3][Sev3][${squad}] should be able to edit the saved searches`, function () {
-        savedSearches.editSavedSearch(
-          namespace,
-          queryEditNamespaceName,
-          queryEditNamespaceDesc
-        )
-      })
+        it(`[P3][Sev3][${squad}] should be able to edit the saved searches`, function () {
+          savedSearches.editSavedSearch(
+            namespace,
+            queryEditNamespaceName,
+            queryEditNamespaceDesc
+          )
+        })
 
-      it(`[P3][Sev3][${squad}] should be able to revert back the edited saved searches`, function () {
-        savedSearches.editSavedSearch(
-          queryEditNamespaceName,
-          queryDefaultNamespaceName,
-          queryDefaultNamespaceDesc
-        )
-      })
+        it(`[P3][Sev3][${squad}] should be able to revert back the edited saved searches`, function () {
+          savedSearches.editSavedSearch(
+            queryEditNamespaceName,
+            queryDefaultNamespaceName,
+            queryDefaultNamespaceDesc
+          )
+        })
 
-      it(`[P3][Sev3][${squad}] should be able to share the saved searches`, function () {
-        savedSearches.shareSavedSearch(queryDefaultNamespaceName)
-      })
+        it(`[P3][Sev3][${squad}] should be able to share the saved searches`, function () {
+          savedSearches.shareSavedSearch(queryDefaultNamespaceName)
+        })
 
-      it(`[P3][Sev3][${squad}] should be able to delete the saved searches ${queryDefaultNamespaceName}`, function () {
-        savedSearches.whenDeleteSavedSearch(queryDefaultNamespaceName)
-      })
+        it(`[P3][Sev3][${squad}] should be able to delete the saved searches ${queryDefaultNamespaceName}`, function () {
+          savedSearches.whenDeleteSavedSearch(queryDefaultNamespaceName)
+        })
 
-      it(`[P3][Sev3][${squad}] should be able to verify the delete saved searches ${queryDefaultNamespaceName}`, function () {
-        savedSearches.shouldNotExist(queryDefaultNamespaceName)
-      })
-    })
+        it(`[P3][Sev3][${squad}] should be able to verify the delete saved searches ${queryDefaultNamespaceName}`, function () {
+          savedSearches.shouldNotExist(queryDefaultNamespaceName)
+        })
+      }
+    )
   }
 )
