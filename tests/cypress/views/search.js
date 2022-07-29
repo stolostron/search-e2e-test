@@ -81,7 +81,7 @@ export const searchPage = {
    * @param {string} kind
    * @param {int} count
    */
-  shouldFindRelationshipTile: (kind, count) => {
+  shouldFindRelationshipTile: (kind) => {
     cy.get('.pf-l-gallery.pf-m-gutter')
       .should('exist')
       .within(() => {
@@ -89,7 +89,6 @@ export const searchPage = {
         cy.get('.pf-c-tile')
           .filter(`:contains(Related ${kind})`)
           .should('exist')
-          .and('contain', count)
       })
   },
   /**
@@ -177,7 +176,6 @@ export const searchPage = {
    * Expands the related resources tiles located within the Search page.
    */
   whenExpandRelationshipTiles: () => {
-    cy.get('.pf-c-skeleton').should('not.exist')
     cy.get('.pf-c-expandable-section__toggle-text')
       .contains('related resources')
       .should('exist')
@@ -215,17 +213,16 @@ export const searchPage = {
    * @returns {Cypress.Chainable} Table row of the targeted test resource.
    */
   whenGetResourceTableRow: (kind, name, namespace) => {
-    cy.get('body').then((body) => {
-      if (body.find('table.pf-c-table').length === 0) {
-        searchPage.whenOpenResourceTableTile(kind)
-      }
-    })
+    cy.get('table.pf-c-table').should('exist').and('be.visible')
+    var row = cy.get('tr').filter(`:contains(${name})`)
 
-    if (namespace) {
-      return cy.get('tr').filter(`:contains(${name})`).and('contain', namespace)
-    } else {
-      return cy.get('tr').filter(`:contains(${name})`)
-    }
+    if (kind === 'pod')
+      return row
+        .filter(`:contains(${namespace})`)
+        .filter(':contains(Running)')
+        .first()
+    else if (namespace) return row.filter(`:contains(${namespace})`).first()
+    else return row
   },
   /**
    * Get the resource table row of the specified kind resource object and deletes the resource within the Search page.
@@ -331,5 +328,30 @@ export const searchBar = {
       namespace,
       ignoreIfDoesNotExist
     )
+  },
+  /**
+   * Execute the search query by pressing the run search button on the Search page.
+   */
+  whenRunSearchQuery: () => {
+    cy.get('.pf-c-button')
+      .filter(':contains(Run search)')
+      .should('exist')
+      .and('be.visible')
+      .click()
+    searchPage.shouldFindNoSkeleton()
+  },
+  /**
+   * Change pagination size for the Search results table.
+   * @param {int} size The amount of resources to be displayed within the table.
+   */
+  whenUsePagination: (size = 10) => {
+    cy.get('.pf-c-options-menu')
+      .should('exist')
+      .and('be.visible')
+      .first()
+      .within(() => {
+        cy.get('.pf-c-options-menu__toggle-button').click()
+        cy.get(`button[data-action="per-page-${size}"]`).should('exist').click()
+      })
   },
 }

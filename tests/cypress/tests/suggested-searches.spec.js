@@ -6,12 +6,12 @@
 /// <reference types="cypress" />
 
 import { squad, tags } from '../config'
-import { searchBar, searchPage } from '../views/search'
+import { searchBar } from '../views/search'
 import { suggestedSearches } from '../views/suggestedSearches'
 
 describe(
   'RHACM4K-411: Search: Verify the suggested search templates',
-  { tags: tags.required },
+  { tags: tags.env },
   function () {
     beforeEach(function () {
       // Log into the cluster ACM console.
@@ -20,7 +20,7 @@ describe(
 
     context(
       'verify: search page suggested search queries',
-      { tags: [] },
+      { tags: tags.modes },
       function () {
         it(`[P3][Sev3][${squad}] should see the workloads template & search tag in search items`, function () {
           suggestedSearches.whenSelectCardWithTitle('Workloads')
