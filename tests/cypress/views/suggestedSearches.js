@@ -28,24 +28,33 @@ export const suggestedSearches = {
   whenVerifyRelatedItemsDetails: () => {
     searchPage.shouldLoad()
 
-    cy.get('.pf-c-expandable-section__toggle')
-      .filter(':contains(related resource)')
-      .should('exist')
-      .click()
+    // There's a chance that the suggested resource tile will have 0 resources.
+    // If so we can log that there are no resources that fit the suggested query.
+    cy.get('body').then((body) => {
+      if (body.find('.pf-c-alert.pf-m-info').length === 0) {
+        cy.get('.pf-c-expandable-section__toggle')
+          .filter(':contains(related resource)')
+          .should('exist')
+          .and('be.visible')
+          .click()
 
-    cy.get('.pf-l-gallery.pf-m-gutter')
-      .should('exist')
-      .then(($related) => {
-        if ($related.children().length > 0) {
-          cy.get('.pf-c-tile__body .pf-c-skeleton')
-            .should('not.exist')
-            .then(() => {
-              cy.get('.pf-c-tile__body').first().click()
-              cy.get('.pf-c-expandable-section__toggle-text')
-                .should('exist')
-                .and('contain', 'Related')
-            })
-        }
-      })
+        cy.get('.pf-l-gallery.pf-m-gutter')
+          .should('exist')
+          .then(($related) => {
+            if ($related.children().length > 0) {
+              cy.get('.pf-c-tile__body .pf-c-skeleton')
+                .should('not.exist')
+                .then(() => {
+                  cy.get('.pf-c-tile__body').first().click()
+                  cy.get('.pf-c-expandable-section__toggle-text')
+                    .should('exist')
+                    .and('contain', 'Related')
+                })
+            }
+          })
+      } else {
+        cy.log('No resources returned from the suggested search.')
+      }
+    })
   },
 }
