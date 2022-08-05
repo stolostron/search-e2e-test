@@ -11,7 +11,7 @@ const lodash = require('lodash')
  * @returns
  */
 function closeMatch(received, expected, range = 5) {
-  // If the amount of received resources is zero, return false. The received resources should have at one item.
+  // If the amount of received resources is zero, return false. The received resources should have at least one item.
   if (received.length === 0 && expected.length !== 0) {
     return false
   }
@@ -206,6 +206,7 @@ function matchPerc(received, expected) {
     )
   ).length
 
+  // DEBUGGING LOG. This log will be active for a few canary builds to see how many resources are being matched between the resources array.
   console.log('received', received.length, 'matched', matches)
 
   // Determine if all of the received resources are contained within the expected list.

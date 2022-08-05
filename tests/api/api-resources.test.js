@@ -124,7 +124,6 @@ function baseTest(
             )
             expect(parseFloat(match)).toBeGreaterThanOrEqual(95.0)
           } else {
-            // If the expected resources does contain the entire subset of the received repo and have a match percentage above 95%
             // Verify if the amount of resources returned are contained within a targeted range (default: 5)
             expect(closeMatch(searchResources, expectedResources)).toBeTruthy()
           }
