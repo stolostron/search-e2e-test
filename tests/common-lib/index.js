@@ -5,21 +5,34 @@ const lodash = require('lodash')
 
 /**
  * Compares the length of two arrays and determine if the
- * @param {*} receieved The target array.
+ * @param {*} received The target array.
  * @param {*} expected The source array.
  * @param {*} range The accepted range of difference between the arrays.
  * @returns
  */
-function closeMatch(receieved, expected, range = 3) {
-  if (receieved.length === 0) {
+function closeMatch(received, expected, range = 5) {
+  // If the amount of received resources is zero, return false. The received resources should have at one item.
+  if (received.length === 0 && expected.length !== 0) {
     return false
-  } else if (
-    receieved.length <= expected.length + range &&
-    receieved.length >= expected.length - range
-  ) {
+  }
+
+  // Generate the range for the match scale.
+  const [max, min] = [
+    expected.length + range,
+    expected.length - range > 0 ? expected.length - range : 1,
+  ]
+
+  if (received.length <= max && received.length >= min) {
+    console.info(
+      `The total amount of received resources is within of the expected range: (${min}-${max}) - received (${received.length}).`
+    )
+
     return true
   }
 
+  console.warn(
+    `The total amount of received resources is outside of the expected range: (${min}-${max}) - received (${received.length}).`
+  )
   return false
 }
 
@@ -182,13 +195,30 @@ function getClusterList(kubeconfigs = []) {
  * @returns
  */
 function matchPerc(received, expected) {
+  // If one of the arrays are empty, this will cause the matchPerc to be NaN; therefore, we will just return 0%.
+  if (received.length === 0 || expected.length === 0) {
+    return '0%'
+  }
+
   var matches = received.filter((res) =>
     expected.find(
       (resp) => res.name == resp.name && res.namespace == resp.namespace
     )
   ).length
 
-  return ((matches / expected.length) * 100).toFixed(2) + '%'
+  console.log('received', received.length, 'matched', matches)
+
+  // Determine if all of the received resources are contained within the expected list.
+  var foundAllReceived = false
+
+  if (received.length === matches) {
+    foundAllReceived = true
+  }
+
+  return [
+    ((matches / expected.length) * 100).toFixed(2) + '%',
+    foundAllReceived,
+  ]
 }
 
 /**

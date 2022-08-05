@@ -26,8 +26,6 @@ const {
   shouldUseAPIGroup,
 } = require('../common-lib/index')
 
-const { sleep } = require('../common-lib/sleep')
-
 // Set list to ignore resources that aren't being collected by Search.
 // When using the oc command clusterclaim doesn't include the namespace, therefore, for testing purposes, we will omit that resource object.
 const ignoreKindResourceList = [
@@ -100,7 +98,10 @@ function baseTest(
           `Detected incorrect amount of data matches for (${kind}) resources (search/expected) - (${searchResources.length}/${expectedResources.length}).`
         )
 
-        const match = matchPerc(searchResources, expectedResources)
+        const [match, foundAllReceived] = matchPerc(
+          searchResources,
+          expectedResources
+        )
         console.log(`(${kind}) - Match Percentage (${match})`)
 
         const mismatch = getMismatchResources(
@@ -113,9 +114,18 @@ function baseTest(
           console.warn('Mismatched resources found:', mismatch)
         }
 
-        // If the match percentage is below 100%, we will verify if the amount of resources returned are contained within a targeted range (default: 3)
+        // Verify if the match percentage. (Note: This could only be 100% if the received amount of resources is greater than expected)
         if (parseFloat(match) < 100.0) {
-          if (closeMatch(searchResources, expectedResources)) {
+          // There is a chance that the received resources contain a subset of the expected resources.
+          // If the match percentage is gte 95% and all received resources are shared, the test can pass.
+          if (parseFloat(match) >= 95.0 && foundAllReceived) {
+            console.log(
+              `The expected list contained all received (${kind}) resources and the match percentage was above 95% percent.`
+            )
+            expect(parseFloat(match)).toBeGreaterThanOrEqual(95.0)
+          } else {
+            // If the expected resources does contain the entire subset of the received repo and have a match percentage above 95%
+            // Verify if the amount of resources returned are contained within a targeted range (default: 5)
             expect(closeMatch(searchResources, expectedResources)).toBeTruthy()
           }
         } else {
