@@ -26,6 +26,16 @@ const query = {
 }
 
 describe('Search API: Verify access:', () => {
+  beforeAll(async () => {
+    // Log in and get access token
+    token = getToken()
+
+    // Create a route to access the Search API.
+    searchApiRoute = await getSearchApiRoute()
+
+    // Temporary workaround. TODO: Get SSL cert from cluster.
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
+  })
 
   test(`[P1][Sev1][${squad}] should get 401 if authorization header is not present.`, () => {
     return request(searchApiRoute)
