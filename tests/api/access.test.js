@@ -37,6 +37,9 @@ describe('Search API: Verify access:', () => {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
   })
 
+  // Cleanup and teardown here.
+  afterAll(() => {})
+
   test(`[P1][Sev1][${squad}] should get 401 if authorization header is not present.`, () => {
     return request(searchApiRoute)
       .post('/searchapi/graphql')
