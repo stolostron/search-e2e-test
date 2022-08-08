@@ -8,9 +8,8 @@ const squad = require('../../config').get('squadName')
 const {
   getSearchApiRoute,
   getToken,
-  searchQueryBuilder,
-  sendRequest,
 } = require('../common-lib/clusterAccess')
+const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 
 describe('RHACM4K-1709: Search - Search using filters', () => {
   beforeAll(async () => {

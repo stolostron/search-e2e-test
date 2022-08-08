@@ -8,9 +8,8 @@ const {
   getResource,
   getSearchApiRoute,
   getToken,
-  searchQueryBuilder,
-  sendRequest,
 } = require('../common-lib/clusterAccess')
+const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 // const { baseTest } = require('./api-resources.test.js')
 
 const _ = require('lodash')

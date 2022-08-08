@@ -6,9 +6,8 @@ const squad = require('../../config').get('squadName')
 const {
   getSearchApiRoute,
   getToken,
-  searchQueryBuilder,
-  sendRequest,
 } = require('../common-lib/clusterAccess')
+const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 
 const _ = require('lodash')
 
