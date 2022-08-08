@@ -92,7 +92,8 @@ const getSearchApiRoute = async (options = {}) => {
     execSync(
       `oc create route passthrough search-api-automation --service=search-search-api --insecure-policy=Redirect -n ${namespace}`
     )
-    await sleep(10000)
+    await sleep(5000)
+    console.log('Created route search-api-automation.')
   }
   return `https://search-api-automation-${namespace}.apps.${config.get(
     'options:hub:baseDomain'

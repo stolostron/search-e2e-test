@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Red Hat, Inc.
+// Copyright Contributors to the Open Cluster Management project
 
 const { execSync } = require('child_process')
 
@@ -9,4 +9,5 @@ module.exports = () => {
   execSync(
     `oc delete route search-api-automation -n ${namespace} --ignore-not-found`
   )
+  console.log('globalTeardown.js - Deleted route search-api-automation.')
 }
