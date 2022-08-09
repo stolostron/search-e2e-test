@@ -3,7 +3,6 @@
 const config = require('../../config')
 const { sleep } = require('./sleep')
 const { execSync } = require('child_process')
-const request = require('supertest')
 const fs = require('fs')
 
 /**
@@ -92,7 +91,8 @@ const getSearchApiRoute = async (options = {}) => {
     execSync(
       `oc create route passthrough search-api-automation --service=search-search-api --insecure-policy=Redirect -n ${namespace}`
     )
-    await sleep(10000)
+    await sleep(5000)
+    console.log('Created route search-api-automation.')
   }
   return `https://search-api-automation-${namespace}.apps.${config.get(
     'options:hub:baseDomain'
@@ -108,54 +108,9 @@ const getToken = (options = {}) => {
   return execSync('oc whoami -t').toString().replace('\n', '')
 }
 
-/**
- * Builds and returns a query object for a HTTP request. (Current supported input keys: `keywords`, `filters`, and `limit`)
- * @param {object} {} The input keys that will be used to build the query object.
- * @param {object} options Additional options for building the query object..
- * @returns {object} The query object.
- */
-function searchQueryBuilder(
-  { keywords = [], filters = [], limit = 10000 },
-  options = {}
-) {
-  // Return query built from passed arguments.
-  const query = {
-    operationName: 'searchResult',
-    variables: {
-      input: [
-        {
-          keywords: keywords,
-          filters: filters,
-          limit: limit,
-        },
-      ],
-    },
-    query:
-      'query searchResult($input: [SearchInput]) {\n  searchResult: search(input: $input) {\n    items\n    __typename\n  }\n}\n',
-  }
-  return query
-}
-
-/**
- * Send a HTTP request to the API server and return the results. Expects the response to have a 200 status code.
- * @param {*} query The query to send.
- * @param {*} token The validation token to use for the request.
- * @param {object} options Additional options for sending the request.
- * @returns
- */
-function sendRequest(query, token, options = {}) {
-  return request(searchApiRoute)
-    .post('/searchapi/graphql')
-    .send(query)
-    .set({ Authorization: `Bearer ${token}` })
-    .expect(200)
-}
-
 exports.clusterLogin = clusterLogin
 exports.deleteResource = deleteResource
 exports.getKubeConfig = getKubeConfig
 exports.getResource = getResource
 exports.getSearchApiRoute = getSearchApiRoute
 exports.getToken = getToken
-exports.searchQueryBuilder = searchQueryBuilder
-exports.sendRequest = sendRequest
