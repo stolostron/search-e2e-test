@@ -7,10 +7,10 @@ const { sleep } = require('./sleep')
 /**
  * Common function to validate that the data in search matches
  * the data in Kubernetes.
- * @param {*} kind The resource object kind that will be used for testing.
- * @param {*} apigroup The apigroup of the object kind.
+ * @param {string} kind The resource object kind that will be used for testing.
+ * @param {string} apigroup The apigroup of the object kind.
  * @param {*} cluster The cluster of the object kind.
- * @param {*} namespace The namespace of the object kind.
+ * @param {string} namespace The namespace of the object kind.
  */
 async function ValidateSearchData(
     kind,
