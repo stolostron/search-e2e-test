@@ -5,8 +5,15 @@
  */
 const { fail } = require('assert')
 const { performance } = require('perf_hooks')    
+<<<<<<< HEAD
 const request = require('supertest')
 const lodash = require('lodash')
+=======
+const {
+    formatResourcesFromSearch,
+    formatFilters } = require('./index')
+const request = require('supertest')
+>>>>>>> origin/main
 
 /**
  * Query the Search API using the given filters.
@@ -20,11 +27,36 @@ async function getResourcesFromSearch(kind,
     apigroup,
     namespace = '--all-namespaces',
     cluster = { type: 'hub', name: 'local-cluster' }){
+<<<<<<< HEAD
     // Build the search api query.
     const filters = formatFilters(kind, apigroup, namespace, cluster)
     const query = searchQueryBuilder({ filters })
     // Fetch data from the search api.
     const resp = await sendRequest(query, token)
+=======
+    const filters = formatFilters(kind, apigroup, namespace, cluster)
+  
+    // Fetch data from the search api.
+    var query = searchQueryBuilder({ filters })
+  
+    // Monitor how long search took to return results.
+    var startTime = performance.now()
+    var resp = await sendRequest(query, token)
+    var endTime = performance.now()
+    var totalElapsedTime = endTime - startTime
+  
+    if (totalElapsedTime > 30000) {
+      fail(
+        `Search required more than 30 seconds to return resources for ${kind}. (TotalElapsedTime: ${totalElapsedTime})`
+      )
+    } else if (totalElapsedTime > 1000) {
+      console.warn(
+        `Search required more than 1 second to return resources for ${kind}. (TotalElapsedTime: ${totalElapsedTime.toFixed(
+          2
+        )})`
+      )
+    }
+>>>>>>> origin/main
   
     return formatResourcesFromSearch(resp)
   }
@@ -64,17 +96,22 @@ async function getResourcesFromSearch(kind,
  * @param {object} options Additional options for sending the request.
  * @returns
  */
+<<<<<<< HEAD
 function sendRequest(query, token, options = {}) {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0 // Disable SSL validation so we can connect to the search-api route.
     
     // Monitor how long search took to return results.
     const startTime = performance.now()
      
+=======
+ function sendRequest(query, token, options = {}) {
+>>>>>>> origin/main
     return request(searchApiRoute)
       .post('/searchapi/graphql')
       .send(query)
       .set({ Authorization: `Bearer ${token}` })
       .expect(200)
+<<<<<<< HEAD
       .then((r) => {
         const endTime = performance.now()
         const totalElapsedTime = endTime - startTime
@@ -141,6 +178,9 @@ function formatResourcesFromSearch(resources) {
   
     return filter
 }
+=======
+  }
+>>>>>>> origin/main
   
 exports.getResourcesFromSearch = getResourcesFromSearch
 exports.searchQueryBuilder = searchQueryBuilder
