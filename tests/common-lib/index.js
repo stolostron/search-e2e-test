@@ -1,60 +1,6 @@
-// Copyright (c) 2022 Red Hat, Inc.
+// Copyright Contributors to the Open Cluster Management project
 
 const { execSync } = require('child_process')
-const lodash = require('lodash')
-
-/**
- * Compares the length of two arrays and determine if the
- * @param {*} receieved The target array.
- * @param {*} expected The source array.
- * @param {*} range The accepted range of difference between the arrays.
- * @returns
- */
-function closeMatch(receieved, expected, range = 3) {
-  if (receieved.length === 0) {
-    return false
-  } else if (
-    receieved.length <= expected.length + range &&
-    receieved.length >= expected.length - range
-  ) {
-    return true
-  }
-
-  return false
-}
-
-/**
- * Format filters for search queries.
- * @param {string} kind The kind of resource to filter.
- * @param {Object} group The API group to filter the resources against.
- * @param {string} namespace The namespace to filter the resources against.
- * @param {Object} cluster The cluster to filter the resources against.
- * @returns `filter` Formatted array of object filters.
- */
-function formatFilters(
-  kind,
-  group,
-  namespace = '--all-namespaces',
-  cluster = { type: 'hub', name: 'local-cluster' }
-) {
-  const filter = []
-
-  // Add namespace filter
-  if (namespace !== '--all-namespaces')
-    filter.push({ property: 'namespace', values: [namespace] })
-
-  // Add kind filter
-  filter.push({ property: 'kind', values: [kind] })
-
-  // Add group filter
-  if (group.useAPIGroup && group.name != 'v1')
-    filter.push({ property: 'apigroup', values: [group.name] })
-
-  // Add cluster filter
-  filter.push({ property: 'cluster', values: [cluster.name] })
-
-  return filter
-}
 
 /**
  * Format resources for search queries.
@@ -75,24 +21,6 @@ function formatResources(cluster, kind, resources) {
   })
 
   return formattedResources
-}
-/**
- * Format resources for search queries.
- * @param {*} resources A list of resources that will be formated as an object containing name and namespace.
- * @returns `formatedResources` Formatted array of resource object.
- */
-function formatResourcesFromSearch(resources) {
-  var searchResources = lodash
-    .get(resources, 'body.data.searchResult[0].items')
-    .filter((items) => items.namespace) // We're only interested in resources that have a namespace.
-    .map((item) => ({
-      cluster: item.cluster,
-      kind: item.kind,
-      name: item.name,
-      namespace: item.namespace,
-    }))
-
-  return searchResources
 }
 
 /**
@@ -175,36 +103,6 @@ function getClusterList(kubeconfigs = []) {
   return clusters
 }
 
-/**
- * Return the match percentage been both object arrays.
- * @param {Array} received An array of resources received from the target API.
- * @param {Array} expected An array of resources expected from the source API.
- * @returns
- */
-function matchPerc(received, expected) {
-  var matches = received.filter((res) =>
-    expected.find(
-      (resp) => res.name == resp.name && res.namespace == resp.namespace
-    )
-  ).length
-
-  return ((matches / expected.length) * 100).toFixed(2) + '%'
-}
-
-/**
- * Return an array of mismatched api resources
- * @param {*} received An array of resources received from the target API.
- * @param {*} expected An array of resources expected from the source API.
- * @returns
- */
-function getMismatchResources(received, expected) {
-  return received.filter(
-    (res) =>
-      !expected.find(
-        (resp) => res.name == resp.name && res.namespace == resp.namespace
-      )
-  )
-}
 
 function getResourcesFromOC(
   kind,
@@ -334,16 +232,11 @@ function shouldUseAPIGroup(kind, resourceList, requiredList = []) {
   return _.length > 1 || requiredList.includes(kind)
 }
 
-exports.closeMatch = closeMatch
 exports.fetchAPIResourcesWithListWatchMethods =
   fetchAPIResourcesWithListWatchMethods
-exports.formatFilters = formatFilters
 exports.formatResources = formatResources
-exports.formatResourcesFromSearch = formatResourcesFromSearch
 exports.getClusterList = getClusterList
-exports.getMismatchResources = getMismatchResources
 exports.getResourcesFromOC = getResourcesFromOC
 exports.getTargetManagedCluster = getTargetManagedCluster
-exports.matchPerc = matchPerc
 exports.removeEmptyEntries = removeEmptyEntries
 exports.shouldUseAPIGroup = shouldUseAPIGroup

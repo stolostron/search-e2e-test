@@ -18,9 +18,6 @@ describe('RHACM4K-1695: Search - verify managed cluster info in the search page'
 
     // Create a route to access the Search API.
     searchApiRoute = await getSearchApiRoute()
-
-    // Temporary workaround. TODO: Get SSL cert from cluster.
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
   })
 
   // Cleanup and teardown here.

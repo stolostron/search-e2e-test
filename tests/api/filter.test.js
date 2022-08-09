@@ -18,9 +18,6 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
 
     // Create a route to access the Search API.
     searchApiRoute = await getSearchApiRoute()
-
-    // Temporary workaround. TODO: Get SSL cert from cluster.
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
   })
 
   var filtersRegistry = [
