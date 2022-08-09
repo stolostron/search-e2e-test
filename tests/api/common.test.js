@@ -10,10 +10,6 @@ const {
   getToken,
 } = require('../common-lib/clusterAccess')
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
-<<<<<<< HEAD
-=======
-// const { baseTest } = require('./api-resources.test.js')
->>>>>>> origin/main
 
 const _ = require('lodash')
 
