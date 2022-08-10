@@ -10,7 +10,6 @@ const {
   getToken,
 } = require('../common-lib/clusterAccess')
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
-// const { baseTest } = require('./api-resources.test.js')
 
 const _ = require('lodash')
 
@@ -21,9 +20,6 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
 
     // Create a route to access the Search API.
     searchApiRoute = await getSearchApiRoute()
-
-    // Temporary workaround. TODO: Get SSL cert from cluster.
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
   })
 
   const app = 'console'

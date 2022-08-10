@@ -25,9 +25,6 @@ describe('RHACM4K-913: Search - Verify search results with different queries', (
     // Create a route to access the Search API.
     searchApiRoute = await getSearchApiRoute()
 
-    // Temporary workaround. TODO: Get SSL cert from cluster.
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
-
     if (import_kubeconfig) {
       managedCluster = execSync(
         `oc --kubeconfig ${import_kubeconfig} get klusterlets.operator.open-cluster-management.io -o custom-columns=NAME:.spec.clusterName --no-headers`
