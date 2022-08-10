@@ -29,7 +29,7 @@ const ignoreKindResourceList = [
 const requireAPIGroup = []
 
 
-describe('[P2][Sev2] Search API: Validate data in index', () => { 
+describe(`[P2][Sev2][${squad}] Search API: Validate data in index`, () => { 
   // Get kubeconfig for cluster environments.
   var kubeconfigs = getKubeConfig()
 
