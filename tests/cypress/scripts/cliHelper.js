@@ -258,14 +258,11 @@ export const cliHelper = {
       cmd += ` --insecure-skip-tls-verify`
     }
 
-    cy.exec(cmd).then((r) => {
-      if (r.code !== 0) {
-        cy.log(
-          `CLI login command failed. Will retry only once after 2 seconds.\n\tcode: ${r.code}\n\tstdout: ${r.stdout}\n\tstderr: ${r.stderr}`
-        )
-        return cy.wait(2000).exec(cmd, { failOnNonZeroExit: false })
-      }
-      return r
+    cy.exec(cmd).catch((r) => {
+      cy.log(
+        `CLI login command failed. Will retry only once after 2 seconds.\n\tcode: ${r.code}\n\tstdout: ${r.stdout}\n\tstderr: ${r.stderr}`
+      )
+      return cy.wait(2000).exec(cmd, { failOnNonZeroExit: false })
     })
   },
 }
