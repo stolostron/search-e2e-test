@@ -29,8 +29,14 @@ async function ValidateSearchData(
   
     // TODO: optimization: Check if any missingInSearch resources were created more than 1 minute ago and fail without retry.
   
-    for(var retry=1; (missingInSearch.length > 0 || unexpectedInSearch.length > 0) && retry <= 10; retry++){
-      const debugMsg = `Data from search index didn't match the Kube API. Will retry in 5 seconds. Total retries: ${retry}\nMissingInSearch: ${JSON.stringify(missingInSearch)}\nUnexpectedInSearch: ${JSON.stringify(unexpectedInSearch)}`
+    // Why we retry 12 times? Some tests are creating new namespaces. Data is indexed within a few seconds,
+    // but the RBAC cache takes up to 60 seconds to update and include the new namespace.
+    for(var retry=0; (missingInSearch.length > 0 || unexpectedInSearch.length > 0) && retry <= 12; retry++){
+      const debugMsg = `Data in search index didn't match the Kube API. Will retry in 5 seconds. Retry ${retry} of 12.`
+      if (retry > 10){ // Reduce logging by adding this debug info only when the test is close to failing.
+        debugMsg += `\nMissingInSearch: ${JSON.stringify(missingInSearch)}`
+        debugMsg += `\nUnexpectedInSearch: ${JSON.stringify(unexpectedInSearch)}`
+      }
       console.warn(debugMsg)
       await sleep(5000)
   
@@ -53,6 +59,11 @@ async function ValidateSearchData(
         retrySearch.find(s => r.name == s.name) || 
         // Keep unexpected resource if it doesn't appear in the new kube result.
         !retryKube.find(k => r.name == k.name))
+    }
+
+    // Temporary log to debug this test. Will remove after confirming the test is working.
+    if (missingInSearch.length > 0 || unexpectedInSearch.length > 0){
+      console.warn('This test should fail next.')
     }
   
     expect(missingInSearch).toEqual([])
