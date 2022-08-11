@@ -71,7 +71,7 @@ describe(`[P2][Sev2][${squad}] Search API: Validate data in index`, () => {
           
           test(`resource ${resource.kind}.${group.name || ''}`,
             async () => ValidateSearchData(resource.kind, group, cluster),
-            60000)
+            90000) // Keep timeout above 60000 to allow the validation function enough time to retry.
         })
       })
     } else {
