@@ -16,8 +16,10 @@ async function ValidateSearchData(
     kind,
     apigroup,
     cluster = { type: 'hub', name: 'local-cluster' },
-    namespace = '--all-namespaces'
-  ) {
+    namespace = '--all-namespaces',
+    retries = 12, // Default to 12 because some tests create namespaces and RBAC cache takes up to 60 seconds to update.
+    retryWait = 5000,
+    ) {
     
     const [kube, search] = await Promise.all([
       getResourcesFromOC(kind, apigroup, namespace, cluster),
@@ -31,14 +33,14 @@ async function ValidateSearchData(
   
     // Why we retry 12 times? Some tests are creating new namespaces. Data is indexed within a few seconds,
     // but the RBAC cache takes up to 60 seconds to update and include the new namespace.
-    for(var retry=0; (missingInSearch.length > 0 || unexpectedInSearch.length > 0) && retry <= 12; retry++){
-      const debugMsg = `Data in search index didn't match the Kube API. Will retry in 5 seconds. Retry ${retry} of 12.`
-      if (retry > 10){ // Reduce logging by adding this debug info only when the test is close to failing.
+    for(var retry=0; (missingInSearch.length > 0 || unexpectedInSearch.length > 0) && retry <= retries; retry++){
+      const debugMsg = `Data mismatch for resource: ${kind}.${apigroup} namespace:${namespace} cluster:${cluster.name}. Will retry in ${retryWait} ms. Retry ${retry} of ${retries}.`
+      if (retry == 0 || retry == retries){ // Reduce logging by adding debug info only in the first and last retry.
         debugMsg += `\nMissingInSearch: ${JSON.stringify(missingInSearch)}`
         debugMsg += `\nUnexpectedInSearch: ${JSON.stringify(unexpectedInSearch)}`
       }
       console.warn(debugMsg)
-      await sleep(5000)
+      await sleep(retryWait)
   
       const [retryKube, retrySearch] = await Promise.all([
         getResourcesFromOC(kind, apigroup, namespace, cluster),
@@ -61,9 +63,9 @@ async function ValidateSearchData(
         !retryKube.find(k => r.name == k.name))
     }
 
-    // Temporary log to debug this test. Will remove after confirming the test is working.
+    // Log error to help debug this test.
     if (missingInSearch.length > 0 || unexpectedInSearch.length > 0){
-      console.warn('This test should fail next.')
+      console.warn('Data validation failed, however the test may no fail because Jest will retry.')
     }
   
     expect(missingInSearch).toEqual([])
