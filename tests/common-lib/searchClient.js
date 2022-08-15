@@ -77,7 +77,7 @@ function sendRequest(query, token, options = {}) {
       .set({ Authorization: `Bearer ${token}` })
       .expect(200)
       .then((r) => {
-        const totalElapsedTime = endTime - Date.now()
+        const totalElapsedTime = Date.now() - startTime
         
         if (totalElapsedTime > 10000) {
             fail(
