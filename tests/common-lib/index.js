@@ -103,7 +103,14 @@ function getClusterList(kubeconfigs = []) {
   return clusters
 }
 
-
+/**
+ * Query the Kubernetes API using the oc CLI to get the expected state.
+ * @param string kind 
+ * @param string apigroup 
+ * @param {[string]} namespace 
+ * @param {*} cluster 
+ * @returns {[]} Resources
+ */
 function getResourcesFromOC(
   kind,
   apigroup,
@@ -118,7 +125,7 @@ function getResourcesFromOC(
 
   var cmd = `oc get ${property.toLowerCase()} ${
     namespace === '--all-namespaces' ? namespace : `-n ${namespace}`
-  } --no-headers `
+  } --no-headers --ignore-not-found=true`
 
   // Add kubeconfig filter if the option is set within the cluster object.
   if (cluster.kubeconfig) {
@@ -128,16 +135,22 @@ function getResourcesFromOC(
   // Uncomment the following line for debugging purposes.
   // console.debug(cmd)
 
-  var resources = formatResources(
-    cluster,
-    kind,
-    execSync(cmd, { stdio: [] })
-      .toString()
-      .split('\n')
-      .filter((res) => res)
-  )
-
-  return resources
+  try {
+    return formatResources(
+      cluster,
+      kind,
+      execSync(cmd, { stdio: [] })
+        .toString()
+        .split('\n')
+        .filter((res) => res)
+    )
+  } catch (err) {
+    if (err.message.indexOf('the server doesn\'t have a resource type') > 0 ){
+      console.debug(`The resource [${kind}.${apigroup}] doesn't exists in the cluster. It's possible that the CRD was removed by another test. Returning [] instead of the error.`)
+      return []
+    }
+    throw e
+  }
 }
 
 /**

@@ -57,6 +57,11 @@ describe(`[P2][Sev2][${squad}] Search API: Validate data in index`, () => {
           // Create a route to access the Search API.
           searchApiRoute = await getSearchApiRoute()
         })
+
+        // This test checks the validation logic in case that a CRD gets removed.
+        test(`check for a CRD that doesn't exist [kind:MissingCRD]`,
+          async () => ValidateSearchData('MissingCRD', '', {name: 'local-cluster'}))
+
         resourceList.forEach((resource) => {
           // There can be multiple occurrences of the same resource kind with different API groups; therefore
           // if we detect multiple versions of the same resource we will then test based upon API groups.
