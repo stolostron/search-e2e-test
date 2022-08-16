@@ -34,7 +34,7 @@ async function ValidateSearchData(
     // Why we retry 12 times? Some tests are creating new namespaces. Data is indexed within a few seconds,
     // but the RBAC cache takes up to 60 seconds to update and include the new namespace.
     for(var retry=0; (missingInSearch.length > 0 || unexpectedInSearch.length > 0) && retry <= retries; retry++){
-      const debugMsg = `Data mismatch for resource: ${kind}.${apigroup} namespace:${namespace} cluster:${cluster.name}. Will retry in ${retryWait} ms. Retry ${retry} of ${retries}.`
+      let debugMsg = `Data mismatch for resource: ${kind}.${apigroup} namespace:${namespace} cluster:${cluster.name}. Will retry in ${retryWait} ms. Retry ${retry} of ${retries}.`
       if (retry == 0 || retry == retries){ // Reduce logging by adding debug info only in the first and last retry.
         debugMsg += `\nMissingInSearch: ${JSON.stringify(missingInSearch)}`
         debugMsg += `\nUnexpectedInSearch: ${JSON.stringify(unexpectedInSearch)}`
