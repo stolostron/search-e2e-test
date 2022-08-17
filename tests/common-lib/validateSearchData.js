@@ -39,7 +39,7 @@ async function ValidateSearchData(
         debugMsg += `\nMissingInSearch: ${JSON.stringify(missingInSearch)}`
         debugMsg += `\nUnexpectedInSearch: ${JSON.stringify(unexpectedInSearch)}`
       }
-      console.warn(debugMsg)
+      console.log(debugMsg)
       await sleep(retryWait)
   
       const [retryKube, retrySearch] = await Promise.all([
@@ -65,7 +65,7 @@ async function ValidateSearchData(
 
     // Log error to help debug this test.
     if (missingInSearch.length > 0 || unexpectedInSearch.length > 0){
-      console.warn('Data validation failed, however the test may no fail because Jest will retry.')
+      console.log('Data validation failed, however the test may no fail because Jest will retry.')
     }
   
     expect(missingInSearch).toEqual([])
