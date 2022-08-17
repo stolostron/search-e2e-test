@@ -81,11 +81,11 @@ function sendRequest(query, token, options = {}) {
         
         if (totalElapsedTime > 10000) {
             fail(
-                `Search required more than 10 seconds to return resources for query ${JSON.stringify(query)}. (TotalElapsedTime: ${totalElapsedTime})`
+                `Search required more than 10 seconds to return for ${query.operationName} with vars: ${JSON.stringify(query.variables)}. (TotalElapsedTime: ${totalElapsedTime})`
             )
         } else if (totalElapsedTime > 1000) {
-            console.warn(
-                `Search required more than 1 second to return resources for query ${JSON.stringify(query)}. (TotalElapsedTime: ${totalElapsedTime.toFixed(2)})`
+            console.log(
+                `Search required more than 1 second to return for ${query.operationName} with vars: ${JSON.stringify(query.variables)}. (TotalElapsedTime: ${totalElapsedTime.toFixed(2)})`
             )
         } 
         
