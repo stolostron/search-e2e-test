@@ -29,11 +29,11 @@ export const suggestedSearches = {
     searchPage.shouldLoad()
 
     cy.get('.pf-c-expandable-section__toggle')
-      .filter(':contains(related resource)')
+      .filter(':contains(Show related resources)')
       .should('exist')
       .click()
 
-    cy.get('.pf-l-gallery.pf-m-gutter')
+    cy.get('.pf-l-grid.pf-m-gutter')
       .should('exist')
       .then(($related) => {
         if ($related.children().length > 0) {
