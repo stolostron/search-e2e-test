@@ -4,7 +4,7 @@
   "description": "End to end test for Search component",
   "scripts": {
     "lint": "prettier --check ./tests/**/*.js ./tests/**/**/*.js",
-    "lint:fix": "prettier --write ./tests/**/*.js ./tests/**/*/*.js",
+    "lint:fix": "prettier --write tests/**/*.js tests/**/**/*.js",
     "prepare": "husky install",
     "rbac:clean": "./build/rbac-clean.sh",
     "rbac:setup": "./build/rbac-setup.sh",
