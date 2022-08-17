@@ -16,7 +16,9 @@ async function ValidateSearchData(
   kind,
   apigroup,
   cluster = { type: 'hub', name: 'local-cluster' },
-  namespace = '--all-namespaces'
+  namespace = '--all-namespaces',
+  retries = 12, // Default to 12 because some tests create namespaces and RBAC cache takes up to 60 seconds to update.
+  retryWait = 5000
 ) {
   const [kube, search] = await Promise.all([
     getResourcesFromOC(kind, apigroup, namespace, cluster),
@@ -32,17 +34,22 @@ async function ValidateSearchData(
 
   // TODO: optimization: Check if any missingInSearch resources were created more than 1 minute ago and fail without retry.
 
+  // Why we retry 12 times? Some tests are creating new namespaces. Data is indexed within a few seconds,
+  // but the RBAC cache takes up to 60 seconds to update and include the new namespace.
   for (
-    var retry = 1;
+    var retry = 0;
     (missingInSearch.length > 0 || unexpectedInSearch.length > 0) &&
-    retry <= 10;
+    retry <= retries;
     retry++
   ) {
-    const debugMsg = `Data from search index didn't match the Kube API. Will retry in 5 seconds. Total retries: ${retry}\nMissingInSearch: ${JSON.stringify(
-      missingInSearch
-    )}\nUnexpectedInSearch: ${JSON.stringify(unexpectedInSearch)}`
-    console.warn(debugMsg)
-    await sleep(5000)
+    let debugMsg = `Data mismatch for resource: ${kind}.${apigroup} namespace:${namespace} cluster:${cluster.name}. Will retry in ${retryWait} ms. Retry ${retry} of ${retries}.`
+    if (retry == 0 || retry == retries) {
+      // Reduce logging by adding debug info only in the first and last retry.
+      debugMsg += `\nMissingInSearch: ${JSON.stringify(missingInSearch)}`
+      debugMsg += `\nUnexpectedInSearch: ${JSON.stringify(unexpectedInSearch)}`
+    }
+    console.log(debugMsg)
+    await sleep(retryWait)
 
     const [retryKube, retrySearch] = await Promise.all([
       getResourcesFromOC(kind, apigroup, namespace, cluster),
@@ -65,6 +72,13 @@ async function ValidateSearchData(
         retrySearch.find((s) => r.name == s.name) ||
         // Keep unexpected resource if it doesn't appear in the new kube result.
         !retryKube.find((k) => r.name == k.name)
+    )
+  }
+
+  // Log error to help debug this test.
+  if (missingInSearch.length > 0 || unexpectedInSearch.length > 0) {
+    console.log(
+      'Data validation failed, however the test may no fail because Jest will retry.'
     )
   }
 

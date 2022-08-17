@@ -4,7 +4,6 @@
  * This file has functions to interact with the Search API.
  */
 const { fail } = require('assert')
-const { performance } = require('perf_hooks')
 const request = require('supertest')
 const lodash = require('lodash')
 
@@ -72,7 +71,7 @@ function sendRequest(query, token, options = {}) {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
 
   // Monitor how long search took to return results.
-  const startTime = performance.now()
+  const startTime = Date.now()
 
   return request(searchApiRoute)
     .post('/searchapi/graphql')
@@ -80,18 +79,23 @@ function sendRequest(query, token, options = {}) {
     .set({ Authorization: `Bearer ${token}` })
     .expect(200)
     .then((r) => {
-      const endTime = performance.now()
-      const totalElapsedTime = endTime - startTime
+      const totalElapsedTime = Date.now() - startTime
 
       if (totalElapsedTime > 10000) {
         fail(
-          `Search required more than 10 seconds to return resources for query [${query}]. (TotalElapsedTime: ${totalElapsedTime})`
+          `Search required more than 10 seconds to return for ${
+            query.operationName
+          } with vars: ${JSON.stringify(
+            query.variables
+          )}. (TotalElapsedTime: ${totalElapsedTime})`
         )
       } else if (totalElapsedTime > 1000) {
-        console.warn(
-          `Search required more than 1 second to return resources for query [${query}]. (TotalElapsedTime: ${totalElapsedTime.toFixed(
-            2
-          )})`
+        console.log(
+          `Search required more than 1 second to return for ${
+            query.operationName
+          } with vars: ${JSON.stringify(
+            query.variables
+          )}. (TotalElapsedTime: ${totalElapsedTime.toFixed(2)})`
         )
       }
 
