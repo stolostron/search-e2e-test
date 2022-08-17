@@ -29,7 +29,7 @@ const ignoreKindResourceList = [
 const requireAPIGroup = []
 
 
-describe('[P2][Sev2] Search API: Validate data in index', () => { 
+describe(`[P2][Sev2][${squad}] Search API: Validate data in index`, () => { 
   // Get kubeconfig for cluster environments.
   var kubeconfigs = getKubeConfig()
 
@@ -57,6 +57,11 @@ describe('[P2][Sev2] Search API: Validate data in index', () => {
           // Create a route to access the Search API.
           searchApiRoute = await getSearchApiRoute()
         })
+
+        // This test checks the validation logic in case that a CRD gets removed.
+        test(`check for a CRD that doesn't exist [kind:MissingCRD]`,
+          async () => ValidateSearchData('MissingCRD', '', {name: 'local-cluster'}))
+
         resourceList.forEach((resource) => {
           // There can be multiple occurrences of the same resource kind with different API groups; therefore
           // if we detect multiple versions of the same resource we will then test based upon API groups.
@@ -69,9 +74,9 @@ describe('[P2][Sev2] Search API: Validate data in index', () => {
             ),
           }
           
-          test(`resource ${resource.kind}.${group.name}`,
+          test(`resource ${resource.kind}.${group.name || ''}`,
             async () => ValidateSearchData(resource.kind, group, cluster),
-            30000)
+            90000) // Keep timeout above 60000 to allow the validation function enough time to retry.
         })
       })
     } else {

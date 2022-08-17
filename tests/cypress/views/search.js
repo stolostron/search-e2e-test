@@ -5,7 +5,6 @@
 
 /// <reference types="cypress" />
 
-import { namespace } from '../../common-lib/resources'
 import { capitalize } from '../scripts/cliHelper'
 import { popupModal } from './popup'
 
@@ -82,13 +81,11 @@ export const searchPage = {
    * @param {int} count
    */
   shouldFindRelationshipTile: (kind) => {
-    cy.get('.pf-l-gallery.pf-m-gutter')
+    cy.get('.pf-l-grid.pf-m-gutter')
       .should('exist')
       .within(() => {
         cy.get('.pf-c-skeleton').should('not.exist')
-        cy.get('.pf-c-tile')
-          .filter(`:contains(Related ${kind})`)
-          .should('exist')
+        cy.get('.pf-c-tile').filter(`:contains(${kind})`).should('exist')
       })
   },
   /**
@@ -177,15 +174,9 @@ export const searchPage = {
    */
   whenExpandRelationshipTiles: () => {
     cy.get('.pf-c-expandable-section__toggle-text')
-      .contains('related resources')
+      .contains('Show related resources')
       .should('exist')
       .click()
-    cy.get('.pf-l-gallery')
-      .children()
-      .should('have.length.above', 1)
-      .then(() => {
-        cy.get('button.pf-c-button.pf-m-secondary').focus().click()
-      })
   },
   whenOpenFirstResourceTableTile: () => {
     cy.get('.pf-c-card__header')
