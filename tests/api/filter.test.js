@@ -5,11 +5,11 @@ jest.retryTimes(global.retry)
 const { execSync } = require('child_process')
 
 const squad = require('../../config').get('squadName')
+const { getSearchApiRoute, getToken } = require('../common-lib/clusterAccess')
 const {
-  getSearchApiRoute,
-  getToken,
-} = require('../common-lib/clusterAccess')
-const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
+  searchQueryBuilder,
+  sendRequest,
+} = require('../common-lib/searchClient')
 
 describe('RHACM4K-1709: Search - Search using filters', () => {
   beforeAll(async () => {

@@ -9,7 +9,10 @@ const {
   getSearchApiRoute,
   getToken,
 } = require('../common-lib/clusterAccess')
-const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
+const {
+  searchQueryBuilder,
+  sendRequest,
+} = require('../common-lib/searchClient')
 
 const _ = require('lodash')
 

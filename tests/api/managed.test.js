@@ -3,11 +3,11 @@
 jest.retryTimes(global.retry)
 
 const squad = require('../../config').get('squadName')
+const { getSearchApiRoute, getToken } = require('../common-lib/clusterAccess')
 const {
-  getSearchApiRoute,
-  getToken,
-} = require('../common-lib/clusterAccess')
-const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
+  searchQueryBuilder,
+  sendRequest,
+} = require('../common-lib/searchClient')
 
 const _ = require('lodash')
 
