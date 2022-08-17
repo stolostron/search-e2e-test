@@ -132,9 +132,6 @@ function getResourcesFromOC(
     cmd += `--kubeconfig ${cluster.kubeconfig}`
   }
 
-  // Uncomment the following line for debugging purposes.
-  // console.debug(cmd)
-
   try {
     return formatResources(
       cluster,
@@ -146,7 +143,7 @@ function getResourcesFromOC(
     )
   } catch (err) {
     if (err.message.indexOf('the server doesn\'t have a resource type') > 0 ){
-      console.debug(`The resource [${kind}.${apigroup}] doesn't exists in the cluster. It's possible that the CRD was removed by another test. Returning [] instead of the error.`)
+      console.log(`The resource [${kind}.${apigroup}] doesn't exists in the cluster. It's possible that the CRD was removed by another test. Returning [] instead of the error.`)
       return []
     }
     throw e

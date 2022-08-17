@@ -10,7 +10,7 @@
     "rbac:setup": "./build/rbac-setup.sh",
     "test": "npm run test:clean-reports && npm run test:headless && npm run test:merge-reports",
     "test:api": "jest --colors --verbose",
-    "test:api:prow": "jest --colors --verbose",
+    "test:api:prow": "jest --verbose",
     "test:clean-reports": "rm -rf ./results",
     "test:debug": "cross-env NODE_ENV=debug ./start-tests.sh",
     "test:headed": "cross-env NODE_ENV=development LIVE_MODE=true ./start-tests.sh",
