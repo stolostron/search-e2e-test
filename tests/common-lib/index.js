@@ -103,7 +103,6 @@ function getClusterList(kubeconfigs = []) {
   return clusters
 }
 
-
 function getResourcesFromOC(
   kind,
   apigroup,

@@ -28,8 +28,7 @@ const ignoreKindResourceList = [
 // Set list of resources that require filtering by api group.
 const requireAPIGroup = []
 
-
-describe(`[P2][Sev2][${squad}] Search API: Validate data in index`, () => { 
+describe(`[P2][Sev2][${squad}] Search API: Validate data in index`, () => {
   // Get kubeconfig for cluster environments.
   var kubeconfigs = getKubeConfig()
 
@@ -45,7 +44,6 @@ describe(`[P2][Sev2][${squad}] Search API: Validate data in index`, () => {
     (resource) => !ignoreKindResourceList.includes(resource.kind)
   )
 
-
   // Run tests for each test cluster environment.
   clusterList.forEach((cluster) => {
     if (!cluster.skip) {
@@ -53,7 +51,7 @@ describe(`[P2][Sev2][${squad}] Search API: Validate data in index`, () => {
         beforeAll(async () => {
           // Log in and get access token
           token = getToken()
-      
+
           // Create a route to access the Search API.
           searchApiRoute = await getSearchApiRoute()
         })
@@ -68,10 +66,12 @@ describe(`[P2][Sev2][${squad}] Search API: Validate data in index`, () => {
               requireAPIGroup
             ),
           }
-          
-          test(`resource ${resource.kind}.${group.name || ''}`,
+
+          test(
+            `resource ${resource.kind}.${group.name || ''}`,
             async () => ValidateSearchData(resource.kind, group, cluster),
-            60000)
+            60000
+          )
         })
       })
     } else {
