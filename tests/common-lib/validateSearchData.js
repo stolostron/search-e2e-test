@@ -12,17 +12,25 @@ const { sleep } = require('./sleep')
  * @param {*} cluster The cluster of the object kind.
  * @param {string} namespace The namespace of the object kind.
  */
-async function ValidateSearchData(
+async function ValidateSearchData({
+  user,
   kind,
-  apigroup,
+  apigroup = '',
   cluster = { type: 'hub', name: 'local-cluster' },
   namespace = '--all-namespaces',
   retries = 12, // Default to 12 because some tests create namespaces and RBAC cache takes up to 60 seconds to update.
-  retryWait = 5000
-) {
+  retryWait = 5000,
+}) {
+  const userString = user && `system:serviceaccount:${user.namespace}:${user.name}`
   const [kube, search] = await Promise.all([
-    getResourcesFromOC(kind, apigroup, namespace, cluster),
-    getResourcesFromSearch(kind, apigroup, namespace, cluster),
+    getResourcesFromOC({
+      user: userString,
+      kind,
+      apigroup,
+      namespace,
+      cluster,
+    }),
+    getResourcesFromSearch({ userToken: user && user.token, kind, apigroup, namespace, cluster }),
   ])
 
   var missingInSearch = kube.filter((k) => !search.find((s) => s.name == k.name))
@@ -33,18 +41,11 @@ async function ValidateSearchData(
   // Why we retry 12 times? Some tests are creating new namespaces. Data is indexed within a few seconds,
   // but the RBAC cache takes up to 60 seconds to update and include the new namespace.
   for (var retry = 0; (missingInSearch.length > 0 || unexpectedInSearch.length > 0) && retry <= retries; retry++) {
-    let debugMsg = `Data mismatch for resource: ${kind}.${apigroup} namespace:${namespace} cluster:${cluster.name}. Will retry in ${retryWait} ms. Retry ${retry} of ${retries}.`
-    if (retry == 0 || retry == retries) {
-      // Reduce logging by adding debug info only in the first and last retry.
-      debugMsg += `\nMissingInSearch: ${JSON.stringify(missingInSearch)}`
-      debugMsg += `\nUnexpectedInSearch: ${JSON.stringify(unexpectedInSearch)}`
-    }
-    console.log(debugMsg)
     await sleep(retryWait)
 
     const [retryKube, retrySearch] = await Promise.all([
-      getResourcesFromOC(kind, apigroup, namespace, cluster),
-      getResourcesFromSearch(kind, apigroup, namespace, cluster),
+      getResourcesFromOC({ user: userString, kind, apigroup, namespace, cluster }),
+      getResourcesFromSearch({ userToken: user && user.token, kind, apigroup, namespace, cluster }),
     ])
 
     // Validate missingInSearch resources using data after retry.
@@ -68,7 +69,12 @@ async function ValidateSearchData(
 
   // Log error to help debug this test.
   if (missingInSearch.length > 0 || unexpectedInSearch.length > 0) {
-    console.log('Data validation failed, however the test may no fail because Jest will retry.')
+    const msg = `Data validation failed for resource ${kind}.${apigroup} namespace:${namespace} cluster:${
+      cluster.name
+    }, however the test may no fail because Jest will retry.
+    > MissingInSearch:    ${JSON.stringify(missingInSearch)}
+    > UnexpectedInSearch: ${JSON.stringify(unexpectedInSearch)}`
+    console.log(msg)
   }
 
   expect(missingInSearch).toEqual([])
@@ -76,3 +82,6 @@ async function ValidateSearchData(
 }
 
 exports.ValidateSearchData = ValidateSearchData
+// Use this timeout in tests that use this validation to account for the retry time.
+// Keep timeout above 60000 because rbac might take 60s to update.
+exports.validationTimeout = 90000

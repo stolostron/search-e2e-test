@@ -15,17 +15,18 @@ const lodash = require('lodash')
  * @param {*} cluster The cluster fiilter.
  * @param {string} namespace The namespace filter.
  */
-async function getResourcesFromSearch(
+async function getResourcesFromSearch({
+  userToken,
   kind,
   apigroup,
   namespace = '--all-namespaces',
-  cluster = { type: 'hub', name: 'local-cluster' }
-) {
+  cluster = { type: 'hub', name: 'local-cluster' },
+}) {
   // Build the search api query.
   const filters = formatFilters(kind, apigroup, namespace, cluster)
   const query = searchQueryBuilder({ filters })
   // Fetch data from the search api.
-  const resp = await sendRequest(query, token)
+  const resp = await sendRequest(query, userToken || token)
 
   return formatResourcesFromSearch(resp)
 }
@@ -76,22 +77,19 @@ function sendRequest(query, token, options = {}) {
     .set({ Authorization: `Bearer ${token}` })
     .expect(200)
     .then((r) => {
-      const totalElapsedTime = Date.now() - startTime
+      const elapsed = Date.now() - startTime
 
-      if (totalElapsedTime > 10000) {
+      if (elapsed > 10000) {
         fail(
-          `Search required more than 10 seconds to return for ${query.operationName} with vars: ${JSON.stringify(
-            query.variables
-          )}. (TotalElapsedTime: ${totalElapsedTime})`
+          `Search request took more than 10 seconds. (ElapsedTime: ${elapsed.toFixed(2)} ms)
+    operation: ${query.operationName}
+    variables: ${JSON.stringify(query.variables)}`
         )
-      } else if (totalElapsedTime > 1000) {
-        console.log(
-          `Search required more than 1 second to return for ${query.operationName} with vars: ${JSON.stringify(
-            query.variables
-          )}. (TotalElapsedTime: ${totalElapsedTime.toFixed(2)})`
-        )
+      } else if (elapsed > 1000) {
+        console.log(`Search request took more than 1 second. (ElapsedTime: ${elapsed.toFixed(2)} ms)
+    operation: ${query.operationName}
+    variables: ${JSON.stringify(query.variables)}`)
       }
-
       return r
     })
 }

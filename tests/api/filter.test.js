@@ -82,7 +82,7 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
       filters: [
         {
           property: 'clusterIP',
-          values: [execSync("oc get service -o=jsonpath='{.items[0].spec.clusterIP}'").toString()],
+          values: [execSync("oc get service --all-namespaces -o=jsonpath='{.items[0].spec.clusterIP}'").toString()],
         },
       ],
     },

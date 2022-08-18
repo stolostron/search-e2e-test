@@ -105,16 +105,17 @@ function getClusterList(kubeconfigs = []) {
  * @param {*} cluster
  * @returns {[]} Resources
  */
-function getResourcesFromOC(
+function getResourcesFromOC({
+  user,
   kind,
   apigroup,
   namespace = '--all-namespaces',
-  cluster = { type: 'hub', name: 'local-cluster' }
-) {
+  cluster = { type: 'hub', name: 'local-cluster' },
+}) {
   var property = kind
 
   // Check to see if the test needs to include the apigroup name within the query. For kind resources with v1 versions, no apigroup is needed.
-  if (apigroup.useAPIGroup && apigroup.name != 'v1') property += `.${apigroup.name}`
+  if (apigroup && apigroup.useAPIGroup && apigroup.name != 'v1') property += `.${apigroup.name}`
 
   var cmd = `oc get ${property.toLowerCase()} ${
     namespace === '--all-namespaces' ? namespace : `-n ${namespace}`
@@ -122,7 +123,12 @@ function getResourcesFromOC(
 
   // Add kubeconfig filter if the option is set within the cluster object.
   if (cluster.kubeconfig) {
-    cmd += `--kubeconfig ${cluster.kubeconfig}`
+    cmd += ` --kubeconfig ${cluster.kubeconfig}`
+  }
+
+  // Impersonate user.
+  if (user) {
+    cmd += ` --as=${user}`
   }
 
   try {
@@ -140,8 +146,12 @@ function getResourcesFromOC(
         `The resource [${kind}.${apigroup}] doesn't exists in the cluster. It's possible that the CRD was removed by another test. Returning [] instead of the error.`
       )
       return []
+    } else if (err.message.indexOf('Error from server (Forbidden)') > 0) {
+      // This is expected when user ddoesn't have access to a resource.
+      return []
     }
-    throw e
+    console.log(`Unexpected error getting resources from CLI. ${err.message}`)
+    throw err
   }
 }
 

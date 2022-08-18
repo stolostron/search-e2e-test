@@ -7,7 +7,7 @@ const { getKubeConfig, getToken, getSearchApiRoute } = require('../common-lib/cl
 
 const { fetchAPIResourcesWithListWatchMethods, getClusterList, shouldUseAPIGroup } = require('../common-lib/index')
 
-const { ValidateSearchData } = require('../common-lib/validateSearchData')
+const { ValidateSearchData, validationTimeout } = require('../common-lib/validateSearchData')
 
 // Set list to ignore resources that aren't being collected by Search.
 // When using the oc command clusterclaim doesn't include the namespace, therefore, for testing purposes, we will omit that resource object.
@@ -43,7 +43,7 @@ describe(`[P2][Sev2][${squad}] Search API: Validate data in index`, () => {
 
         // This test checks the validation logic in case that a CRD gets removed.
         test(`check for a CRD that doesn't exist [kind:MissingCRD]`, async () =>
-          ValidateSearchData('MissingCRD', '', { name: 'local-cluster' }))
+          ValidateSearchData({ kind: 'MissingCRD', cluster: { name: 'local-cluster' } }))
 
         resourceList.forEach((resource) => {
           // There can be multiple occurrences of the same resource kind with different API groups; therefore
@@ -55,9 +55,9 @@ describe(`[P2][Sev2][${squad}] Search API: Validate data in index`, () => {
 
           test(
             `resource ${resource.kind}.${group.name || ''}`,
-            async () => ValidateSearchData(resource.kind, group, cluster),
-            90000
-          ) // Keep timeout above 60000 to allow the validation function enough time to retry.
+            async () => ValidateSearchData({ kind: resource.kind, apigroup: group, cluster }),
+            validationTimeout
+          )
         })
       })
     } else {
