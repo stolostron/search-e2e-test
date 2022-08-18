@@ -6,10 +6,7 @@ const { execSync } = require('child_process')
 
 const squad = require('../../config').get('squadName')
 const { getSearchApiRoute, getToken } = require('../common-lib/clusterAccess')
-const {
-  searchQueryBuilder,
-  sendRequest,
-} = require('../common-lib/searchClient')
+const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 
 describe('RHACM4K-1709: Search - Search using filters', () => {
   beforeAll(async () => {
@@ -41,11 +38,7 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
       filters: [
         {
           property: 'podIP',
-          values: [
-            execSync(
-              "oc get pods -n openshift-console -o=jsonpath='{.items[0].status.podIP}'"
-            ).toString(),
-          ],
+          values: [execSync("oc get pods -n openshift-console -o=jsonpath='{.items[0].status.podIP}'").toString()],
         },
       ],
     },
@@ -53,11 +46,7 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
       filters: [
         {
           property: 'hostIP',
-          values: [
-            execSync(
-              "oc get pods -n openshift-console -o=jsonpath='{.items[0].status.hostIP}'"
-            ).toString(),
-          ],
+          values: [execSync("oc get pods -n openshift-console -o=jsonpath='{.items[0].status.hostIP}'").toString()],
         },
       ],
     },
@@ -65,11 +54,7 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
       filters: [
         {
           property: 'kubernetesVersion',
-          values: [
-            execSync(
-              "oc get nodes -o=jsonpath='{.items[0].status.nodeInfo.kubeletVersion}'"
-            ).toString(),
-          ],
+          values: [execSync("oc get nodes -o=jsonpath='{.items[0].status.nodeInfo.kubeletVersion}'").toString()],
         },
       ],
     },
@@ -77,11 +62,7 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
       filters: [
         {
           property: 'memory',
-          values: [
-            execSync(
-              "oc get managedclusters -o=jsonpath='{.items[0].status.capacity.memory}'"
-            ).toString(),
-          ],
+          values: [execSync("oc get managedclusters -o=jsonpath='{.items[0].status.capacity.memory}'").toString()],
         },
       ],
     },
@@ -93,11 +74,7 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
       filters: [
         {
           property: 'capacity',
-          values: [
-            execSync(
-              "oc get pv -o=jsonpath='{.items[0].spec.capacity.storage}'"
-            ).toString(),
-          ],
+          values: [execSync("oc get pv -o=jsonpath='{.items[0].spec.capacity.storage}'").toString()],
         },
       ],
     },
@@ -105,11 +82,7 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
       filters: [
         {
           property: 'clusterIP',
-          values: [
-            execSync(
-              "oc get service -o=jsonpath='{.items[0].spec.clusterIP}'"
-            ).toString(),
-          ],
+          values: [execSync("oc get service -o=jsonpath='{.items[0].spec.clusterIP}'").toString()],
         },
       ],
     },
@@ -119,11 +92,7 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
       filters: [
         {
           property: 'request',
-          values: [
-            execSync(
-              "oc get pv -o=jsonpath='{.items[0].spec.capacity.storage}'"
-            ).toString(),
-          ],
+          values: [execSync("oc get pv -o=jsonpath='{.items[0].spec.capacity.storage}'").toString()],
         },
       ],
     },
@@ -131,11 +100,7 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
       filters: [
         {
           property: 'volumeName',
-          values: [
-            execSync(
-              "oc get pv -o=jsonpath='{.items[0].metadata.name}'"
-            ).toString(),
-          ],
+          values: [execSync("oc get pv -o=jsonpath='{.items[0].metadata.name}'").toString()],
         },
       ],
     },
@@ -143,11 +108,7 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
       filters: [
         {
           property: 'architecture',
-          values: [
-            execSync(
-              "oc get nodes -o=jsonpath='{.items[0].status.nodeInfo.architecture}'"
-            ).toString(),
-          ],
+          values: [execSync("oc get nodes -o=jsonpath='{.items[0].status.nodeInfo.architecture}'").toString()],
         },
       ],
     },
@@ -155,11 +116,7 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
       filters: [
         {
           property: 'osImage',
-          values: [
-            execSync(
-              "oc get nodes -o=jsonpath='{.items[0].status.nodeInfo.osImage}'"
-            ).toString(),
-          ],
+          values: [execSync("oc get nodes -o=jsonpath='{.items[0].status.nodeInfo.osImage}'").toString()],
         },
       ],
     },
@@ -179,11 +136,7 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
       filters: [
         {
           property: 'reclaimPolicy',
-          values: [
-            execSync(
-              "oc get pv -o=jsonpath='{.items[0].spec.persistentVolumeReclaimPolicy}'"
-            ).toString(),
-          ],
+          values: [execSync("oc get pv -o=jsonpath='{.items[0].spec.persistentVolumeReclaimPolicy}'").toString()],
         },
       ],
     },

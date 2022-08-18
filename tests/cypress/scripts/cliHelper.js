@@ -8,8 +8,7 @@
  * @param {string} string The string to be capitalized.
  * @return {string} Capitalized version of the string.
  */
-export const capitalize = (string) =>
-  string.charAt(0).toUpperCase() + string.slice(1)
+export const capitalize = (string) => string.charAt(0).toUpperCase() + string.slice(1)
 
 /**
  * Generate a new resource state for the kind objects that are required by the test environment.
@@ -18,14 +17,10 @@ export const capitalize = (string) =>
  */
 export const generateNewResourceState = (state, options = {}) => {
   if (!Cypress.env(state.kind)) {
-    cy.log(
-      `Required ${state.kind} has not been created within this test instance. Preparing to create them.`
-    )
+    cy.log(`Required ${state.kind} has not been created within this test instance. Preparing to create them.`)
     cliHelper.createResource(state, options)
   } else {
-    cy.log(
-      `Detected that the required ${state.kind} resources has been created within this test instance.`
-    )
+    cy.log(`Detected that the required ${state.kind} resources has been created within this test instance.`)
   }
 }
 
@@ -86,9 +81,7 @@ export const cliHelper = {
 
     cy.exec(cmd, { failOnNonZeroExit: false }).then((res) => {
       if (!res.stderr) {
-        cy.log(
-          `${resource.kind}: ${resource.name} exist within the current cluster environment.`
-        )
+        cy.log(`${resource.kind}: ${resource.name} exist within the current cluster environment.`)
         Cypress.env(resource.kind, true)
       } else {
         cy.log(
@@ -106,18 +99,12 @@ export const cliHelper = {
         }
 
         if (resource.kind == 'application') {
-          cy.readFile('tests/cypress/templates/application.yaml').then(
-            (cfg) => {
-              let b64Cfg = btoa(
-                cfg
-                  .replaceAll('APPNAME', resource.name)
-                  .replaceAll('NAMESPACE', resource.namespace)
-              )
-              cy.exec(`echo ${b64Cfg} | base64 -d | oc apply -f -`).then(() => {
-                Cypress.env(resource.kind, true)
-              })
-            }
-          )
+          cy.readFile('tests/cypress/templates/application.yaml').then((cfg) => {
+            let b64Cfg = btoa(cfg.replaceAll('APPNAME', resource.name).replaceAll('NAMESPACE', resource.namespace))
+            cy.exec(`echo ${b64Cfg} | base64 -d | oc apply -f -`).then(() => {
+              Cypress.env(resource.kind, true)
+            })
+          })
         } else {
           cy.exec(cmd).then(() => {
             Cypress.env(resource.kind, true)
@@ -149,9 +136,7 @@ export const cliHelper = {
 
     cy.exec(cmd, { failOnNonZeroExit: false }).then((res) => {
       if (!res.stderr) {
-        cy.log(
-          `${resource.kind}: ${resource.name} exist within the current cluster environment. Deleting it now.`
-        )
+        cy.log(`${resource.kind}: ${resource.name} exist within the current cluster environment. Deleting it now.`)
         resourceExist = true
       } else {
         cy.log(
@@ -162,15 +147,13 @@ export const cliHelper = {
       if (resourceExist) {
         cmd = cmd.replace('oc get', 'oc delete')
 
-        cy.exec(cmd, { failOnNonZeroExit: options.failOnNonZeroExit }).then(
-          (res) => {
-            if (res.stderr) {
-              cy.log('[ERROR]', res.stderr)
-            } else {
-              cy.log(res.stdout)
-            }
+        cy.exec(cmd, { failOnNonZeroExit: options.failOnNonZeroExit }).then((res) => {
+          if (res.stderr) {
+            cy.log('[ERROR]', res.stderr)
+          } else {
+            cy.log(res.stdout)
           }
-        )
+        })
       }
     })
   },
@@ -200,46 +183,30 @@ export const cliHelper = {
       return cy.wrap(targetCluster)
     }
 
-    return cy
-      .exec('oc get managedclusters -o custom-columns=NAME:.metadata.name')
-      .then((res) => {
-        const managedClusters = res.stdout.split('\n').slice(1)
+    return cy.exec('oc get managedclusters -o custom-columns=NAME:.metadata.name').then((res) => {
+      const managedClusters = res.stdout.split('\n').slice(1)
 
-        if (
-          managedClusters.length === 1 &&
-          managedClusters.find((c) => c.includes('local-cluster'))
-        ) {
-          cy.log(
-            `No imported cluster name found. Using local-cluster for testing.`
-          )
+      if (managedClusters.length === 1 && managedClusters.find((c) => c.includes('local-cluster'))) {
+        cy.log(`No imported cluster name found. Using local-cluster for testing.`)
 
-          targetCluster = 'local-cluster'
-          return cy.wrap(targetCluster)
-        }
-
-        // In the canary tests, we only need to focus on the import-xxxx managed cluster.
-        if (
-          Cypress.env('NODE_ENV') &&
-          Cypress.env('NODE_ENV') !== 'development' &&
-          Cypress.env('NODE_ENV') !== 'debug'
-        ) {
-          targetCluster = managedClusters.find(
-            (c) =>
-              c.startsWith('canary-') ||
-              c.includes('canary') ||
-              c.startsWith('import-')
-          )
-        }
-
-        if (targetCluster === undefined) {
-          targetCluster = managedClusters.find(
-            (c) => !c.includes('local-cluster')
-          )
-        }
-
-        cy.log(`Testing with Managed Cluster: ${targetCluster}`)
+        targetCluster = 'local-cluster'
         return cy.wrap(targetCluster)
-      })
+      }
+
+      // In the canary tests, we only need to focus on the import-xxxx managed cluster.
+      if (Cypress.env('NODE_ENV') && Cypress.env('NODE_ENV') !== 'development' && Cypress.env('NODE_ENV') !== 'debug') {
+        targetCluster = managedClusters.find(
+          (c) => c.startsWith('canary-') || c.includes('canary') || c.startsWith('import-')
+        )
+      }
+
+      if (targetCluster === undefined) {
+        targetCluster = managedClusters.find((c) => !c.includes('local-cluster'))
+      }
+
+      cy.log(`Testing with Managed Cluster: ${targetCluster}`)
+      return cy.wrap(targetCluster)
+    })
   },
 
   /**
@@ -247,11 +214,9 @@ export const cliHelper = {
    * @param {object} options Additional options for logging into the cluster environment.
    */
   login: (options = { useInsecure: true }) => {
-    var cmd = `oc login --server=https://api.${Cypress.env(
-      'OPTIONS_HUB_BASEDOMAIN'
-    )}:6443 -u ${Cypress.env('OPTIONS_HUB_USER')} -p ${Cypress.env(
-      'OPTIONS_HUB_PASSWORD'
-    )}`
+    var cmd = `oc login --server=https://api.${Cypress.env('OPTIONS_HUB_BASEDOMAIN')}:6443 -u ${Cypress.env(
+      'OPTIONS_HUB_USER'
+    )} -p ${Cypress.env('OPTIONS_HUB_PASSWORD')}`
 
     if (options.useInsecure) {
       cy.log('[INFO] useInsecure was set to true. Using insecure login.')

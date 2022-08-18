@@ -30,9 +30,7 @@ export const overviewPage = {
    * Verify that the Overview page should have a cluster provider card panel.
    */
   shouldHaveClusterProviderCard: () => {
-    cy.get('.pf-l-gallery.pf-m-gutter')
-      .find('.pf-c-card.pf-m-selectable')
-      .should('exist')
+    cy.get('.pf-l-gallery.pf-m-gutter').find('.pf-c-card.pf-m-selectable').should('exist')
     cy.get('.pf-c-card__footer').should('exist').and('contain', 'Cluster')
   },
   /**
@@ -43,10 +41,7 @@ export const overviewPage = {
       .filter(':contains(Summary)')
       .should('exist')
       .within(() => {
-        cy.get('.pf-c-card__body')
-          .should('contain', 'Application')
-          .and('contain', 'Cluster')
-          .and('contain', 'Pods')
+        cy.get('.pf-c-card__body').should('contain', 'Application').and('contain', 'Cluster').and('contain', 'Pods')
       })
   },
   /**
@@ -66,10 +61,7 @@ export const overviewPage = {
         }
       })
 
-    cy.get('.react-tags__selected')
-      .should('have.length', 1)
-      .invoke('text')
-      .should('eq', 'kind:cluster')
+    cy.get('.react-tags__selected').should('have.length', 1).invoke('text').should('eq', 'kind:cluster')
 
     searchPage.shouldLoadResults()
     cy.get('.pf-c-expandable-section__toggle-text').filter(':contains(Cluster)')
@@ -91,10 +83,7 @@ export const overviewPage = {
     cy.get('.pf-c-nav__list').contains(page)
 
     if (noClick) {
-      cy.get('li.pf-c-nav__item')
-        .contains(page)
-        .should('have.attr', 'href')
-        .and('contain', path)
+      cy.get('li.pf-c-nav__item').contains(page).should('have.attr', 'href').and('contain', path)
     } else {
       cy.get('li.pf-c-nav__item').contains(page).click()
       cy.get('h1.pf-c-title').contains(page)
@@ -104,9 +93,7 @@ export const overviewPage = {
    * Navigate the test user to the Add credential page within the ACM console.
    */
   whenAddCredentialAction: () => {
-    cy.get('#add-credential')
-      .should('have.attr', 'href')
-      .and('contain', 'credential')
+    cy.get('#add-credential').should('have.attr', 'href').and('contain', 'credential')
     cy.get('#add-credential').click()
   },
   /**
