@@ -41,10 +41,7 @@ describe('Search API: Verify access:', () => {
   afterAll(() => {})
 
   test(`[P1][Sev1][${squad}] should get 401 if authorization header is not present.`, () => {
-    return request(searchApiRoute)
-      .post('/searchapi/graphql')
-      .send(query)
-      .expect(401)
+    return request(searchApiRoute).post('/searchapi/graphql').send(query).expect(401)
   })
 
   test(`[P1][Sev1][${squad}] should get 401 if authorization header is incorrect.`, () => {

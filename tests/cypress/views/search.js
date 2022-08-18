@@ -8,8 +8,7 @@
 import { capitalize } from '../scripts/cliHelper'
 import { popupModal } from './popup'
 
-const SEARCH_MESSAGES_NO_RESULTS =
-  'No results found for the current search criteria.'
+const SEARCH_MESSAGES_NO_RESULTS = 'No results found for the current search criteria.'
 const SEARCH_MESSAGES_FEW_SECONDS_AGO = 'a few seconds ago'
 
 /**
@@ -152,9 +151,7 @@ export const searchPage = {
    * Verify that the saved search tab is rendered on the Search page.
    */
   shouldRenderSavedSearchesTab: () => {
-    cy.get('.pf-c-dropdown__toggle-text')
-      .filter(':contains(Saved searches)')
-      .should('exist')
+    cy.get('.pf-c-dropdown__toggle-text').filter(':contains(Saved searches)').should('exist')
   },
   /**
    * Verify that the search bar is rendered on the Search page.
@@ -173,10 +170,7 @@ export const searchPage = {
    * Expands the related resources tiles located within the Search page.
    */
   whenExpandRelationshipTiles: () => {
-    cy.get('.pf-c-expandable-section__toggle-text')
-      .contains('Show related resources')
-      .should('exist')
-      .click()
+    cy.get('.pf-c-expandable-section__toggle-text').contains('Show related resources').should('exist').click()
   },
   whenOpenFirstResourceTableTile: () => {
     cy.get('.pf-c-card__header')
@@ -191,9 +185,7 @@ export const searchPage = {
     cy.get('.pf-c-expandable-section')
       .should('have.lengthOf.at.most', 2)
       .then(() => {
-        cy.get('.pf-c-expandable-section__toggle-text')
-          .contains(capitalize(kind))
-          .click()
+        cy.get('.pf-c-expandable-section__toggle-text').contains(capitalize(kind)).click()
       })
   },
   /**
@@ -207,11 +199,7 @@ export const searchPage = {
     cy.get('table.pf-c-table').should('exist').and('be.visible')
     var row = cy.get('tr').filter(`:contains(${name})`)
 
-    if (kind === 'pod')
-      return row
-        .filter(`:contains(${namespace})`)
-        .filter(':contains(Running)')
-        .first()
+    if (kind === 'pod') return row.filter(`:contains(${namespace})`).filter(':contains(Running)').first()
     else if (namespace) return row.filter(`:contains(${namespace})`).first()
     else return row
   },
@@ -222,13 +210,8 @@ export const searchPage = {
    * @param {string} namespace The namespace from which the resource object will be deleted.
    */
   whenDeleteResourceDetailItem: (kind, name, namespace) => {
-    searchPage
-      .whenGetResourceTableRow(kind, name, namespace)
-      .find('.pf-c-dropdown__toggle')
-      .click()
-    cy.get('button.pf-c-dropdown__menu-item')
-      .should('contain', `Delete ${kind}`)
-      .click()
+    searchPage.whenGetResourceTableRow(kind, name, namespace).find('.pf-c-dropdown__toggle').click()
+    cy.get('button.pf-c-dropdown__menu-item').should('contain', `Delete ${kind}`).click()
     popupModal.whenAccept()
   },
   /**
@@ -244,10 +227,7 @@ export const searchPage = {
     searchPage.whenDeleteResourceDetailItem('namespace', name)
   },
   whenGoToResourceDetailItemPage: (kind, name, namespace) => {
-    searchPage
-      .whenGetResourceTableRow(kind, name, namespace)
-      .find('td[data-label="Name"] a')
-      .click()
+    searchPage.whenGetResourceTableRow(kind, name, namespace).find('td[data-label="Name"] a').click()
   },
   /**
    * Navigate the test user to the Search page within the ACM console.
@@ -267,9 +247,7 @@ export const searchBar = {
   },
   whenSuggestionsAreAvailable: (value, ignoreIfDoesNotExist) => {
     if (!ignoreIfDoesNotExist) {
-      cy.get('.react-tags__suggestions ul#ReactTags')
-        .children()
-        .should('have.length.above', 1)
+      cy.get('.react-tags__suggestions ul#ReactTags').children().should('have.length.above', 1)
     }
     cy.get('.react-tags__search-input').click().type(value)
   },
@@ -314,21 +292,13 @@ export const searchBar = {
    * @param {bool} ignoreIfDoesNotExist Option to ignore the Search page prompts (No results found...) if resource is not found.
    */
   whenFilterByNamespace: (namespace, ignoreIfDoesNotExist) => {
-    searchBar.whenEnterTextInSearchBar(
-      'namespace',
-      namespace,
-      ignoreIfDoesNotExist
-    )
+    searchBar.whenEnterTextInSearchBar('namespace', namespace, ignoreIfDoesNotExist)
   },
   /**
    * Execute the search query by pressing the run search button on the Search page.
    */
   whenRunSearchQuery: () => {
-    cy.get('.pf-c-button')
-      .filter(':contains(Run search)')
-      .should('exist')
-      .and('be.visible')
-      .click()
+    cy.get('.pf-c-button').filter(':contains(Run search)').should('exist').and('be.visible').click()
     searchPage.shouldFindNoSkeleton()
   },
   /**

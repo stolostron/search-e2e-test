@@ -15,9 +15,7 @@ const clusterLogin = (options = { useInsecure: true }) => {
   )} --server=https://api.${config.get('options:hub:baseDomain')}:6443`
 
   if (options.useInsecure) {
-    console.log(
-      '[INFO] Using insecure options was set to true. Using insecure login.'
-    )
+    console.log('[INFO] Using insecure options was set to true. Using insecure login.')
     cmd += ` --insecure-skip-tls-verify`
   }
 
@@ -82,9 +80,7 @@ function getResource(kind, ns, options = {}) {
  * @returns {string} The route of the cluster's Search API.
  */
 const getSearchApiRoute = async (options = {}) => {
-  const namespace = execSync(
-    `oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`
-  ).toString()
+  const namespace = execSync(`oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`).toString()
   const routes = execSync(`oc get routes -n ${namespace}`).toString()
 
   if (routes.indexOf('search-api-automation') == -1) {
@@ -94,9 +90,7 @@ const getSearchApiRoute = async (options = {}) => {
     await sleep(5000)
     console.log('Created route search-api-automation.')
   }
-  return `https://search-api-automation-${namespace}.apps.${config.get(
-    'options:hub:baseDomain'
-  )}`
+  return `https://search-api-automation-${namespace}.apps.${config.get('options:hub:baseDomain')}`
 }
 
 /**

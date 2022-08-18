@@ -5,15 +5,8 @@ jest.retryTimes(global.retry)
 const { exec, execSync } = require('child_process')
 
 const squad = require('../../config').get('squadName')
-const {
-  getKubeConfig,
-  getSearchApiRoute,
-  getToken,
-} = require('../common-lib/clusterAccess')
-const {
-  searchQueryBuilder,
-  sendRequest,
-} = require('../common-lib/searchClient')
+const { getKubeConfig, getSearchApiRoute, getToken } = require('../common-lib/clusterAccess')
+const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 
 describe('RHACM4K-913: Search - Verify search results with different queries', () => {
   // Get kubeconfig for imported clusters
@@ -36,9 +29,7 @@ describe('RHACM4K-913: Search - Verify search results with different queries', (
         .toString()
         .trim()
     } else {
-      console.log(
-        'Cannot get managedCluster because import_kubeconfig is undefined.'
-      )
+      console.log('Cannot get managedCluster because import_kubeconfig is undefined.')
     }
   })
 

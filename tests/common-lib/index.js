@@ -33,9 +33,7 @@ function fetchAPIResourcesWithListWatchMethods() {
   const resourceList = []
 
   try {
-    execSync(
-      "oc api-resources --namespaced -o wide --sort-by=kind | grep -E 'list.*watch|watch.*list'"
-    )
+    execSync("oc api-resources --namespaced -o wide --sort-by=kind | grep -E 'list.*watch|watch.*list'")
       .toString()
       .split('\n')
       .filter((resources) => resources)
@@ -51,8 +49,7 @@ function fetchAPIResourcesWithListWatchMethods() {
 
         if (item) {
           obj.kind = item[item.length - 1].toLowerCase() // Kind is the last item.
-          obj.apigroup =
-            item.length < 5 ? item[1].split('/')[0] : item[2].split('/')[0]
+          obj.apigroup = item.length < 5 ? item[1].split('/')[0] : item[2].split('/')[0]
 
           resourceList.push(obj)
         }
@@ -83,10 +80,7 @@ function getClusterList(kubeconfigs = []) {
 
   if (managedCluster) {
     // Set the managed cluster name within the environemnt.
-    if (
-      !process.env.OPTIONS_MANAGED_CLUSTER_NAME ||
-      managedCluster != process.env.OPTIONS_MANAGED_CLUSTER_NAME
-    )
+    if (!process.env.OPTIONS_MANAGED_CLUSTER_NAME || managedCluster != process.env.OPTIONS_MANAGED_CLUSTER_NAME)
       process.env.OPTIONS_MANAGED_CLUSTER_NAME = managedCluster
 
     // TODO: Implement a better method to consume less resources for the managed cluster test.
@@ -120,8 +114,7 @@ function getResourcesFromOC(
   var property = kind
 
   // Check to see if the test needs to include the apigroup name within the query. For kind resources with v1 versions, no apigroup is needed.
-  if (apigroup.useAPIGroup && apigroup.name != 'v1')
-    property += `.${apigroup.name}`
+  if (apigroup.useAPIGroup && apigroup.name != 'v1') property += `.${apigroup.name}`
 
   var cmd = `oc get ${property.toLowerCase()} ${
     namespace === '--all-namespaces' ? namespace : `-n ${namespace}`
@@ -161,9 +154,7 @@ function getTargetManagedCluster() {
 
   try {
     // Fetch imported clusters attached to the hub cluster.
-    var managedClusters = execSync(
-      'oc get managedclusters -o custom-columns=NAME:.metadata.name --no-headers'
-    )
+    var managedClusters = execSync('oc get managedclusters -o custom-columns=NAME:.metadata.name --no-headers')
       .toString()
       .split('\n')
       .filter((cluster) => cluster)
@@ -176,11 +167,7 @@ function getTargetManagedCluster() {
         `Checking for the exported managed cluster: ${process.env.OPTIONS_MANAGED_CLUSTER_NAME} within the returned list.`
       )
 
-      if (
-        managedClusters.find((c) =>
-          c.includes(process.env.OPTIONS_MANAGED_CLUSTER_NAME)
-        )
-      ) {
+      if (managedClusters.find((c) => c.includes(process.env.OPTIONS_MANAGED_CLUSTER_NAME))) {
         targetCluster = process.env.OPTIONS_MANAGED_CLUSTER_NAME
         return targetCluster
       }
@@ -190,10 +177,7 @@ function getTargetManagedCluster() {
       )
     }
 
-    if (
-      managedClusters.length === 1 &&
-      managedClusters.find((c) => c.includes('local-cluster'))
-    ) {
+    if (managedClusters.length === 1 && managedClusters.find((c) => c.includes('local-cluster'))) {
       console.info(
         `Managed cluster list only contains one managed cluster: ${managedClusters}. Proceeding to test only the local-cluster.`
       )
@@ -201,10 +185,7 @@ function getTargetManagedCluster() {
     } else {
       // In the canary tests, we only need to focus on the import-xxxx managed cluster.
       targetCluster = managedClusters.find(
-        (c) =>
-          c.startsWith('canary-') ||
-          c.includes('canary') ||
-          c.startsWith('import-')
+        (c) => c.startsWith('canary-') || c.includes('canary') || c.startsWith('import-')
       )
     }
 
@@ -215,10 +196,7 @@ function getTargetManagedCluster() {
     console.info(`Preparing to test with managed cluster: ${targetCluster}`)
     return targetCluster
   } catch (err) {
-    console.warn(
-      err,
-      'Error getting managedclusters. Proceeding with the local cluster.'
-    )
+    console.warn(err, 'Error getting managedclusters. Proceeding with the local cluster.')
     return
   }
 }
@@ -244,8 +222,7 @@ function shouldUseAPIGroup(kind, resourceList, requiredList = []) {
   return _.length > 1 || requiredList.includes(kind)
 }
 
-exports.fetchAPIResourcesWithListWatchMethods =
-  fetchAPIResourcesWithListWatchMethods
+exports.fetchAPIResourcesWithListWatchMethods = fetchAPIResourcesWithListWatchMethods
 exports.formatResources = formatResources
 exports.getClusterList = getClusterList
 exports.getResourcesFromOC = getResourcesFromOC
