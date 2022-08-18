@@ -8,8 +8,12 @@ const squad = require('../../config').get('squadName')
 const {
   getKubeConfig,
   getSearchApiRoute,
-  getToken } = require('../common-lib/clusterAccess')
-const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
+  getToken,
+} = require('../common-lib/clusterAccess')
+const {
+  searchQueryBuilder,
+  sendRequest,
+} = require('../common-lib/searchClient')
 
 describe('RHACM4K-913: Search - Verify search results with different queries', () => {
   // Get kubeconfig for imported clusters
