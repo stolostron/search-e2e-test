@@ -25,23 +25,14 @@ async function ValidateSearchData(
     getResourcesFromSearch(kind, apigroup, namespace, cluster),
   ])
 
-  var missingInSearch = kube.filter(
-    (k) => !search.find((s) => s.name == k.name)
-  )
-  var unexpectedInSearch = search.filter(
-    (s) => !kube.find((k) => s.name == k.name)
-  )
+  var missingInSearch = kube.filter((k) => !search.find((s) => s.name == k.name))
+  var unexpectedInSearch = search.filter((s) => !kube.find((k) => s.name == k.name))
 
   // TODO: optimization: Check if any missingInSearch resources were created more than 1 minute ago and fail without retry.
 
   // Why we retry 12 times? Some tests are creating new namespaces. Data is indexed within a few seconds,
   // but the RBAC cache takes up to 60 seconds to update and include the new namespace.
-  for (
-    var retry = 0;
-    (missingInSearch.length > 0 || unexpectedInSearch.length > 0) &&
-    retry <= retries;
-    retry++
-  ) {
+  for (var retry = 0; (missingInSearch.length > 0 || unexpectedInSearch.length > 0) && retry <= retries; retry++) {
     let debugMsg = `Data mismatch for resource: ${kind}.${apigroup} namespace:${namespace} cluster:${cluster.name}. Will retry in ${retryWait} ms. Retry ${retry} of ${retries}.`
     if (retry == 0 || retry == retries) {
       // Reduce logging by adding debug info only in the first and last retry.
@@ -77,9 +68,7 @@ async function ValidateSearchData(
 
   // Log error to help debug this test.
   if (missingInSearch.length > 0 || unexpectedInSearch.length > 0) {
-    console.log(
-      'Data validation failed, however the test may no fail because Jest will retry.'
-    )
+    console.log('Data validation failed, however the test may no fail because Jest will retry.')
   }
 
   expect(missingInSearch).toEqual([])

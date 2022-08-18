@@ -32,49 +32,44 @@
 import 'cypress-wait-until'
 import { getOpt } from '../scripts/utils'
 
-Cypress.Commands.add(
-  'visitAndLogin',
-  (URL, OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OPTIONS_HUB_OC_IDP) => {
-    var user = OPTIONS_HUB_USER || Cypress.env('OPTIONS_HUB_USER')
-    var password = OPTIONS_HUB_PASSWORD || Cypress.env('OPTIONS_HUB_PASSWORD')
-    var idp = OPTIONS_HUB_OC_IDP || Cypress.env('OPTIONS_HUB_OC_IDP')
+Cypress.Commands.add('visitAndLogin', (URL, OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OPTIONS_HUB_OC_IDP) => {
+  var user = OPTIONS_HUB_USER || Cypress.env('OPTIONS_HUB_USER')
+  var password = OPTIONS_HUB_PASSWORD || Cypress.env('OPTIONS_HUB_PASSWORD')
+  var idp = OPTIONS_HUB_OC_IDP || Cypress.env('OPTIONS_HUB_OC_IDP')
 
-    cy.visit(URL, { failOnStatusCode: false })
-    cy.url().then((url) => {
-      if (!url.includes('oauth-openshift')) {
-        // check for and handle provider button
-        cy.get('body').then((body) => {
-          if (body.find('.pf-c-page__header').length === 0) {
-            cy.log("Clicking 'Log in with OpenShift' button")
-            cy.get('.panel-login').get('button').click()
-          }
-        })
-      }
-    })
-    cy.url().then((res) => {
-      if (res.includes('oauth-openshift')) {
-        cy.log(
-          'The current user is logged out of the ACM console. Attempting to log into the console.'
-        )
+  cy.visit(URL, { failOnStatusCode: false })
+  cy.url().then((url) => {
+    if (!url.includes('oauth-openshift')) {
+      // check for and handle provider button
+      cy.get('body').then((body) => {
+        if (body.find('.pf-c-page__header').length === 0) {
+          cy.log("Clicking 'Log in with OpenShift' button")
+          cy.get('.panel-login').get('button').click()
+        }
+      })
+    }
+  })
+  cy.url().then((res) => {
+    if (res.includes('oauth-openshift')) {
+      cy.log('The current user is logged out of the ACM console. Attempting to log into the console.')
 
-        cy.get('body').then((body) => {
-          // Check if logged in
-          if (body.find('.pf-c-page__header').length === 0) {
-            // Check if identity providers are configured
-            if (body.find('form').length === 0) cy.contains(idp).click()
+      cy.get('body').then((body) => {
+        // Check if logged in
+        if (body.find('.pf-c-page__header').length === 0) {
+          // Check if identity providers are configured
+          if (body.find('form').length === 0) cy.contains(idp).click()
 
-            cy.get('#inputUsername').click().focused().type(user)
-            cy.get('#inputPassword').click().focused().type(password)
-            cy.get('button[type="submit"]').click()
-            cy.get('.pf-c-page__header')
-          }
-        })
-      } else {
-        cy.log('Confirmed that the user is logged. Procceding with the test.')
-      }
-    })
-  }
-)
+          cy.get('#inputUsername').click().focused().type(user)
+          cy.get('#inputPassword').click().focused().type(password)
+          cy.get('button[type="submit"]').click()
+          cy.get('.pf-c-page__header')
+        }
+      })
+    } else {
+      cy.log('Confirmed that the user is logged. Procceding with the test.')
+    }
+  })
+})
 
 Cypress.Commands.add('reloadUntil', (condition, options) => {
   if (!options) {
@@ -112,27 +107,15 @@ Cypress.Commands.add('waitUntilAttrIs', (selector, attr, value, options) => {
 })
 
 Cypress.Commands.add('ifAttrIs', (selector, attr, value, action) => {
-  return cy.checkCondition(
-    selector,
-    ($elem) => $elem && $elem.attr(attr) && $elem.attr(attr).includes(value),
-    action
-  )
+  return cy.checkCondition(selector, ($elem) => $elem && $elem.attr(attr) && $elem.attr(attr).includes(value), action)
 })
 
 Cypress.Commands.add('ifContains', (selector, text, action) => {
-  return cy.checkCondition(
-    selector,
-    ($elem) => $elem && $elem.text().includes(text),
-    action
-  )
+  return cy.checkCondition(selector, ($elem) => $elem && $elem.text().includes(text), action)
 })
 
 Cypress.Commands.add('ifNotContains', (selector, text, action) => {
-  return cy.checkCondition(
-    selector,
-    ($elem) => !$elem || !$elem.text().includes(text),
-    action
-  )
+  return cy.checkCondition(selector, ($elem) => !$elem || !$elem.text().includes(text), action)
 })
 
 Cypress.Commands.add('checkCondition', (selector, condition, action) => {
@@ -164,9 +147,7 @@ Cypress.Commands.add('forEach', (selector, action, options) => {
 
 Cypress.Commands.add('logout', () => {
   cy.log('Attempt to logout existing user')
-  cy.get(
-    '.pf-c-app-launcher.pf-m-align-right.co-app-launcher.co-user-menu'
-  ).then(($btn) => {
+  cy.get('.pf-c-app-launcher.pf-m-align-right.co-app-launcher.co-user-menu').then(($btn) => {
     //logout when test starts since we need to use the app idp user
     cy.log('Logging out existing user').get($btn).click()
     if (Cypress.config().baseUrl.includes('localhost')) {

@@ -3,16 +3,8 @@
 jest.retryTimes(global.retry)
 
 const squad = require('../../config').get('squadName')
-const {
-  deleteResource,
-  getResource,
-  getSearchApiRoute,
-  getToken,
-} = require('../common-lib/clusterAccess')
-const {
-  searchQueryBuilder,
-  sendRequest,
-} = require('../common-lib/searchClient')
+const { deleteResource, getResource, getSearchApiRoute, getToken } = require('../common-lib/clusterAccess')
+const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 
 const _ = require('lodash')
 
@@ -100,9 +92,7 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
     var configmap = _.get(res, 'body.data.searchResult[0].items', '')
 
     expect(configmap[0].kind).toEqual('configmap')
-    expect(
-      configmap.find((el) => el.namespace === 'open-cluster-management')
-    ).toBeDefined()
+    expect(configmap.find((el) => el.namespace === 'open-cluster-management')).toBeDefined()
     expect(configmap.find((el) => el.name.includes('search'))).toBeDefined()
   }, 20000)
 
@@ -115,13 +105,7 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
     var deployment = _.get(res, 'body.data.searchResult[0].items', '')
 
     expect(deployment[0].kind).toEqual('deployment')
-    expect(
-      deployment.find(
-        (deploy) => deploy.namespace === 'open-cluster-management'
-      )
-    ).toBeDefined()
-    expect(
-      deployment.find((deploy) => deploy.name.includes('search-prod'))
-    ).toBeDefined()
+    expect(deployment.find((deploy) => deploy.namespace === 'open-cluster-management')).toBeDefined()
+    expect(deployment.find((deploy) => deploy.name.includes('search-prod'))).toBeDefined()
   }, 20000)
 })

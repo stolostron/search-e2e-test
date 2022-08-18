@@ -37,10 +37,7 @@ async function getResourcesFromSearch(
  * @param {object} options Additional options for building the query object.
  * @returns {object} The query object.
  */
-function searchQueryBuilder(
-  { keywords = [], filters = [], limit = 10000 },
-  options = {}
-) {
+function searchQueryBuilder({ keywords = [], filters = [], limit = 10000 }, options = {}) {
   // Return query built from passed arguments.
   const query = {
     operationName: 'searchResult',
@@ -83,17 +80,13 @@ function sendRequest(query, token, options = {}) {
 
       if (totalElapsedTime > 10000) {
         fail(
-          `Search required more than 10 seconds to return for ${
-            query.operationName
-          } with vars: ${JSON.stringify(
+          `Search required more than 10 seconds to return for ${query.operationName} with vars: ${JSON.stringify(
             query.variables
           )}. (TotalElapsedTime: ${totalElapsedTime})`
         )
       } else if (totalElapsedTime > 1000) {
         console.log(
-          `Search required more than 1 second to return for ${
-            query.operationName
-          } with vars: ${JSON.stringify(
+          `Search required more than 1 second to return for ${query.operationName} with vars: ${JSON.stringify(
             query.variables
           )}. (TotalElapsedTime: ${totalElapsedTime.toFixed(2)})`
         )
@@ -128,24 +121,17 @@ function formatResourcesFromSearch(resources) {
  * @param {Object} cluster The cluster to filter the resources against.
  * @returns `filter` Formatted array of object filters.
  */
-function formatFilters(
-  kind,
-  group,
-  namespace = '--all-namespaces',
-  cluster = { type: 'hub', name: 'local-cluster' }
-) {
+function formatFilters(kind, group, namespace = '--all-namespaces', cluster = { type: 'hub', name: 'local-cluster' }) {
   const filter = []
 
   // Add namespace filter
-  if (namespace !== '--all-namespaces')
-    filter.push({ property: 'namespace', values: [namespace] })
+  if (namespace !== '--all-namespaces') filter.push({ property: 'namespace', values: [namespace] })
 
   // Add kind filter
   filter.push({ property: 'kind', values: [kind] })
 
   // Add group filter
-  if (group.useAPIGroup && group.name != 'v1')
-    filter.push({ property: 'apigroup', values: [group.name] })
+  if (group.useAPIGroup && group.name != 'v1') filter.push({ property: 'apigroup', values: [group.name] })
 
   // Add cluster filter
   filter.push({ property: 'cluster', values: [cluster.name] })
