@@ -7,13 +7,21 @@ const { getSearchApiRoute } = require('../common-lib/clusterAccess')
 const { ValidateSearchData, validationTimeout } = require('../common-lib/validateSearchData')
 const { execSync } = require('child_process')
 
-describe(`[${squad}] Search API: Verify RBAC`, () => {
-  const ns = 'search-rbac'
-  const [usr0, usr1, usr2, usr3] = ['search-user0', 'search-user1', 'search-user2', 'search-user3']
+const ns = 'search-rbac'
+const [usr0, usr1, usr2, usr3] = ['search-user0', 'search-user1', 'search-user2', 'search-user3']
 
+function buildUserObject(userName) {
+  return {
+    fullName: `system:serviceaccount:${ns}:${userName}`,
+    name: userName,
+    namespace: ns,
+    token: execSync(`oc serviceaccounts get-token ${userName} -n ${ns}`),
+  }
+}
+
+describe(`[${squad}] Search API: Verify RBAC`, () => {
   beforeAll(async () => {
-    // Configure ServiceAccounts (users) for the tests.
-    // ServiceAccounts are simpler because it doesn't require an IDP.
+    // Usng ServiceAccounts for these tests because somfiguration is simpler.
 
     /*
         export usr0=search-user0
@@ -24,24 +32,22 @@ describe(`[${squad}] Search API: Verify RBAC`, () => {
         oc create serviceaccount ${usr0}
         oc create serviceaccount ${usr1}
         oc create serviceaccount ${usr2}
-        oc create role ${usr1} --verb=get,list --resource=pods,configmaps
+        oc create role ${usr1} --verb=get,list --resource=configmaps
         oc create rolebinding ${usr1} --role=${usr1} --serviceaccount=${ns}:${usr1}
-        oc create clusterrole ${usr1} --verb=list,get --resource=nodes
-        oc create clusterrolebinding ${usr1} --clusterrole=${usr1} --serviceaccount=${ns}:${usr1}
+        oc create clusterrole ${usr2} --verb=list,get --resource=nodes,configmaps
+        oc create clusterrolebinding ${usr2} --clusterrole=${usr2} --serviceaccount=${ns}:${usr2}
         oc create configmap cm0 -n ${ns} --from-literal=key=cm0
         oc create configmap cm1 -n ${ns} --from-literal=key=cm1
         */
     const createUsersConfig = async () => {
-      execSync(`oc new-project ${ns}`) // TODO: thiis is changing context when running locally.
+      execSync(`oc new-project ${ns}`) // TODO: this is changing ns when running locally.
       execSync(`oc create serviceaccount ${usr0} -n ${ns}`)
       execSync(`oc create serviceaccount ${usr1} -n ${ns}`)
       execSync(`oc create serviceaccount ${usr2} -n ${ns}`)
       execSync(`oc create role ${usr1} --verb=get,list --resource=configmaps -n ${ns}`)
       execSync(`oc create rolebinding ${usr1} --role=${usr1} --serviceaccount=${ns}:${usr1} -n ${ns}`)
-
-      execSync(`oc create clusterrole ${usr2} --verb=list,get --resource=nodes,configmaps -n ${ns}`)
-      execSync(`oc create clusterrolebinding ${usr2} --clusterrole=${usr2} --serviceaccount=${ns}:${usr2} -n ${ns}`)
-
+      execSync(`oc create clusterrole ${usr2} --verb=list,get --resource=nodes,configmaps`)
+      execSync(`oc create clusterrolebinding ${usr2} --clusterrole=${usr2} --serviceaccount=${ns}:${usr2}`)
       execSync(`oc create configmap search-cm0 -n ${ns} --from-literal=key=cm0`)
       execSync(`oc create configmap search-cm1 -n ${ns} --from-literal=key=cm1`)
     }
@@ -57,20 +63,16 @@ describe(`[${squad}] Search API: Verify RBAC`, () => {
     execSync(`oc delete ns ${ns}`)
     execSync(`oc delete clusterrolebinding ${usr2}`)
     execSync(`oc delete clusterrole ${usr2}`)
-  }, 20000)
+  }, 10000)
 
-  describe(`with user search-user0 (not authorized to list any resources) `, () => {
+  describe(`with user ${usr0} (not authorized to list any resources)`, () => {
     beforeAll(() => {
-      user = {
-        fullName: `system:serviceaccount:${ns}:search-user0`,
-        name: 'search-user0',
-        namespace: ns,
-        token: execSync(`oc serviceaccounts get-token search-user0 -n ${ns}`),
-      }
+      user = buildUserObject(usr0)
     })
 
     test('should validate RBAC configuration for user', () => {
       expect(() => execSync(`oc auth can-i list secret --as=${user.fullName}`)).toThrow()
+      expect(() => execSync(`oc auth can-i list configmap --as=${user.fullName}`)).toThrow()
       expect(() => execSync(`oc auth can-i list node --as=${user.fullName}`)).toThrow()
     })
 
@@ -81,12 +83,7 @@ describe(`[${squad}] Search API: Verify RBAC`, () => {
 
   describe(`with user ${usr1} (configmap in namespace ${ns} only)`, () => {
     beforeAll(() => {
-      user = {
-        fullName: `system:serviceaccount:${ns}:${usr1}`,
-        name: usr1,
-        namespace: ns,
-        token: execSync(`oc serviceaccounts get-token ${usr1} -n ${ns}`),
-      }
+      user = buildUserObject(usr1)
     })
 
     test('should validate RBAC configuration for user', () => {
@@ -100,12 +97,7 @@ describe(`[${squad}] Search API: Verify RBAC`, () => {
 
   describe(`with user ${usr2} (nodes and configmap in all namespaces.)`, () => {
     beforeAll(() => {
-      user = {
-        fullName: `system:serviceaccount:${ns}:${usr2}`,
-        name: usr2,
-        namespace: ns,
-        token: execSync(`oc serviceaccounts get-token ${usr2} -n ${ns}`),
-      }
+      user = buildUserObject(usr2)
     })
 
     test('should validate RBAC configuration for user', () => {
@@ -124,6 +116,16 @@ describe(`[${squad}] Search API: Verify RBAC`, () => {
   })
 
   describe(`with user ${usr3} (all resources in namespace ${ns})`, () => {
+    test.todo('should validate RBAC configuration.')
+    test.todo('should validate results from search.')
+  })
+
+  describe(`with user search-user4 (access to deployment but not pod)`, () => {
+    test.todo('should validate RBAC configuration.')
+    test.todo('should validate relationship data is correct.')
+  })
+
+  describe(`with user search-user5 (access to configmap cm0 only)`, () => {
     test.todo('should validate RBAC configuration.')
     test.todo('should validate results from search.')
   })

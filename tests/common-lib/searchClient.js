@@ -16,7 +16,7 @@ const lodash = require('lodash')
  * @param {string} namespace The namespace filter.
  */
 async function getResourcesFromSearch({
-  userToken,
+  token,
   kind,
   apigroup,
   namespace = '--all-namespaces',
@@ -26,7 +26,7 @@ async function getResourcesFromSearch({
   const filters = formatFilters(kind, apigroup, namespace, cluster)
   const query = searchQueryBuilder({ filters })
   // Fetch data from the search api.
-  const resp = await sendRequest(query, userToken || token)
+  const resp = await sendRequest(query, token)
 
   return formatResourcesFromSearch(resp)
 }
@@ -35,10 +35,9 @@ async function getResourcesFromSearch({
  * Builds and returns a query object for a HTTP request.
  * Current supported input keys: `keywords`, `filters`, and `limit`
  * @param {object} {} The input keys that will be used to build the query object. (Supported input keys: `keywords`, `filters`, and `limit`)
- * @param {object} options Additional options for building the query object.
  * @returns {object} The query object.
  */
-function searchQueryBuilder({ keywords = [], filters = [], limit = 10000 }, options = {}) {
+function searchQueryBuilder({ keywords = [], filters = [], limit = 10000 }) {
   // Return query built from passed arguments.
   const query = {
     operationName: 'searchResult',

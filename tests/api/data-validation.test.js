@@ -35,7 +35,9 @@ describe(`[P2][Sev2][${squad}] Search API: Validate data in index`, () => {
       describe(`for cluster ${cluster.name}`, () => {
         beforeAll(async () => {
           // Log in and get access token
-          token = getToken()
+          user = {
+            token: getToken(),
+          }
 
           // Create a route to access the Search API.
           searchApiRoute = await getSearchApiRoute()
@@ -43,7 +45,7 @@ describe(`[P2][Sev2][${squad}] Search API: Validate data in index`, () => {
 
         // This test checks the validation logic in case that a CRD gets removed.
         test(`check for a CRD that doesn't exist [kind:MissingCRD]`, async () =>
-          ValidateSearchData({ kind: 'MissingCRD', cluster: { name: 'local-cluster' } }))
+          ValidateSearchData({ user, kind: 'MissingCRD', cluster: { name: 'local-cluster' } }))
 
         resourceList.forEach((resource) => {
           // There can be multiple occurrences of the same resource kind with different API groups; therefore
@@ -55,15 +57,13 @@ describe(`[P2][Sev2][${squad}] Search API: Validate data in index`, () => {
 
           test(
             `resource ${resource.kind}.${group.name || ''}`,
-            async () => ValidateSearchData({ kind: resource.kind, apigroup: group, cluster }),
+            async () => ValidateSearchData({ user, kind: resource.kind, apigroup: group, cluster }),
             validationTimeout
           )
         })
       })
     } else {
-      console.warn(
-        `Detected skip option set to ${cluster.skip}. Proceeding to skip the API test for cluster ${cluster.name} with type ${cluster.type}.`
-      )
+      console.log(`Skiping data-validation test for cluster ${cluster.name}. ${JSON.stringify(cluster)}`)
     }
   })
 })

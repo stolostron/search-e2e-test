@@ -23,7 +23,7 @@ async function ValidateSearchData({
 }) {
   const [kube, search] = await Promise.all([
     getResourcesFromOC({ user, kind, apigroup, namespace, cluster }),
-    getResourcesFromSearch({ userToken: user && user.token, kind, apigroup, namespace, cluster }),
+    getResourcesFromSearch({ token: user && user.token, kind, apigroup, namespace, cluster }),
   ])
 
   var missingInSearch = kube.filter((k) => !search.find((s) => s.name == k.name))
@@ -38,7 +38,7 @@ async function ValidateSearchData({
 
     const [retryKube, retrySearch] = await Promise.all([
       getResourcesFromOC({ user, kind, apigroup, namespace, cluster }),
-      getResourcesFromSearch({ userToken: user && user.token, kind, apigroup, namespace, cluster }),
+      getResourcesFromSearch({ token: user && user.token, kind, apigroup, namespace, cluster }),
     ])
 
     // Validate missingInSearch resources using data after retry.
