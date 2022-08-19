@@ -24,10 +24,10 @@ describe(`[${squad}] Search API: Verify RBAC`, () => {
     // Usng ServiceAccounts for these tests because somfiguration is simpler.
 
     /*
+        export ns=search-rbac
         export usr0=search-user0
         export usr1=search-user1
         export usr2=search-user2
-        export ns=search-rbac
         oc new-project ${ns}
         oc create serviceaccount ${usr0}
         oc create serviceaccount ${usr1}
