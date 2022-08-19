@@ -112,9 +112,13 @@ function getResourcesFromOC({
   namespace = '--all-namespaces',
   cluster = { type: 'hub', name: 'local-cluster' },
 }) {
+  if (!kind) {
+    console.error('Error in test code, kind is required when calling getResourcesFromOC(). Received:', kind)
+  }
   var property = kind
 
-  // Check to see if the test needs to include the apigroup name within the query. For kind resources with v1 versions, no apigroup is needed.
+  // Check to see if the test needs to include the apigroup name within the query.
+  // For kind resources with v1 versions, no apigroup is needed.
   if (apigroup && apigroup.useAPIGroup && apigroup.name != 'v1') property += `.${apigroup.name}`
 
   var cmd = `oc get ${property.toLowerCase()} ${
@@ -126,9 +130,9 @@ function getResourcesFromOC({
     cmd += ` --kubeconfig ${cluster.kubeconfig}`
   }
 
-  // Impersonate user.
-  if (user) {
-    cmd += ` --as=${user}`
+  // Impersonate the user.
+  if (user && (user.fullName || user.name)) {
+    cmd += ` --as=${user.fullName || user.name}`
   }
 
   try {
@@ -142,9 +146,8 @@ function getResourcesFromOC({
     )
   } catch (err) {
     if (err.message.indexOf("the server doesn't have a resource type") > 0) {
-      console.log(
-        `The resource [${kind}.${apigroup}] doesn't exists in the cluster. It's possible that the CRD was removed by another test. Returning [] instead of the error.`
-      )
+      // This is expected when a CRD gets removed by another test.
+      console.log(`The resource [${kind}.${apigroup}] doesn't exists in the cluster. Using [] or no resources.`)
       return []
     } else if (err.message.indexOf('Error from server (Forbidden)') > 0) {
       // This is expected when user ddoesn't have access to a resource.
