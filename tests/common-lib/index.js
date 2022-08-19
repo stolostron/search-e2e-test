@@ -147,7 +147,7 @@ function getResourcesFromOC({
   } catch (err) {
     if (err.message.indexOf("the server doesn't have a resource type") > 0) {
       // This is expected when a CRD gets removed by another test.
-      console.log(`The resource [${kind}.${apigroup}] doesn't exists in the cluster. Using [] or no resources.`)
+      console.log(`The resource [${kind}.${apigroup}] doesn't exists in the cluster. Returning [].`)
       return []
     } else if (err.message.indexOf('Error from server (Forbidden)') > 0) {
       // This is expected when user ddoesn't have access to a resource.
