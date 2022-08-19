@@ -63,12 +63,12 @@ async function ValidateSearchData({
   // Log error to help debug this test.
   if (missingInSearch.length > 0 || unexpectedInSearch.length > 0) {
     const msg = `Search data validation failed, but the test may no fail because Jest will retry.
-    > Validation parameters: ${JSON.stringify({ user, kind, apigroup, namespace, cluster })}
+    > Validation parameters: ${JSON.stringify({ user: user.name, kind, apigroup, namespace, cluster })}
     > MissingInSearch:       ${JSON.stringify(missingInSearch)}
     > UnexpectedInSearch:    ${JSON.stringify(unexpectedInSearch)}`
     console.log(msg)
   }
-  // > Resource { kind: ${kind} apigroup: ${apigroup && apigroup.name} namespace:${namespace} cluster:${cluster && cluster.name},
+
   expect(missingInSearch).toEqual([])
   expect(unexpectedInSearch).toEqual([])
 }
