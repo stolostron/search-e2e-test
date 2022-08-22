@@ -44,8 +44,11 @@ describe(`[P2][Sev2][${squad}] Search API: Validate data in index`, () => {
         })
 
         // This test checks the validation logic in case that a CRD gets removed.
-        test(`check for a CRD that doesn't exist [kind:MissingCRD]`, async () =>
-          ValidateSearchData({ user, kind: 'MissingCRD', cluster: { name: 'local-cluster' } }))
+        test(
+          `check for a CRD that doesn't exist [kind:MissingCRD]`,
+          async () => ValidateSearchData({ user, kind: 'MissingCRD', cluster: { name: 'local-cluster' } }),
+          validationTimeout
+        )
 
         resourceList.forEach((resource) => {
           // There can be multiple occurrences of the same resource kind with different API groups; therefore
