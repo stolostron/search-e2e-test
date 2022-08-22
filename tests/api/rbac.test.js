@@ -6,6 +6,7 @@ const squad = require('../../config').get('squadName')
 const { getSearchApiRoute } = require('../common-lib/clusterAccess')
 const { ValidateSearchData, validationTimeout } = require('../common-lib/validateSearchData')
 const { execSync } = require('child_process')
+const { execCliCmdString } = require('../common-lib/cliClient')
 
 const ns = 'search-rbac'
 const [usr0, usr1, usr2, usr3] = ['search-user0', 'search-user1', 'search-user2', 'search-user3']
@@ -23,46 +24,34 @@ describe(`[${squad}] Search API: Verify RBAC`, () => {
   beforeAll(async () => {
     // Usng ServiceAccounts for these tests because somfiguration is simpler.
 
-    /*
-        export ns=search-rbac
-        export usr0=search-user0
-        export usr1=search-user1
-        export usr2=search-user2
-        oc new-project ${ns}
-        oc create serviceaccount ${usr0}
-        oc create serviceaccount ${usr1}
-        oc create serviceaccount ${usr2}
-        oc create role ${usr1} --verb=get,list --resource=configmaps
-        oc create rolebinding ${usr1} --role=${usr1} --serviceaccount=${ns}:${usr1}
-        oc create clusterrole ${usr2} --verb=list,get --resource=nodes,configmaps
-        oc create clusterrolebinding ${usr2} --clusterrole=${usr2} --serviceaccount=${ns}:${usr2}
-        oc create configmap cm0 -n ${ns} --from-literal=key=cm0
-        oc create configmap cm1 -n ${ns} --from-literal=key=cm1
-        */
-    const createUsersConfig = async () => {
-      execSync(`oc new-project ${ns}`) // TODO: this is changing ns when running locally.
-      execSync(`oc create serviceaccount ${usr0} -n ${ns}`)
-      execSync(`oc create serviceaccount ${usr1} -n ${ns}`)
-      execSync(`oc create serviceaccount ${usr2} -n ${ns}`)
-      execSync(`oc create role ${usr1} --verb=get,list --resource=configmaps -n ${ns}`)
-      execSync(`oc create rolebinding ${usr1} --role=${usr1} --serviceaccount=${ns}:${usr1} -n ${ns}`)
-      execSync(`oc create clusterrole ${usr2} --verb=list,get --resource=nodes,configmaps`)
-      execSync(`oc create clusterrolebinding ${usr2} --clusterrole=${usr2} --serviceaccount=${ns}:${usr2}`)
-      execSync(`oc create configmap search-cm0 -n ${ns} --from-literal=key=cm0`)
-      execSync(`oc create configmap search-cm1 -n ${ns} --from-literal=key=cm1`)
-    }
+    const setupCmds = `
+    # export ns=search-rbac; export usr0=search-user0; export usr1=search-user1; export usr2=search-user2
+    oc new-project ${ns}
+    oc create serviceaccount ${usr0}
+    oc create serviceaccount ${usr1}
+    oc create serviceaccount ${usr2}
+    oc create role ${usr1} --verb=get,list --resource=configmaps
+    oc create rolebinding ${usr1} --role=${usr1} --serviceaccount=${ns}:${usr1}
+    oc create clusterrole ${usr2} --verb=list,get --resource=nodes,configmaps
+    oc create clusterrolebinding ${usr2} --clusterrole=${usr2} --serviceaccount=${ns}:${usr2}
+    oc create configmap cm0 -n ${ns} --from-literal=key=cm0
+    oc create configmap cm1 -n ${ns} --from-literal=key=cm1`
 
     // Run setup steps in parallel
     // - Create a route to access the Search API.
     // - Create users and objects for this test.
-    const [route] = await Promise.all([getSearchApiRoute(), createUsersConfig()])
+    const [route] = await Promise.all([getSearchApiRoute(), execCliCmdString(setupCmds)])
     searchApiRoute = route
   }, 20000)
 
   afterAll(async () => {
-    execSync(`oc delete ns ${ns}`)
-    execSync(`oc delete clusterrolebinding ${usr2}`)
-    execSync(`oc delete clusterrole ${usr2}`)
+    const teardownCmds = `
+    # export ns=search-rbac; export usr2=search-user2
+    oc delete ns ${ns}
+    oc delete clusterrolebinding ${usr2}
+    oc delete clusterrole ${usr2}`
+
+    execCliCmdString(teardownCmds)
   }, 10000)
 
   describe(`with user ${usr0} (not authorized to list any resources)`, () => {
