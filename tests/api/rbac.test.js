@@ -27,11 +27,11 @@ describe(`[${squad}] Search API: Verify RBAC`, () => {
     const setupCmds = `
     # export ns=search-rbac; export usr0=search-user0; export usr1=search-user1; export usr2=search-user2
     oc new-project ${ns}
-    oc create serviceaccount ${usr0}
-    oc create serviceaccount ${usr1}
-    oc create serviceaccount ${usr2}
-    oc create role ${usr1} --verb=get,list --resource=configmaps
-    oc create rolebinding ${usr1} --role=${usr1} --serviceaccount=${ns}:${usr1}
+    oc create serviceaccount ${usr0} -n ${ns}
+    oc create serviceaccount ${usr1} -n ${ns}
+    oc create serviceaccount ${usr2} -n ${ns}
+    oc create role ${usr1} --verb=get,list --resource=configmaps -n ${ns}
+    oc create rolebinding ${usr1} --role=${usr1} --serviceaccount=${ns}:${usr1} -n ${ns}
     oc create clusterrole ${usr2} --verb=list,get --resource=nodes,configmaps
     oc create clusterrolebinding ${usr2} --clusterrole=${usr2} --serviceaccount=${ns}:${usr2}
     oc create configmap cm0 -n ${ns} --from-literal=key=cm0
