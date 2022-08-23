@@ -44,19 +44,19 @@ async function ValidateSearchData({
     // Validate missingInSearch resources using data after retry.
     missingInSearch = missingInSearch.filter(
       (r) =>
-        // Keep missing resource if it doesn't appear in new search result.
-        !retrySearch.find((s) => r.name == s.name) ||
-        // Keep missing resource if it continues to appear in new kube result.
-        retryKube.find((k) => r.name == k.name)
+        // Remove from missing list if in new search result.
+        retrySearch.find((s) => r.name == s.name) ||
+        // Remove from missing list if not in new kube results.
+        !retryKube.find((k) => r.name == k.name)
     )
 
     // Validate unexpectedInSearch resources using data after retry.
     unexpectedInSearch = unexpectedInSearch.filter(
       (r) =>
-        // Keep unexpected resource if continues to appear in the new search result.
-        retrySearch.find((s) => r.name == s.name) ||
-        // Keep unexpected resource if it doesn't appear in the new kube result.
-        !retryKube.find((k) => r.name == k.name)
+        // Remove from unexpected list if it's not in new search result.
+        !retrySearch.find((s) => r.name == s.name) ||
+        // Remove from unexpected list if it's in new kube result.
+        retryKube.find((k) => r.name == k.name)
     )
   }
 

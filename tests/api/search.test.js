@@ -1,8 +1,8 @@
-// Copyright (c) 2020 Red Hat, Inc.
+// Copyright Contributors to the Open Cluster Management project
 
-jest.retryTimes(global.retry)
+jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
-const { exec, execSync } = require('child_process')
+const { execSync } = require('child_process')
 
 const squad = require('../../config').get('squadName')
 const { getKubeConfig, getSearchApiRoute, getToken } = require('../common-lib/clusterAccess')
@@ -33,21 +33,6 @@ describe('RHACM4K-913: Search - Verify search results with different queries', (
     }
   })
 
-  function execShellCommand(cmd) {
-    return new Promise((resolve, reject) => {
-      exec(cmd, (error, stdout, stderr) => {
-        if (error) {
-          console.warn(error)
-        }
-        resolve(stdout)
-      })
-    })
-  }
-
-  function log({ message = '' }) {
-    console.log(message)
-  }
-
   test(`[P3][Sev3][${squad}] should have expected count of pods in ocm on hub cluster.`, async () => {
     var query = searchQueryBuilder({
       filters: [
@@ -59,13 +44,11 @@ describe('RHACM4K-913: Search - Verify search results with different queries', (
     })
     const [searchRes, cliRes] = await Promise.all([
       sendRequest(query, token),
-      execShellCommand(
-        'oc get pods -n open-cluster-management --field-selector=status.phase==Running --no-headers | wc -l'
-      ),
+      execSync('oc get pods -n open-cluster-management --field-selector=status.phase==Running --no-headers | wc -l'),
     ])
     const pods = searchRes.body.data.searchResult[0].items
     expect(pods.length.toString()).toEqual(cliRes.toString().trim())
-  }, 20000)
+  }, 10000)
 
   test(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent on hub cluster.`, async () => {
     var query = searchQueryBuilder({
@@ -78,13 +61,13 @@ describe('RHACM4K-913: Search - Verify search results with different queries', (
     })
     const [searchRes, cliRes] = await Promise.all([
       sendRequest(query, token),
-      execShellCommand(
+      execSync(
         'oc get pods -n open-cluster-management-agent --field-selector=status.phase==Running --no-headers | wc -l'
       ),
     ])
     const pods = searchRes.body.data.searchResult[0].items
     expect(pods.length.toString()).toEqual(cliRes.toString().trim())
-  }, 20000)
+  }, 10000)
 
   test(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent on imported cluster.`, async () => {
     if (import_kubeconfig) {
@@ -98,18 +81,16 @@ describe('RHACM4K-913: Search - Verify search results with different queries', (
       })
       const [searchRes, cliRes] = await Promise.all([
         sendRequest(query, token),
-        execShellCommand(
+        execSync(
           `oc --kubeconfig ${import_kubeconfig} get pods -n open-cluster-management-agent --field-selector=status.phase==Running --no-headers | wc -l`
         ),
       ])
       const pods = searchRes.body.data.searchResult[0].items
       expect(pods.length.toString()).toEqual(cliRes.toString().trim())
     } else {
-      log({
-        message: 'Test skipped because import_kubeconfig is undefined.',
-      })
+      console.log('Test skipped because import_kubeconfig is undefined.')
     }
-  }, 20000)
+  }, 10000)
 
   test(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent-addon on hub cluster.`, async () => {
     var query = searchQueryBuilder({
@@ -125,13 +106,13 @@ describe('RHACM4K-913: Search - Verify search results with different queries', (
     })
     const [searchRes, cliRes] = await Promise.all([
       sendRequest(query, token),
-      execShellCommand(
+      execSync(
         'oc get pods -n open-cluster-management-agent-addon --field-selector=status.phase==Running --no-headers | wc -l'
       ),
     ])
     const pods = searchRes.body.data.searchResult[0].items
     expect(pods.length.toString()).toEqual(cliRes.toString().trim())
-  }, 20000)
+  }, 10000)
 
   test.skip(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent-addon on imported cluster.`, async () => {
     if (import_kubeconfig) {
@@ -148,18 +129,16 @@ describe('RHACM4K-913: Search - Verify search results with different queries', (
       })
       const [searchRes, cliRes] = await Promise.all([
         sendRequest(query, token),
-        execShellCommand(
+        execSync(
           `oc --kubeconfig ${import_kubeconfig} get pods -n open-cluster-management-agent-addon --field-selector=status.phase==Running --no-headers | wc -l`
         ),
       ])
       const pods = searchRes.body.data.searchResult[0].items
       expect(pods.length.toString()).toEqual(cliRes.toString().trim())
     } else {
-      log({
-        message: 'Test skipped because import_kubeconfig is undefined.',
-      })
+      console.log('Test skipped because import_kubeconfig is undefined.')
     }
-  }, 20000)
+  }, 10000)
 
   test(`[P3][Sev3][${squad}] should have expected count of pods in kube-system on imported cluster.`, async () => {
     if (import_kubeconfig) {
@@ -173,16 +152,14 @@ describe('RHACM4K-913: Search - Verify search results with different queries', (
       })
       const [searchRes, cliRes] = await Promise.all([
         sendRequest(query, token),
-        execShellCommand(
+        execSync(
           `oc --kubeconfig ${import_kubeconfig} get pods -n kube-system --field-selector=status.phase==Running --no-headers | wc -l`
         ),
       ])
       const pods = searchRes.body.data.searchResult[0].items
       expect(pods.length.toString()).toEqual(cliRes.toString().trim())
     } else {
-      log({
-        message: 'Test skipped because import_kubeconfig is undefined.',
-      })
+      console.log('Test skipped because import_kubeconfig is undefined.')
     }
-  }, 20000)
+  }, 10000)
 })

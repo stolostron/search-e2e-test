@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Red Hat, Inc.
+// Copyright Contributors to the Open Cluster Management project
 
 const config = require('../../config')
 const { sleep } = require('./sleep')
@@ -49,7 +49,7 @@ const getKubeConfig = (options = {}) => {
       }
     })
   } catch (err) {
-    console.warn(`Error: ${err}`)
+    console.log(`Error reading kube config file: ${err}`)
   }
 
   return kubeconfigs
