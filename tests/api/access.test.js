@@ -9,6 +9,7 @@ const request = require('supertest')
 
 describe(`[P1][Sev1][${squad}] Search API: Verify access:`, () => {
   const query = searchQueryBuilder({ filters: [{ property: 'kind', values: ['pod'] }] })
+
   beforeAll(async () => {
     // Log in and get access token
     token = getToken()
@@ -32,12 +33,12 @@ describe(`[P1][Sev1][${squad}] Search API: Verify access:`, () => {
       .expect(401)
   })
 
-  test('should get 401 if authorization header missing Bearer.', () => {
+  test('should get 403 if authorization header missing Bearer.', () => {
     return request(searchApiRoute)
       .post('/searchapi/graphql')
       .send(query)
       .set({ Authorization: token }) // Missing Bearer.
-      .expect(401)
+      .expect(403)
   })
 
   test('should return results when searching for kind:pod.', () => {

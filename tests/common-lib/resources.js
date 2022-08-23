@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Red Hat, Inc.
+// Copyright Contributors to the Open Cluster Management project
 
 /**
  * String created from the Date.now() (Primarily used as a postfix)
