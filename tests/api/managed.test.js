@@ -1,6 +1,6 @@
 // Copyright (c) 2020 Red Hat, Inc.
 
-jest.retryTimes(global.retry)
+jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const squad = require('../../config').get('squadName')
 const { getSearchApiRoute, getToken } = require('../common-lib/clusterAccess')

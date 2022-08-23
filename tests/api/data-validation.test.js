@@ -1,6 +1,6 @@
 // Copyright Contributors to the Open Cluster Management project
 
-jest.retryTimes(global.retry)
+jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const squad = require('../../config').get('squadName')
 const { getKubeConfig, getToken, getSearchApiRoute } = require('../common-lib/clusterAccess')
@@ -66,7 +66,7 @@ describe(`[P2][Sev2][${squad}] Search API: Validate data in index`, () => {
         })
       })
     } else {
-      console.log(`Skiping data-validation test for cluster ${cluster.name}. ${JSON.stringify(cluster)}`)
+      console.log(`Skiping data-validation test for cluster ${JSON.stringify(cluster)}`)
     }
   })
 })

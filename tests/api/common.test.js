@@ -1,6 +1,6 @@
 // Copyright Contributors to the Open Cluster Management project
 
-jest.retryTimes(global.retry)
+jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const squad = require('../../config').get('squadName')
 const { deleteResource, getResource, getSearchApiRoute, getToken } = require('../common-lib/clusterAccess')

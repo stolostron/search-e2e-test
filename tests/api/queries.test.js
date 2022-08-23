@@ -17,9 +17,9 @@ describe(`[${squad}] Search API - Verify results of different queries`, () => {
   beforeAll(async () => {
     let setupCommands = `# export ns=search-query; export usr=search-query-user
     oc new-project ${ns}
-    oc create serviceaccount ${usr}
-    oc create role ${usr} --verb=get,list --resource=configmaps
-    oc create rolebinding ${usr} --role=${usr} --serviceaccount=${ns}:${usr}
+    oc create serviceaccount ${usr} -n ${ns}
+    oc create role ${usr} --verb=get,list --resource=configmaps -n ${ns}
+    oc create rolebinding ${usr} --role=${usr} --serviceaccount=${ns}:${usr} -n ${ns}
 
     oc create configmap cm0 -n ${ns} --from-literal=key=cm0
     oc create configmap cm1 -n ${ns} --from-literal=key=cm1
@@ -31,9 +31,9 @@ describe(`[${squad}] Search API - Verify results of different queries`, () => {
     oc label configmap cm4-broccoli -n ${ns} type=vegetable
     `
 
+    // The V1 logic requires that user has access to list namespaces.
     if (SEARCH_API_V1) {
       setupCommands += `
-    # V1 logic requires that user has access to list namespaces.
     oc create clusterrole ${usr} --verb=list,get --resource=namespaces
     oc create clusterrolebinding ${usr} --clusterrole=${usr} --serviceaccount=${ns}:${usr}
     `
@@ -54,7 +54,6 @@ describe(`[${squad}] Search API - Verify results of different queries`, () => {
 
   afterAll(async () => {
     execSync(`oc delete ns ${ns}`)
-
     if (SEARCH_API_V1) {
       execSync(`oc delete clusterrole ${usr}`)
       execSync(`oc delete clusterrolebinding ${usr}`)
@@ -68,16 +67,10 @@ describe(`[${squad}] Search API - Verify results of different queries`, () => {
       const items = res.body.data.searchResult[0].items
       expect(items.length).toEqual(1)
       expect(items[0].name).toEqual('cm2-apple')
-
-      // console.log('This test object: ', expect.getState())
-      // console.log('query =>', q)
-      // console.log('variables =>', JSON.stringify(q.variables))
-      // console.log(res.body.data)
-      // console.log(items)
     })
 
-    test(`should match resources with text containing 'apple' AND 'fruit'`, async () => {
-      const q = searchQueryBuilder({ keywords: ['apple', 'fruit'] })
+    test(`should match resources with text containing 'apple' AND 'cm2'`, async () => {
+      const q = searchQueryBuilder({ keywords: ['apple', 'cm2'] })
       const res = await sendRequest(q, user.token)
       const items = res.body.data.searchResult[0].items
       expect(items.length).toEqual(1)
@@ -91,22 +84,49 @@ describe(`[${squad}] Search API - Verify results of different queries`, () => {
       expect(items.length).toEqual(1)
       expect(items[0].name).toEqual('cm2-apple')
     })
+
+    test(`should match resources where label text contains 'vegetable'`, async () => {
+      const q = searchQueryBuilder({ keywords: ['vegetable'] })
+      const res = await sendRequest(q, user.token)
+      const items = res.body.data.searchResult[0].items
+      expect(items.length).toEqual(2)
+      //   expect(items[0].name).toEqual('cm3-avocado')
+      //   expect(items[1].name).toEqual('cm4-broccoli')
+    })
   })
 
   describe('using labels', () => {
     test(`should match resources containing the label 'fruit'`, async () => {
-      const q = searchQueryBuilder({ filters: [{ property: 'label', values: ['fruit'] }] })
+      const q = searchQueryBuilder({ filters: [{ property: 'label', values: ['type=fruit'] }] })
       const res = await sendRequest(q, user.token)
       const items = res.body.data.searchResult[0].items
       expect(items.length).toEqual(1)
       expect(items[0].name).toEqual('cm2-apple')
     })
 
-    test.todo('should match resources containing labelA OR labelB.')
+    test('should match resources containing labelA OR labelB.', async () => {
+      const q = searchQueryBuilder({ filters: [{ property: 'label', values: ['type=fruit', 'type=vegetable'] }] })
+      const res = await sendRequest(q, user.token)
+      const items = res.body.data.searchResult[0].items
+      expect(items.length).toEqual(3)
+      //   expect(items[0].name).toEqual('cm2-apple')
+      //   expect(items[1].name).toEqual('cm3-avocado')
+      //   expect(items[2].name).toEqual('cm4-broccoli')
+    })
   })
 
   describe(`[${squad}] search using kind`, () => {
-    test.todo('should be case sensitive (lowercase).')
+    // FIXME: This test is failing.
+    test.skip('should be case sensitive (lowercase).', async () => {
+      const q = searchQueryBuilder({ filters: [{ property: 'kind', values: ['configmap'] }] })
+      const q2 = searchQueryBuilder({ filters: [{ property: 'kind', values: ['ConfigMap'] }] })
+      const [res, res2] = await Promise.all([sendRequest(q, user.token), sendRequest(q2, user.token)])
+      const items = res.body.data.searchResult[0].items
+      const items2 = res2.body.data.searchResult[0].items
+
+      expect(items.length).toEqual(7) // Why receiving 53?
+      expect(items2.length).toEqual(0)
+    })
     test.todo('should only match resources of kind a,b, OR c.')
   })
 
