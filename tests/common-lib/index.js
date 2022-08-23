@@ -105,16 +105,21 @@ function getClusterList(kubeconfigs = []) {
  * @param {*} cluster
  * @returns {[]} Resources
  */
-function getResourcesFromOC(
+function getResourcesFromOC({
+  user,
   kind,
   apigroup,
   namespace = '--all-namespaces',
-  cluster = { type: 'hub', name: 'local-cluster' }
-) {
+  cluster = { type: 'hub', name: 'local-cluster' },
+}) {
+  if (!kind) {
+    console.error('Error in test code, kind is required when calling getResourcesFromOC(). Received:', kind)
+  }
   var property = kind
 
-  // Check to see if the test needs to include the apigroup name within the query. For kind resources with v1 versions, no apigroup is needed.
-  if (apigroup.useAPIGroup && apigroup.name != 'v1') property += `.${apigroup.name}`
+  // Check to see if the test needs to include the apigroup name within the query.
+  // For kind resources with v1 versions, no apigroup is needed.
+  if (apigroup && apigroup.useAPIGroup && apigroup.name != 'v1') property += `.${apigroup.name}`
 
   var cmd = `oc get ${property.toLowerCase()} ${
     namespace === '--all-namespaces' ? namespace : `-n ${namespace}`
@@ -122,7 +127,12 @@ function getResourcesFromOC(
 
   // Add kubeconfig filter if the option is set within the cluster object.
   if (cluster.kubeconfig) {
-    cmd += `--kubeconfig ${cluster.kubeconfig}`
+    cmd += ` --kubeconfig ${cluster.kubeconfig}`
+  }
+
+  // Impersonate the user.
+  if (user && (user.fullName || user.name)) {
+    cmd += ` --as=${user.fullName || user.name}`
   }
 
   try {
@@ -136,12 +146,15 @@ function getResourcesFromOC(
     )
   } catch (err) {
     if (err.message.indexOf("the server doesn't have a resource type") > 0) {
-      console.log(
-        `The resource [${kind}.${apigroup}] doesn't exists in the cluster. It's possible that the CRD was removed by another test. Returning [] instead of the error.`
-      )
+      // This is expected when a CRD gets removed by another test.
+      console.log(`The resource [${kind}.${apigroup}] doesn't exists in the cluster. Returning [].`)
+      return []
+    } else if (err.message.indexOf('Error from server (Forbidden)') > 0) {
+      // This is expected when user ddoesn't have access to a resource.
       return []
     }
-    throw e
+    console.log(`Unexpected error getting resources from CLI. ${err.message}`)
+    throw err
   }
 }
 
