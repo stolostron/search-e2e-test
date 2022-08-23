@@ -1,42 +1,46 @@
 // Copyright Contributors to the Open Cluster Management project
 
-jest.retryTimes(global.retry)
+jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const { execSync } = require('child_process')
 const squad = require('../../config').get('squadName')
-const { getSearchApiRoute, getToken } = require('../common-lib/clusterAccess')
-// const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
+const { getSearchApiRoute } = require('../common-lib/clusterAccess')
+const { execCliCmdString } = require('../common-lib/cliClient')
+const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
+const { sleep } = require('../common-lib/sleep')
+
+const SEARCH_API_V1 = true
 
 const usr = 'search-query-user'
 const ns = 'search-query'
-describe('Search API - Verify results of different queries', () => {
+describe(`[${squad}] Search API - Verify results of different queries`, () => {
   beforeAll(async () => {
-    // Avoid using kubeadmin to get these benefits.
-    // - Factor RBAC testing in all scenarios.
-    // - Filter out other resources in the cluster that could affect the expected results.
+    let setupCommands = `# export ns=search-query; export usr=search-query-user
+    oc new-project ${ns}
+    oc create serviceaccount ${usr}
+    oc create role ${usr} --verb=get,list --resource=configmaps
+    oc create rolebinding ${usr} --role=${usr} --serviceaccount=${ns}:${usr}
 
-    /*
-        export ns=search-query
-        export usr=search-query-usr
-        oc new-project ${ns}
-        oc create serviceaccount ${usr}
+    oc create configmap cm0 -n ${ns} --from-literal=key=cm0
+    oc create configmap cm1 -n ${ns} --from-literal=key=cm1
+    oc create configmap cm2-apple -n ${ns} --from-literal=key=cm2
+    oc label configmap cm2-apple -n ${ns} type=fruit
+    oc create configmap cm3-avocado -n ${ns} --from-literal=key=cm3
+    oc label configmap cm3-avocado -n ${ns} type=vegetable
+    oc create configmap cm4-broccoli -n ${ns} --from-literal=key=cm4
+    oc label configmap cm4-broccoli -n ${ns} type=vegetable
+    `
 
-        oc create configmap cm0 -n ${ns} --from-literal=key=cm0
-        oc create configmap cm1 -n ${ns} --from-literal=key=cm1
-        */
-
-    const createUsersAndResources = async () => {
-      execSync(`oc new-project ${ns}`) // TODO: this is changing ns when running locally.
-      execSync(`oc create serviceaccount ${usr} -n ${ns}`)
-
-      execSync(`oc create configmap search-cm0 -n ${ns} --from-literal=key=cm0`)
-      execSync(`oc create configmap search-cm1 -n ${ns} --from-literal=key=cm1`)
+    if (SEARCH_API_V1) {
+      setupCommands += `
+    # V1 logic requires that user has access to list namespaces.
+    oc create clusterrole ${usr} --verb=list,get --resource=namespaces
+    oc create clusterrolebinding ${usr} --clusterrole=${usr} --serviceaccount=${ns}:${usr}
+    `
     }
 
-    // Run the setup steps in parallel
-    // - Create a route to access the Search API.
-    // - Create user and resources for this test.
-    const [route] = await Promise.all([getSearchApiRoute(), createUsersAndResources()])
+    // Run the setup steps in parallel.
+    const [route] = await Promise.all([getSearchApiRoute(), execCliCmdString(setupCommands)])
     searchApiRoute = route
 
     user = {
@@ -45,20 +49,64 @@ describe('Search API - Verify results of different queries', () => {
       namespace: ns,
       token: execSync(`oc serviceaccounts get-token ${usr} -n ${ns}`),
     }
-  }, 20000)
+    await sleep(20000) // Wait for the search index to get updated.
+  }, 60000)
 
-  describe(`[${squad}] search using keywords`, () => {
-    test.todo('should only match resources containing the keyword.')
-    test.todo('shouls match resources with text containing abc OR xyz')
+  afterAll(async () => {
+    execSync(`oc delete ns ${ns}`)
+
+    if (SEARCH_API_V1) {
+      execSync(`oc delete clusterrole ${usr}`)
+      execSync(`oc delete clusterrolebinding ${usr}`)
+    }
+  }, 15000)
+
+  describe(`using keywords`, () => {
+    test(`should match any resources containing the keyword 'apple'`, async () => {
+      const q = searchQueryBuilder({ keywords: ['apple'] })
+      const res = await sendRequest(q, user.token)
+      const items = res.body.data.searchResult[0].items
+      expect(items.length).toEqual(1)
+      expect(items[0].name).toEqual('cm2-apple')
+
+      // console.log('This test object: ', expect.getState())
+      // console.log('query =>', q)
+      // console.log('variables =>', JSON.stringify(q.variables))
+      // console.log(res.body.data)
+      // console.log(items)
+    })
+
+    test(`should match resources with text containing 'apple' AND 'fruit'`, async () => {
+      const q = searchQueryBuilder({ keywords: ['apple', 'fruit'] })
+      const res = await sendRequest(q, user.token)
+      const items = res.body.data.searchResult[0].items
+      expect(items.length).toEqual(1)
+      expect(items[0].name).toEqual('cm2-apple')
+    })
+
+    test('should be case insensitive.', async () => {
+      const q = searchQueryBuilder({ keywords: ['ApPLe'] })
+      const res = await sendRequest(q, user.token)
+      const items = res.body.data.searchResult[0].items
+      expect(items.length).toEqual(1)
+      expect(items[0].name).toEqual('cm2-apple')
+    })
   })
 
-  describe(`[${squad}] search using labels`, () => {
-    test.todo('should only match resources containing the label.')
-    test.todo('should only match resources containing labelA OR labelB.')
+  describe('using labels', () => {
+    test(`should match resources containing the label 'fruit'`, async () => {
+      const q = searchQueryBuilder({ filters: [{ property: 'label', values: ['fruit'] }] })
+      const res = await sendRequest(q, user.token)
+      const items = res.body.data.searchResult[0].items
+      expect(items.length).toEqual(1)
+      expect(items[0].name).toEqual('cm2-apple')
+    })
+
+    test.todo('should match resources containing labelA OR labelB.')
   })
 
   describe(`[${squad}] search using kind`, () => {
-    test.todo('should be case sensitive.')
+    test.todo('should be case sensitive (lowercase).')
     test.todo('should only match resources of kind a,b, OR c.')
   })
 
