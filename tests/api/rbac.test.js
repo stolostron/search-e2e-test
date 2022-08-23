@@ -20,7 +20,7 @@ function buildUserObject(userName) {
   }
 }
 
-describe(`[${squad}] Search API: Verify RBAC`, () => {
+describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
   beforeAll(async () => {
     // Usng ServiceAccounts for these tests because somfiguration is simpler.
 
