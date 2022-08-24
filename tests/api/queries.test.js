@@ -10,9 +10,9 @@ const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient'
 const { sleep } = require('../common-lib/sleep')
 
 const SEARCH_API_V1 = true
-
 const usr = 'search-query-user'
 const ns = 'search-query'
+
 describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`, () => {
   beforeAll(async () => {
     let setupCommands = `# export ns=search-query; export usr=search-query-user
@@ -83,9 +83,10 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
       const q = searchQueryBuilder({ keywords: ['vegetable'] })
       const res = await sendRequest(q, user.token)
       const items = res.body.data.searchResult[0].items
+      const names = items.map((i) => i.name)
+
       expect(items.length).toEqual(2)
-      //   expect(items[0].name).toEqual('cm3-avocado')
-      //   expect(items[1].name).toEqual('cm4-broccoli')
+      expect(names).toEqual(expect.arrayContaining(['cm3-avocado', 'cm4-broccoli']))
     })
   })
 
@@ -102,10 +103,10 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
       const q = searchQueryBuilder({ filters: [{ property: 'label', values: ['type=fruit', 'type=vegetable'] }] })
       const res = await sendRequest(q, user.token)
       const items = res.body.data.searchResult[0].items
+      const names = items.map((i) => i.name)
+
       expect(items.length).toEqual(3)
-      //   expect(items[0].name).toEqual('cm2-apple')
-      //   expect(items[1].name).toEqual('cm3-avocado')
-      //   expect(items[2].name).toEqual('cm4-broccoli')
+      expect(names).toEqual(expect.arrayContaining(['cm2-apple', 'cm3-avocado', 'cm4-broccoli']))
     })
   })
 
