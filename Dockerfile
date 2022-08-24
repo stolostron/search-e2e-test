@@ -1,7 +1,7 @@
 # Copyright (c) 2020 Red Hat, Inc.
 
 FROM mikefarah/yq:4 as builder
-FROM cypress/browsers:node13.6.0-chrome80-ff72 as production
+FROM cypress/browsers:node16.14.2-slim-chrome100-ff99-edge as production
 
 USER root
 
