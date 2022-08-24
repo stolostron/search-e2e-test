@@ -5,10 +5,10 @@ jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 const { execSync } = require('child_process')
 
 const squad = require('../../config').get('squadName')
-const { getKubeConfig, getSearchApiRoute, getToken } = require('../common-lib/clusterAccess')
+const { getKubeConfig, getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 
-describe('RHACM4K-913: Search - Verify search results with different queries', () => {
+describe('RHACM4K-913: Search API - Verify search results with different queries', () => {
   // Get kubeconfig for imported clusters
   var kubeconfigs = getKubeConfig()
 
@@ -17,7 +17,7 @@ describe('RHACM4K-913: Search - Verify search results with different queries', (
 
   beforeAll(async () => {
     // Log in and get access token
-    token = getToken()
+    token = getKubeadminToken()
 
     // Create a route to access the Search API.
     searchApiRoute = await getSearchApiRoute()

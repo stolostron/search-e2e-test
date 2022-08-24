@@ -4,7 +4,7 @@ jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const { execSync } = require('child_process')
 const squad = require('../../config').get('squadName')
-const { getSearchApiRoute } = require('../common-lib/clusterAccess')
+const { getUserContext, getSearchApiRoute } = require('../common-lib/clusterAccess')
 const { execCliCmdString } = require('../common-lib/cliClient')
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 const { sleep } = require('../common-lib/sleep')
@@ -42,13 +42,8 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     const [route] = await Promise.all([getSearchApiRoute(), execCliCmdString(setupCommands)])
     searchApiRoute = route
 
-    user = {
-      fullName: `system:serviceaccount:${ns}:${usr}`,
-      name: usr,
-      namespace: ns,
-      token: execSync(`oc serviceaccounts get-token ${usr} -n ${ns}`),
-    }
-    await sleep(20000) // Wait for the search index to get updated.
+    await sleep(20000) // Wait for the service account and search index to get updated.
+    user = await getUserContext(usr, ns)
   }, 60000)
 
   afterAll(async () => {

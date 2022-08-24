@@ -3,15 +3,15 @@
 jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const squad = require('../../config').get('squadName')
-const { deleteResource, getResource, getSearchApiRoute, getToken } = require('../common-lib/clusterAccess')
+const { deleteResource, getResource, getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 
 const _ = require('lodash')
 
-describe('RHACM4K-1696: Search - Verify search result with common filter and conditions', () => {
+describe('RHACM4K-1696: Search API - Verify search result with common filter and conditions', () => {
   beforeAll(async () => {
     // Log in and get access token
-    token = getToken()
+    token = getKubeadminToken()
 
     // Create a route to access the Search API.
     searchApiRoute = await getSearchApiRoute()
@@ -34,9 +34,6 @@ describe('RHACM4K-1696: Search - Verify search result with common filter and con
     // Change state
     var pods = getResource('pod', namespace)
     await deleteResource('pod', pods[0][0], namespace)
-
-    // Validate search data.
-    // baseTest('pod', '')
   }, 20000)
 
   test(`[P2][Sev2][${squad}] Search kind application on specific namespace.`, async () => {

@@ -98,13 +98,37 @@ const getSearchApiRoute = async (options = {}) => {
  * @param {object} options Additional options for getting the cluster's authorization token.
  * @returns {string} The cluster environment authorization token.
  */
-const getToken = (options = {}) => {
+const getKubeadminToken = (options = {}) => {
   return execSync('oc whoami -t').toString().replace('\n', '')
+}
+
+/**
+ * Gets the token and other information required to impersonate a user (service account).
+ * @param string userName - Service account name.
+ * @param string ns - Namespace of the service account.
+ * @returns {}
+ */
+async function getUserContext(userName, ns) {
+  let t
+  try {
+    t = execSync(`oc serviceaccounts get-token ${userName} -n ${ns}`)
+  } catch (e) {
+    console.log('Failed to get service account token, will retry after 10 seconds.', e)
+    await sleep(10000)
+    t = execSync(`oc serviceaccounts get-token ${userName} -n ${ns}`)
+  }
+  return {
+    fullName: `system:serviceaccount:${ns}:${userName}`,
+    name: userName,
+    namespace: ns,
+    token: t,
+  }
 }
 
 exports.clusterLogin = clusterLogin
 exports.deleteResource = deleteResource
 exports.getKubeConfig = getKubeConfig
+exports.getUserContext = getUserContext
 exports.getResource = getResource
 exports.getSearchApiRoute = getSearchApiRoute
-exports.getToken = getToken
+exports.getKubeadminToken = getKubeadminToken
