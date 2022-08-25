@@ -3,10 +3,8 @@
 jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const squad = require('../../config').get('squadName')
-const { getKubeConfig, getToken, getSearchApiRoute } = require('../common-lib/clusterAccess')
-
+const { getKubeConfig, getKubeadminToken, getSearchApiRoute } = require('../common-lib/clusterAccess')
 const { fetchAPIResourcesWithListWatchMethods, getClusterList, shouldUseAPIGroup } = require('../common-lib/index')
-
 const { ValidateSearchData, validationTimeout } = require('../common-lib/validateSearchData')
 
 // Set list to ignore resources that aren't being collected by Search.
@@ -36,7 +34,7 @@ describe(`[P2][Sev2][${squad}] Search API: Validate data in index`, () => {
         beforeAll(async () => {
           // Log in and get access token
           user = {
-            token: getToken(),
+            token: getKubeadminToken(),
           }
 
           // Create a route to access the Search API.

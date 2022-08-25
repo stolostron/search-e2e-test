@@ -3,7 +3,7 @@
 jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const squad = require('../../config').get('squadName')
-const { getSearchApiRoute, getToken } = require('../common-lib/clusterAccess')
+const { getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
 const { searchQueryBuilder } = require('../common-lib/searchClient')
 const request = require('supertest')
 
@@ -12,7 +12,7 @@ describe(`[P1][Sev1][${squad}] Search API: Verify access:`, () => {
 
   beforeAll(async () => {
     // Log in and get access token
-    token = getToken()
+    token = getKubeadminToken()
 
     // Create a route to access the Search API.
     searchApiRoute = await getSearchApiRoute()

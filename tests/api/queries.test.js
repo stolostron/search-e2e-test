@@ -4,15 +4,15 @@ jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const { execSync } = require('child_process')
 const squad = require('../../config').get('squadName')
-const { getSearchApiRoute } = require('../common-lib/clusterAccess')
+const { getUserContext, getSearchApiRoute } = require('../common-lib/clusterAccess')
 const { execCliCmdString } = require('../common-lib/cliClient')
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 const { sleep } = require('../common-lib/sleep')
 
 const SEARCH_API_V1 = true
-
 const usr = 'search-query-user'
 const ns = 'search-query'
+
 describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`, () => {
   beforeAll(async () => {
     let setupCommands = `# export ns=search-query; export usr=search-query-user
@@ -42,13 +42,8 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     const [route] = await Promise.all([getSearchApiRoute(), execCliCmdString(setupCommands)])
     searchApiRoute = route
 
-    user = {
-      fullName: `system:serviceaccount:${ns}:${usr}`,
-      name: usr,
-      namespace: ns,
-      token: execSync(`oc serviceaccounts get-token ${usr} -n ${ns}`),
-    }
-    await sleep(20000) // Wait for the search index to get updated.
+    await sleep(20000) // Wait for the service account and search index to get updated.
+    user = await getUserContext(usr, ns)
   }, 60000)
 
   afterAll(async () => {
@@ -88,9 +83,10 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
       const q = searchQueryBuilder({ keywords: ['vegetable'] })
       const res = await sendRequest(q, user.token)
       const items = res.body.data.searchResult[0].items
+      const names = items.map((i) => i.name)
+
       expect(items.length).toEqual(2)
-      //   expect(items[0].name).toEqual('cm3-avocado')
-      //   expect(items[1].name).toEqual('cm4-broccoli')
+      expect(names).toEqual(expect.arrayContaining(['cm3-avocado', 'cm4-broccoli']))
     })
   })
 
@@ -107,10 +103,10 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
       const q = searchQueryBuilder({ filters: [{ property: 'label', values: ['type=fruit', 'type=vegetable'] }] })
       const res = await sendRequest(q, user.token)
       const items = res.body.data.searchResult[0].items
+      const names = items.map((i) => i.name)
+
       expect(items.length).toEqual(3)
-      //   expect(items[0].name).toEqual('cm2-apple')
-      //   expect(items[1].name).toEqual('cm3-avocado')
-      //   expect(items[2].name).toEqual('cm4-broccoli')
+      expect(names).toEqual(expect.arrayContaining(['cm2-apple', 'cm3-avocado', 'cm4-broccoli']))
     })
   })
 

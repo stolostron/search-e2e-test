@@ -3,26 +3,18 @@
 jest.retryTimes(global.retry)
 
 const squad = require('../../config').get('squadName')
-const { getSearchApiRoute } = require('../common-lib/clusterAccess')
+const { getUserContext, getSearchApiRoute } = require('../common-lib/clusterAccess')
 const { ValidateSearchData, validationTimeout } = require('../common-lib/validateSearchData')
 const { execSync } = require('child_process')
 const { execCliCmdString } = require('../common-lib/cliClient')
+const { sleep } = require('../common-lib/sleep')
 
 const ns = 'search-rbac'
 const [usr0, usr1, usr2, usr3] = ['search-user0', 'search-user1', 'search-user2', 'search-user3']
 
-function buildUserObject(userName) {
-  return {
-    fullName: `system:serviceaccount:${ns}:${userName}`,
-    name: userName,
-    namespace: ns,
-    token: execSync(`oc serviceaccounts get-token ${userName} -n ${ns}`),
-  }
-}
-
 describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
   beforeAll(async () => {
-    // Usng ServiceAccounts for these tests because somfiguration is simpler.
+    // Usng ServiceAccounts for rbac tests because configuration is simpler.
 
     const setupCmds = `
     # export ns=search-rbac; export usr0=search-user0; export usr1=search-user1; export usr2=search-user2
@@ -42,7 +34,9 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
     // - Create users and objects for this test.
     const [route] = await Promise.all([getSearchApiRoute(), execCliCmdString(setupCmds)])
     searchApiRoute = route
-  }, 20000)
+
+    await sleep(10000) // Wait for service account and the search index to get updated.
+  }, 30000)
 
   afterAll(async () => {
     const teardownCmds = `
@@ -55,9 +49,9 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
   }, 10000)
 
   describe(`with user ${usr0} (not authorized to list any resources)`, () => {
-    beforeAll(() => {
-      user = buildUserObject(usr0)
-    })
+    beforeAll(async () => {
+      user = await getUserContext(usr0, ns)
+    }, 20000)
 
     test('should validate RBAC configuration for user', () => {
       expect(() => execSync(`oc auth can-i list secret --as=${user.fullName}`)).toThrow()
@@ -71,9 +65,9 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
   })
 
   describe(`with user ${usr1} (configmap in namespace ${ns} only)`, () => {
-    beforeAll(() => {
-      user = buildUserObject(usr1)
-    })
+    beforeAll(async () => {
+      user = await getUserContext(usr1, ns)
+    }, 20000)
 
     test('should validate RBAC configuration for user', () => {
       expect(() => execSync(`oc auth can-i list secret -n ${ns} --as=${user.fullName}`)).toThrow()
@@ -85,9 +79,9 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
   })
 
   describe(`with user ${usr2} (nodes and configmap in all namespaces.)`, () => {
-    beforeAll(() => {
-      user = buildUserObject(usr2)
-    })
+    beforeAll(async () => {
+      user = await getUserContext(usr2, ns)
+    }, 20000)
 
     test('should validate RBAC configuration for user', () => {
       expect(() => execSync(`oc auth can-i list secret -n ${ns} --as=${user.fullName}`)).toThrow()

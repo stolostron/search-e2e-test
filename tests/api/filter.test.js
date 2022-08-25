@@ -5,13 +5,13 @@ jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 const { execSync } = require('child_process')
 
 const squad = require('../../config').get('squadName')
-const { getSearchApiRoute, getToken } = require('../common-lib/clusterAccess')
+const { getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 
 describe('RHACM4K-1709: Search - Search using filters', () => {
   beforeAll(async () => {
     // Log in and get access token
-    token = getToken()
+    token = getKubeadminToken()
 
     // Create a route to access the Search API.
     searchApiRoute = await getSearchApiRoute()

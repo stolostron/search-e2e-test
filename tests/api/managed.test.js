@@ -3,7 +3,7 @@
 jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const squad = require('../../config').get('squadName')
-const { getSearchApiRoute, getToken } = require('../common-lib/clusterAccess')
+const { getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 
 const _ = require('lodash')
@@ -11,18 +11,11 @@ const _ = require('lodash')
 describe('RHACM4K-1695: Search - verify managed cluster info in the search page', () => {
   beforeAll(async () => {
     // Log in and get access token
-    token = getToken()
+    token = getKubeadminToken()
 
     // Create a route to access the Search API.
     searchApiRoute = await getSearchApiRoute()
   })
-
-  // Cleanup and teardown here.
-  afterAll(() => {})
-
-  function log({ message = '' }) {
-    console.log(message)
-  }
 
   test(`[P1][Sev1][${squad}] Search - verify managed cluster info in the search page.`, async () => {
     var query = searchQueryBuilder({
@@ -49,9 +42,7 @@ describe('RHACM4K-1695: Search - verify managed cluster info in the search page'
         expect(element.status).toEqual('Running')
       })
     } else {
-      log({
-        message: 'Test skipped because no managedCluster detected.',
-      })
+      console.log('Test skipped because no managedCluster detected.')
     }
   }, 20000)
 })
