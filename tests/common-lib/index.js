@@ -3,27 +3,6 @@
 const { execSync } = require('child_process')
 
 /**
- * Format resources for search queries.
- * @param {Object} cluster The cluster of the resource objects.
- * @param {string} kind The kind of the resource objects.
- * @param {*} resources A list of resources that will be formated as an object containing name and namespace.
- * @returns `formatedResources` Formatted array of resource object.
- */
-function formatResources(cluster, kind, resources) {
-  var formattedResources = resources.map((res) => {
-    const item = res.split(' ').filter((property) => property)
-    return {
-      cluster: cluster.name,
-      kind,
-      namespace: item[0],
-      name: item[1],
-    }
-  })
-
-  return formattedResources
-}
-
-/**
  * Fetches all namespaced resources that has methods list and watch.
  ** When fetching the api-resources, the data will be returned with the following format: [0]: NAME, [1]: SHORTNAMES, [2]: APIVERSIONS, [3]: NAMESPACED, [4]: KIND
  ** If there are no short names, the array will be returned with the following format: [0]: NAME, [1]: APIVERSIONS, [2]: NAMESPACED, [3]: KIND
@@ -95,67 +74,6 @@ function getClusterList(kubeconfigs = []) {
   }
 
   return clusters
-}
-
-/**
- * Query the Kubernetes API using the oc CLI to get the expected state.
- * @param string kind
- * @param string apigroup
- * @param {[string]} namespace
- * @param {*} cluster
- * @returns {[]} Resources
- */
-function getResourcesFromOC({
-  user,
-  kind,
-  apigroup,
-  namespace = '--all-namespaces',
-  cluster = { type: 'hub', name: 'local-cluster' },
-}) {
-  if (!kind) {
-    console.error('Error in test code, kind is required when calling getResourcesFromOC(). Received:', kind)
-  }
-  var property = kind
-
-  // Check to see if the test needs to include the apigroup name within the query.
-  // For kind resources with v1 versions, no apigroup is needed.
-  if (apigroup && apigroup.useAPIGroup && apigroup.name != 'v1') property += `.${apigroup.name}`
-
-  var cmd = `oc get ${property.toLowerCase()} ${
-    namespace === '--all-namespaces' ? namespace : `-n ${namespace}`
-  } --no-headers --ignore-not-found=true`
-
-  // Add kubeconfig filter if the option is set within the cluster object.
-  if (cluster.kubeconfig) {
-    cmd += ` --kubeconfig ${cluster.kubeconfig}`
-  }
-
-  // Impersonate the user.
-  if (user && (user.fullName || user.name)) {
-    cmd += ` --as=${user.fullName || user.name}`
-  }
-
-  try {
-    return formatResources(
-      cluster,
-      kind,
-      execSync(cmd, { stdio: [] })
-        .toString()
-        .split('\n')
-        .filter((res) => res)
-    )
-  } catch (err) {
-    if (err.message.indexOf("the server doesn't have a resource type") > 0) {
-      // This is expected when a CRD gets removed by another test.
-      console.log(`The resource [${kind}.${apigroup}] doesn't exists in the cluster. Returning [].`)
-      return []
-    } else if (err.message.indexOf('Error from server (Forbidden)') > 0) {
-      // This is expected when user ddoesn't have access to a resource.
-      return []
-    }
-    console.log(`Unexpected error getting resources from CLI. ${err.message}`)
-    throw err
-  }
 }
 
 /**
@@ -236,9 +154,7 @@ function shouldUseAPIGroup(kind, resourceList, requiredList = []) {
 }
 
 exports.fetchAPIResourcesWithListWatchMethods = fetchAPIResourcesWithListWatchMethods
-exports.formatResources = formatResources
 exports.getClusterList = getClusterList
-exports.getResourcesFromOC = getResourcesFromOC
 exports.getTargetManagedCluster = getTargetManagedCluster
 exports.removeEmptyEntries = removeEmptyEntries
 exports.shouldUseAPIGroup = shouldUseAPIGroup
