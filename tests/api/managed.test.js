@@ -1,11 +1,10 @@
-// Copyright (c) 2020 Red Hat, Inc.
+// Copyright Contributors to the Open Cluster Management project
 
 jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const squad = require('../../config').get('squadName')
 const { getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
-
 const _ = require('lodash')
 
 describe('RHACM4K-1695: Search - verify managed cluster info in the search page', () => {

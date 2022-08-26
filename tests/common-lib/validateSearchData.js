@@ -1,7 +1,7 @@
 // Copyright Contributors to the Open Cluster Management project
 
 const { getResourcesFromSearch } = require('./searchClient')
-const { getResourcesFromOC } = require('./index')
+const { getResourcesFromOC } = require('./cliClient')
 const { sleep } = require('./sleep')
 
 /**
