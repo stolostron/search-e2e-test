@@ -6,23 +6,6 @@ const { execSync } = require('child_process')
 const fs = require('fs')
 
 /**
- * Login into the cluster environment with the `oc` cli command.
- * @param {object} options Additional options for logging into the cluster environment.
- */
-const clusterLogin = (options = { useInsecure: true }) => {
-  var cmd = `oc login -u ${config.get('options:hub:user')} -p ${config.get(
-    'options:hub:password'
-  )} --server=https://api.${config.get('options:hub:baseDomain')}:6443`
-
-  if (options.useInsecure) {
-    console.log('[INFO] Using insecure options was set to true. Using insecure login.')
-    cmd += ` --insecure-skip-tls-verify`
-  }
-
-  execSync(cmd)
-}
-
-/**
  * Delete a kind resource from a specified namespace within the cluster environment.
  * @param {string} kind The kind of the resource object.
  * @param {string} name The name of the resource object.
@@ -35,10 +18,9 @@ async function deleteResource(kind, name, ns, options = {}) {
 
 /**
  * Return a list of all kubeconfigs available for the given test environment.
- * @param {object} options Additional options for getting the kubeconfig files.
  * @returns {array} List of kubeconfig files that contain the cluster configurations for the test execution.
  */
-const getKubeConfig = (options = {}) => {
+function getKubeConfig() {
   const kubeconfigs = []
   const dir = './kube/config'
 
@@ -49,7 +31,7 @@ const getKubeConfig = (options = {}) => {
       }
     })
   } catch (err) {
-    console.log(`Error reading kube config file: ${err}`)
+    console.log(`Unable to read kube config from environment. Reason: ${err}`)
   }
 
   return kubeconfigs
@@ -75,30 +57,30 @@ function getResource(kind, ns, options = {}) {
 }
 
 /**
- * Return the endpoint route for the cluster environment Search API.
- * @param {object} options Additional options for getting the endpoint route of the Search API server.
- * @returns {string} The route of the cluster's Search API.
+ * Create and return the route to access the Search API in the target cluster.
+ * @returns {string} The route to the Search API.
  */
-const getSearchApiRoute = async (options = {}) => {
+async function getSearchApiRoute() {
   const namespace = execSync(`oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`).toString()
-  const routes = execSync(`oc get routes -n ${namespace}`).toString()
-
-  if (routes.indexOf('search-api-automation') == -1) {
+  let route
+  try {
+    route = execSync(`oc get route search-api-automation -n ${namespace} -o jsonpath='{.spec.host}'`)
+  } catch (e) {
     execSync(
       `oc create route passthrough search-api-automation --service=search-search-api --insecure-policy=Redirect -n ${namespace}`
     )
     await sleep(5000)
     console.log('Created route search-api-automation.')
+    route = execSync(`oc get route search-api-automation -n ${namespace} -o jsonpath='{.spec.host}'`)
   }
-  return `https://search-api-automation-${namespace}.apps.${config.get('options:hub:baseDomain')}`
+  return `https://${route}`
 }
 
 /**
- * Get the current authorization token for the cluster environment.
- * @param {object} options Additional options for getting the cluster's authorization token.
+ * Get the current authorization token for the target cluster environment.
  * @returns {string} The cluster environment authorization token.
  */
-const getKubeadminToken = (options = {}) => {
+function getKubeadminToken() {
   return execSync('oc whoami -t').toString().replace('\n', '')
 }
 
@@ -113,8 +95,8 @@ async function getUserContext(userName, ns) {
   try {
     t = execSync(`oc serviceaccounts get-token ${userName} -n ${ns}`)
   } catch (e) {
-    console.log('Failed to get service account token, will retry after 10 seconds.', e)
-    await sleep(10000)
+    console.log('Failed to get service account token, will retry after 9 seconds.', e)
+    await sleep(9000) // If this changes, must update timeout for tests using this function.
     t = execSync(`oc serviceaccounts get-token ${userName} -n ${ns}`)
   }
   return {
@@ -125,7 +107,6 @@ async function getUserContext(userName, ns) {
   }
 }
 
-exports.clusterLogin = clusterLogin
 exports.deleteResource = deleteResource
 exports.getKubeConfig = getKubeConfig
 exports.getUserContext = getUserContext
