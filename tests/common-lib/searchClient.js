@@ -28,7 +28,7 @@ async function getResourcesFromSearch({
   // Fetch data from the search api.
   const resp = await sendRequest(query, token)
 
-  return formatResourcesFromSearch(resp)
+  return lodash.get(resp, 'body.data.searchResult[0].items', [])
 }
 
 /**
@@ -57,6 +57,12 @@ function searchQueryBuilder({ keywords = [], filters = [], limit = 10000 }) {
 }
 
 /**
+ * Collect metrics from the search requests to evaluate performace.
+ * @object { time, token, firstRequest }
+ */
+const metrics = []
+
+/**
  * Send a HTTP request to the API server and return the results. Expects the response to have a 200 status code.
  * @param {*} query The query to send.
  * @param {string} token The validation token to use for the request.
@@ -79,35 +85,23 @@ function sendRequest(query, token, options = {}) {
       const elapsed = Date.now() - startTime
 
       if (elapsed > 10000) {
-        fail(
-          `Search request took more than 10 seconds. (ElapsedTime: ${elapsed.toFixed(2)} ms)
+        fail(`Search request took more than 10 seconds. (ElapsedTime: ${elapsed.toFixed(2)} ms)
     operation: ${query.operationName}
-    variables: ${JSON.stringify(query.variables)}`
-        )
-      } else if (elapsed > 1000) {
+    variables: ${JSON.stringify(query.variables)}`)
+      } else if (elapsed > 1000 && !metrics.map((m) => m.token).includes(token)) {
+        // First request takes longer, so we'll log if it takes more than 2 seconds.
         console.log(`Search request took more than 1 second. (ElapsedTime: ${elapsed.toFixed(2)} ms)
     operation: ${query.operationName}
     variables: ${JSON.stringify(query.variables)}`)
+      } else if (elapsed > 2000) {
+        console.log(`Initial search request took more than 2 seconds. (ElapsedTime: ${elapsed.toFixed(2)} ms)
+    operation: ${query.operationName}
+    variables: ${JSON.stringify(query.variables)}`)
       }
+
+      metrics.push({ time: elapsed, token, firstRequest: !metrics.map((m) => m.token).includes(token) })
       return r
     })
-}
-
-/**
- * Format resources for search queries.
- * @param {*} resources A list of resources that will be formated as an object containing name and namespace.
- * @returns `formatedResources` Formatted array of resource object.
- */
-function formatResourcesFromSearch(resources) {
-  return lodash
-    .get(resources, 'body.data.searchResult[0].items')
-    .filter((items) => items.namespace) // We're only interested in resources that have a namespace.
-    .map((item) => ({
-      cluster: item.cluster,
-      kind: item.kind,
-      name: item.name,
-      namespace: item.namespace,
-    }))
 }
 
 /**
@@ -116,7 +110,7 @@ function formatResourcesFromSearch(resources) {
  * @param {Object} group The API group to filter the resources against.
  * @param {string} namespace The namespace to filter the resources against.
  * @param {Object} cluster The cluster to filter the resources against.
- * @returns `filter` Formatted array of object filters.
+ * @returns {[filter]} Formatted array of object filters.
  */
 function formatFilters(kind, group, namespace = '--all-namespaces', cluster = { type: 'hub', name: 'local-cluster' }) {
   const filter = []

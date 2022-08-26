@@ -86,22 +86,23 @@ function getKubeadminToken() {
 
 /**
  * Gets the token and other information required to impersonate a user (service account).
- * @param string userName - Service account name.
- * @param string ns - Namespace of the service account.
- * @returns {}
+ * @param string username - Service account name.
+ * @param string namespace - Namespace of the service account.
+ * @param number retryWait - Milliseconds to wait before retry. Default: 9000 ms
+ * @returns {name, namespace, fullName, token} - Object with information to impersonate user.
  */
-async function getUserContext(userName, ns) {
+async function getUserContext({ usr, ns, retryWait = 9000 }) {
   let t
   try {
-    t = execSync(`oc serviceaccounts get-token ${userName} -n ${ns}`)
+    t = execSync(`oc serviceaccounts get-token ${usr} -n ${ns}`)
   } catch (e) {
     console.log('Failed to get service account token, will retry after 9 seconds.', e)
-    await sleep(9000) // If this changes, must update timeout for tests using this function.
-    t = execSync(`oc serviceaccounts get-token ${userName} -n ${ns}`)
+    await sleep(retryWait)
+    t = execSync(`oc serviceaccounts get-token ${usr} -n ${ns}`)
   }
   return {
-    fullName: `system:serviceaccount:${ns}:${userName}`,
-    name: userName,
+    fullName: `system:serviceaccount:${ns}:${usr}`,
+    name: usr,
     namespace: ns,
     token: t,
   }

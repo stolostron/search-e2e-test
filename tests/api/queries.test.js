@@ -2,7 +2,6 @@
 
 jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
-const { execSync } = require('child_process')
 const squad = require('../../config').get('squadName')
 const { getUserContext, getSearchApiRoute } = require('../common-lib/clusterAccess')
 const { execCliCmdString } = require('../common-lib/cliClient')
@@ -16,7 +15,7 @@ const ns = 'search-query'
 describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`, () => {
   beforeAll(async () => {
     let setupCommands = `# export ns=search-query; export usr=search-query-user
-    oc new-project ${ns}
+    oc create namespace ${ns}
     oc create serviceaccount ${usr} -n ${ns}
     oc create role ${usr} --verb=get,list --resource=configmaps -n ${ns}
     oc create rolebinding ${usr} --role=${usr} --serviceaccount=${ns}:${usr} -n ${ns}
@@ -43,15 +42,20 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     searchApiRoute = route
 
     await sleep(20000) // Wait for the service account and search index to get updated.
-    user = await getUserContext(usr, ns)
+    user = await getUserContext({ usr, ns, retryWait: 9000 })
   }, 60000)
 
   afterAll(async () => {
-    execSync(`oc delete ns ${ns}`)
+    let teardownCmds = `# export ns=search-query; export usr=search-query-user
+    oc delete ns ${ns}`
+
     if (SEARCH_API_V1) {
-      execSync(`oc delete clusterrole ${usr}`)
-      execSync(`oc delete clusterrolebinding ${usr}`)
+      teardownCmds += `
+      oc delete clusterrole ${usr}
+      oc delete clusterrolebinding ${usr}`
     }
+
+    execCliCmdString(teardownCmds)
   }, 15000)
 
   describe(`using keywords`, () => {
