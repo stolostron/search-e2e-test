@@ -5,7 +5,7 @@ jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 const squad = require('../../config').get('squadName')
 const { getUserContext, getSearchApiRoute } = require('../common-lib/clusterAccess')
 const { ValidateSearchData, validationTimeout } = require('../common-lib/validateSearchData')
-const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
+const { resolveSearchItems } = require('../common-lib/searchClient')
 const { execSync } = require('child_process')
 const { execCliCmdString } = require('../common-lib/cliClient')
 const { sleep } = require('../common-lib/sleep')
@@ -34,7 +34,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
     oc create role ${usr4} --verb=get,list --resource=deployment -n ${ns}
     oc create rolebinding ${usr4} --role=${usr4} --serviceaccount=${ns}:${usr4} -n ${ns}
 
-    oc create deployment ${usr4} -n ${ns} --image=busybox --replicas=1 -- date; sleep 1; date; sleep 5;
+    oc create deployment ${usr4} -n ${ns} --image=busybox --replicas=1 -- 'date; sleep 1; date; sleep 5;'
     oc patch deployment ${usr4} -n ${ns} -p '{"spec":{"template":{"spec":{"containers":[{"name":"busybox","imagePullPolicy":"IfNotPresent"}]}}}}'
     oc scale deployment ${usr4} -n ${ns} --replicas=5
 
@@ -75,16 +75,12 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
     test('should not receive Node', () => ValidateSearchData({ user, kind: 'node' }), validationTimeout)
     test('should not receive Secret', () => ValidateSearchData({ user, kind: 'secret' }), validationTimeout)
     test(`should not match any resources containing the keyword 'a'`, async () => {
-      const q = searchQueryBuilder({ keywords: ['a'] })
-      const res = await sendRequest(q, user.token)
-      const items = res.body.data.searchResult[0].items
+      const items = await resolveSearchItems(user.token, { keywords: ['a'] })
       expect(items.length).toEqual(0)
       expect(items).toEqual([])
     })
     test(`should not match any resources in namespace ${ns}`, async () => {
-      const q = searchQueryBuilder({ filters: [{ property: 'namespace', values: [ns] }] })
-      const res = await sendRequest(q, user.token)
-      const items = res.body.data.searchResult[0].items
+      const items = await resolveSearchItems(user.token, { filters: [{ property: 'namespace', values: [ns] }] })
       expect(items.length).toEqual(0)
       expect(items).toEqual([])
     })
@@ -104,19 +100,13 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
     test('should receive ConfigMap', () => ValidateSearchData({ user, kind: 'configmap' }), validationTimeout)
 
     test(`should not match any ConfigMap from other namespaces`, async () => {
-      const q = searchQueryBuilder({ filters: [{ property: 'kind', values: ['configmap'] }] })
-      const res = await sendRequest(q, user.token)
-      const items = res.body.data.searchResult[0].items
-
+      const items = await resolveSearchItems(user.token, { filters: [{ property: 'kind', values: ['configmap'] }] })
       expect(items.find(({ namespace }) => namespace && namespace.toLowerCase() !== ns)).toEqual(undefined)
       expect(items.find(({ kind }) => kind && kind.toLowerCase() !== 'configmap')).toEqual(undefined)
     })
 
     test(`should not match any other kind`, async () => {
-      const q = searchQueryBuilder({ filters: [{ property: 'kind', values: ['!configmap'] }] })
-      const res = await sendRequest(q, user.token)
-      const items = res.body.data.searchResult[0].items
-
+      const items = await resolveSearchItems(user.token, { filters: [{ property: 'kind', values: ['!configmap'] }] })
       expect(items.length).toEqual(0)
       expect(items).toEqual([])
     })

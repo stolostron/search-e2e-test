@@ -56,6 +56,25 @@ function searchQueryBuilder({ keywords = [], filters = [], limit = 10000 }) {
   return query
 }
 
+function searchCountQuery({ keywords = [], filters = [], limit = 10000 }) {
+  // Return query built from passed arguments.
+  const query = {
+    operationName: 'searchCount',
+    variables: {
+      input: [
+        {
+          keywords: keywords,
+          filters: filters,
+          limit: limit,
+        },
+      ],
+    },
+    query:
+      'query searchCount($input: [SearchInput]) {\n  searchResult: search(input: $input) {\n    count\n    __typename\n  }\n}\n',
+  }
+  return query
+}
+
 /**
  * Collect metrics from the search requests to evaluate performace.
  * @object { time, token, firstRequest }
@@ -130,6 +149,20 @@ function formatFilters(kind, group, namespace = '--all-namespaces', cluster = { 
   return filter
 }
 
+async function resolveSearchCount(token, input) {
+  const q = searchCountQuery(input)
+  const r = await sendRequest(q, token)
+  return lodash.get(r, 'body.data.searchResult[0].count', 0)
+}
+
+async function resolveSearchItems(token, input) {
+  const q = searchQueryBuilder(input)
+  const r = await sendRequest(q, token)
+  return lodash.get(r, 'body.data.searchResult[0].items', [])
+}
+
 exports.getResourcesFromSearch = getResourcesFromSearch
+exports.resolveSearchCount = resolveSearchCount
+exports.resolveSearchItems = resolveSearchItems
 exports.searchQueryBuilder = searchQueryBuilder
 exports.sendRequest = sendRequest

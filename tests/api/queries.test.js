@@ -5,7 +5,7 @@ jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 const squad = require('../../config').get('squadName')
 const { getUserContext, getSearchApiRoute } = require('../common-lib/clusterAccess')
 const { execCliCmdString } = require('../common-lib/cliClient')
-const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
+const { resolveSearchCount, resolveSearchItems } = require('../common-lib/searchClient')
 const { sleep } = require('../common-lib/sleep')
 
 const SEARCH_API_V1 = true
@@ -17,7 +17,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     let setupCommands = `# export ns=search-query; export usr=search-query-user
     oc create namespace ${ns}
     oc create serviceaccount ${usr} -n ${ns}
-    oc create role ${usr} --verb=get,list --resource=configmaps -n ${ns}
+    oc create role ${usr} --verb=get,list --resource=configmaps,deployments,replicasets,pods -n ${ns}
     oc create rolebinding ${usr} --role=${usr} --serviceaccount=${ns}:${usr} -n ${ns}
 
     oc create configmap cm0 -n ${ns} --from-literal=key=cm0
@@ -28,6 +28,10 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     oc label configmap cm3-avocado -n ${ns} type=vegetable
     oc create configmap cm4-broccoli -n ${ns} --from-literal=key=cm4
     oc label configmap cm4-broccoli -n ${ns} type=vegetable
+
+    oc create deployment ${usr} -n ${ns} --image=busybox --replicas=1 -- 'date; sleep 1; date; sleep 5;'
+    oc patch deployment ${usr} -n ${ns} -p '{"spec":{"template":{"spec":{"containers":[{"name":"busybox","imagePullPolicy":"IfNotPresent"}]}}}}'
+    oc scale deployment ${usr} -n ${ns} --replicas=5
     `
 
     // The V1 logic requires that user has access to list namespaces.
@@ -56,39 +60,30 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     }
 
     execCliCmdString(teardownCmds)
-  }, 15000)
+  }, 30000)
 
   describe(`using keywords`, () => {
     test(`should match any resources containing the keyword 'apple'`, async () => {
-      const q = searchQueryBuilder({ keywords: ['apple'] })
-      const res = await sendRequest(q, user.token)
-      const items = res.body.data.searchResult[0].items
+      const items = await resolveSearchItems(user.token, { keywords: ['apple'] })
       expect(items.length).toEqual(1)
       expect(items[0].name).toEqual('cm2-apple')
     })
 
     test(`should match resources with text containing 'apple' AND 'cm2'`, async () => {
-      const q = searchQueryBuilder({ keywords: ['apple', 'cm2'] })
-      const res = await sendRequest(q, user.token)
-      const items = res.body.data.searchResult[0].items
+      const items = await resolveSearchItems(user.token, { keywords: ['apple', 'cm2'] })
       expect(items.length).toEqual(1)
       expect(items[0].name).toEqual('cm2-apple')
     })
 
     test('should be case insensitive.', async () => {
-      const q = searchQueryBuilder({ keywords: ['ApPLe'] })
-      const res = await sendRequest(q, user.token)
-      const items = res.body.data.searchResult[0].items
+      const items = await resolveSearchItems(user.token, { keywords: ['ApPLe'] })
       expect(items.length).toEqual(1)
       expect(items[0].name).toEqual('cm2-apple')
     })
 
     test(`should match resources where label text contains 'vegetable'`, async () => {
-      const q = searchQueryBuilder({ keywords: ['vegetable'] })
-      const res = await sendRequest(q, user.token)
-      const items = res.body.data.searchResult[0].items
+      const items = await resolveSearchItems(user.token, { keywords: ['vegetable'] })
       const names = items.map((i) => i.name)
-
       expect(items.length).toEqual(2)
       expect(names).toEqual(expect.arrayContaining(['cm3-avocado', 'cm4-broccoli']))
     })
@@ -96,17 +91,15 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
 
   describe('using labels', () => {
     test(`should match resources containing the label 'fruit'`, async () => {
-      const q = searchQueryBuilder({ filters: [{ property: 'label', values: ['type=fruit'] }] })
-      const res = await sendRequest(q, user.token)
-      const items = res.body.data.searchResult[0].items
+      const items = await resolveSearchItems(user.token, { filters: [{ property: 'label', values: ['type=fruit'] }] })
       expect(items.length).toEqual(1)
       expect(items[0].name).toEqual('cm2-apple')
     })
 
     test('should match resources containing labelA OR labelB.', async () => {
-      const q = searchQueryBuilder({ filters: [{ property: 'label', values: ['type=fruit', 'type=vegetable'] }] })
-      const res = await sendRequest(q, user.token)
-      const items = res.body.data.searchResult[0].items
+      const items = await resolveSearchItems(user.token, {
+        filters: [{ property: 'label', values: ['type=fruit', 'type=vegetable'] }],
+      })
       const names = items.map((i) => i.name)
 
       expect(items.length).toEqual(3)
@@ -115,53 +108,105 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
   })
 
   describe(`using the filter 'kind'`, () => {
-    // FIXME: Skipping failing test.
-    test.skip('should be case sensitive (lowercase).', async () => {
-      const q = searchQueryBuilder({ filters: [{ property: 'kind', values: ['configmap'] }] })
-      const q2 = searchQueryBuilder({ filters: [{ property: 'kind', values: ['ConfigMap'] }] })
-      const [res, res2] = await Promise.all([sendRequest(q, user.token), sendRequest(q2, user.token)])
-      const items = res.body.data.searchResult[0].items
-      const items2 = res2.body.data.searchResult[0].items
+    test('should be case sensitive (lowercase).', async () => {
+      const [items, items2] = await Promise.all([
+        resolveSearchItems(user.token, { filters: [{ property: 'kind', values: ['deployment'] }] }),
+        resolveSearchItems(user.token, { filters: [{ property: 'kind', values: ['Deployment'] }] }),
+      ])
 
-      expect(items.length).toEqual(7) // <- FIXME: Test is failing here.
+      expect(items.length).toEqual(1)
       expect(items2.length).toEqual(0)
     })
-    test.todo('should only match resources of kind a,b, OR c.')
   })
 
-  describe(`[${squad}] search using comparison operators`, () => {
-    test.todo('should match resources created within the last hour.')
-    test.todo('should match numerical property = {value}')
-    test.todo('should match numerical property > {value}')
-    test.todo('should match numerical property < {value}')
-    test.todo('should match numerical property >= {value}')
-    test.todo('should match numerical property <= {value}')
-    test.todo('should match property where {value} is not equal to string')
+  describe('search using comparison operators', () => {
+    test(`should match resources in namespace ${ns} created within the last hour`, async () => {
+      const items = await resolveSearchItems(user.token, {
+        filters: [
+          { property: 'namespace', values: [ns] }, // Limit to namespace created by test
+          { property: 'kind', values: ['!pod'] }, // and exclude pod to keep test stable.
+          { property: 'created', values: ['hour'] },
+        ],
+      })
+      expect(items.length).toEqual(10)
+    })
+
+    test('should match deployments where desired = 5', async () => {
+      const items = await resolveSearchItems(user.token, { filters: [{ property: 'desired', values: ['=5'] }] })
+      expect(items.length).toEqual(1)
+      expect(items[0].name).toEqual(usr)
+    })
+
+    test('should match resources where current > 3', async () => {
+      const items = await resolveSearchItems(user.token, { filters: [{ property: 'current', values: ['>3'] }] })
+      expect(items.length).toEqual(2)
+      const kinds = items.map((i) => i.kind)
+      expect(kinds).toEqual(expect.arrayContaining(['deployment', 'replicaset']))
+    })
+
+    test('should match deployments where available < 3', async () => {
+      const items = await resolveSearchItems(user.token, { filters: [{ property: 'available', values: ['<3'] }] })
+      expect(items.length).toEqual(1)
+      expect(items[0].name).toEqual(usr)
+    })
+
+    test('should match deployments where desired <= 5', async () => {
+      const items = await resolveSearchItems(user.token, { filters: [{ property: 'desired', values: ['<=5'] }] })
+      expect(items.length).toEqual(3)
+    })
+
+    test('should match resources where current >= 5', async () => {
+      const items = await resolveSearchItems(user.token, { filters: [{ property: 'current', values: ['>=5'] }] })
+      expect(items.length).toEqual(1)
+      expect(items[0].kind).toEqual('deployment')
+    })
+
+    test('should match resources where kind is not namespace and status is not Running', async () => {
+      const items = await resolveSearchItems(user.token, {
+        filters: [
+          { property: 'kind', values: ['!namespace'] },
+          { property: 'status', values: ['!Running'] },
+        ],
+      })
+      expect(items.length).toEqual(7)
+    })
   })
 
-  describe(`[${squad}] search with multiple filters and values (AND/OR)`, () => {
+  describe('search with multiple filters and values (AND/OR)', () => {
     test.todo('should match resources in namespace a OR b.')
     test.todo('should match resources in namespace a AND name b OR c.')
     test.todo('should match resources in namespace a AND contains keyword xyz.')
+    test.todo('should only match resources of kind a, b, OR c.')
   })
 
-  describe(`[${squad}] search by count`, () => {
-    test.todo('should return expected count.')
+  describe('search by count', () => {
+    test('should return expected count.', async () => {
+      const count = await resolveSearchCount(user.token, {
+        filters: [{ property: 'label', values: ['type=fruit', 'type=vegetable'] }],
+      })
+      expect(count).toEqual(3)
+    })
   })
 
-  describe(`[${squad}] search with limit`, () => {
-    test.todo('should return LIMIT or less resources.')
+  describe('search with limit', () => {
+    test('should return LIMIT or less resources.', async () => {
+      const items = await resolveSearchItems(user.token, {
+        filters: [{ property: 'kind', values: ['configmap'] }],
+        limit: 2,
+      })
+      expect(items.length).toEqual(2)
+    })
   })
 
-  describe(`[${squad}] search complete`, () => {
+  describe('search complete', () => {
     test.todo('should return all values for ${property}.')
   })
 
-  describe(`[${squad}] single request with multiple search queries`, () => {
+  describe('single request with multiple search queries', () => {
     test.todo('should resolve all requests.')
   })
 
-  describe(`[${squad}] search for relationship`, () => {
+  describe('search for relationship', () => {
     test.todo('should return relationship count for ${RESOURCE}')
     test.todo('should return relationship items')
     test.todo('should return relationship filtered by [releatedKinds]')

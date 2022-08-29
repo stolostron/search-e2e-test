@@ -64,7 +64,9 @@ async function getSearchApiRoute() {
   const namespace = execSync(`oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`).toString()
   let route
   try {
-    route = execSync(`oc get route search-api-automation -n ${namespace} -o jsonpath='{.spec.host}'`)
+    route = execSync(`oc get route search-api-automation -n ${namespace} -o jsonpath='{.spec.host}'`, {
+      stdio: [],
+    }).toString()
   } catch (e) {
     execSync(
       `oc create route passthrough search-api-automation --service=search-search-api --insecure-policy=Redirect -n ${namespace}`
@@ -97,10 +99,10 @@ async function getUserContext({ usr, ns, retryWait = 9000 }) {
     t = execSync(`oc serviceaccounts get-token ${usr} -n ${ns}`)
   } catch (e) {
     console.warn(`Failed to get service account token, will retry after ${retryWait} ms.`, e)
-    let podState = execSync(`oc get pod -A`)
+    let podState = execSync(`oc get pod -A`).toString()
     console.warn(`Pods after error.`, podState) // Used to debug canary environment.
     await sleep(retryWait) // If this changes, must update timeout for tests using this function.
-    podState = execSync(`oc get pod -A`)
+    podState = execSync(`oc get pod -A`).toString()
     console.warn(`Pods after waiting.`, podState) // Used to debug canary environment.
     t = execSync(`oc serviceaccounts get-token ${usr} -n ${ns}`)
   }
