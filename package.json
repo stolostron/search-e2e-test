@@ -1,10 +1,10 @@
 {
   "name": "search-e2e-test",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "description": "End to end test for Search component",
   "scripts": {
-    "lint": "prettier --check --config .prettierrc.json ./config/*.js ./tests/**/*.js ./tests/**/**/*.js",
-    "lint:fix": "prettier --write --config .prettierrc.json ./config/*.js tests/**/*.js tests/**/**/*.js",
+    "lint": "prettier --check --config .prettierrc.json config/*.js ./tests/**/*.js ./tests/**/**/*.js",
+    "lint:fix": "prettier --write --config .prettierrc.json config/*.js tests/**/*.js tests/**/**/*.js",
     "prepare": "husky install",
     "rbac:clean": "./build/rbac-clean.sh",
     "rbac:setup": "./build/rbac-setup.sh",

@@ -48,7 +48,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
     searchApiRoute = route
 
     await sleep(10000) // Wait for service account and the search index to get updated.
-  }, 30000)
+  }, 60000)
 
   afterAll(async () => {
     const teardownCmds = `
@@ -62,8 +62,8 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
 
   describe(`with user ${usr0} (not authorized to list any resources)`, () => {
     beforeAll(async () => {
-      user = await getUserContext({ usr: usr0, ns, retryWait: 9000 })
-    }, 10000)
+      user = await getUserContext({ usr: usr0, ns, retryWait: 18000 })
+    }, 20000)
 
     test('should validate RBAC configuration for user', () => {
       expect(() => execSync(`oc auth can-i list secret --as=${user.fullName}`)).toThrow()
@@ -93,7 +93,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
   describe(`with user ${usr1} (configmap in namespace ${ns} only)`, () => {
     beforeAll(async () => {
       user = await getUserContext({ usr: usr1, ns, retryWait: 9000 })
-    }, 10000)
+    }, 20000)
 
     test('should validate RBAC configuration for user', () => {
       expect(() => execSync(`oc auth can-i list secret -n ${ns} --as=${user.fullName}`)).toThrow()
@@ -125,7 +125,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
   describe(`with user ${usr2} (nodes and configmap in all namespaces.)`, () => {
     beforeAll(async () => {
       user = await getUserContext({ usr: usr2, ns, retryWait: 9000 })
-    }, 10000)
+    }, 20000)
 
     test('should validate RBAC configuration for user', () => {
       expect(() => execSync(`oc auth can-i list secret -n ${ns} --as=${user.fullName}`)).toThrow()
