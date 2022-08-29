@@ -96,7 +96,11 @@ async function getUserContext({ usr, ns, retryWait = 9000 }) {
     t = execSync(`oc serviceaccounts get-token ${usr} -n ${ns}`)
   } catch (e) {
     console.warn(`Failed to get service account token, will retry after ${retryWait} ms.`, e)
+    let podState = execSync(`oc get pod -A`)
+    console.warn(`Pods after error.`, podState) // Used to debug canary environment.
     await sleep(retryWait) // If this changes, must update timeout for tests using this function.
+    podState = execSync(`oc get pod -A`)
+    console.warn(`Pods after waiting.`, podState) // Used to debug canary environment.
     t = execSync(`oc serviceaccounts get-token ${usr} -n ${ns}`)
   }
   return {
