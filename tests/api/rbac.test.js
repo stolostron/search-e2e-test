@@ -1,6 +1,6 @@
 // Copyright Contributors to the Open Cluster Management project
 
-jest.retryTimes(global.retry)
+jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const squad = require('../../config').get('squadName')
 const { getUserContext, getSearchApiRoute } = require('../common-lib/clusterAccess')
@@ -14,11 +14,11 @@ const [usr0, usr1, usr2, usr3] = ['search-user0', 'search-user1', 'search-user2'
 
 describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
   beforeAll(async () => {
-    // Usng ServiceAccounts for rbac tests because configuration is simpler.
+    // Using ServiceAccounts for rbac tests because configuration is simpler.
 
     const setupCmds = `
     # export ns=search-rbac; export usr0=search-user0; export usr1=search-user1; export usr2=search-user2
-    oc new-project ${ns}
+    oc create namespace ${ns}
     oc create serviceaccount ${usr0} -n ${ns}
     oc create serviceaccount ${usr1} -n ${ns}
     oc create serviceaccount ${usr2} -n ${ns}
@@ -36,7 +36,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
     searchApiRoute = route
 
     await sleep(10000) // Wait for service account and the search index to get updated.
-  }, 30000)
+  }, 60000)
 
   afterAll(async () => {
     const teardownCmds = `
@@ -50,7 +50,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
 
   describe(`with user ${usr0} (not authorized to list any resources)`, () => {
     beforeAll(async () => {
-      user = await getUserContext(usr0, ns)
+      user = await getUserContext({ usr: usr0, ns, retryWait: 18000 })
     }, 20000)
 
     test('should validate RBAC configuration for user', () => {
@@ -66,7 +66,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
 
   describe(`with user ${usr1} (configmap in namespace ${ns} only)`, () => {
     beforeAll(async () => {
-      user = await getUserContext(usr1, ns)
+      user = await getUserContext({ usr: usr1, ns, retryWait: 9000 })
     }, 20000)
 
     test('should validate RBAC configuration for user', () => {
@@ -80,7 +80,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
 
   describe(`with user ${usr2} (nodes and configmap in all namespaces.)`, () => {
     beforeAll(async () => {
-      user = await getUserContext(usr2, ns)
+      user = await getUserContext({ usr: usr2, ns, retryWait: 9000 })
     }, 20000)
 
     test('should validate RBAC configuration for user', () => {
