@@ -12,6 +12,7 @@ const { sleep } = require('../common-lib/sleep')
 const SEARCH_API_V1 = true
 const usr = 'search-query-user'
 const ns = 'search-query'
+var user
 
 describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`, () => {
   beforeAll(async () => {
@@ -35,7 +36,8 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     if (SEARCH_API_V1) {
       setupCommands += `
     oc create clusterrole ${usr} --verb=list,get --resource=namespaces
-    oc create clusterrolebinding ${usr} --clusterrole=${usr} --serviceaccount=${ns}:${usr}`
+    oc create clusterrolebinding ${usr} --clusterrole=${usr} --serviceaccount=${ns}:${usr}
+    `
     }
 
     // Run the setup steps in parallel.
@@ -43,8 +45,16 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     searchApiRoute = route
 
     await sleep(20000) // Wait for the service account and search index to get updated.
-    user = await getUserContext({ usr, ns, retryWait: 9000 })
+    user = await getUserContext({ usr, ns, retryWait: 20000 })
   }, 60000)
+
+  // Adding the before to debug problems getting user token during beforeAll.
+  beforeEach(async () => {
+    if (!!user) {
+      console.log('Warning, user context was not set during beforeAll.')
+      user = await getUserContext({ usr, ns, retryWait: 20000 })
+    }
+  }, 30000)
 
   afterAll(async () => {
     execSync(`oc delete ns ${ns}`)
