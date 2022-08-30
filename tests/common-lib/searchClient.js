@@ -32,10 +32,10 @@ async function getResourcesFromSearch({
 }
 
 /**
- * Builds and returns a query object for a HTTP request.
+ * Builds and returns a graphQl query requesting items.
  * Current supported input keys: `keywords`, `filters`, and `limit`
- * @param {object} {} The input keys that will be used to build the query object. (Supported input keys: `keywords`, `filters`, and `limit`)
- * @returns {object} The query object.
+ * @param {keywords:[], filters:[], limit:number } input The input parameters that will be used to build the query object.
+ * @returns {object} The graphQl query object.
  */
 function searchQueryBuilder({ keywords = [], filters = [], limit = 10000 }) {
   // Return query built from passed arguments.
@@ -56,6 +56,11 @@ function searchQueryBuilder({ keywords = [], filters = [], limit = 10000 }) {
   return query
 }
 
+/**
+ * Builds and returns a graphQl query requesting count.
+ * @param {keywords:[], filters:[], limit:number } input The input parameters that will be used to build the query object.
+ * @returns {object} The graphQl query object.
+ */
 function searchCountQuery({ keywords = [], filters = [], limit = 10000 }) {
   // Return query built from passed arguments.
   const query = {
@@ -149,12 +154,24 @@ function formatFilters(kind, group, namespace = '--all-namespaces', cluster = { 
   return filter
 }
 
+/**
+ * Sends a search query requesting count.
+ * @param {string} token Required. Token of the user initiating the request.
+ * @param {keywords:[], filters:[], limit:number } input Required. The search query input.
+ * @returns {number} Count of resources matching the search.
+ */
 async function resolveSearchCount(token, input) {
   const q = searchCountQuery(input)
   const r = await sendRequest(q, token)
   return lodash.get(r, 'body.data.searchResult[0].count', 0)
 }
 
+/**
+ * Sends a search query requesting items.
+ * @param {string} token Required. Token of the user initiating the request.
+ * @param {keywords:[], filters:[], limit:number } input Required. The search query input.
+ * @returns {[]} Array of resources matching the search.
+ */
 async function resolveSearchItems(token, input) {
   const q = searchQueryBuilder(input)
   const r = await sendRequest(q, token)

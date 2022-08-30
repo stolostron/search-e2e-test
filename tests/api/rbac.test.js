@@ -62,8 +62,8 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
 
   describe(`with user ${usr0} (not authorized to list any resources)`, () => {
     beforeAll(async () => {
-      user = await getUserContext({ usr: usr0, ns, retryWait: 18000 })
-    }, 20000)
+      user = await getUserContext({ usr: usr0, ns, retryWait: 4000 })
+    })
 
     test('should validate RBAC configuration for user', () => {
       expectCli(`oc auth can-i list secret --as=${user.fullName}`).toThrow()
@@ -88,8 +88,8 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
 
   describe(`with user ${usr1} (configmap in namespace ${ns} only)`, () => {
     beforeAll(async () => {
-      user = await getUserContext({ usr: usr1, ns, retryWait: 18000 })
-    }, 20000)
+      user = await getUserContext({ usr: usr1, ns, retryWait: 4000 })
+    })
 
     test('should validate RBAC configuration for user', () => {
       expect(() => execSync(`oc auth can-i list secret -n ${ns} --as=${user.fullName}`)).toThrow()
@@ -114,8 +114,8 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
 
   describe(`with user ${usr2} (nodes and configmap in all namespaces.)`, () => {
     beforeAll(async () => {
-      user = await getUserContext({ usr: usr2, ns, retryWait: 18000 })
-    }, 20000)
+      user = await getUserContext({ usr: usr2, ns, retryWait: 4000 })
+    })
 
     test('should validate RBAC configuration for user', () => {
       expectCli(`oc auth can-i list secret -n ${ns} --as=${user.fullName}`).toThrow()
@@ -131,8 +131,8 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
 
   describe(`with user ${usr3} (admin for namespace ${ns})`, () => {
     beforeAll(async () => {
-      user = await getUserContext({ usr: usr3, ns, retryWait: 18000 })
-    }, 20000)
+      user = await getUserContext({ usr: usr3, ns, retryWait: 4000 })
+    })
 
     test('should validate RBAC configuration for user', () => {
       expectCli(`oc auth can-i list secret -n ${ns} --as=${user.fullName}`).not.toThrow()
@@ -160,8 +160,8 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
 
   describe(`with user ${usr4} (access to deployment but not pod)`, () => {
     beforeAll(async () => {
-      user = await getUserContext({ usr: usr4, ns, retryWait: 9000 })
-    }, 10000)
+      user = await getUserContext({ usr: usr4, ns, retryWait: 4000 })
+    })
 
     test('should validate RBAC configuration.', () => {
       expectCli(`oc auth can-i list secret -n ${ns} --as=${user.fullName}`).toThrow()
@@ -169,18 +169,10 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
       expectCli(`oc auth can-i list deployment -n ${ns} --as=${user.fullName}`).not.toThrow()
     })
 
+    test(`should not get Secret`, () => ValidateSearchData({ user, kind: 'secret', namespace: ns }), validationTimeout)
+    test('should not get Pod', () => ValidateSearchData({ user, kind: 'configmap', namespace: ns }), validationTimeout)
     test(
-      'should not receive Secret',
-      () => ValidateSearchData({ user, kind: 'secret', namespace: ns }),
-      validationTimeout
-    )
-    test(
-      'should not receive Pod',
-      () => ValidateSearchData({ user, kind: 'configmap', namespace: ns }),
-      validationTimeout
-    )
-    test(
-      'should receive Deployment',
+      'should get Deploymt',
       () => ValidateSearchData({ user, kind: 'deployment', namespace: ns }),
       validationTimeout
     )
