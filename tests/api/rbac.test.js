@@ -7,7 +7,7 @@ const { getUserContext, getSearchApiRoute } = require('../common-lib/clusterAcce
 const { ValidateSearchData, validationTimeout } = require('../common-lib/validateSearchData')
 const { resolveSearchItems } = require('../common-lib/searchClient')
 const { execSync } = require('child_process')
-const { execCliCmdString } = require('../common-lib/cliClient')
+const { execCliCmdString, expectCli } = require('../common-lib/cliClient')
 const { sleep } = require('../common-lib/sleep')
 
 const ns = 'search-rbac'
@@ -66,9 +66,9 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
     }, 20000)
 
     test('should validate RBAC configuration for user', () => {
-      expect(() => execSync(`oc auth can-i list secret --as=${user.fullName}`)).toThrow()
-      expect(() => execSync(`oc auth can-i list configmap --as=${user.fullName}`)).toThrow()
-      expect(() => execSync(`oc auth can-i list node --as=${user.fullName}`)).toThrow()
+      expectCli(`oc auth can-i list secret --as=${user.fullName}`).toThrow()
+      expectCli(`oc auth can-i list configmap --as=${user.fullName}`).toThrow()
+      expectCli(`oc auth can-i list node --as=${user.fullName}`).toThrow()
     })
 
     test('should not receive ConfigMap', () => ValidateSearchData({ user, kind: 'configmap' }), validationTimeout)
@@ -76,19 +76,19 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
     test('should not receive Secret', () => ValidateSearchData({ user, kind: 'secret' }), validationTimeout)
     test(`should not match any resources containing the keyword 'a'`, async () => {
       const items = await resolveSearchItems(user.token, { keywords: ['a'] })
-      expect(items.length).toEqual(0)
+      expect(items).toHaveLength(0)
       expect(items).toEqual([])
     })
     test(`should not match any resources in namespace ${ns}`, async () => {
       const items = await resolveSearchItems(user.token, { filters: [{ property: 'namespace', values: [ns] }] })
-      expect(items.length).toEqual(0)
+      expect(items).toHaveLength(0)
       expect(items).toEqual([])
     })
   })
 
   describe(`with user ${usr1} (configmap in namespace ${ns} only)`, () => {
     beforeAll(async () => {
-      user = await getUserContext({ usr: usr1, ns, retryWait: 9000 })
+      user = await getUserContext({ usr: usr1, ns, retryWait: 18000 })
     }, 20000)
 
     test('should validate RBAC configuration for user', () => {
@@ -107,21 +107,21 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
 
     test(`should not match any other kind`, async () => {
       const items = await resolveSearchItems(user.token, { filters: [{ property: 'kind', values: ['!configmap'] }] })
-      expect(items.length).toEqual(0)
+      expect(items).toHaveLength(0)
       expect(items).toEqual([])
     })
   })
 
   describe(`with user ${usr2} (nodes and configmap in all namespaces.)`, () => {
     beforeAll(async () => {
-      user = await getUserContext({ usr: usr2, ns, retryWait: 9000 })
+      user = await getUserContext({ usr: usr2, ns, retryWait: 18000 })
     }, 20000)
 
     test('should validate RBAC configuration for user', () => {
-      expect(() => execSync(`oc auth can-i list secret -n ${ns} --as=${user.fullName}`)).toThrow()
-      expect(() => execSync(`oc auth can-i list configmap -A --as=${user.fullName}`)).not.toThrow()
-      expect(() => execSync(`oc auth can-i list configmap -n ${ns} --as=${user.fullName}`)).not.toThrow()
-      expect(() => execSync(`oc auth can-i list node --as=${user.fullName}`)).not.toThrow()
+      expectCli(`oc auth can-i list secret -n ${ns} --as=${user.fullName}`).toThrow()
+      expectCli(`oc auth can-i list configmap -A --as=${user.fullName}`).not.toThrow()
+      expectCli(`oc auth can-i list configmap -n ${ns} --as=${user.fullName}`).not.toThrow()
+      expectCli(`oc auth can-i list node --as=${user.fullName}`).not.toThrow()
     })
 
     test('should not receive Secret', () => ValidateSearchData({ user, kind: 'secret' }), validationTimeout)
@@ -131,14 +131,14 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
 
   describe(`with user ${usr3} (admin for namespace ${ns})`, () => {
     beforeAll(async () => {
-      user = await getUserContext({ usr: usr3, ns, retryWait: 9000 })
-    }, 10000)
+      user = await getUserContext({ usr: usr3, ns, retryWait: 18000 })
+    }, 20000)
 
     test('should validate RBAC configuration for user', () => {
-      expect(() => execSync(`oc auth can-i list secret -n ${ns} --as=${user.fullName}`)).not.toThrow()
-      expect(() => execSync(`oc auth can-i list configmap -n ${ns} --as=${user.fullName}`)).not.toThrow()
-      expect(() => execSync(`oc auth can-i list configmap -n default --as=${user.fullName}`)).toThrow()
-      expect(() => execSync(`oc auth can-i list node --as=${user.fullName}`)).toThrow()
+      expectCli(`oc auth can-i list secret -n ${ns} --as=${user.fullName}`).not.toThrow()
+      expectCli(`oc auth can-i list configmap -n ${ns} --as=${user.fullName}`).not.toThrow()
+      expectCli(`oc auth can-i list configmap -n default --as=${user.fullName}`).toThrow()
+      expectCli(`oc auth can-i list node --as=${user.fullName}`).toThrow()
     })
 
     test('should receive Secret', () => ValidateSearchData({ user, kind: 'secret' }), validationTimeout)
@@ -164,9 +164,9 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
     }, 10000)
 
     test('should validate RBAC configuration.', () => {
-      expect(() => execSync(`oc auth can-i list secret -n ${ns} --as=${user.fullName}`)).toThrow()
-      expect(() => execSync(`oc auth can-i list pod -n ${ns} --as=${user.fullName}`)).toThrow()
-      expect(() => execSync(`oc auth can-i list deployment -n ${ns} --as=${user.fullName}`)).not.toThrow()
+      expectCli(`oc auth can-i list secret -n ${ns} --as=${user.fullName}`).toThrow()
+      expectCli(`oc auth can-i list pod -n ${ns} --as=${user.fullName}`).toThrow()
+      expectCli(`oc auth can-i list deployment -n ${ns} --as=${user.fullName}`).not.toThrow()
     })
 
     test(

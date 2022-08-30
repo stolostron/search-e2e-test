@@ -65,26 +65,26 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
   describe(`using keywords`, () => {
     test(`should match any resources containing the keyword 'apple'`, async () => {
       const items = await resolveSearchItems(user.token, { keywords: ['apple'] })
-      expect(items.length).toEqual(1)
-      expect(items[0].name).toEqual('cm2-apple')
+      expect(items).toHaveLength(1)
+      expect(items[0]).toHaveProperty('name', 'cm2-apple')
     })
 
     test(`should match resources with text containing 'apple' AND 'cm2'`, async () => {
       const items = await resolveSearchItems(user.token, { keywords: ['apple', 'cm2'] })
-      expect(items.length).toEqual(1)
-      expect(items[0].name).toEqual('cm2-apple')
+      expect(items).toHaveLength(1)
+      expect(items[0]).toHaveProperty('name', 'cm2-apple')
     })
 
     test('should be case insensitive.', async () => {
       const items = await resolveSearchItems(user.token, { keywords: ['ApPLe'] })
-      expect(items.length).toEqual(1)
-      expect(items[0].name).toEqual('cm2-apple')
+      expect(items).toHaveLength(1)
+      expect(items[0]).toHaveProperty('name', 'cm2-apple')
     })
 
     test(`should match resources where label text contains 'vegetable'`, async () => {
       const items = await resolveSearchItems(user.token, { keywords: ['vegetable'] })
       const names = items.map((i) => i.name)
-      expect(items.length).toEqual(2)
+      expect(items).toHaveLength(2)
       expect(names).toEqual(expect.arrayContaining(['cm3-avocado', 'cm4-broccoli']))
     })
   })
@@ -92,8 +92,8 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
   describe('using labels', () => {
     test(`should match resources containing the label 'fruit'`, async () => {
       const items = await resolveSearchItems(user.token, { filters: [{ property: 'label', values: ['type=fruit'] }] })
-      expect(items.length).toEqual(1)
-      expect(items[0].name).toEqual('cm2-apple')
+      expect(items).toHaveLength(1)
+      expect(items[0]).toHaveProperty('name', 'cm2-apple')
     })
 
     test('should match resources containing labelA OR labelB.', async () => {
@@ -102,7 +102,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
       })
       const names = items.map((i) => i.name)
 
-      expect(items.length).toEqual(3)
+      expect(items).toHaveLength(3)
       expect(names).toEqual(expect.arrayContaining(['cm2-apple', 'cm3-avocado', 'cm4-broccoli']))
     })
   })
@@ -114,8 +114,8 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
         resolveSearchItems(user.token, { filters: [{ property: 'kind', values: ['Deployment'] }] }),
       ])
 
-      expect(items.length).toEqual(1)
-      expect(items2.length).toEqual(0)
+      expect(items).toHaveLength(1)
+      expect(items2).toHaveLength(0)
     })
   })
 
@@ -128,37 +128,37 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
           { property: 'created', values: ['hour'] },
         ],
       })
-      expect(items.length).toEqual(10)
+      expect(items).toHaveLength(10)
     })
 
     test('should match resources where desired = 5', async () => {
       const items = await resolveSearchItems(user.token, { filters: [{ property: 'desired', values: ['=5'] }] })
-      expect(items.length).toEqual(1)
-      expect(items[0].name).toEqual(usr)
+      expect(items).toHaveLength(1)
+      expect(items[0]).toHaveProperty('name', usr)
     })
 
     test('should match resources where current > 3', async () => {
       const items = await resolveSearchItems(user.token, { filters: [{ property: 'current', values: ['>3'] }] })
-      expect(items.length).toEqual(2)
+      expect(items).toHaveLength(2)
       const kinds = items.map((i) => i.kind)
       expect(kinds).toEqual(expect.arrayContaining(['deployment', 'replicaset']))
     })
 
     test('should match deployments where available < 3', async () => {
       const items = await resolveSearchItems(user.token, { filters: [{ property: 'available', values: ['<3'] }] })
-      expect(items.length).toEqual(1)
-      expect(items[0].name).toEqual(usr)
+      expect(items).toHaveLength(1)
+      expect(items[0]).toHaveProperty('name', usr)
     })
 
     test('should match deployments where desired <= 5', async () => {
       const items = await resolveSearchItems(user.token, { filters: [{ property: 'desired', values: ['<=5'] }] })
-      expect(items.length).toEqual(3)
+      expect(items).toHaveLength(3)
     })
 
     test('should match resources where current >= 5', async () => {
       const items = await resolveSearchItems(user.token, { filters: [{ property: 'current', values: ['>=5'] }] })
-      expect(items.length).toEqual(1)
-      expect(items[0].kind).toEqual('deployment')
+      expect(items).toHaveLength(1)
+      expect(items[0]).toHaveProperty('kind', 'deployment')
     })
 
     test('should match resources where kind is not namespace and status is not Running', async () => {
@@ -168,7 +168,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
           { property: 'status', values: ['!Running'] },
         ],
       })
-      expect(items.length).toEqual(7)
+      expect(items).toHaveLength(7)
     })
   })
 
@@ -194,7 +194,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
         filters: [{ property: 'kind', values: ['configmap'] }],
         limit: 2,
       })
-      expect(items.length).toEqual(2)
+      expect(items).toHaveLength(2)
     })
   })
 

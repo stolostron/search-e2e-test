@@ -92,7 +92,7 @@ function formatListOutput(cluster, kind, resources) {
     nameIndex = headers.indexOf('name')
     namespaceIndex = headers.indexOf('namespace')
   }
-  var formattedResources = resources.map((res) => {
+  const formattedResources = resources.map((res) => {
     const item = res.split(' ').filter((property) => property)
     return {
       cluster: cluster.name,
@@ -105,5 +105,10 @@ function formatListOutput(cluster, kind, resources) {
   return formattedResources
 }
 
+function expectCli(cmd) {
+  return expect(() => execSync(cmd, { stdio: [] }))
+}
+
 exports.execCliCmdString = execCliCmdString
+exports.expectCli = expectCli
 exports.getResourcesFromOC = getResourcesFromOC
