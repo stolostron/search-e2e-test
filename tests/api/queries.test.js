@@ -46,7 +46,6 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     user = await getUserContext({ usr, ns, retryWait: 5000 })
   }, 60000)
 
-
   afterAll(async () => {
     execSync(`oc delete ns ${ns}`)
     if (SEARCH_API_V1) {
