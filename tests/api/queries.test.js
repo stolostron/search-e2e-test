@@ -43,7 +43,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     searchApiRoute = route
 
     await sleep(20000) // Wait for the service account and search index to get updated.
-    user = await getUserContext({ usr, ns, retryWait: 9000 })
+    user = await getUserContext({ usr, ns, retryWait: 5000 })
   }, 60000)
 
   afterAll(async () => {
