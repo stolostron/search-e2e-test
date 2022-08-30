@@ -131,7 +131,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
       expect(items.length).toEqual(10)
     })
 
-    test('should match deployments where desired = 5', async () => {
+    test('should match resources where desired = 5', async () => {
       const items = await resolveSearchItems(user.token, { filters: [{ property: 'desired', values: ['=5'] }] })
       expect(items.length).toEqual(1)
       expect(items[0].name).toEqual(usr)
