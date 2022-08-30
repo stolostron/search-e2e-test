@@ -87,10 +87,10 @@ function getKubeadminToken() {
 /**
  * @param string username - Service account name.
  * @param string namespace - Namespace of the service account.
- * @param number retryWait - Milliseconds to wait before retry. Default: 9000 ms
+ * @param number retryWait - Milliseconds to wait before retry. Default: 1000 ms
  * @returns {name, namespace, fullName, token} - Object with information to impersonate user.
  */
-async function getUserContext({ usr, ns, retryWait = 9000 }) {
+async function getUserContext({ usr, ns, retryWait = 1000 }) {
   let t
   try {
     t = execSync(`oc serviceaccounts get-token ${usr} -n ${ns}`)
@@ -98,13 +98,10 @@ async function getUserContext({ usr, ns, retryWait = 9000 }) {
     console.warn(`Failed to get service account token, will retry after ${retryWait} ms.`, e)
     let sa = execSync(`oc get serviceaccount ${usr} -n ${ns} -o yaml`).toString()
     console.log('Service account yaml after error: ', sa) // Used to debug canary environment.
-    let podState = execSync(`oc get pod -A`).toString()
-    console.log(`Pods after error.`, podState) // Used to debug canary environment.
+
     await sleep(retryWait)
     sa = execSync(`oc get serviceaccount ${usr} -n ${ns} -o yaml`).toString()
     console.log('Service account yaml after wait: ', sa) // Used to debug canary environment.
-    podState = execSync(`oc get pod -A`).toString()
-    console.log(`Pods after waiting.`, podState) // Used to debug canary environment.
     t = execSync(`oc serviceaccounts get-token ${usr} -n ${ns}`)
   }
   return {
