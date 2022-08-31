@@ -171,11 +171,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
 
     test(`should not get Secret`, () => ValidateSearchData({ user, kind: 'secret', namespace: ns }), validationTimeout)
     test('should not get Pod', () => ValidateSearchData({ user, kind: 'configmap', namespace: ns }), validationTimeout)
-    test(
-      'should get Deploymt',
-      () => ValidateSearchData({ user, kind: 'deployment', namespace: ns }),
-      validationTimeout
-    )
+    test('should get Deploy', () => ValidateSearchData({ user, kind: 'deployment', namespace: ns }), validationTimeout)
 
     test.todo('should validate relationship data is correct.')
   })
