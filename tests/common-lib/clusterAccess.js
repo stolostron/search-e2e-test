@@ -64,7 +64,9 @@ async function getSearchApiRoute() {
   const namespace = execSync(`oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`).toString()
   let route
   try {
-    route = execSync(`oc get route search-api-automation -n ${namespace} -o jsonpath='{.spec.host}'`)
+    route = execSync(`oc get route search-api-automation -n ${namespace} -o jsonpath='{.spec.host}'`, {
+      stdio: [],
+    }).toString()
   } catch (e) {
     execSync(
       `oc create route passthrough search-api-automation --service=search-search-api --insecure-policy=Redirect -n ${namespace}`
@@ -85,6 +87,7 @@ function getKubeadminToken() {
 }
 
 /**
+ * Gets the token and other information required to impersonate a user (service account).
  * @param string username - Service account name.
  * @param string namespace - Namespace of the service account.
  * @param number retryWait - Milliseconds to wait before retry. Default: 1000 ms
