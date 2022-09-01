@@ -62,7 +62,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
 
   describe(`with user ${usr0} (not authorized to list any resources)`, () => {
     beforeAll(async () => {
-      user = await getUserContext({ usr: usr0, ns, retryWait: 4000 })
+      user = await getUserContext({ usr: usr0, ns })
     })
 
     test('should validate RBAC configuration for user', () => {
@@ -88,7 +88,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
 
   describe(`with user ${usr1} (configmap in namespace ${ns} only)`, () => {
     beforeAll(async () => {
-      user = await getUserContext({ usr: usr1, ns, retryWait: 4000 })
+      user = await getUserContext({ usr: usr1, ns })
     })
 
     test('should validate RBAC configuration for user', () => {
@@ -114,7 +114,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
 
   describe(`with user ${usr2} (nodes and configmap in all namespaces.)`, () => {
     beforeAll(async () => {
-      user = await getUserContext({ usr: usr2, ns, retryWait: 4000 })
+      user = await getUserContext({ usr: usr2, ns })
     })
 
     test('should validate RBAC configuration for user', () => {
@@ -131,7 +131,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
 
   describe(`with user ${usr3} (admin for namespace ${ns})`, () => {
     beforeAll(async () => {
-      user = await getUserContext({ usr: usr3, ns, retryWait: 4000 })
+      user = await getUserContext({ usr: usr3, ns })
     })
 
     test('should validate RBAC configuration for user', () => {
@@ -160,7 +160,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
 
   describe(`with user ${usr4} (access to deployment but not pod)`, () => {
     beforeAll(async () => {
-      user = await getUserContext({ usr: usr4, ns, retryWait: 4000 })
+      user = await getUserContext({ usr: usr4, ns })
     })
 
     test('should validate RBAC configuration.', () => {

@@ -8,7 +8,7 @@ const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient'
 
 const _ = require('lodash')
 
-describe('RHACM4K-1696: Search API - Verify search result with common filter and conditions', () => {
+describe.skip('RHACM4K-1696: Search API - Verify search result with common filter and conditions', () => {
   beforeAll(async () => {
     // Log in and get access token
     token = getKubeadminToken()
