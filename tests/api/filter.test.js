@@ -151,9 +151,11 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
   ]
 
   filtersRegistry.forEach((value) => {
-    test(`[P2][Sev2][${squad}] should filter by ${value.filters[0].property}`, async () => {
-      var query = searchQueryBuilder(value)
-      var res = await sendRequest(query, token)
-    }, 20000)
+    // This test is disabled because it's missing the result validation.
+    test.todo(`[P2][Sev2][${squad}] should filter by ${value.filters[0].property}`)
+    // test(`[P2][Sev2][${squad}] should filter by ${value.filters[0].property}`, async () => {
+    //   var query = searchQueryBuilder(value)
+    //   var res = await sendRequest(query, token)
+    // }, 20000)
   })
 })
