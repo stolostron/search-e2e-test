@@ -94,7 +94,6 @@ const metrics = []
  * @returns
  */
 function sendRequest(query, token, options = {}) {
-
   // Disable SSL validation so we can connect to the search-api route.
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
 
