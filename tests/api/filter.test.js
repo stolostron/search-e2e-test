@@ -6,7 +6,7 @@ const { execSync } = require('child_process')
 
 const squad = require('../../config').get('squadName')
 const { getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
-const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
+// const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 
 describe('RHACM4K-1709: Search - Search using filters', () => {
   beforeAll(async () => {
@@ -96,14 +96,14 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
     //     },
     //   ],
     // },
-    {
-      filters: [
-        {
-          property: 'volumeName',
-          values: [execSync("oc get pv -o=jsonpath='{.items[0].metadata.name}'").toString()],
-        },
-      ],
-    },
+    // {
+    //   filters: [
+    //     {
+    //       property: 'volumeName',
+    //       values: [execSync("oc get pv -o=jsonpath='{.items[0].metadata.name}'").toString()],
+    //     },
+    //   ],
+    // },
     {
       filters: [
         {
@@ -120,26 +120,26 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
         },
       ],
     },
-    {
-      filters: [
-        {
-          property: 'claimRef',
-          values: [
-            execSync(
-              'oc get pv -o=jsonpath=\'{range .items[0]}{.spec.claimRef.namespace}{"/"}{.spec.claimRef.name}{end}\''
-            ).toString(),
-          ],
-        },
-      ],
-    },
-    {
-      filters: [
-        {
-          property: 'reclaimPolicy',
-          values: [execSync("oc get pv -o=jsonpath='{.items[0].spec.persistentVolumeReclaimPolicy}'").toString()],
-        },
-      ],
-    },
+    // {
+    //   filters: [
+    //     {
+    //       property: 'claimRef',
+    //       values: [
+    //         execSync(
+    //           'oc get pv -o=jsonpath=\'{range .items[0]}{.spec.claimRef.namespace}{"/"}{.spec.claimRef.name}{end}\''
+    //         ).toString(),
+    //       ],
+    //     },
+    //   ],
+    // },
+    // {
+    //   filters: [
+    //     {
+    //       property: 'reclaimPolicy',
+    //       values: [execSync("oc get pv -o=jsonpath='{.items[0].spec.persistentVolumeReclaimPolicy}'").toString()],
+    //     },
+    //   ],
+    // },
     {
       filters: [
         {
