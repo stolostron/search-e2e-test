@@ -6,7 +6,7 @@
 /**
  * Squad label displayed within the test metadata (Required by CICD).
  */
-export const squad = require('../../config').get('squadName')
+const squad = 'observability-usa'
 
 /**
  * Tags to determine the test environment.
