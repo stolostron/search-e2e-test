@@ -19,7 +19,7 @@
 // ***********************************************************
 
 import './commands'
-import { SEARCH_API_V1 } from './config'
+import { SEARCH_API_V1 } from '../config'
 import { cliHelper } from '../scripts/cliHelper'
 
 require('cypress-terminal-report/src/installLogsCollector')()
