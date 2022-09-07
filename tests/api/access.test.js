@@ -25,7 +25,7 @@ describe(`[P1][Sev1][${squad}] Search API: Verify access:`, () => {
     return request(searchApiRoute).post('/searchapi/graphql').send(query).expect(401)
   })
 
-  test('should get 401 if authorization token is invalid.', () => {
+  test.skip('should get 401 if authorization token is invalid.', () => {
     return request(searchApiRoute)
       .post('/searchapi/graphql')
       .send(query)
@@ -33,7 +33,7 @@ describe(`[P1][Sev1][${squad}] Search API: Verify access:`, () => {
       .expect(401)
   })
 
-  test('should get 403 if authorization header missing Bearer.', () => {
+  test.skip('should get 403 if authorization header missing Bearer.', () => {
     return request(searchApiRoute)
       .post('/searchapi/graphql')
       .send(query)
