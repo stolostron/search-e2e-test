@@ -3,6 +3,7 @@
 jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const squad = require('../../config').get('squadName')
+const SEARCH_API_V1 = require('../../config').get('SEARCH_API_V1')
 const { deleteResource, getResource, getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 
@@ -103,7 +104,9 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
 
     expect(deployment[0].kind).toMatch(/Deployment/i)
     expect(deployment.find((deploy) => deploy.namespace === 'open-cluster-management')).toBeDefined()
-    // Not valid for V2.
-    // expect(items.find((deploy) => deploy.name.includes('search-prod'))).toBeDefined()
+    if (!!SEARCH_API_V1) {
+      // This validation is only valid for V1.
+      expect(items.find((deploy) => deploy.name.includes('search-prod'))).toBeDefined()
+    }
   }, 20000)
 })

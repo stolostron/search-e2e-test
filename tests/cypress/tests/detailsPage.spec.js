@@ -5,7 +5,7 @@
 
 /// <reference types="cypress" />
 
-import { squad, tags } from '../config'
+import { SEARCH_API_V1, squad, tags } from '../config'
 import { searchPage, searchBar } from '../views/search'
 // import { deploymentDetailPage } from '../views/deploymentDetailPage'
 import { podDetailPage } from '../views/podDetailPage'
@@ -40,8 +40,10 @@ describe(`Search: Search in ${clusterMode.label} Cluster`, { tags: tags.env }, f
       searchBar.whenUsePagination(50)
       searchPage.whenGoToResourceDetailItemPage('Pod', clusterMode.deployment, clusterMode.namespace)
       podDetailPage.whenClickOnLogsTab()
-      // TODO: Update this log verification for V2.
-      // podDetailPage.shouldSeeLogs('[INFO] [search-api]')
+      if (!!SEARCH_API_V1) {
+        // This validation is only valid for V1.
+        podDetailPage.shouldSeeLogs('[INFO] [search-api]')
+      }
     })
 
     // TODO: Re-enable within a smaller PR.

@@ -5,7 +5,7 @@
 
 /// <reference types="cypress" />
 
-import { squad, tags } from '../config'
+import { SEARCH_API_V1, squad, tags } from '../config'
 import { searchPage, searchBar } from '../views/search'
 
 const clusterMode = {
@@ -59,9 +59,11 @@ describe(`Search: Search in ${clusterMode.label} Cluster`, { tags: tags.env }, f
       searchBar.whenRunSearchQuery()
       searchPage.whenExpandRelationshipTiles()
       searchPage.shouldFindRelationshipTile('Cluster')
-      // TODO: Re-enable verification for V2.
-      // searchPage.shouldFindRelationshipTile('Deployment')
-      // searchPage.shouldFindRelationshipTile('Pod')
+      if (!!SEARCH_API_V1) {
+        // TODO: Re-enable verification for V2.
+        searchPage.shouldFindRelationshipTile('Deployment')
+        searchPage.shouldFindRelationshipTile('Pod')
+      }
     })
   })
 })
