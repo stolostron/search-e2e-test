@@ -35,10 +35,10 @@ describe(`Search: Search in ${clusterMode.label} Cluster`, { tags: tags.env }, f
     })
 
     it(`[P2][Sev2][${squad}] should see pod logs`, function () {
-      searchBar.whenFilterByKind('pod')
+      searchBar.whenFilterByKind('Pod')
       searchBar.whenRunSearchQuery()
       searchBar.whenUsePagination(50)
-      searchPage.whenGoToResourceDetailItemPage('pod', clusterMode.deployment, clusterMode.namespace)
+      searchPage.whenGoToResourceDetailItemPage('Pod', clusterMode.deployment, clusterMode.namespace)
       podDetailPage.whenClickOnLogsTab()
       podDetailPage.shouldSeeLogs('[INFO] [search-api]')
     })
