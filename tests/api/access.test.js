@@ -26,26 +26,21 @@ describe(`[P1][Sev1][${squad}] Search API: Verify access:`, () => {
     return request(searchApiRoute).post('/searchapi/graphql').send(query).expect(401)
   })
 
-  if (!!SEARCH_API_V1) {
-    test('should get 401 if authorization token is invalid.', () => {
-      return request(searchApiRoute)
-        .post('/searchapi/graphql')
-        .send(query)
-        .set({ Authorization: 'Bearer invalidauthorizationtoken' })
-        .expect(401)
-    })
+  test('should get 401 if authorization token is invalid.', () => {
+    return request(searchApiRoute)
+      .post('/searchapi/graphql')
+      .send(query)
+      .set({ Authorization: 'Bearer invalidauthorizationtoken' })
+      .expect(!!SEARCH_API_V1 ? 401 : 403)
+  })
 
-    test('should get 403 if authorization header missing Bearer.', () => {
-      return request(searchApiRoute)
-        .post('/searchapi/graphql')
-        .send(query)
-        .set({ Authorization: token }) // Missing Bearer.
-        .expect(403)
-    })
-  } else {
-    test.todo('SKIPPING FOR V2 - should get 401 if authorization token is invalid.')
-    test.todo('SKIPPING FOR V2 - should get 403 if authorization header missing Bearer.')
-  }
+  test('should get 403 if authorization header missing Bearer.', () => {
+    return request(searchApiRoute)
+      .post('/searchapi/graphql')
+      .send(query)
+      .set({ Authorization: token }) // Missing Bearer.
+      .expect(!!SEARCH_API_V1 ? 403 : 200)
+  })
 
   test('should return results when searching for kind:pod.', () => {
     return request(searchApiRoute)
