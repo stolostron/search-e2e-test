@@ -70,14 +70,14 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
     { filters: [{ property: 'cluster', values: ['local-cluster'] }] },
     { filters: [{ property: 'port', values: ['8443/TCP'] }] },
     { filters: [{ property: 'type', values: ['ClusterIP'] }] },
-    {
-      filters: [
-        {
-          property: 'capacity',
-          values: [execSync("oc get pv -o=jsonpath='{.items[0].spec.capacity.storage}'").toString()],
-        },
-      ],
-    },
+    // {
+    //   filters: [
+    //     {
+    //       property: 'capacity',
+    //       values: [execSync("oc get pv -o=jsonpath='{.items[0].spec.capacity.storage}'").toString()],
+    //     },
+    //   ],
+    // },
     {
       filters: [
         {
@@ -88,14 +88,14 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
     },
     { filters: [{ property: 'lastSchedule', values: ['month'] }] },
     { filters: [{ property: 'suspend', values: ['false'] }] },
-    {
-      filters: [
-        {
-          property: 'request',
-          values: [execSync("oc get pv -o=jsonpath='{.items[0].spec.capacity.storage}'").toString()],
-        },
-      ],
-    },
+    // {
+    //   filters: [
+    //     {
+    //       property: 'request',
+    //       values: [execSync("oc get pv -o=jsonpath='{.items[0].spec.capacity.storage}'").toString()],
+    //     },
+    //   ],
+    // },
     {
       filters: [
         {
