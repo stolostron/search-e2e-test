@@ -4,7 +4,7 @@ module.exports = {
   },
   globalSetup: './globalSetup.js',
   globalTeardown: './globalTeardown.js',
-  verbose: true,
+  verbose: false,
   rootDir: './tests/api',
   reporters: [
     'default',
