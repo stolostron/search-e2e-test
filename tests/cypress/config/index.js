@@ -3,7 +3,7 @@
  * Copyright (c) 2021 Red Hat, Inc.
  ****************************************************************************** */
 
-export const SEARCH_API_V1 = false
+export const SEARCH_API_V1 = process.env.SEARCH_API_V1 || false
 /**
  * Squad label displayed within the test metadata (Required by CICD).
  */

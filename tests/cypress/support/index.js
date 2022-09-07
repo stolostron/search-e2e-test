@@ -19,12 +19,12 @@
 // ***********************************************************
 
 import './commands'
+import { SEARCH_API_V1 } from './config'
 import { cliHelper } from '../scripts/cliHelper'
 
 require('cypress-terminal-report/src/installLogsCollector')()
 require('cypress-grep')()
 
-const SEARCH_API_V1 = false //require('../../config').get('SEARCH_API_V1')
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 var timeoutID
 

@@ -34,7 +34,7 @@ describe(`[P1][Sev1][${squad}] Search API: Verify access:`, () => {
       .expect(!!SEARCH_API_V1 ? 401 : 403)
   })
 
-  test('should get 403 if authorization header missing Bearer.', () => {
+  test('should accept authorization header missing Bearer.', () => {
     return request(searchApiRoute)
       .post('/searchapi/graphql')
       .send(query)
