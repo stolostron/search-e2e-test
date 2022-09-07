@@ -59,8 +59,9 @@ describe(`Search: Search in ${clusterMode.label} Cluster`, { tags: tags.env }, f
       searchBar.whenRunSearchQuery()
       searchPage.whenExpandRelationshipTiles()
       searchPage.shouldFindRelationshipTile('Cluster')
-      searchPage.shouldFindRelationshipTile('Deployment')
-      searchPage.shouldFindRelationshipTile('Pod')
+      // TODO: Re-enable verification for V2.
+      // searchPage.shouldFindRelationshipTile('Deployment')
+      // searchPage.shouldFindRelationshipTile('Pod')
     })
   })
 })
