@@ -35,7 +35,7 @@ before(() => {
   cliHelper.login()
 
   // This is needed for search V1 to deploy RedisGraph upstream. Without this search V1 won't be operational.
-  if (SEARCH_API_V1) {
+  if (!!SEARCH_API_V1) {
     cy.exec(`oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`, {
       failOnNonZeroExit: false,
     }).then((res) => {
