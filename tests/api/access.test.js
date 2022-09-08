@@ -3,6 +3,7 @@
 jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const squad = require('../../config').get('squadName')
+const SEARCH_API_V1 = require('../../config').get('SEARCH_API_V1')
 const { getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
 const { searchQueryBuilder } = require('../common-lib/searchClient')
 const request = require('supertest')
@@ -30,15 +31,15 @@ describe(`[P1][Sev1][${squad}] Search API: Verify access:`, () => {
       .post('/searchapi/graphql')
       .send(query)
       .set({ Authorization: 'Bearer invalidauthorizationtoken' })
-      .expect(401)
+      .expect(!!SEARCH_API_V1 ? 401 : 403)
   })
 
-  test('should get 403 if authorization header missing Bearer.', () => {
+  test('should accept authorization header missing Bearer.', () => {
     return request(searchApiRoute)
       .post('/searchapi/graphql')
       .send(query)
       .set({ Authorization: token }) // Missing Bearer.
-      .expect(403)
+      .expect(!!SEARCH_API_V1 ? 403 : 200)
   })
 
   test('should return results when searching for kind:pod.', () => {

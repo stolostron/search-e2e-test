@@ -3,6 +3,7 @@
 jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const squad = require('../../config').get('squadName')
+const SEARCH_API_V1 = require('../../config').get('SEARCH_API_V1')
 const { getUserContext, getSearchApiRoute } = require('../common-lib/clusterAccess')
 const { ValidateSearchData, validationTimeout } = require('../common-lib/validateSearchData')
 const { resolveSearchItems } = require('../common-lib/searchClient')
@@ -74,11 +75,15 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
     test('should not receive ConfigMap', () => ValidateSearchData({ user, kind: 'configmap' }), validationTimeout)
     test('should not receive Node', () => ValidateSearchData({ user, kind: 'node' }), validationTimeout)
     test('should not receive Secret', () => ValidateSearchData({ user, kind: 'secret' }), validationTimeout)
-    test(`should not match any resources containing the keyword 'a'`, async () => {
-      const items = await resolveSearchItems(user.token, { keywords: ['a'] })
-      expect(items).toHaveLength(0)
-      expect(items).toEqual([])
-    })
+    if (!!SEARCH_API_V1) {
+      test(`should not match any resources containing the keyword 'a'`, async () => {
+        const items = await resolveSearchItems(user.token, { keywords: ['a'] })
+        expect(items).toHaveLength(0)
+        expect(items).toEqual([])
+      })
+    } else {
+      test.todo(`SKIPPING FOR V2 - should not match any resources containing the keyword 'a'`)
+    }
     test(`should not match any resources in namespace ${ns}`, async () => {
       const items = await resolveSearchItems(user.token, { filters: [{ property: 'namespace', values: [ns] }] })
       expect(items).toHaveLength(0)
@@ -99,17 +104,21 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
     test('should not receive Secret', () => ValidateSearchData({ user, kind: 'secret' }), validationTimeout)
     test('should receive ConfigMap', () => ValidateSearchData({ user, kind: 'configmap' }), validationTimeout)
 
-    test(`should not match any ConfigMap from other namespaces`, async () => {
-      const items = await resolveSearchItems(user.token, { filters: [{ property: 'kind', values: ['configmap'] }] })
-      expect(items.find(({ namespace }) => namespace && namespace.toLowerCase() !== ns)).toEqual(undefined)
-      expect(items.find(({ kind }) => kind && kind.toLowerCase() !== 'configmap')).toEqual(undefined)
-    })
-
-    test(`should not match any other kind`, async () => {
-      const items = await resolveSearchItems(user.token, { filters: [{ property: 'kind', values: ['!configmap'] }] })
-      expect(items).toHaveLength(0)
-      expect(items).toEqual([])
-    })
+    if (!!SEARCH_API_V1) {
+      test(`should not match any ConfigMap from other namespaces`, async () => {
+        const items = await resolveSearchItems(user.token, { filters: [{ property: 'kind', values: ['configmap'] }] })
+        expect(items.find(({ namespace }) => namespace && namespace.toLowerCase() !== ns)).toEqual(undefined)
+        expect(items.find(({ kind }) => kind && kind.toLowerCase() !== 'configmap')).toEqual(undefined)
+      })
+      test(`should not match any other kind`, async () => {
+        const items = await resolveSearchItems(user.token, { filters: [{ property: 'kind', values: ['!configmap'] }] })
+        expect(items).toHaveLength(0)
+        expect(items).toEqual([])
+      })
+    } else {
+      test.todo('SKIPPING FOR V2 - should not match any ConfigMap from other namespaces')
+      test.todo('SKIPPING FOR V2 - should not match any other kind')
+    }
   })
 
   describe(`with user ${usr2} (nodes and configmap in all namespaces.)`, () => {

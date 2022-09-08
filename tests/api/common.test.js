@@ -3,6 +3,7 @@
 jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const squad = require('../../config').get('squadName')
+const SEARCH_API_V1 = require('../../config').get('SEARCH_API_V1')
 const { deleteResource, getResource, getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 
@@ -46,7 +47,7 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
     })
     var res = await sendRequest(query, token)
     expect(res.body.data.searchResult[0].items[0].name).toEqual(app)
-    expect(res.body.data.searchResult[0].items[0].kind).toEqual('deployment')
+    expect(res.body.data.searchResult[0].items[0].kind).toMatch(/Deployment/i)
     expect(res.body.data.searchResult[0].items[0].namespace).toEqual(namespace)
   }, 20000)
 
@@ -88,7 +89,7 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
     var res = await sendRequest(query, token)
     var configmap = _.get(res, 'body.data.searchResult[0].items', '')
 
-    expect(configmap[0].kind).toEqual('configmap')
+    expect(configmap[0].kind).toMatch(/ConfigMap/i)
     expect(configmap.find((el) => el.namespace === 'open-cluster-management')).toBeDefined()
     expect(configmap.find((el) => el.name.includes('search'))).toBeDefined()
   }, 20000)
@@ -101,8 +102,11 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
     var res = await sendRequest(query, token)
     var deployment = _.get(res, 'body.data.searchResult[0].items', '')
 
-    expect(deployment[0].kind).toEqual('deployment')
+    expect(deployment[0].kind).toMatch(/Deployment/i)
     expect(deployment.find((deploy) => deploy.namespace === 'open-cluster-management')).toBeDefined()
-    expect(deployment.find((deploy) => deploy.name.includes('search-prod'))).toBeDefined()
+    if (!!SEARCH_API_V1) {
+      // This validation is only valid for V1.
+      expect(items.find((deploy) => deploy.name.includes('search-prod'))).toBeDefined()
+    }
   }, 20000)
 })

@@ -5,7 +5,7 @@
 
 /// <reference types="cypress" />
 
-import { squad, tags } from '../config'
+import { SEARCH_API_V1, squad, tags } from '../config'
 import { searchPage, searchBar } from '../views/search'
 
 const clusterMode = {
@@ -49,18 +49,21 @@ describe(`Search: Search in ${clusterMode.label} Cluster`, { tags: tags.env }, f
     })
 
     it(`[P2][Sev2][${squad}] should work kind filter for pod`, function () {
-      searchBar.whenFilterByKind('pod')
+      searchBar.whenFilterByKind('Pod')
       searchBar.whenRunSearchQuery()
       searchBar.whenUsePagination(50)
-      searchPage.shouldFindResourceDetailItem('pod', clusterMode.deployment, clusterMode.namespace)
+      searchPage.shouldFindResourceDetailItem('Pod', clusterMode.deployment, clusterMode.namespace)
     })
 
     it(`[P3][Sev3][${squad}] should have the expected relationships`, function () {
       searchBar.whenRunSearchQuery()
       searchPage.whenExpandRelationshipTiles()
-      searchPage.shouldFindRelationshipTile('cluster')
-      searchPage.shouldFindRelationshipTile('deployment')
-      searchPage.shouldFindRelationshipTile('pod')
+      searchPage.shouldFindRelationshipTile('Cluster')
+      if (!!SEARCH_API_V1) {
+        // TODO: Re-enable verification for V2.
+        searchPage.shouldFindRelationshipTile('Deployment')
+        searchPage.shouldFindRelationshipTile('Pod')
+      }
     })
   })
 })

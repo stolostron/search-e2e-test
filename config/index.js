@@ -12,12 +12,13 @@ if (fs.existsSync('./resources/options.yaml')) {
 const timestamp = Date.now()
 
 nconf.env({ lowerCase: true, separator: '_' }).file({ file: optionsFile, format: nconfYaml }).defaults({
-  timestamp,
   CLUSTER_PORT: '443',
   CLUSTER_VIEWER_USR: 'user-viewer',
   CLUSTER_VIEWER_PWD: 'pass-viewer',
   contextPath: '/multicloud',
   squadName: 'observability-usa',
+  SEARCH_API_V1: false,
+  timestamp,
 })
 
 // Hack to deal with camelCase when using env OPTIONS_HUB_BASEDOMAIN OPTIONS_HUB_USER OPTIONS_HUB_PASSWORD

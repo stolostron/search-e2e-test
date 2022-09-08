@@ -6,7 +6,7 @@ const { execSync } = require('child_process')
 
 const squad = require('../../config').get('squadName')
 const { getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
-const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
+// const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 
 describe('RHACM4K-1709: Search - Search using filters', () => {
   beforeAll(async () => {
@@ -70,14 +70,14 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
     { filters: [{ property: 'cluster', values: ['local-cluster'] }] },
     { filters: [{ property: 'port', values: ['8443/TCP'] }] },
     { filters: [{ property: 'type', values: ['ClusterIP'] }] },
-    {
-      filters: [
-        {
-          property: 'capacity',
-          values: [execSync("oc get pv -o=jsonpath='{.items[0].spec.capacity.storage}'").toString()],
-        },
-      ],
-    },
+    // {
+    //   filters: [
+    //     {
+    //       property: 'capacity',
+    //       values: [execSync("oc get pv -o=jsonpath='{.items[0].spec.capacity.storage}'").toString()],
+    //     },
+    //   ],
+    // },
     {
       filters: [
         {
@@ -88,22 +88,22 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
     },
     { filters: [{ property: 'lastSchedule', values: ['month'] }] },
     { filters: [{ property: 'suspend', values: ['false'] }] },
-    {
-      filters: [
-        {
-          property: 'request',
-          values: [execSync("oc get pv -o=jsonpath='{.items[0].spec.capacity.storage}'").toString()],
-        },
-      ],
-    },
-    {
-      filters: [
-        {
-          property: 'volumeName',
-          values: [execSync("oc get pv -o=jsonpath='{.items[0].metadata.name}'").toString()],
-        },
-      ],
-    },
+    // {
+    //   filters: [
+    //     {
+    //       property: 'request',
+    //       values: [execSync("oc get pv -o=jsonpath='{.items[0].spec.capacity.storage}'").toString()],
+    //     },
+    //   ],
+    // },
+    // {
+    //   filters: [
+    //     {
+    //       property: 'volumeName',
+    //       values: [execSync("oc get pv -o=jsonpath='{.items[0].metadata.name}'").toString()],
+    //     },
+    //   ],
+    // },
     {
       filters: [
         {
@@ -120,26 +120,26 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
         },
       ],
     },
-    {
-      filters: [
-        {
-          property: 'claimRef',
-          values: [
-            execSync(
-              'oc get pv -o=jsonpath=\'{range .items[0]}{.spec.claimRef.namespace}{"/"}{.spec.claimRef.name}{end}\''
-            ).toString(),
-          ],
-        },
-      ],
-    },
-    {
-      filters: [
-        {
-          property: 'reclaimPolicy',
-          values: [execSync("oc get pv -o=jsonpath='{.items[0].spec.persistentVolumeReclaimPolicy}'").toString()],
-        },
-      ],
-    },
+    // {
+    //   filters: [
+    //     {
+    //       property: 'claimRef',
+    //       values: [
+    //         execSync(
+    //           'oc get pv -o=jsonpath=\'{range .items[0]}{.spec.claimRef.namespace}{"/"}{.spec.claimRef.name}{end}\''
+    //         ).toString(),
+    //       ],
+    //     },
+    //   ],
+    // },
+    // {
+    //   filters: [
+    //     {
+    //       property: 'reclaimPolicy',
+    //       values: [execSync("oc get pv -o=jsonpath='{.items[0].spec.persistentVolumeReclaimPolicy}'").toString()],
+    //     },
+    //   ],
+    // },
     {
       filters: [
         {
@@ -151,9 +151,11 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
   ]
 
   filtersRegistry.forEach((value) => {
-    test(`[P2][Sev2][${squad}] should filter by ${value.filters[0].property}`, async () => {
-      var query = searchQueryBuilder(value)
-      var res = await sendRequest(query, token)
-    }, 20000)
+    // This test is disabled because it's missing the result validation.
+    test.todo(`[P2][Sev2][${squad}] should filter by ${value.filters[0].property}`)
+    // test(`[P2][Sev2][${squad}] should filter by ${value.filters[0].property}`, async () => {
+    //   var query = searchQueryBuilder(value)
+    //   var res = await sendRequest(query, token)
+    // }, 20000)
   })
 })
