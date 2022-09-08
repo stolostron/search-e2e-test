@@ -1,34 +1,18 @@
 // Copyright Contributors to the Open Cluster Management project
 
-jest.retryTimes(global.retry)
+jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const squad = require('../../config').get('squadName')
-const { getSearchApiRoute, getToken } = require('../common-lib/clusterAccess')
-
+const { getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
+const { searchQueryBuilder } = require('../common-lib/searchClient')
 const request = require('supertest')
 
-let searchApiRoute = ''
-let token = ''
+describe(`[P1][Sev1][${squad}] Search API: Verify access:`, () => {
+  const query = searchQueryBuilder({ filters: [{ property: 'kind', values: ['pod'] }] })
 
-const query = {
-  operationName: 'searchResult',
-  variables: {
-    input: [
-      {
-        keywords: [],
-        filters: [{ property: 'kind', values: ['pod'] }],
-        limit: 1000,
-      },
-    ],
-  },
-  query:
-    'query searchResult($input: [SearchInput]) {\n  searchResult: search(input: $input) {\n    items\n    __typename\n  }\n}\n',
-}
-
-describe('Search API: Verify access:', () => {
   beforeAll(async () => {
     // Log in and get access token
-    token = getToken()
+    token = getKubeadminToken()
 
     // Create a route to access the Search API.
     searchApiRoute = await getSearchApiRoute()
@@ -37,17 +21,11 @@ describe('Search API: Verify access:', () => {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
   })
 
-  // Cleanup and teardown here.
-  afterAll(() => {})
-
-  test(`[P1][Sev1][${squad}] should get 401 if authorization header is not present.`, () => {
-    return request(searchApiRoute)
-      .post('/searchapi/graphql')
-      .send(query)
-      .expect(401)
+  test('should get 401 if authorization header is not present.', () => {
+    return request(searchApiRoute).post('/searchapi/graphql').send(query).expect(401)
   })
 
-  test(`[P1][Sev1][${squad}] should get 401 if authorization header is incorrect.`, () => {
+  test('should get 401 if authorization token is invalid.', () => {
     return request(searchApiRoute)
       .post('/searchapi/graphql')
       .send(query)
@@ -55,7 +33,15 @@ describe('Search API: Verify access:', () => {
       .expect(401)
   })
 
-  test(`[P1][Sev1][${squad}] should return results when searching for kind:pod.`, () => {
+  test('should get 403 if authorization header missing Bearer.', () => {
+    return request(searchApiRoute)
+      .post('/searchapi/graphql')
+      .send(query)
+      .set({ Authorization: token }) // Missing Bearer.
+      .expect(403)
+  })
+
+  test('should return results when searching for kind:pod.', () => {
     return request(searchApiRoute)
       .post('/searchapi/graphql')
       .send(query)

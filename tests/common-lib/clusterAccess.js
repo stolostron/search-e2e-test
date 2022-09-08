@@ -1,28 +1,9 @@
-// Copyright (c) 2020 Red Hat, Inc.
+// Copyright Contributors to the Open Cluster Management project
 
 const config = require('../../config')
 const { sleep } = require('./sleep')
 const { execSync } = require('child_process')
 const fs = require('fs')
-
-/**
- * Login into the cluster environment with the `oc` cli command.
- * @param {object} options Additional options for logging into the cluster environment.
- */
-const clusterLogin = (options = { useInsecure: true }) => {
-  var cmd = `oc login -u ${config.get('options:hub:user')} -p ${config.get(
-    'options:hub:password'
-  )} --server=https://api.${config.get('options:hub:baseDomain')}:6443`
-
-  if (options.useInsecure) {
-    console.log(
-      '[INFO] Using insecure options was set to true. Using insecure login.'
-    )
-    cmd += ` --insecure-skip-tls-verify`
-  }
-
-  execSync(cmd)
-}
 
 /**
  * Delete a kind resource from a specified namespace within the cluster environment.
@@ -37,10 +18,9 @@ async function deleteResource(kind, name, ns, options = {}) {
 
 /**
  * Return a list of all kubeconfigs available for the given test environment.
- * @param {object} options Additional options for getting the kubeconfig files.
  * @returns {array} List of kubeconfig files that contain the cluster configurations for the test execution.
  */
-const getKubeConfig = (options = {}) => {
+function getKubeConfig() {
   const kubeconfigs = []
   const dir = './kube/config'
 
@@ -51,7 +31,7 @@ const getKubeConfig = (options = {}) => {
       }
     })
   } catch (err) {
-    console.warn(`Error: ${err}`)
+    console.log(`Unable to read kube config from environment. Reason: ${err}`)
   }
 
   return kubeconfigs
@@ -77,40 +57,66 @@ function getResource(kind, ns, options = {}) {
 }
 
 /**
- * Return the endpoint route for the cluster environment Search API.
- * @param {object} options Additional options for getting the endpoint route of the Search API server.
- * @returns {string} The route of the cluster's Search API.
+ * Create and return the route to access the Search API in the target cluster.
+ * @returns {string} The route to the Search API.
  */
-const getSearchApiRoute = async (options = {}) => {
-  const namespace = execSync(
-    `oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`
-  ).toString()
-  const routes = execSync(`oc get routes -n ${namespace}`).toString()
-
-  if (routes.indexOf('search-api-automation') == -1) {
+async function getSearchApiRoute() {
+  const namespace = execSync(`oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`).toString()
+  let route
+  try {
+    route = execSync(`oc get route search-api-automation -n ${namespace} -o jsonpath='{.spec.host}'`, {
+      stdio: [],
+    }).toString()
+  } catch (e) {
     execSync(
       `oc create route passthrough search-api-automation --service=search-search-api --insecure-policy=Redirect -n ${namespace}`
     )
     await sleep(5000)
     console.log('Created route search-api-automation.')
+    route = execSync(`oc get route search-api-automation -n ${namespace} -o jsonpath='{.spec.host}'`)
   }
-  return `https://search-api-automation-${namespace}.apps.${config.get(
-    'options:hub:baseDomain'
-  )}`
+  return `https://${route}`
 }
 
 /**
- * Get the current authorization token for the cluster environment.
- * @param {object} options Additional options for getting the cluster's authorization token.
+ * Get the current authorization token for the target cluster environment.
  * @returns {string} The cluster environment authorization token.
  */
-const getToken = (options = {}) => {
+function getKubeadminToken() {
   return execSync('oc whoami -t').toString().replace('\n', '')
 }
 
-exports.clusterLogin = clusterLogin
+/**
+ * Gets the token and other information required to impersonate a user (service account).
+ * @param string username - Service account name.
+ * @param string namespace - Namespace of the service account.
+ * @returns {name, namespace, fullName, token} - Object with information to impersonate user.
+ */
+async function getUserContext({ usr, ns }) {
+  let t
+  try {
+    t = execSync(`oc create token ${usr} -n ${ns}`)
+  } catch (e) {
+    const ocVersion = execSync(`oc version`).toString()
+    console.warn(`Failed to create token for service account. This test requires oc version 4.11.0 or later.
+    The oc version in the current environment is:
+    ${ocVersion}
+    Original error: ${e}
+    Falling back to using deprecated command 'oc serviceaccounts get-token ${usr} -n ${ns}`)
+
+    t = execSync(`oc serviceaccounts get-token ${usr} -n ${ns}`)
+  }
+  return {
+    fullName: `system:serviceaccount:${ns}:${usr}`,
+    name: usr,
+    namespace: ns,
+    token: t,
+  }
+}
+
 exports.deleteResource = deleteResource
 exports.getKubeConfig = getKubeConfig
+exports.getUserContext = getUserContext
 exports.getResource = getResource
 exports.getSearchApiRoute = getSearchApiRoute
-exports.getToken = getToken
+exports.getKubeadminToken = getKubeadminToken
