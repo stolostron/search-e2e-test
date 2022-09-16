@@ -132,8 +132,7 @@ export const searchPage = {
   shouldLoad: () => {
     searchPage.shouldFindNoSkeleton()
     cy.get('.pf-c-title').filter(':contains(Search)').should('exist')
-    cy.get('.react-tags').should('exist')
-    cy.get('.react-tags__search-input').should('exist')
+    cy.get('.pf-c-text-input-group__text-input').should('exist')
   },
   /**
    * Verify that the Search page should have loaded the resource table.
@@ -157,7 +156,7 @@ export const searchPage = {
    * Verify that the search bar is rendered on the Search page.
    */
   shouldRenderSearchBar: () => {
-    cy.get('.searchbar-container').should('exist')
+    cy.get('.pf-c-text-input-group__text-input').should('exist')
   },
   /**
    * Verify that the suggested searches header and tiles are rendered on the Search page.
@@ -170,7 +169,7 @@ export const searchPage = {
    * Expands the related resources tiles located within the Search page.
    */
   whenExpandRelationshipTiles: () => {
-    cy.get('.pf-c-expandable-section__toggle-text').contains('Show related resources').should('exist').click()
+    cy.get('.pf-c-expandable-section__toggle').contains('Show related resources').should('exist').click()
   },
   whenOpenFirstResourceTableTile: () => {
     cy.get('.pf-c-card__header')
@@ -178,14 +177,14 @@ export const searchPage = {
       .and('be.visible')
       .first()
       .within(() => {
-        cy.get('.pf-c-expandable-section__toggle-text').click()
+        cy.get('.pf-c-expandable-section__toggle').click()
       })
   },
   whenOpenResourceTableTile: (kind) => {
     cy.get('.pf-c-expandable-section')
       .should('have.lengthOf.at.most', 2)
       .then(() => {
-        cy.get('.pf-c-expandable-section__toggle-text').contains(capitalize(kind)).click()
+        cy.get('.pf-c-expandable-section__toggle').contains(capitalize(kind)).click()
       })
   },
   /**
@@ -243,23 +242,23 @@ export const searchPage = {
  */
 export const searchBar = {
   shouldContainTag: (filter) => {
-    cy.get('.react-tags__selected-tag-name').should('contain', filter)
+    cy.get('.pf-c-chip-group__list').should('contain', filter)
   },
   whenSuggestionsAreAvailable: (value, ignoreIfDoesNotExist) => {
     if (!ignoreIfDoesNotExist) {
-      cy.get('.react-tags__suggestions ul#ReactTags').children().should('have.length.above', 1)
+      cy.get('.pf-c-menu__list').children().should('have.length.above', 1)
     }
-    cy.get('.react-tags__search-input').click().type(value)
+    cy.get('.pf-c-text-input-group__text-input').click().type(value)
   },
   whenEnterTextInSearchBar: (property, value, ignoreIfDoesNotExist) => {
-    cy.get('.react-tags__search-input').click()
+    cy.get('.pf-c-text-input-group__text-input').click()
     searchBar.whenSuggestionsAreAvailable(property, ignoreIfDoesNotExist)
 
-    cy.get('.react-tags__search-input').type(' ')
+    cy.get('.pf-c-text-input-group__text-input').type(' ')
 
     if (value && value !== null) {
       searchBar.whenSuggestionsAreAvailable(value, ignoreIfDoesNotExist)
-      cy.get('.react-tags__search-input').type(' ')
+      cy.get('.pf-c-text-input-group__text-input').type(' ')
     }
   },
   /**
