@@ -5,7 +5,7 @@
 
 /// <reference types="cypress" />
 
-import { searchPage, searchBar } from './search'
+import { searchBar, searchPage } from './search'
 
 export const savedSearches = {
   editSavedSearch: (queryName, editedName, editedDesc) => {
@@ -24,7 +24,7 @@ export const savedSearches = {
   saveClusterNamespaceSearch: (cluster, namespace, queryName, queryDesc) => {
     searchPage.shouldFindNamespaceInCluster(namespace, cluster)
     searchBar.whenRunSearchQuery()
-    cy.get('.pf-c-button.pf-m-link').contains('Save search').focus().click()
+    cy.get('.pf-c-button.pf-m-plain').contains('Save search').focus().click()
     cy.get('#add-query-name').type(queryName)
     cy.get('#add-query-desc').type(queryDesc)
     cy.get('.pf-c-modal-box__footer').contains('Save').focus().click()
