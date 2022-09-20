@@ -94,21 +94,26 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
   })
 
   describe('using labels', () => {
-    test(`should match resources containing the label 'fruit'`, async () => {
-      const items = await resolveSearchItems(user.token, { filters: [{ property: 'label', values: ['type=fruit'] }] })
-      expect(items).toHaveLength(1)
-      expect(items[0]).toHaveProperty('name', 'cm2-apple')
-    })
-
-    test('should match resources containing labelA OR labelB.', async () => {
-      const items = await resolveSearchItems(user.token, {
-        filters: [{ property: 'label', values: ['type=fruit', 'type=vegetable'] }],
+    if (SEARCH_API_V1) {
+      test(`should match resources containing the label 'fruit'`, async () => {
+        const items = await resolveSearchItems(user.token, { filters: [{ property: 'label', values: ['type=fruit'] }] })
+        expect(items).toHaveLength(1)
+        expect(items[0]).toHaveProperty('name', 'cm2-apple')
       })
-      const names = items.map((i) => i.name)
 
-      expect(items).toHaveLength(3)
-      expect(names).toEqual(expect.arrayContaining(['cm2-apple', 'cm3-avocado', 'cm4-broccoli']))
-    })
+      test('should match resources containing labelA OR labelB.', async () => {
+        const items = await resolveSearchItems(user.token, {
+          filters: [{ property: 'label', values: ['type=fruit', 'type=vegetable'] }],
+        })
+        const names = items.map((i) => i.name)
+
+        expect(items).toHaveLength(3)
+        expect(names).toEqual(expect.arrayContaining(['cm2-apple', 'cm3-avocado', 'cm4-broccoli']))
+      })
+    } else {
+      test.skip(`(SKIPPED V2) should match resources containing the label 'fruit'`)
+      test.skip('(SKIPPED V2) should match resources containing labelA OR labelB.')
+    }
   })
 
   describe(`using the filter 'kind'`, () => {
