@@ -189,12 +189,16 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
   })
 
   describe('search by count', () => {
-    test('should return expected count.', async () => {
-      const count = await resolveSearchCount(user.token, {
-        filters: [{ property: 'label', values: ['type=fruit', 'type=vegetable'] }],
+    if (SEARCH_API_V1) {
+      test('should return expected count.', async () => {
+        const count = await resolveSearchCount(user.token, {
+          filters: [{ property: 'label', values: ['type=fruit', 'type=vegetable'] }],
+        })
+        expect(count).toEqual(3)
       })
-      expect(count).toEqual(3)
-    })
+    } else {
+      test.skip('(SKIPPED V2) should return expected count.')
+    }
   })
 
   describe('search with limit', () => {
