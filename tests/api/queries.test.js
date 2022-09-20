@@ -111,8 +111,8 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
         expect(names).toEqual(expect.arrayContaining(['cm2-apple', 'cm3-avocado', 'cm4-broccoli']))
       })
     } else {
-      test.skip(`(SKIPPED V2) should match resources containing the label 'fruit'`)
-      test.skip('(SKIPPED V2) should match resources containing labelA OR labelB.')
+      test.skip(`(SKIPPED V2) should match resources containing the label 'fruit'`, () => {})
+      test.skip('(SKIPPED V2) should match resources containing labelA OR labelB.', () => {})
     }
   })
 
@@ -197,7 +197,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
         expect(count).toEqual(3)
       })
     } else {
-      test.skip('(SKIPPED V2) should return expected count.')
+      test.skip('(SKIPPED V2) should return expected count.', () => {})
     }
   })
 
