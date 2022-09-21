@@ -17,14 +17,14 @@ export const overviewPage = {
   shouldLoad: () => {
     cy.get('.pf-c-empty-state__icon').should('not.exist')
     cy.get('.pf-c-skeleton').should('not.exist')
-    cy.get('.pf-c-title').filter(':contains(Overview)').should('exist')
+    cy.get('.pf-c-page__main-section').filter(':contains(Overview)').should('exist')
   },
   /**
    * Verify that the Add credential page should be loaded correctly.
    */
   shouldLoadAddCredentialPage: () => {
     cy.get('.pf-c-empty-state__icon').should('not.exist')
-    cy.get('.pf-c-title').filter(':contains(credential)').should('exist')
+    cy.get('.pf-c-page__main-section').filter(':contains(credential)').should('exist')
   },
   /**
    * Verify that the Overview page should have a cluster provider card panel.
@@ -71,23 +71,6 @@ export const overviewPage = {
 
     searchPage.shouldLoadResults()
     cy.get('.pf-c-expandable-section__toggle-text').filter(':contains(Pod)')
-  },
-  /**
-   * Verify that the Overview page should have a left navigation panel that contain accessible links to a specified page.
-   * @param {string} page The page to check for within the left navigation panel.
-   * @param {bool} noClick Determine if the link should be clicked on within the test.
-   * @param {string} path The URL path of the targeted page.
-   */
-  shouldHaveLeftNavLinkToTargetedPage: (page, noClick, path) => {
-    overviewPage.shouldLoad()
-    cy.get('.pf-c-nav__list').contains(page)
-
-    if (noClick) {
-      cy.get('li.pf-c-nav__item').contains(page).should('have.attr', 'href').and('contain', path)
-    } else {
-      cy.get('li.pf-c-nav__item').contains(page).click()
-      cy.get('h1.pf-c-title').contains(page)
-    }
   },
   /**
    * Navigate the test user to the Add credential page within the ACM console.

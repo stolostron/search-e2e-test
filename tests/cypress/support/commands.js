@@ -38,18 +38,10 @@ Cypress.Commands.add('visitAndLogin', (URL, OPTIONS_HUB_USER, OPTIONS_HUB_PASSWO
   var idp = OPTIONS_HUB_OC_IDP || Cypress.env('OPTIONS_HUB_OC_IDP')
 
   cy.visit(URL, { failOnStatusCode: false })
-  cy.url().then((url) => {
-    if (!url.includes('oauth-openshift')) {
-      // check for and handle provider button
-      cy.get('body').then((body) => {
-        if (body.find('.pf-c-page__header').length === 0) {
-          cy.log("Clicking 'Log in with OpenShift' button")
-          cy.get('.panel-login').get('button').click()
-        }
-      })
-    }
-  })
+  cy.waitUntil(() => cy.ifContains('.pf-c-title', 'Log in with'))
   cy.url().then((res) => {
+    cy.log('res')
+    cy.log(res)
     if (res.includes('oauth-openshift')) {
       cy.log('The current user is logged out of the ACM console. Attempting to log into the console.')
 
