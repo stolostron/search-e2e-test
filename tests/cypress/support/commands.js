@@ -40,8 +40,6 @@ Cypress.Commands.add('visitAndLogin', (URL, OPTIONS_HUB_USER, OPTIONS_HUB_PASSWO
   cy.visit(URL, { failOnStatusCode: false })
   cy.waitUntil(() => cy.ifContains('.pf-c-title', 'Log in with'))
   cy.url().then((res) => {
-    cy.log('res')
-    cy.log(res)
     if (res.includes('oauth-openshift')) {
       cy.log('The current user is logged out of the ACM console. Attempting to log into the console.')
 
