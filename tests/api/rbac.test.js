@@ -82,7 +82,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
         expect(items).toEqual([])
       })
     } else {
-      test.todo(`SKIPPING FOR V2 - should not match any resources containing the keyword 'a'`)
+      test.skip(`(SKIPPED V2) - should not match any resources containing the keyword 'a'`, () => {})
     }
     test(`should not match any resources in namespace ${ns}`, async () => {
       const items = await resolveSearchItems(user.token, { filters: [{ property: 'namespace', values: [ns] }] })
@@ -116,8 +116,8 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
         expect(items).toEqual([])
       })
     } else {
-      test.todo('SKIPPING FOR V2 - should not match any ConfigMap from other namespaces')
-      test.todo('SKIPPING FOR V2 - should not match any other kind')
+      test.skip('(SKIPPED V2) - should not match any ConfigMap from other namespaces', () => {})
+      test.skip('(SKIPPED V2) - should not match any other kind', () => {})
     }
   })
 
