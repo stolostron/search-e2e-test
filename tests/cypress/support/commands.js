@@ -41,7 +41,7 @@ Cypress.Commands.add('visitAndLogin', (URL, OPTIONS_HUB_USER, OPTIONS_HUB_PASSWO
   cy.get('body').then((body) => {
     if (body.find('.pf-c-title').length === 0) {
       // wait until identity provider select is present
-      cy.waitUntil(() => cy.ifContains('.pf-c-title', 'Log in with'))
+      cy.waitUntilContains('.pf-c-title', 'Log in with')
     }
   })
   cy.url().then((res) => {
