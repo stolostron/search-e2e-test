@@ -38,7 +38,17 @@ Cypress.Commands.add('visitAndLogin', (URL, OPTIONS_HUB_USER, OPTIONS_HUB_PASSWO
   var idp = OPTIONS_HUB_OC_IDP || Cypress.env('OPTIONS_HUB_OC_IDP')
 
   cy.visit(URL, { failOnStatusCode: false })
-  cy.waitUntil(() => cy.ifContains('.pf-c-title', 'Log in with'))
+  cy.url().then(() => {
+    cy.get('body').then((body) => {
+      if (body.find('.pf-c-title').length === 0) {
+        // wait until identity provider select is present
+        cy.waitUntil(() => cy.ifContains('.pf-c-title', 'Log in with'))
+      }
+    })
+  })
+  cy.get('body').then(() => {
+    cy.waitUntil(() => cy.ifContains('.pf-c-title', 'Log in with'))
+  })
   cy.url().then((res) => {
     if (res.includes('oauth-openshift')) {
       cy.log('The current user is logged out of the ACM console. Attempting to log into the console.')

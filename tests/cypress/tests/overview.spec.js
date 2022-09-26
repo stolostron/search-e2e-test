@@ -30,10 +30,5 @@ describe('RHACM4K-1419: Search: Overview page', { tags: tags.env }, function () 
     it(`[P2][Sev2][${squad}] should have link to search page`, function () {
       overviewPage.shouldHaveLinkToSearchPage()
     })
-
-    it(`[P2][Sev2][${squad}] add credential action works`, function () {
-      overviewPage.whenAddCredentialAction()
-      overviewPage.shouldLoadAddCredentialPage()
-    })
   })
 })

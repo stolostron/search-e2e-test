@@ -20,13 +20,6 @@ export const overviewPage = {
     cy.get('.pf-c-page__main-section').filter(':contains(Overview)').should('exist')
   },
   /**
-   * Verify that the Add credential page should be loaded correctly.
-   */
-  shouldLoadAddCredentialPage: () => {
-    cy.get('.pf-c-empty-state__icon').should('not.exist')
-    cy.get('.pf-c-page__main-section').filter(':contains(credential)').should('exist')
-  },
-  /**
    * Verify that the Overview page should have a cluster provider card panel.
    */
   shouldHaveClusterProviderCard: () => {
@@ -71,13 +64,6 @@ export const overviewPage = {
 
     searchPage.shouldLoadResults()
     cy.get('.pf-c-expandable-section__toggle-text').filter(':contains(Pod)')
-  },
-  /**
-   * Navigate the test user to the Add credential page within the ACM console.
-   */
-  whenAddCredentialAction: () => {
-    cy.get('#add-credential').should('have.attr', 'href').and('contain', 'credential')
-    cy.get('#add-credential').click()
   },
   /**
    * Navigate the test user to the Overview page within the ACM console.
