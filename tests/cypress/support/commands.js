@@ -38,10 +38,14 @@ Cypress.Commands.add('visitAndLogin', (URL, OPTIONS_HUB_USER, OPTIONS_HUB_PASSWO
   var idp = OPTIONS_HUB_OC_IDP || Cypress.env('OPTIONS_HUB_OC_IDP')
 
   cy.visit(URL, { failOnStatusCode: false })
-  cy.get('body').then((body) => {
-    if (body.find('.pf-c-title').length === 0) {
-      // wait until identity provider select is present
-      cy.waitUntilContains('.pf-c-title', 'Log in with')
+  cy.url().then((url) => {
+    if (!url.includes('oauth-openshift')) {
+      // check if user is already logged in via the rhacm header - if not wait until the login screen appears
+      cy.get('body').then((body) => {
+        if (body.find('.pf-c-page__header').length === 0) {
+          cy.waitUntilContains('.pf-c-title', 'Log in with')
+        }
+      })
     }
   })
   cy.url().then((res) => {
