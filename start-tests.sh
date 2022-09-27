@@ -136,7 +136,7 @@ export CYPRESS_OPTIONS_HUB_PASSWORD=$OPTIONS_HUB_PASSWORD
 export CYPRESS_OPTIONS_HUB_USER=$OPTIONS_HUB_USER
 
 # Export base url for cluster.
-export BASE_URL=https://multicloud-console.apps.$OPTIONS_HUB_BASEDOMAIN
+export BASE_URL=https://console-openshift-console.apps.$OPTIONS_HUB_BASEDOMAIN
 export CYPRESS_BASE_URL=$BASE_URL
 
 echo -e
