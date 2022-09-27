@@ -38,16 +38,7 @@ Cypress.Commands.add('visitAndLogin', (URL, OPTIONS_HUB_USER, OPTIONS_HUB_PASSWO
   var idp = OPTIONS_HUB_OC_IDP || Cypress.env('OPTIONS_HUB_OC_IDP')
 
   cy.visit(URL, { failOnStatusCode: false })
-  cy.url().then((url) => {
-    if (!url.includes('oauth-openshift')) {
-      // check if user is already logged in via the rhacm header - if not wait until the login screen appears
-      cy.get('body').then((body) => {
-        if (body.find('.pf-c-page__header').length === 0) {
-          cy.waitUntilContains('.pf-c-title', 'Log in with')
-        }
-      })
-    }
-  })
+  cy.get('.pf-c-title').should('exist').and('contain', 'Log in with')
   cy.url().then((res) => {
     if (res.includes('oauth-openshift')) {
       cy.log('The current user is logged out of the ACM console. Attempting to log into the console.')
