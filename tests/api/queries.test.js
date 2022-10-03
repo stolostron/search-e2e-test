@@ -17,7 +17,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     let setupCommands = `# export ns=search-query; export usr=search-query-user
     oc create namespace ${ns}
     oc create serviceaccount ${usr} -n ${ns}
-    oc create role ${usr} --verb=get,list --resource=configmaps,deployments,replicasets,pods -n ${ns}
+    oc create role ${usr} --verb=get,list --resource=configmaps,deployments,replicasets -n ${ns}
     oc create rolebinding ${usr} --role=${usr} --serviceaccount=${ns}:${usr} -n ${ns}
 
     oc create configmap cm0 -n ${ns} --from-literal=key=cm0
@@ -29,9 +29,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     oc create configmap cm4-broccoli -n ${ns} --from-literal=key=cm4
     oc label configmap cm4-broccoli -n ${ns} type=vegetable
 
-    oc create deployment ${usr} -n ${ns} --image=busybox --replicas=1 -- 'date; sleep 1; date; sleep 5;'
-    oc patch deployment ${usr} -n ${ns} -p '{"spec":{"template":{"spec":{"containers":[{"name":"busybox","imagePullPolicy":"IfNotPresent"}]}}}}'
-    oc scale deployment ${usr} -n ${ns} --replicas=5
+    oc create deployment ${usr} -n ${ns} --image=busybox --replicas=0 -- 'date; sleep 60;'
     `
 
     // The V1 logic requires that user has access to list namespaces.
@@ -75,15 +73,11 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
       expect(items[0]).toHaveProperty('name', 'cm2-apple')
     })
 
-    if (SEARCH_API_V1) {
-      test('should be case insensitive.', async () => {
-        const items = await resolveSearchItems(user.token, { keywords: ['ApPLe'] })
-        expect(items).toHaveLength(1)
-        expect(items[0]).toHaveProperty('name', 'cm2-apple')
-      })
-    } else {
-      test.skip('(SKIPPED V2) should be case insensitive', () => {})
-    }
+    test('should be case insensitive.', async () => {
+      const items = await resolveSearchItems(user.token, { keywords: ['ApPLe'] })
+      expect(items).toHaveLength(1)
+      expect(items[0]).toHaveProperty('name', 'cm2-apple')
+    })
 
     test(`should match resources where label text contains 'vegetable'`, async () => {
       const items = await resolveSearchItems(user.token, { keywords: ['vegetable'] })
@@ -137,16 +131,18 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
           { property: 'created', values: ['hour'] },
         ],
       })
-      expect(items).toHaveLength(10)
+      expect(items).toHaveLength(9)
     })
 
-    test('should match resources where desired = 5', async () => {
-      const items = await resolveSearchItems(user.token, { filters: [{ property: 'desired', values: ['=5'] }] })
-      expect(items).toHaveLength(1)
-      expect(items[0]).toHaveProperty('name', usr)
+    test('should match resources where desired = 0', async () => {
+      const items = await resolveSearchItems(user.token, { filters: [{ property: 'desired', values: ['=0'] }] })
+      expect(items).toHaveLength(2)
+      const kinds = items.map((i) => i.kind)
+      expect(kinds).toEqual(expect.arrayContaining(['Deployment', 'ReplicaSet']))
     })
 
-    test('should match resources where current > 3', async () => {
+    // TODO: Skiping because this depends on kubernetes creating the pod, which could cause intermittent test failures.
+    test.skip('should match resources where current > 3', async () => {
       const items = await resolveSearchItems(user.token, { filters: [{ property: 'current', values: ['>3'] }] })
       expect(items).toHaveLength(2)
       const kinds = items.map((i) => i.kind)
@@ -161,16 +157,18 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
 
     test('should match deployments where desired <= 5', async () => {
       const items = await resolveSearchItems(user.token, { filters: [{ property: 'desired', values: ['<=5'] }] })
-      expect(items).toHaveLength(3)
+      expect(items).toHaveLength(2)
     })
 
-    test('should match resources where current >= 5', async () => {
+    // TODO: Skiping because this depends on kubernetes creating the pod, which could cause intermittent test failures.
+    test.skip('should match resources where current >= 5', async () => {
       const items = await resolveSearchItems(user.token, { filters: [{ property: 'current', values: ['>=5'] }] })
       expect(items).toHaveLength(1)
       expect(items[0]).toHaveProperty('kind', 'Deployment')
     })
 
-    test('should match resources where kind is not namespace and status is not Running', async () => {
+    // TODO: Skiping because this depends on kubernetes creating the pod, which could cause intermittent test failures.
+    test.skip('should match resources where kind is not namespace and status is not Running', async () => {
       const items = await resolveSearchItems(user.token, {
         filters: [
           { property: 'kind', values: ['!Namespace'] },

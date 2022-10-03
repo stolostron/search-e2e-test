@@ -169,17 +169,7 @@ echo -e "Logged in as user: $(oc whoami)\n"
 export CYPRESS_ACM_VERSION=`oc get subscriptions.operators.coreos.com -A -o yaml | grep currentCSV:\ advanced-cluster-management | awk '{$1=$1};1' | sed "s/currentCSV:\ advanced-cluster-management.v//"`
 log_color "green" "Testing with ACM Version": "$CYPRESS_ACM_VERSION\n"
 
-log_color "cyan" "Checking RedisGraph deployment."
 installNamespace=`oc get subscriptions.operators.coreos.com --all-namespaces | grep advanced-cluster-management | awk '{print $1}'`
-rgstatus=`oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}" -n $installNamespace`
-
-if [[ "$rgstatus" == "true" ]]; then
-  echo -e "RedisGraph deployment is enabled.\n"
-else
-  echo -e "RedisGraph deployment disabled, enabling and waiting 60 seconds for the search-redisgraph-0 pod.\n"
-  oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n $installNamespace
-  sleep 60
-fi
 
 # Search for managed clusters.
 MANAGED_CLUSTERS=($(oc get managedclusters -o custom-columns='name:.metadata.name' --no-headers))
