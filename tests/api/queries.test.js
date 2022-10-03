@@ -73,15 +73,11 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
       expect(items[0]).toHaveProperty('name', 'cm2-apple')
     })
 
-    if (SEARCH_API_V1) {
-      test('should be case insensitive.', async () => {
-        const items = await resolveSearchItems(user.token, { keywords: ['ApPLe'] })
-        expect(items).toHaveLength(1)
-        expect(items[0]).toHaveProperty('name', 'cm2-apple')
-      })
-    } else {
-      test.skip('(SKIPPED V2) should be case insensitive', () => {})
-    }
+    test('should be case insensitive.', async () => {
+      const items = await resolveSearchItems(user.token, { keywords: ['ApPLe'] })
+      expect(items).toHaveLength(1)
+      expect(items[0]).toHaveProperty('name', 'cm2-apple')
+    })
 
     test(`should match resources where label text contains 'vegetable'`, async () => {
       const items = await resolveSearchItems(user.token, { keywords: ['vegetable'] })
