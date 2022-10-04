@@ -43,9 +43,14 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     const [route] = await Promise.all([getSearchApiRoute(), execCliCmdString(setupCommands)])
     searchApiRoute = route
 
-    await sleep(20000) // Wait for the service account and search index to get updated.
+    await sleep(15000) // Wait for the service account and search index to get updated.
+  }, 30000)
+
+  // Note: Keep this separate from beforeAll because it causes test to fail for unknown reason.
+  beforeEach(async () => {
+    await sleep(3000)
     user = await getUserContext({ usr, ns })
-  }, 45000)
+  })
 
   afterAll(async () => {
     let teardownCmds = `# export ns=search-query; export usr=search-query-user
@@ -57,7 +62,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
       oc delete clusterrolebinding ${usr}`
     }
 
-    execCliCmdString(teardownCmds)
+    await execCliCmdString(teardownCmds)
   }, 30000)
 
   describe(`using keywords`, () => {

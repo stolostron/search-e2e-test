@@ -35,7 +35,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
     oc create role ${usr4} --verb=get,list --resource=deployment -n ${ns}
     oc create rolebinding ${usr4} --role=${usr4} --serviceaccount=${ns}:${usr4} -n ${ns}
 
-    oc create deployment ${usr4} -n ${ns} --image=busybox --replicas=1 -- 'date; sleep 1; date; sleep 5;'
+    oc create deployment ${usr4} -n ${ns} --image=busybox --replicas=1 -- 'date; sleep 60;'
     oc patch deployment ${usr4} -n ${ns} -p '{"spec":{"template":{"spec":{"containers":[{"name":"busybox","imagePullPolicy":"IfNotPresent"}]}}}}'
     oc scale deployment ${usr4} -n ${ns} --replicas=5
 
@@ -58,7 +58,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
     oc delete clusterrolebinding ${usr2}
     oc delete clusterrole ${usr2}`
 
-    execCliCmdString(teardownCmds)
+    await execCliCmdString(teardownCmds)
   }, 10000)
 
   describe(`with user ${usr0} (not authorized to list any resources)`, () => {
