@@ -41,7 +41,7 @@ export const overviewPage = {
       .filter(':contains(Summary)')
       .should('exist')
       .within(() => {
-        cy.get('.pf-c-card__body').should('contain', 'Application').and('contain', 'Cluster').and('contain', 'Pods')
+        cy.get('.pf-c-card__body').should('contain', 'Application').and('contain', 'Cluster').and('contain', 'Nodes')
       })
   },
   /**
@@ -67,10 +67,10 @@ export const overviewPage = {
     cy.get('.pf-c-expandable-section__toggle-text').filter(':contains(Cluster)')
     cy.go('back')
 
-    cy.get('#pods-summary a').should('exist').and('be.visible').click()
+    cy.get('#nodes-summary a').should('exist').and('be.visible').click()
 
     searchPage.shouldLoadResults()
-    cy.get('.pf-c-expandable-section__toggle-text').filter(':contains(Pod)')
+    cy.get('.pf-c-expandable-section__toggle-text').filter(':contains(Node)')
   },
   /**
    * Verify that the Overview page should have a left navigation panel that contain accessible links to a specified page.
