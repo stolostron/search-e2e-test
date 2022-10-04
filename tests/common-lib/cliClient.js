@@ -13,7 +13,11 @@ async function execCliCmdString(commands) {
   cmds.forEach((cmd) => {
     // Ignore empty lines and comments.
     if (cmd.trim() && cmd.trim().charAt(0) !== '#') {
-      execSync(cmd.trim())
+      try {
+        execSync(cmd.trim())
+      } catch (e) {
+        console.log(`Error executing cli command. Command: [${cmd}] Error: [${e}]`)
+      }
     }
   })
 }
