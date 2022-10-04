@@ -43,9 +43,9 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     const [route] = await Promise.all([getSearchApiRoute(), execCliCmdString(setupCommands)])
     searchApiRoute = route
 
-    await sleep(15000) // Wait for the service account and search index to get updated.
+    await sleep(20000) // Wait for the service account and search index to get updated.
     user = await getUserContext({ usr, ns })
-  }, 40000)
+  }, 45000)
 
   afterAll(async () => {
     let teardownCmds = `# export ns=search-query; export usr=search-query-user
