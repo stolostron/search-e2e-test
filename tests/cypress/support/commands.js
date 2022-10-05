@@ -38,9 +38,9 @@ Cypress.Commands.add('visitAndLogin', (URL, OPTIONS_HUB_USER, OPTIONS_HUB_PASSWO
   var idp = OPTIONS_HUB_OC_IDP || Cypress.env('OPTIONS_HUB_OC_IDP')
 
   cy.visit(URL, { failOnStatusCode: false })
-  cy.waitUntil(() => cy.ifContains('.pf-c-title', 'Log in with'), {
-    timeout: 30000,
-  })
+  // Wait until the login page loads
+  cy.waitUntil(() => cy.get('.pf-c-login__main').should('exist'))
+  // If user is not logged in log them in otherwise proceed with tests
   cy.url().then((res) => {
     if (res.includes('oauth-openshift')) {
       cy.log('The current user is logged out of the ACM console. Attempting to log into the console.')
