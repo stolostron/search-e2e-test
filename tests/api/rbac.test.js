@@ -26,13 +26,13 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
     oc create serviceaccount ${usr2} -n ${ns}
     oc create serviceaccount ${usr3} -n ${ns}
     oc create serviceaccount ${usr4} -n ${ns}
-    oc create role ${usr1} --verb=get,list --resource=configmaps -n ${ns}
+    oc create role ${usr1} --verb=list${SEARCH_API_V1 ? ',get' : ''} --resource=configmaps -n ${ns}
     oc create rolebinding ${usr1} --role=${usr1} --serviceaccount=${ns}:${usr1} -n ${ns}
-    oc create clusterrole ${usr2} --verb=list,get --resource=nodes,configmaps
+    oc create clusterrole ${usr2} --verb=list${SEARCH_API_V1 ? ',get' : ''} --resource=nodes,configmaps
     oc create clusterrolebinding ${usr2} --clusterrole=${usr2} --serviceaccount=${ns}:${usr2}
     oc create rolebinding ${usr3} --clusterrole=admin --serviceaccount=${ns}:${usr3} -n ${ns}
 
-    oc create role ${usr4} --verb=get,list --resource=deployment -n ${ns}
+    oc create role ${usr4} --verb=list${SEARCH_API_V1 ? ',get' : ''} --resource=deployment -n ${ns}
     oc create rolebinding ${usr4} --role=${usr4} --serviceaccount=${ns}:${usr4} -n ${ns}
 
     oc create deployment ${usr4} -n ${ns} --image=busybox --replicas=1 -- 'date; sleep 60;'
