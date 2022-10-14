@@ -26,13 +26,13 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
     oc create serviceaccount ${usr2} -n ${ns}
     oc create serviceaccount ${usr3} -n ${ns}
     oc create serviceaccount ${usr4} -n ${ns}
-    oc create role ${usr1} --verb=get,list --resource=configmaps -n ${ns}
+    oc create role ${usr1} --verb=list${SEARCH_API_V1 ? ',get' : ''} --resource=configmaps -n ${ns}
     oc create rolebinding ${usr1} --role=${usr1} --serviceaccount=${ns}:${usr1} -n ${ns}
-    oc create clusterrole ${usr2} --verb=list,get --resource=nodes,configmaps
+    oc create clusterrole ${usr2} --verb=list${SEARCH_API_V1 ? ',get' : ''} --resource=nodes,configmaps
     oc create clusterrolebinding ${usr2} --clusterrole=${usr2} --serviceaccount=${ns}:${usr2}
     oc create rolebinding ${usr3} --clusterrole=admin --serviceaccount=${ns}:${usr3} -n ${ns}
 
-    oc create role ${usr4} --verb=get,list --resource=deployment -n ${ns}
+    oc create role ${usr4} --verb=list${SEARCH_API_V1 ? ',get' : ''} --resource=deployment -n ${ns}
     oc create rolebinding ${usr4} --role=${usr4} --serviceaccount=${ns}:${usr4} -n ${ns}
 
     oc create deployment ${usr4} -n ${ns} --image=busybox --replicas=1 -- 'date; sleep 60;'
@@ -61,7 +61,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
     await execCliCmdString(teardownCmds)
   }, 10000)
 
-  describe(`with user ${usr0} (not authorized to list any resources)`, () => {
+  describe(`with user ${usr0} (no special authorization, only default)`, () => {
     beforeAll(async () => {
       user = await getUserContext({ usr: usr0, ns })
     })
@@ -75,15 +75,13 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
     test('should not receive ConfigMap', () => ValidateSearchData({ user, kind: 'configmap' }), validationTimeout)
     test('should not receive Node', () => ValidateSearchData({ user, kind: 'node' }), validationTimeout)
     test('should not receive Secret', () => ValidateSearchData({ user, kind: 'secret' }), validationTimeout)
-    if (!!SEARCH_API_V1) {
-      test(`should not match any resources containing the keyword 'a'`, async () => {
-        const items = await resolveSearchItems(user.token, { keywords: ['a'] })
-        expect(items).toHaveLength(0)
-        expect(items).toEqual([])
-      })
-    } else {
-      test.skip(`(SKIPPED V2) - should not match any resources containing the keyword 'a'`, () => {})
-    }
+
+    test(`should not match any resources containing the keyword 'cm0' or 'cm1`, async () => {
+      const items = await resolveSearchItems(user.token, { keywords: ['cm0', 'cm1'] })
+      expect(items).toHaveLength(0)
+      expect(items).toEqual([])
+    })
+
     test(`should not match any resources in namespace ${ns}`, async () => {
       const items = await resolveSearchItems(user.token, { filters: [{ property: 'namespace', values: [ns] }] })
       expect(items).toHaveLength(0)
@@ -104,21 +102,22 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
     test('should not receive Secret', () => ValidateSearchData({ user, kind: 'secret' }), validationTimeout)
     test('should receive ConfigMap', () => ValidateSearchData({ user, kind: 'configmap' }), validationTimeout)
 
-    if (!!SEARCH_API_V1) {
-      test(`should not match any ConfigMap from other namespaces`, async () => {
-        const items = await resolveSearchItems(user.token, { filters: [{ property: 'kind', values: ['configmap'] }] })
-        expect(items.find(({ namespace }) => namespace && namespace.toLowerCase() !== ns)).toEqual(undefined)
-        expect(items.find(({ kind }) => kind && kind.toLowerCase() !== 'configmap')).toEqual(undefined)
+    test(`should not match any ConfigMap from other namespaces`, async () => {
+      const items = await resolveSearchItems(user.token, { filters: [{ property: 'kind', values: ['configmap'] }] })
+      expect(items.find(({ namespace }) => namespace && namespace.toLowerCase() !== ns)).toEqual(undefined)
+      expect(items.find(({ kind }) => kind && kind.toLowerCase() !== 'configmap')).toEqual(undefined)
+    })
+
+    test(`should not match any other resources in the namespace`, async () => {
+      const items = await resolveSearchItems(user.token, {
+        filters: [
+          { property: 'namespace', values: [ns] },
+          { property: 'kind', values: ['!ConfigMap'] },
+        ],
       })
-      test(`should not match any other kind`, async () => {
-        const items = await resolveSearchItems(user.token, { filters: [{ property: 'kind', values: ['!configmap'] }] })
-        expect(items).toHaveLength(0)
-        expect(items).toEqual([])
-      })
-    } else {
-      test.skip('(SKIPPED V2) - should not match any ConfigMap from other namespaces', () => {})
-      test.skip('(SKIPPED V2) - should not match any other kind', () => {})
-    }
+      expect(items).toHaveLength(0)
+      expect(items).toEqual([])
+    })
   })
 
   describe(`with user ${usr2} (nodes and configmap in all namespaces.)`, () => {

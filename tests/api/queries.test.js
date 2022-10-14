@@ -17,7 +17,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     let setupCommands = `# export ns=search-query; export usr=search-query-user
     oc create namespace ${ns}
     oc create serviceaccount ${usr} -n ${ns}
-    oc create role ${usr} --verb=get,list --resource=configmaps,deployments,replicasets -n ${ns}
+    oc create role ${usr} --verb=list${SEARCH_API_V1 ? ',get' : ''} --resource=configmap,deployment,replicaset -n ${ns}
     oc create rolebinding ${usr} --role=${usr} --serviceaccount=${ns}:${usr} -n ${ns}
 
     oc create configmap cm0 -n ${ns} --from-literal=key=cm0
@@ -30,14 +30,10 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     oc label configmap cm4-broccoli -n ${ns} type=vegetable
 
     oc create deployment ${usr} -n ${ns} --image=busybox --replicas=0 -- 'date; sleep 60;'
-    `
 
-    // The V1 logic requires that user has access to list namespaces.
-    if (SEARCH_API_V1) {
-      setupCommands += `
-      oc create clusterrole ${usr} --verb=list,get --resource=namespaces
-      oc create clusterrolebinding ${usr} --clusterrole=${usr} --serviceaccount=${ns}:${usr}`
-    }
+    # The V1 implementation requires that user has access to list namespaces.
+    ${SEARCH_API_V1 ? `oc create clusterrole ${usr} --verb=list,get --resource=namespaces` : ''}
+    ${SEARCH_API_V1 ? `oc create clusterrolebinding ${usr} --clusterrole=${usr} --serviceaccount=${ns}:${usr}` : ''}`
 
     // Run the setup steps in parallel.
     const [route] = await Promise.all([getSearchApiRoute(), execCliCmdString(setupCommands)])
@@ -56,13 +52,9 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
 
   afterAll(async () => {
     let teardownCmds = `# export ns=search-query; export usr=search-query-user
-    oc delete ns ${ns}`
-
-    if (SEARCH_API_V1) {
-      teardownCmds += `
-      oc delete clusterrole ${usr}
-      oc delete clusterrolebinding ${usr}`
-    }
+    oc delete ns ${ns}
+    ${SEARCH_API_V1 ? `oc delete clusterrole ${usr}` : ''}
+    ${SEARCH_API_V1 ? `oc delete clusterrolebinding ${usr}` : ''}`
 
     await execCliCmdString(teardownCmds)
   }, 30000)
@@ -95,26 +87,21 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
   })
 
   describe('using labels', () => {
-    if (SEARCH_API_V1) {
-      test(`should match resources containing the label 'fruit'`, async () => {
-        const items = await resolveSearchItems(user.token, { filters: [{ property: 'label', values: ['type=fruit'] }] })
-        expect(items).toHaveLength(1)
-        expect(items[0]).toHaveProperty('name', 'cm2-apple')
-      })
+    test(`should match resources containing the label 'fruit'`, async () => {
+      const items = await resolveSearchItems(user.token, { filters: [{ property: 'label', values: ['type=fruit'] }] })
+      expect(items).toHaveLength(1)
+      expect(items[0]).toHaveProperty('name', 'cm2-apple')
+    })
 
-      test('should match resources containing labelA OR labelB.', async () => {
-        const items = await resolveSearchItems(user.token, {
-          filters: [{ property: 'label', values: ['type=fruit', 'type=vegetable'] }],
-        })
-        const names = items.map((i) => i.name)
-
-        expect(items).toHaveLength(3)
-        expect(names).toEqual(expect.arrayContaining(['cm2-apple', 'cm3-avocado', 'cm4-broccoli']))
+    test('should match resources containing labelA OR labelB.', async () => {
+      const items = await resolveSearchItems(user.token, {
+        filters: [{ property: 'label', values: ['type=fruit', 'type=vegetable'] }],
       })
-    } else {
-      test.skip(`(SKIPPED V2) should match resources containing the label 'fruit'`, () => {})
-      test.skip('(SKIPPED V2) should match resources containing labelA OR labelB.', () => {})
-    }
+      const names = items.map((i) => i.name)
+
+      expect(items).toHaveLength(3)
+      expect(names).toEqual(expect.arrayContaining(['cm2-apple', 'cm3-avocado', 'cm4-broccoli']))
+    })
   })
 
   describe(`using the filter 'kind'`, () => {
@@ -194,16 +181,12 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
   })
 
   describe('search by count', () => {
-    if (SEARCH_API_V1) {
-      test('should return expected count.', async () => {
-        const count = await resolveSearchCount(user.token, {
-          filters: [{ property: 'label', values: ['type=fruit', 'type=vegetable'] }],
-        })
-        expect(count).toEqual(3)
+    test('should return expected count.', async () => {
+      const count = await resolveSearchCount(user.token, {
+        filters: [{ property: 'label', values: ['type=fruit', 'type=vegetable'] }],
       })
-    } else {
-      test.skip('(SKIPPED V2) should return expected count.', () => {})
-    }
+      expect(count).toEqual(3)
+    })
   })
 
   describe('search with limit', () => {
