@@ -17,7 +17,7 @@ export const overviewPage = {
   shouldLoad: () => {
     cy.get('.pf-c-empty-state__icon').should('not.exist')
     cy.get('.pf-c-skeleton').should('not.exist')
-    cy.get('.pf-c-page__main-section').filter(':contains(Overview)').should('exist')
+    cy.get('h1.pf-c-title').filter(':contains(Overview)').should('exist')
   },
   /**
    * Verify that the Overview page should have a cluster provider card panel.
