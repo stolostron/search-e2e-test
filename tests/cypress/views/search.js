@@ -131,7 +131,7 @@ export const searchPage = {
    */
   shouldLoad: () => {
     searchPage.shouldFindNoSkeleton()
-    cy.get('.pf-c-page__main-section').filter(':contains(Search)').should('exist')
+    cy.get('h1.pf-c-title').filter(':contains(Search)').should('exist')
     cy.get('.pf-c-text-input-group__text-input').should('exist')
   },
   /**
@@ -162,7 +162,7 @@ export const searchPage = {
    * Verify that the suggested searches header and tiles are rendered on the Search page.
    */
   shouldRenderSuggestedSearches: () => {
-    cy.get('.pf-c-page__main-section').filter(':contains(Suggested)').should('exist')
+    cy.get('h4.pf-c-title').filter(':contains(Suggested search templates)').should('exist')
     cy.get('.pf-c-card.pf-m-selectable').should('exist')
   },
   /**
