@@ -14,7 +14,8 @@ export const savedSearches = {
     cy.get('.pf-c-dropdown__menu.pf-m-align-right').contains('Edit').click()
     cy.get('#add-query-name').clear().type(editedName)
     cy.get('#add-query-desc').clear().type(editedDesc)
-    cy.get('.pf-c-modal-box__footer').contains('Save').focus().click()
+    cy.get('.pf-c-button.pf-m-primary').contains('Save').focus().click()
+    savedSearches.shouldExist(editedName)
   },
   getSavedSearch: (queryName) => {
     savedSearches.shouldExist(queryName)
@@ -27,7 +28,10 @@ export const savedSearches = {
     cy.get('.pf-c-button.pf-m-plain').contains('Save search').focus().click()
     cy.get('#add-query-name').type(queryName)
     cy.get('#add-query-desc').type(queryDesc)
-    cy.get('.pf-c-modal-box__footer').contains('Save').focus().click()
+    cy.get('.pf-c-button.pf-m-primary').contains('Save').focus().click()
+    // go back to search home page and check if search exists
+    cy.get('[aria-label="Clear button for chips and input"]').focus().click()
+    savedSearches.shouldExist(queryName)
   },
   shareSavedSearch: (queryName) => {
     savedSearches.shouldExist(queryName)
@@ -43,9 +47,6 @@ export const savedSearches = {
   shouldExist: (queryName) => {
     cy.get('h4.pf-c-title.pf-m-md').should('contain', 'Saved searches').should('exist')
     cy.get('.pf-c-card__title').contains(queryName).should('exist')
-  },
-  shouldNotExist: (queryName) => {
-    cy.get('.pf-c-card__title').contains(queryName).should('not.exist')
   },
   validateClusterNamespace: (filterOptions) => {
     searchBar.whenEnterTextInSearchBar('kind', 'cluster')
@@ -70,7 +71,7 @@ export const savedSearches = {
     savedSearches.shouldExist(queryName)
     cy.get('.pf-c-card__header').contains(queryName).parent().siblings().find('button').click()
     cy.get('.pf-c-dropdown__menu.pf-m-align-right').contains('Delete').click()
-    cy.get('.pf-c-button.pf-m-danger').contains('Delete').click().reload()
+    cy.get('.pf-c-button.pf-m-danger').contains('Delete').click()
     cy.get('.pf-c-card__title').contains(queryName).should('not.exist')
   },
 }
