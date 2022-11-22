@@ -58,9 +58,5 @@ describe('RHACM4K-412 - Search: Saved searches', { tags: tags.env }, function ()
     it(`[P3][Sev3][${squad}] should be able to delete the saved searches ${queryDefaultNamespaceName}`, function () {
       savedSearches.whenDeleteSavedSearch(queryDefaultNamespaceName)
     })
-
-    it(`[P3][Sev3][${squad}] should be able to verify the delete saved searches ${queryDefaultNamespaceName}`, function () {
-      savedSearches.shouldNotExist(queryDefaultNamespaceName)
-    })
   })
 })
