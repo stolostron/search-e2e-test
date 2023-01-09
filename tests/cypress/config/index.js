@@ -7,7 +7,7 @@ export const SEARCH_API_V1 = process.env.SEARCH_API_V1 || false
 /**
  * Squad label displayed within the test metadata (Required by CICD).
  */
-export const squad = 'observability-usa'
+export const squad = 'console'
 
 /**
  * Tags to determine the test environment.
