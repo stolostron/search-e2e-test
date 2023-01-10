@@ -54,7 +54,7 @@ export const overviewPage = {
         }
       })
 
-    cy.get('.pf-c-chip-group__list').should('have.length', 1).invoke('text').should('eq', 'kind:cluster')
+    cy.get('.pf-c-chip-group__list').should('have.length', 1).invoke('text').should('eq', 'kind:Cluster')
 
     searchPage.shouldLoadResults()
     cy.get('.pf-c-expandable-section__toggle-text').filter(':contains(Cluster)')
