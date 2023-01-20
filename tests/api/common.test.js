@@ -26,7 +26,7 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
   test.skip(`[P2][Sev2][${squad}] Verify search data is correct after a pod is deleted and recreated.`, async () => {
     var query = searchQueryBuilder({
       filters: [
-        { property: 'kind', values: ['deployment'] },
+        { property: 'kind', values: ['Deployment'] },
         { property: 'name', values: [app] },
         { property: 'namespace', values: [namespace] },
       ],
@@ -40,7 +40,7 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
   test(`[P2][Sev2][${squad}] Search kind application on specific namespace.`, async () => {
     var query = searchQueryBuilder({
       filters: [
-        { property: 'kind', values: ['deployment'] },
+        { property: 'kind', values: ['Deployment'] },
         { property: 'name', values: [app] },
         { property: 'namespace', values: [namespace] },
       ],
@@ -54,7 +54,7 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
   test(`[P2][Sev2][${squad}] Search kind pod and namespace open-cluster-management.`, async () => {
     var query = searchQueryBuilder({
       filters: [
-        { property: 'kind', values: ['pod'] },
+        { property: 'kind', values: ['Pod'] },
         { property: 'namespace', values: ['open-cluster-management'] },
         { property: 'status', values: ['Running'] },
       ],
@@ -69,7 +69,7 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
   test(`[P2][Sev2][${squad}] Search kind pod on specific cluster.`, async () => {
     var query = searchQueryBuilder({
       filters: [
-        { property: 'kind', values: ['pod'] },
+        { property: 'kind', values: ['Pod'] },
         { property: 'cluster', values: ['local-cluster'] },
         { property: 'status', values: ['Running'] },
       ],
@@ -81,9 +81,12 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
     })
   }, 20000)
 
-  test(`[P2][Sev2][${squad}] Search kind:configmap.`, async () => {
+  test(`[P2][Sev2][${squad}] Search kind:ConfigMap namespace:open-cluster-management`, async () => {
     var query = searchQueryBuilder({
-      filters: [{ property: 'kind', values: ['configmap'] }],
+      filters: [
+        { property: 'kind', values: ['ConfigMap'] },
+        { property: 'namespace', values: ['open-cluster-management'] },
+      ],
     })
 
     var res = await sendRequest(query, token)
@@ -94,9 +97,12 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
     expect(configmap.find((el) => el.name.includes('search'))).toBeDefined()
   }, 20000)
 
-  test(`[P2][Sev2][${squad}] Search kind:deployment.`, async () => {
+  test(`[P2][Sev2][${squad}] Search kind:Deployment namespace:open-cluster-management`, async () => {
     var query = searchQueryBuilder({
-      filters: [{ property: 'kind', values: ['deployment'] }],
+      filters: [
+        { property: 'kind', values: ['Deployment'] },
+        { property: 'namespace', values: ['open-cluster-management'] },
+      ],
     })
 
     var res = await sendRequest(query, token)
@@ -104,9 +110,6 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
 
     expect(deployment[0].kind).toMatch(/Deployment/i)
     expect(deployment.find((deploy) => deploy.namespace === 'open-cluster-management')).toBeDefined()
-    if (!!SEARCH_API_V1) {
-      // This validation is only valid for V1.
-      expect(items.find((deploy) => deploy.name.includes('search-prod'))).toBeDefined()
-    }
+    expect(items.find((deploy) => deploy.name.includes('search-api'))).toBeDefined()
   }, 20000)
 })
