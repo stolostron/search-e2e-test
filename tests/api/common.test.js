@@ -51,7 +51,7 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
     expect(res.body.data.searchResult[0].items[0].namespace).toEqual(namespace)
   }, 20000)
 
-  test(`[P2][Sev2][${squad}] Search kind pod and namespace open-cluster-management.`, async () => {
+  test(`[P2][Sev2][${squad}] Search kind:Pod status:Running namespace:open-cluster-management.`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['Pod'] },
@@ -66,7 +66,7 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
     })
   }, 20000)
 
-  test(`[P2][Sev2][${squad}] Search kind pod on specific cluster.`, async () => {
+  test(`[P2][Sev2][${squad}] Search kind:Pod cluster:local-cluster.`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['Pod'] },
@@ -90,11 +90,11 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
     })
 
     var res = await sendRequest(query, token)
-    var configmap = _.get(res, 'body.data.searchResult[0].items', '')
+    var items = res.body.data.searchResult[0].items
 
-    expect(configmap[0].kind).toMatch(/ConfigMap/i)
-    expect(configmap.find((el) => el.namespace === 'open-cluster-management')).toBeDefined()
-    expect(configmap.find((el) => el.name.includes('search'))).toBeDefined()
+    expect(items[0].kind).toMatch(/ConfigMap/i)
+    expect(items.find((el) => el.namespace === 'open-cluster-management')).toBeDefined()
+    expect(items.find((el) => el.name.includes('search'))).toBeDefined()
   }, 20000)
 
   test(`[P2][Sev2][${squad}] Search kind:Deployment namespace:open-cluster-management`, async () => {
@@ -106,10 +106,10 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
     })
 
     var res = await sendRequest(query, token)
-    var deployment = _.get(res, 'body.data.searchResult[0].items', '')
+    var items = res.body.data.searchResult[0].items
 
-    expect(deployment[0].kind).toMatch(/Deployment/i)
-    expect(deployment.find((deploy) => deploy.namespace === 'open-cluster-management')).toBeDefined()
+    expect(items[0].kind).toMatch(/Deployment/i)
+    expect(items.find((deploy) => deploy.namespace === 'open-cluster-management')).toBeDefined()
     expect(items.find((deploy) => deploy.name.includes('search-api'))).toBeDefined()
   }, 20000)
 })
