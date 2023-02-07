@@ -48,25 +48,6 @@ export const savedSearches = {
     cy.get('h4.pf-c-title.pf-m-md').should('contain', 'Saved searches').should('exist')
     cy.get('.pf-c-card__title').contains(queryName).should('exist')
   },
-  validateClusterNamespace: (filterOptions) => {
-    searchBar.whenEnterTextInSearchBar('kind', 'cluster')
-    searchBar.whenEnterTextInSearchBar('ManagedClusterJoined', 'True')
-
-    cy.get('.pf-c-expandable-section__toggle').then(($btn) => {
-      var fullText = $btn.text()
-      var pattern = /[0-9]+/g
-      var ManagedClustersCount = fullText.match(pattern)
-      var expectedSearchClusterCount = Number(ManagedClustersCount)
-
-      searchPage.whenGoToSearchPage()
-      for (var key in filterOptions) {
-        searchBar.whenEnterTextInSearchBar(key, filterOptions[key])
-      }
-
-      cy.contains(expectedSearchClusterCount)
-      cy.contains('Related cluster')
-    })
-  },
   whenDeleteSavedSearch: (queryName) => {
     savedSearches.shouldExist(queryName)
     cy.get('.pf-c-card__header').contains(queryName).parent().siblings().find('button').click()

@@ -80,11 +80,11 @@ export const searchPage = {
    * @param {int} count
    */
   shouldFindRelationshipTile: (kind) => {
-    cy.get('.pf-l-grid.pf-m-gutter')
+    cy.get('.pf-c-accordion.pf-m-bordered')
       .should('exist')
       .within(() => {
         cy.get('.pf-c-skeleton').should('not.exist')
-        cy.get('.pf-c-tile').filter(`:contains(${kind})`).should('exist')
+        cy.get('.pf-c-accordion__toggle-text').filter(`:contains(${kind})`).should('exist')
       })
   },
   /**
@@ -105,7 +105,7 @@ export const searchPage = {
   shouldFindResourceDetailItemCreatedFewSecondsAgo: (kind, name, namespace) => {
     cy.reloadUntil(
       () => {
-        cy.get('.pf-c-expandable-section')
+        cy.get('.pf-c-accordion__toggle-text')
           .filter(`:contains(${capitalize(kind)})`)
           .should('exist')
           .then(() => {
@@ -138,7 +138,7 @@ export const searchPage = {
    * Verify that the Search page should have loaded the resource table.
    */
   shouldLoadResults: () => {
-    cy.get('.pf-c-card__header').should('exist').and('be.visible')
+    cy.get('.pf-c-accordion__toggle').should('exist').and('be.visible')
 
     cy.get('body').then((body) => {
       if (body.find('table.pf-c-table').length === 0) {
@@ -172,13 +172,7 @@ export const searchPage = {
     cy.get('.pf-c-expandable-section__toggle').contains('Show related resources').should('exist').click()
   },
   whenOpenFirstResourceTableTile: () => {
-    cy.get('.pf-c-card__header')
-      .should('exist')
-      .and('be.visible')
-      .first()
-      .within(() => {
-        cy.get('.pf-c-expandable-section__toggle').click()
-      })
+    cy.get('.pf-c-accordion__toggle').should('exist').and('be.visible').first().click()
   },
   whenOpenResourceTableTile: (kind) => {
     cy.get('.pf-c-expandable-section')
@@ -198,7 +192,7 @@ export const searchPage = {
     cy.get('table.pf-c-table').should('exist').and('be.visible')
     var row = cy.get('tr').filter(`:contains(${name})`)
 
-    if (kind === 'pod') return row.filter(`:contains(${namespace})`).filter(':contains(Running)').first()
+    if (kind === 'Pod') return row.filter(`:contains(${namespace})`).filter(':contains(Running)').first()
     else if (namespace) return row.filter(`:contains(${namespace})`).first()
     else return row
   },
@@ -226,14 +220,7 @@ export const searchPage = {
     searchPage.whenDeleteResourceDetailItem('namespace', name)
   },
   whenGoToResourceDetailItemPage: (kind, name, namespace) => {
-    searchPage.whenGetResourceTableRow(kind, name, namespace).find('td[data-label="Name"] a').click()
-  },
-  /**
-   * Navigate the test user to the Search page within the ACM console.
-   */
-  whenGoToSearchPage: () => {
-    cy.visit('/multicloud/home/search')
-    searchPage.shouldLoad()
+    searchPage.whenGetResourceTableRow(kind, name, namespace).find('td[data-label="Name"] a').click({ force: true })
   },
 }
 
