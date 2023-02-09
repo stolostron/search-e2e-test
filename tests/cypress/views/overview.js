@@ -57,19 +57,12 @@ export const overviewPage = {
     cy.get('.pf-c-chip-group__list').should('have.length', 1).invoke('text').should('eq', 'kind:Cluster')
 
     searchPage.shouldLoadResults()
-    cy.get('.pf-c-expandable-section__toggle-text').filter(':contains(Cluster)')
+    cy.get('.pf-c-accordion__toggle-text').filter(':contains(Cluster)')
     cy.go('back')
 
     cy.get('#nodes-summary a').should('exist').and('be.visible').click()
 
     searchPage.shouldLoadResults()
-    cy.get('.pf-c-expandable-section__toggle-text').filter(':contains(Node)')
-  },
-  /**
-   * Navigate the test user to the Overview page within the ACM console.
-   */
-  whenGoToOverviewPage: () => {
-    cy.visit('/multicloud/home/overview')
-    overviewPage.shouldLoad()
+    cy.get('.pf-c-accordion__toggle-text').filter(':contains(Node)')
   },
 }

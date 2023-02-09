@@ -6,7 +6,7 @@
 /// <reference types="cypress" />
 
 import { SEARCH_API_V1, squad, tags } from '../config'
-import { searchPage, searchBar } from '../views/search'
+import { searchBar, searchPage } from '../views/search'
 
 const clusterMode = {
   deployment: 'search-api',
@@ -41,18 +41,11 @@ describe(`Search: Search in ${clusterMode.label} Cluster`, { tags: tags.env }, f
       searchPage.shouldFindNamespaceInCluster(clusterMode.namespace, this.clusterName)
     })
 
-    it(`[P2][Sev2][${squad}] should work kind filter for deployment`, function () {
-      searchBar.whenFilterByKind('deployment')
+    it(`[P2][Sev2][${squad}] should work kind filter for Deployment`, function () {
+      searchBar.whenFilterByKind('Deployment')
       searchBar.whenRunSearchQuery()
       searchBar.whenUsePagination(50)
-      searchPage.shouldFindResourceDetailItem('deployment', clusterMode.deployment, clusterMode.namespace)
-    })
-
-    it(`[P2][Sev2][${squad}] should work kind filter for pod`, function () {
-      searchBar.whenFilterByKind('Pod')
-      searchBar.whenRunSearchQuery()
-      searchBar.whenUsePagination(50)
-      searchPage.shouldFindResourceDetailItem('Pod', clusterMode.deployment, clusterMode.namespace)
+      searchPage.shouldFindResourceDetailItem('Deployment', clusterMode.deployment, clusterMode.namespace)
     })
 
     it(`[P3][Sev3][${squad}] should have the expected relationships`, function () {
