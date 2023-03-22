@@ -32,11 +32,11 @@ export OPTIONS_HUB_PASSWORD=$(yq '.password' $SHARED_DIR/hub-1.json -r)
 
 # Managed cluster
 MANAGED_CREDS=$(cat ${SHARED_DIR}/managed-1.json)
-export OPTIONS_MANAGED_API_URL=$(yq e '.api_url' $SHARED_DIR/managed-1.json -r)
-export OPTIONS_MANAGED_CONSOLE_URL=$(yq e '.console_url' $SHARED_DIR/managed-1.json -r)
+export OPTIONS_MANAGED_API_URL=$(yq '.api_url' $SHARED_DIR/managed-1.json -r)
+export OPTIONS_MANAGED_CONSOLE_URL=$(yq '.console_url' $SHARED_DIR/managed-1.json -r)
 export OPTIONS_MANAGED_BASEDOMAIN=${OPTIONS_MANAGED_CONSOLE_URL:39}
-export OPTIONS_MANAGED_USER=$(yq e '.username' $SHARED_DIR/managed-1.json -r)
-export OPTIONS_MANAGED_PASSWORD=$(yq e '.password' $SHARED_DIR/managed-1.json -r)
+export OPTIONS_MANAGED_USER=$(yq '.username' $SHARED_DIR/managed-1.json -r)
+export OPTIONS_MANAGED_PASSWORD=$(yq '.password' $SHARED_DIR/managed-1.json -r)
 
 echo -e "\nRunning Search-e2e tests in ${TEST_MODE} test mode. Preparing to run e2e tests."
 ./start-tests.sh
