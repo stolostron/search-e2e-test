@@ -20,19 +20,11 @@ export SKIP_API_TEST=false
 export SKIP_UI_TEST=false
 export TEST_MODE=BVT
 
-cat ${SHARED_DIR}/hub-1.json
-
-echo -e "managed json\n"
-cat ${SHARED_DIR}/hub-1.json
-
 # Hub cluster
 HUB_CREDS=$(cat ${SHARED_DIR}/hub-1.json)
 export OPTIONS_HUB_API_URL=$(yq '.api_url' $SHARED_DIR/hub-1.json -r)
-echo -e "OPTIONS_HUB_API_URL: $OPTIONS_HUB_API_URL\n"
 export OPTIONS_HUB_CONSOLE_URL=$(yq '.console_url' $SHARED_DIR/hub-1.json -r)
-echo -e "OPTIONS_HUB_CONSOLE_URL: $OPTIONS_HUB_CONSOLE_URL\n"
 export OPTIONS_HUB_BASEDOMAIN=${OPTIONS_HUB_CONSOLE_URL:39}
-echo -e "OPTIONS_HUB_BASEDOMAIN: $OPTIONS_HUB_BASEDOMAIN\n"
 export OPTIONS_HUB_USER=$(yq '.username' $SHARED_DIR/hub-1.json -r)
 export OPTIONS_HUB_PASSWORD=$(yq '.password' $SHARED_DIR/hub-1.json -r)
 
