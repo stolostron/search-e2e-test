@@ -29,8 +29,11 @@ cat ${SHARED_DIR}/hub-1.json
 # Hub cluster
 HUB_CREDS=$(cat ${SHARED_DIR}/hub-1.json)
 export OPTIONS_HUB_API_URL=$(yq e '.api_url' $SHARED_DIR/hub-1.json)
+echo -e "OPTIONS_HUB_API_URL: $OPTIONS_HUB_API_URL\n"
 export OPTIONS_HUB_CONSOLE_URL=$(yq e '.console_url' $SHARED_DIR/hub-1.json)
+echo -e "OPTIONS_HUB_CONSOLE_URL: $OPTIONS_HUB_CONSOLE_URL\n"
 export OPTIONS_HUB_BASEDOMAIN=${OPTIONS_HUB_CONSOLE_URL:39}
+echo -e "OPTIONS_HUB_BASEDOMAIN: $OPTIONS_HUB_BASEDOMAIN\n"
 export OPTIONS_HUB_USER=$(yq e '.username' $SHARED_DIR/hub-1.json)
 export OPTIONS_HUB_PASSWORD=$(yq e '.password' $SHARED_DIR/hub-1.json)
 
