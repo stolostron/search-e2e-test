@@ -38,6 +38,11 @@ echo -e "OPTIONS_HUB_BASEDOMAIN: $OPTIONS_HUB_BASEDOMAIN\n"
 export OPTIONS_HUB_USER=$(yq e '.username' $SHARED_DIR/hub-1.json)
 export OPTIONS_HUB_PASSWORD=$(yq e '.password' $SHARED_DIR/hub-1.json)
 
+echo -e "==== Using yq -P flag:\n"
+yq e '.console_url' $SHARED_DIR/hub-1.json -P
+echo -e "==== WITHOUT yq -P flag:\n"
+yq e '.console_url' $SHARED_DIR/hub-1.json
+
 # Managed cluster
 MANAGED_CREDS=$(cat ${SHARED_DIR}/managed-1.json)
 export OPTIONS_MANAGED_API_URL=$(yq e '.api_url' $SHARED_DIR/managed-1.json)
