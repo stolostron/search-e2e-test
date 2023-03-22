@@ -20,6 +20,12 @@ export SKIP_API_TEST=false
 export SKIP_UI_TEST=false
 export TEST_MODE=BVT
 
+echo -e "hub json\n"
+cat ${SHARED_DIR}/hub-1.json
+
+echo -e "managed json\n"
+cat ${SHARED_DIR}/hub-1.json
+
 # Hub cluster
 HUB_CREDS=$(cat ${SHARED_DIR}/hub-1.json)
 export OPTIONS_HUB_API_URL=$(yq e '.api_url' $SHARED_DIR/hub-1.json)
