@@ -20,6 +20,7 @@ export SKIP_API_TEST=false
 export SKIP_UI_TEST=false
 export TEST_MODE=BVT
 
+yq --version
 echo -e "hub json\n"
 cat ${SHARED_DIR}/hub-1.json
 
