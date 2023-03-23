@@ -4,36 +4,7 @@
 # Copyright Contributors to the Open Cluster Management project
 ###############################################################################
 
-####################
-## COLORS
-####################
-CYAN="\033[0;36m"
-GREEN="\033[0;32m"
-PURPLE="\033[0;35m"
-RED="\033[0;31m"
-YELLOW="\033[0;33m"
-NC="\033[0m"
-
-log_color () {
-  case $1 in
-    cyan)
-      echo -e "${CYAN}$2 ${NC}"$3
-    ;;
-    green)
-      echo -e "${GREEN}$2 ${NC}"$3
-    ;;
-    purple)
-      echo -e "${PURPLE}$2 ${NC}"$3
-    ;;
-    red)
-      echo -e "${RED}$2 ${NC}"$3
-    ;;
-    yellow)
-      echo -e "${YELLOW}$2 ${NC}"$3
-    ;;
-  esac
-}
-
+source ./scripts/log-colors.sh
 log_color "cyan" "Initiating Search E2E tests...\n"
 
 # Set browser for UI testing.
