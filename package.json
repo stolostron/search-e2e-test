@@ -45,7 +45,7 @@
     "browserlist": "^1.0.1",
     "chromedriver": "^103.0.0",
     "cross-env": "^7.0.3",
-    "cypress": "8.5.0",
+    "cypress": "^8.5.0",
     "cypress-grep": "^3.0.2",
     "cypress-multi-reporters": "^1.6.1",
     "cypress-terminal-report": "^4.1.0",
