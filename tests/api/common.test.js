@@ -94,8 +94,8 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
     await sleep(1000)
 
     var items = res.body.data.searchResult[0].items
-    console.log("Number of configmaps fetched: ", items.length.toString()); 
-    console.log("First configmap: ", items[0]); 
+    console.log('Number of configmaps fetched: ', items.length.toString())
+    console.log('First configmap: ', items[0])
 
     expect(items[0].kind).toMatch(/ConfigMap/i)
     expect(items.find((el) => el.namespace === 'open-cluster-management')).toBeDefined()
