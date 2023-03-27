@@ -6,6 +6,7 @@ const squad = require('../../config').get('squadName')
 const SEARCH_API_V1 = require('../../config').get('SEARCH_API_V1')
 const { deleteResource, getResource, getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
+const { sleep } = require('../common-lib/sleep')
 
 const _ = require('lodash')
 
@@ -93,7 +94,7 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
     await sleep(1000)
 
     var items = res.body.data.searchResult[0].items
-    console.log("Number of configmaps fetched: ", "items.length: ",items.length.toString()); 
+    console.log("Number of configmaps fetched: ", items.length.toString()); 
     console.log("First configmap: ", items[0]); 
 
     expect(items[0].kind).toMatch(/ConfigMap/i)
