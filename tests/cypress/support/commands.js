@@ -54,7 +54,7 @@ Cypress.Commands.add('visitAndLogin', (URL, OPTIONS_HUB_USER, OPTIONS_HUB_PASSWO
           cy.get('#inputUsername').click().focused().type(user)
           cy.get('#inputPassword').click().focused().type(password)
           cy.get('button[type="submit"]').click()
-          cy.get('.pf-c-page__header')
+          cy.get('.pf-c-page__main')
         }
       })
     } else {
