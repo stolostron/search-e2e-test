@@ -37,12 +37,9 @@ export const savedSearches = {
     savedSearches.shouldExist(queryName)
     cy.get('.pf-c-card__header').contains(queryName).parent().siblings().find('button').click()
     cy.get('.pf-c-dropdown__menu.pf-m-align-right').contains('Share').click()
-    cy.get('.pf-c-code-editor__code')
-      .find('pre')
-      .invoke('text')
-      .then((urlText) => {
-        cy.visit(urlText.toString())
-      })
+    cy.get('input.pf-c-form-control')
+      .invoke('val')
+      .then((inputText) => inputText.includes('/multicloud/home/search?filters={"textsearch"'))
   },
   shouldExist: (queryName) => {
     cy.get('h4.pf-c-title.pf-m-md').should('contain', 'Saved searches').should('exist')
