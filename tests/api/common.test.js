@@ -10,7 +10,7 @@ const { delayRetry } = require('../common-lib/delayRetry')
 
 const _ = require('lodash')
 
-describe('[P2][Sev2][${squad}] RHACM4K-1696: Search API - Verify search result with common filter and conditions', () => {
+describe(`[P2][Sev2][${squad}] RHACM4K-1696: Search API - Verify search result with common filter and conditions`, () => {
   beforeAll(async () => {
     // Log in and get access token
     token = getKubeadminToken()
@@ -35,8 +35,8 @@ describe('[P2][Sev2][${squad}] RHACM4K-1696: Search API - Verify search result w
       expect(res.body.data.searchResult[0].items[0].name).toEqual(app)
       expect(res.body.data.searchResult[0].items[0].kind).toMatch(/Deployment/i)
       expect(res.body.data.searchResult[0].items[0].namespace).toEqual(namespace)
-    }, 10000)
-  }, 15000)
+    }, 5000)
+  }, 10000)
 
   test(`with query {kind:Pod status:Running namespace:open-cluster-management}`, async () => {
     var query = searchQueryBuilder({
@@ -54,7 +54,7 @@ describe('[P2][Sev2][${squad}] RHACM4K-1696: Search API - Verify search result w
         expect(element.status).toEqual('Running')
       }, 5000)
     })
-  }, 15000)
+  }, 10000)
 
   test(`with query {kind:Pod cluster:local-cluster status:Running}`, async () => {
     var query = searchQueryBuilder({
@@ -72,7 +72,7 @@ describe('[P2][Sev2][${squad}] RHACM4K-1696: Search API - Verify search result w
         expect(element.status).toEqual('Running')
       }, 5000)
     })
-  }, 15000)
+  }, 10000)
 
   test(`with query {kind:ConfigMap namespace:open-cluster-management}`, async () => {
     var query = searchQueryBuilder({
@@ -89,8 +89,8 @@ describe('[P2][Sev2][${squad}] RHACM4K-1696: Search API - Verify search result w
       expect(items[0].kind).toMatch(/ConfigMap/i)
       expect(items.find((el) => el.namespace === 'open-cluster-management')).toBeDefined()
       expect(items.find((el) => el.name.includes('search'))).toBeDefined()
-    }, 10000)
-  }, 15000)
+    }, 5000)
+  }, 10000)
 
   test(`with query {kind:Deployment namespace:open-cluster-management}`, async () => {
     var query = searchQueryBuilder({
@@ -107,6 +107,6 @@ describe('[P2][Sev2][${squad}] RHACM4K-1696: Search API - Verify search result w
       expect(items[0].kind).toMatch(/Deployment/i)
       expect(items.find((deploy) => deploy.namespace === 'open-cluster-management')).toBeDefined()
       expect(items.find((deploy) => deploy.name.includes('search-api'))).toBeDefined()
-    }, 10000)
-  }, 15000)
+    }, 5000)
+  }, 10000)
 })
