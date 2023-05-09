@@ -4,12 +4,13 @@ jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const squad = require('../../config').get('squadName')
 const SEARCH_API_V1 = require('../../config').get('SEARCH_API_V1')
-const { deleteResource, getResource, getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
+const { getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
+const { sleep } = require('../common-lib/sleep')
 
 const _ = require('lodash')
 
-describe('RHACM4K-1696: Search API - Verify search result with common filter and conditions', () => {
+describe('[P2][Sev2][${squad}] RHACM4K-1696: Search API - Verify search result with common filter and conditions', () => {
   beforeAll(async () => {
     // Log in and get access token
     token = getKubeadminToken()
@@ -21,23 +22,7 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
   const app = 'console'
   const namespace = 'openshift-console'
 
-  // Skipping this test because it causes baseTest() to become unreliable.
-  // Need to rewrite this test to vaidate the search state without depending on kubernetes logic.
-  test.skip(`[P2][Sev2][${squad}] Verify search data is correct after a pod is deleted and recreated.`, async () => {
-    var query = searchQueryBuilder({
-      filters: [
-        { property: 'kind', values: ['Deployment'] },
-        { property: 'name', values: [app] },
-        { property: 'namespace', values: [namespace] },
-      ],
-    })
-
-    // Change state
-    var pods = getResource('pod', namespace)
-    await deleteResource('pod', pods[0][0], namespace)
-  }, 20000)
-
-  test(`[P2][Sev2][${squad}] Search kind application on specific namespace.`, async () => {
+  test(`with query {kind:application name:${app} namespace:${namespace}}`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['Deployment'] },
@@ -46,12 +31,19 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
       ],
     })
     var res = await sendRequest(query, token)
-    expect(res.body.data.searchResult[0].items[0].name).toEqual(app)
-    expect(res.body.data.searchResult[0].items[0].kind).toMatch(/Deployment/i)
-    expect(res.body.data.searchResult[0].items[0].namespace).toEqual(namespace)
-  }, 20000)
+    try {
+      expect(res.body.data.searchResult[0].items[0].name).toEqual(app)
+      expect(res.body.data.searchResult[0].items[0].kind).toMatch(/Deployment/i)
+      expect(res.body.data.searchResult[0].items[0].namespace).toEqual(namespace)
+    } catch (e) {
+      console.log('>>> should wait 10 seconds before failing and retry.')
+      await sleep(10000) // Wait 10 seconds before failling and retry.
+      console.log('>>> done waiting, will fail now.')
+      throw e
+    }
+  }, 15000)
 
-  test(`[P2][Sev2][${squad}] Search kind:Pod status:Running namespace:open-cluster-management.`, async () => {
+  test(`with query {kind:Pod status:Running namespace:open-cluster-management}`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['Pod'] },
@@ -61,12 +53,19 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
     })
     var res = await sendRequest(query, token)
     var pods = res.body.data.searchResult[0].items
-    pods.forEach((element) => {
-      expect(element.status).toEqual('Running')
-    })
-  }, 20000)
+    try {
+      pods.forEach((element) => {
+        expect(element.status).toEqual('Running')
+      })
+    } catch (e) {
+      console.log('>>> should wait 10 seconds before failing and retry.')
+      await sleep(10000) // Wait 10 seconds before failling and retry.
+      console.log('>>> done waiting, will fail now.')
+      throw e
+    }
+  }, 15000)
 
-  test(`[P2][Sev2][${squad}] Search kind:Pod cluster:local-cluster.`, async () => {
+  test(`with query {kind:Pod cluster:local-cluster status:Running}`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['Pod'] },
@@ -76,12 +75,19 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
     })
     var res = await sendRequest(query, token)
     var pods = res.body.data.searchResult[0].items
-    pods.forEach((element) => {
-      expect(element.status).toEqual('Running')
-    })
-  }, 20000)
+    try {
+      pods.forEach((element) => {
+        expect(element.status).toEqual('Running')
+      })
+    } catch (e) {
+      console.log('>>> should wait 10 seconds before failing and retry.')
+      await sleep(10000) // Wait 10 seconds before failling and retry.
+      console.log('>>> done waiting, will fail now.')
+      throw e
+    }
+  }, 15000)
 
-  test(`[P2][Sev2][${squad}] Search kind:ConfigMap namespace:open-cluster-management`, async () => {
+  test(`with query {kind:ConfigMap namespace:open-cluster-management}`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['ConfigMap'] },
@@ -92,12 +98,19 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
     var res = await sendRequest(query, token)
     var items = res.body.data.searchResult[0].items
 
-    expect(items[0].kind).toMatch(/ConfigMap/i)
-    expect(items.find((el) => el.namespace === 'open-cluster-management')).toBeDefined()
-    expect(items.find((el) => el.name.includes('search'))).toBeDefined()
-  }, 20000)
+    try {
+      expect(items[0].kind).toMatch(/ConfigMap/i)
+      expect(items.find((el) => el.namespace === 'open-cluster-management')).toBeDefined()
+      expect(items.find((el) => el.name.includes('search'))).toBeDefined()
+    } catch (e) {
+      console.log('>>> should wait 10 seconds before failing and retry.')
+      await sleep(10000) // Wait 10 seconds before failling and retry.
+      console.log('>>> done waiting, will fail now.')
+      throw e
+    }
+  }, 15000)
 
-  test(`[P2][Sev2][${squad}] Search kind:Deployment namespace:open-cluster-management`, async () => {
+  test(`with query {kind:Deployment namespace:open-cluster-management}`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['Deployment'] },
@@ -108,8 +121,15 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
     var res = await sendRequest(query, token)
     var items = res.body.data.searchResult[0].items
 
-    expect(items[0].kind).toMatch(/Deployment/i)
-    expect(items.find((deploy) => deploy.namespace === 'open-cluster-management')).toBeDefined()
-    expect(items.find((deploy) => deploy.name.includes('search-api'))).toBeDefined()
-  }, 20000)
+    try {
+      expect(items[0].kind).toMatch(/Deployment/i)
+      expect(items.find((deploy) => deploy.namespace === 'open-cluster-management')).toBeDefined()
+      expect(items.find((deploy) => deploy.name.includes('search-api'))).toBeDefined()
+    } catch (e) {
+      console.log('>>> should wait 10 seconds before failing and retry.')
+      await sleep(10000) // Wait 10 seconds before failling and retry.
+      console.log('>>> done waiting, will fail now.')
+      throw e
+    }
+  }, 15000)
 })
