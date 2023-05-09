@@ -6,9 +6,22 @@ const squad = require('../../config').get('squadName')
 const SEARCH_API_V1 = require('../../config').get('SEARCH_API_V1')
 const { getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
-const { sleep } = require('../common-lib/sleep')
+// const { sleep } = require('../common-lib/sleep')
+const { delayRetry } = require('../common-lib/delayRetry')
 
 const _ = require('lodash')
+
+// async function delayRetry(validationFn, wait = 1000) {
+//   try {
+//     validationFn()
+//   } catch (e) {
+//     const start = Date.now()
+//     console.log(`>>> should wait ${wait} ms before failing and retry. Current time: ${start}`)
+//     await sleep(wait) // Wait before failing and retry.
+//     console.log(`>>> done waiting, will fail now. Waited: ${Date.now() - start}  Current time: ${Date.now()}`)
+//     throw e
+//   }
+// }
 
 describe('[P2][Sev2][${squad}] RHACM4K-1696: Search API - Verify search result with common filter and conditions', () => {
   beforeAll(async () => {
@@ -31,17 +44,22 @@ describe('[P2][Sev2][${squad}] RHACM4K-1696: Search API - Verify search result w
       ],
     })
     var res = await sendRequest(query, token)
-    try {
+    delayRetry(() => {
       expect(res.body.data.searchResult[0].items[0].name).toEqual(app)
       expect(res.body.data.searchResult[0].items[0].kind).toMatch(/Deployment/i)
       expect(res.body.data.searchResult[0].items[0].namespace).toEqual(namespace)
-    } catch (e) {
-      const start = Date.now()
-      console.log(`>>> should wait 10 seconds before failing and retry. Current time: ${start}`)
-      await sleep(10000) // Wait 10 seconds before failing and retry.
-      console.log(`>>> done waiting, will fail now. Waited: ${Date.now() - start}  Current time: ${Date.now()}`)
-      throw e
-    }
+    }, 10000)
+    // try {
+    //   expect(res.body.data.searchResult[0].items[0].name).toEqual(app)
+    //   expect(res.body.data.searchResult[0].items[0].kind).toMatch(/Deployment/i)
+    //   expect(res.body.data.searchResult[0].items[0].namespace).toEqual(namespace)
+    // } catch (e) {
+    //   const start = Date.now()
+    //   console.log(`>>> should wait 10 seconds before failing and retry. Current time: ${start}`)
+    //   await sleep(10000) // Wait 10 seconds before failing and retry.
+    //   console.log(`>>> done waiting, will fail now. Waited: ${Date.now() - start}  Current time: ${Date.now()}`)
+    //   throw e
+    // }
   }, 15000)
 
   test(`with query {kind:Pod status:Running namespace:open-cluster-management}`, async () => {
@@ -54,17 +72,19 @@ describe('[P2][Sev2][${squad}] RHACM4K-1696: Search API - Verify search result w
     })
     var res = await sendRequest(query, token)
     var pods = res.body.data.searchResult[0].items
-    try {
-      pods.forEach((element) => {
+    // try {
+    pods.forEach((element) => {
+      delayRetry(() => {
         expect(element.status).toEqual('Running')
-      })
-    } catch (e) {
-      const start = Date.now()
-      console.log(`>>> should wait 10 seconds before failing and retry. Current time: ${start}`)
-      await sleep(10000) // Wait 10 seconds before failing and retry.
-      console.log(`>>> done waiting, will fail now. Waited: ${Date.now() - start}  Current time: ${Date.now()}`)
-      throw e
-    }
+      }, 10000)
+    })
+    // } catch (e) {
+    //   const start = Date.now()
+    //   console.log(`>>> should wait 10 seconds before failing and retry. Current time: ${start}`)
+    //   await sleep(10000) // Wait 10 seconds before failing and retry.
+    //   console.log(`>>> done waiting, will fail now. Waited: ${Date.now() - start}  Current time: ${Date.now()}`)
+    //   throw e
+    // }
   }, 15000)
 
   test(`with query {kind:Pod cluster:local-cluster status:Running}`, async () => {
@@ -77,17 +97,19 @@ describe('[P2][Sev2][${squad}] RHACM4K-1696: Search API - Verify search result w
     })
     var res = await sendRequest(query, token)
     var pods = res.body.data.searchResult[0].items
-    try {
-      pods.forEach((element) => {
+    // try {
+    pods.forEach((element) => {
+      delayRetry(() => {
         expect(element.status).toEqual('Running')
-      })
-    } catch (e) {
-      const start = Date.now()
-      console.log(`>>> should wait 10 seconds before failing and retry. Current time: ${start}`)
-      await sleep(10000) // Wait 10 seconds before failing and retry.
-      console.log(`>>> done waiting, will fail now. Waited: ${Date.now() - start}  Current time: ${Date.now()}`)
-      throw e
-    }
+      }, 10000)
+    })
+    // } catch (e) {
+    //   const start = Date.now()
+    //   console.log(`>>> should wait 10 seconds before failing and retry. Current time: ${start}`)
+    //   await sleep(10000) // Wait 10 seconds before failing and retry.
+    //   console.log(`>>> done waiting, will fail now. Waited: ${Date.now() - start}  Current time: ${Date.now()}`)
+    //   throw e
+    // }
   }, 15000)
 
   test(`with query {kind:ConfigMap namespace:open-cluster-management}`, async () => {
@@ -101,17 +123,19 @@ describe('[P2][Sev2][${squad}] RHACM4K-1696: Search API - Verify search result w
     var res = await sendRequest(query, token)
     var items = res.body.data.searchResult[0].items
 
-    try {
+    // try {
+    delayRetry(() => {
       expect(items[0].kind).toMatch(/ConfigMap/i)
       expect(items.find((el) => el.namespace === 'open-cluster-management')).toBeDefined()
       expect(items.find((el) => el.name.includes('search'))).toBeDefined()
-    } catch (e) {
-      const start = Date.now()
-      console.log(`>>> should wait 10 seconds before failing and retry. Current time: ${start}`)
-      await sleep(10000) // Wait 10 seconds before failing and retry.
-      console.log(`>>> done waiting, will fail now. Waited: ${Date.now() - start}  Current time: ${Date.now()}`)
-      throw e
-    }
+    }, 10000)
+    // } catch (e) {
+    //   const start = Date.now()
+    //   console.log(`>>> should wait 10 seconds before failing and retry. Current time: ${start}`)
+    //   await sleep(10000) // Wait 10 seconds before failing and retry.
+    //   console.log(`>>> done waiting, will fail now. Waited: ${Date.now() - start}  Current time: ${Date.now()}`)
+    //   throw e
+    // }
   }, 15000)
 
   test(`with query {kind:Deployment namespace:open-cluster-management}`, async () => {
@@ -125,16 +149,18 @@ describe('[P2][Sev2][${squad}] RHACM4K-1696: Search API - Verify search result w
     var res = await sendRequest(query, token)
     var items = res.body.data.searchResult[0].items
 
-    try {
+    // try {
+    delayRetry(() => {
       expect(items[0].kind).toMatch(/Deployment/i)
       expect(items.find((deploy) => deploy.namespace === 'open-cluster-management')).toBeDefined()
       expect(items.find((deploy) => deploy.name.includes('search-api'))).toBeDefined()
-    } catch (e) {
-      const start = Date.now()
-      console.log(`>>> should wait 10 seconds before failing and retry. Current time: ${start}`)
-      await sleep(10000) // Wait 10 seconds before failing and retry.
-      console.log(`>>> done waiting, will fail now. Waited: ${Date.now() - start}  Current time: ${Date.now()}`)
-      throw e
-    }
+    }, 10000)
+    // } catch (e) {
+    //   const start = Date.now()
+    //   console.log(`>>> should wait 10 seconds before failing and retry. Current time: ${start}`)
+    //   await sleep(10000) // Wait 10 seconds before failing and retry.
+    //   console.log(`>>> done waiting, will fail now. Waited: ${Date.now() - start}  Current time: ${Date.now()}`)
+    //   throw e
+    // }
   }, 15000)
 })
