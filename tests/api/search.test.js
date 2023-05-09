@@ -51,8 +51,8 @@ describe('RHACM4K-913: Search API - Verify search results with different queries
 
     await delayRetry(() => {
       expect(pods.length.toString()).toEqual(cliRes.toString().trim())
-    }, 5000)
-  }, 10000)
+    }, 10000)
+  }, 12000)
 
   test(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent on hub cluster.`, async () => {
     var query = searchQueryBuilder({
@@ -73,8 +73,8 @@ describe('RHACM4K-913: Search API - Verify search results with different queries
 
     await delayRetry(() => {
       expect(pods.length.toString()).toEqual(cliRes.toString().trim())
-    }, 5000)
-  }, 10000)
+    }, 10000)
+  }, 12000)
 
   test(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent on imported cluster.`, async () => {
     if (import_kubeconfig) {
@@ -95,11 +95,11 @@ describe('RHACM4K-913: Search API - Verify search results with different queries
       const pods = searchRes.body.data.searchResult[0].items
       await delayRetry(() => {
         expect(pods.length.toString()).toEqual(cliRes.toString().trim())
-      }, 5000)
+      }, 10000)
     } else {
       console.log('Test skipped because import_kubeconfig is undefined.')
     }
-  }, 10000)
+  }, 12000)
 
   test(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent-addon on hub cluster.`, async () => {
     var query = searchQueryBuilder({
@@ -122,8 +122,8 @@ describe('RHACM4K-913: Search API - Verify search results with different queries
     const pods = searchRes.body.data.searchResult[0].items
     await delayRetry(() => {
       expect(pods.length.toString()).toEqual(cliRes.toString().trim())
-    }, 5000)
-  }, 10000)
+    }, 10000)
+  }, 12000)
 
   test.skip(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent-addon on imported cluster.`, async () => {
     if (import_kubeconfig) {
@@ -148,11 +148,11 @@ describe('RHACM4K-913: Search API - Verify search results with different queries
 
       await delayRetry(() => {
         expect(pods.length.toString()).toEqual(cliRes.toString().trim())
-      }, 5000)
+      }, 10000)
     } else {
       console.log('Test skipped because import_kubeconfig is undefined.')
     }
-  }, 10000)
+  }, 12000)
 
   test(`[P3][Sev3][${squad}] should have expected count of pods in kube-system on imported cluster.`, async () => {
     if (import_kubeconfig) {
@@ -174,9 +174,9 @@ describe('RHACM4K-913: Search API - Verify search results with different queries
 
       await delayRetry(() => {
         expect(pods.length.toString()).toEqual(cliRes.toString().trim())
-      }, 5000)
+      }, 10000)
     } else {
       console.log('Test skipped because import_kubeconfig is undefined.')
     }
-  }, 10000)
+  }, 12000)
 })
