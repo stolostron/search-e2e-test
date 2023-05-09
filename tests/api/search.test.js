@@ -47,8 +47,16 @@ describe('RHACM4K-913: Search API - Verify search results with different queries
       execSync('oc get pods -n open-cluster-management --field-selector=status.phase==Running --no-headers | wc -l'),
     ])
     const pods = searchRes.body.data.searchResult[0].items
-    expect(pods.length.toString()).toEqual(cliRes.toString().trim())
-  }, 10000)
+    try {
+      expect(pods.length.toString()).toEqual(cliRes.toString().trim())
+    } catch (e) {
+      const start = Date.now()
+      console.log(`>>> should wait 10 seconds before failing and retry. Current time: ${start}`)
+      await sleep(10000) // Wait 10 seconds before failing and retry.
+      console.log(`>>> done waiting, will fail now. Waited: ${Date.now() - start}  Current time: ${Date.now()}`)
+      throw e
+    }
+  }, 15000)
 
   test(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent on hub cluster.`, async () => {
     var query = searchQueryBuilder({
@@ -66,8 +74,16 @@ describe('RHACM4K-913: Search API - Verify search results with different queries
       ),
     ])
     const pods = searchRes.body.data.searchResult[0].items
-    expect(pods.length.toString()).toEqual(cliRes.toString().trim())
-  }, 10000)
+    try {
+      expect(pods.length.toString()).toEqual(cliRes.toString().trim())
+    } catch (e) {
+      const start = Date.now()
+      console.log(`>>> should wait 10 seconds before failing and retry. Current time: ${start}`)
+      await sleep(10000) // Wait 10 seconds before failing and retry.
+      console.log(`>>> done waiting, will fail now. Waited: ${Date.now() - start}  Current time: ${Date.now()}`)
+      throw e
+    }
+  }, 15000)
 
   test(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent on imported cluster.`, async () => {
     if (import_kubeconfig) {
@@ -86,11 +102,19 @@ describe('RHACM4K-913: Search API - Verify search results with different queries
         ),
       ])
       const pods = searchRes.body.data.searchResult[0].items
-      expect(pods.length.toString()).toEqual(cliRes.toString().trim())
+      try {
+        expect(pods.length.toString()).toEqual(cliRes.toString().trim())
+      } catch (e) {
+        const start = Date.now()
+        console.log(`>>> should wait 10 seconds before failing and retry. Current time: ${start}`)
+        await sleep(10000) // Wait 10 seconds before failing and retry.
+        console.log(`>>> done waiting, will fail now. Waited: ${Date.now() - start}  Current time: ${Date.now()}`)
+        throw e
+      }
     } else {
       console.log('Test skipped because import_kubeconfig is undefined.')
     }
-  }, 10000)
+  }, 15000)
 
   test(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent-addon on hub cluster.`, async () => {
     var query = searchQueryBuilder({
@@ -111,8 +135,16 @@ describe('RHACM4K-913: Search API - Verify search results with different queries
       ),
     ])
     const pods = searchRes.body.data.searchResult[0].items
-    expect(pods.length.toString()).toEqual(cliRes.toString().trim())
-  }, 10000)
+    try {
+      expect(pods.length.toString()).toEqual(cliRes.toString().trim())
+    } catch (e) {
+      const start = Date.now()
+      console.log(`>>> should wait 10 seconds before failing and retry. Current time: ${start}`)
+      await sleep(10000) // Wait 10 seconds before failing and retry.
+      console.log(`>>> done waiting, will fail now. Waited: ${Date.now() - start}  Current time: ${Date.now()}`)
+      throw e
+    }
+  }, 15000)
 
   test.skip(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent-addon on imported cluster.`, async () => {
     if (import_kubeconfig) {
@@ -134,11 +166,19 @@ describe('RHACM4K-913: Search API - Verify search results with different queries
         ),
       ])
       const pods = searchRes.body.data.searchResult[0].items
-      expect(pods.length.toString()).toEqual(cliRes.toString().trim())
+      try {
+        expect(pods.length.toString()).toEqual(cliRes.toString().trim())
+      } catch (e) {
+        const start = Date.now()
+        console.log(`>>> should wait 10 seconds before failing and retry. Current time: ${start}`)
+        await sleep(10000) // Wait 10 seconds before failing and retry.
+        console.log(`>>> done waiting, will fail now. Waited: ${Date.now() - start}  Current time: ${Date.now()}`)
+        throw e
+      }
     } else {
       console.log('Test skipped because import_kubeconfig is undefined.')
     }
-  }, 10000)
+  }, 15000)
 
   test(`[P3][Sev3][${squad}] should have expected count of pods in kube-system on imported cluster.`, async () => {
     if (import_kubeconfig) {
@@ -157,9 +197,17 @@ describe('RHACM4K-913: Search API - Verify search results with different queries
         ),
       ])
       const pods = searchRes.body.data.searchResult[0].items
-      expect(pods.length.toString()).toEqual(cliRes.toString().trim())
+      try {
+        expect(pods.length.toString()).toEqual(cliRes.toString().trim())
+      } catch (e) {
+        const start = Date.now()
+        console.log(`>>> should wait 10 seconds before failing and retry. Current time: ${start}`)
+        await sleep(10000) // Wait 10 seconds before failing and retry.
+        console.log(`>>> done waiting, will fail now. Waited: ${Date.now() - start}  Current time: ${Date.now()}`)
+        throw e
+      }
     } else {
       console.log('Test skipped because import_kubeconfig is undefined.')
     }
-  }, 10000)
+  }, 15000)
 })
