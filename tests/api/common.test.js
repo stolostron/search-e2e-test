@@ -36,9 +36,10 @@ describe('[P2][Sev2][${squad}] RHACM4K-1696: Search API - Verify search result w
       expect(res.body.data.searchResult[0].items[0].kind).toMatch(/Deployment/i)
       expect(res.body.data.searchResult[0].items[0].namespace).toEqual(namespace)
     } catch (e) {
-      console.log('>>> should wait 10 seconds before failing and retry.')
-      await sleep(10000) // Wait 10 seconds before failling and retry.
-      console.log('>>> done waiting, will fail now.')
+      const start = date.Now()
+      console.log(`>>> should wait 10 seconds before failing and retry. Current time: ${start}`)
+      await sleep(10000) // Wait 10 seconds before failing and retry.
+      console.log(`>>> done waiting, will fail now. Waited: ${date.Now() - start}  Current time: ${date.Now()}`)
       throw e
     }
   }, 15000)
@@ -58,9 +59,10 @@ describe('[P2][Sev2][${squad}] RHACM4K-1696: Search API - Verify search result w
         expect(element.status).toEqual('Running')
       })
     } catch (e) {
-      console.log('>>> should wait 10 seconds before failing and retry.')
-      await sleep(10000) // Wait 10 seconds before failling and retry.
-      console.log('>>> done waiting, will fail now.')
+      const start = date.Now()
+      console.log(`>>> should wait 10 seconds before failing and retry. Current time: ${start}`)
+      await sleep(10000) // Wait 10 seconds before failing and retry.
+      console.log(`>>> done waiting, will fail now. Waited: ${date.Now() - start}  Current time: ${date.Now()}`)
       throw e
     }
   }, 15000)
@@ -80,9 +82,10 @@ describe('[P2][Sev2][${squad}] RHACM4K-1696: Search API - Verify search result w
         expect(element.status).toEqual('Running')
       })
     } catch (e) {
-      console.log('>>> should wait 10 seconds before failing and retry.')
-      await sleep(10000) // Wait 10 seconds before failling and retry.
-      console.log('>>> done waiting, will fail now.')
+      const start = date.Now()
+      console.log(`>>> should wait 10 seconds before failing and retry. Current time: ${start}`)
+      await sleep(10000) // Wait 10 seconds before failing and retry.
+      console.log(`>>> done waiting, will fail now. Waited: ${date.Now() - start}  Current time: ${date.Now()}`)
       throw e
     }
   }, 15000)
@@ -103,9 +106,10 @@ describe('[P2][Sev2][${squad}] RHACM4K-1696: Search API - Verify search result w
       expect(items.find((el) => el.namespace === 'open-cluster-management')).toBeDefined()
       expect(items.find((el) => el.name.includes('search'))).toBeDefined()
     } catch (e) {
-      console.log('>>> should wait 10 seconds before failing and retry.')
-      await sleep(10000) // Wait 10 seconds before failling and retry.
-      console.log('>>> done waiting, will fail now.')
+      const start = date.Now()
+      console.log(`>>> should wait 10 seconds before failing and retry. Current time: ${start}`)
+      await sleep(10000) // Wait 10 seconds before failing and retry.
+      console.log(`>>> done waiting, will fail now. Waited: ${date.Now() - start}  Current time: ${date.Now()}`)
       throw e
     }
   }, 15000)
@@ -126,9 +130,10 @@ describe('[P2][Sev2][${squad}] RHACM4K-1696: Search API - Verify search result w
       expect(items.find((deploy) => deploy.namespace === 'open-cluster-management')).toBeDefined()
       expect(items.find((deploy) => deploy.name.includes('search-api'))).toBeDefined()
     } catch (e) {
-      console.log('>>> should wait 10 seconds before failing and retry.')
-      await sleep(10000) // Wait 10 seconds before failling and retry.
-      console.log('>>> done waiting, will fail now.')
+      const start = date.Now()
+      console.log(`>>> should wait 10 seconds before failing and retry. Current time: ${start}`)
+      await sleep(10000) // Wait 10 seconds before failing and retry.
+      console.log(`>>> done waiting, will fail now. Waited: ${date.Now() - start}  Current time: ${date.Now()}`)
       throw e
     }
   }, 15000)
