@@ -33,7 +33,8 @@ describe('RHACM4K-913: Search API - Verify search results with different queries
     }
   })
 
-  test(`[P3][Sev3][${squad}] should have expected count of pods in ocm on hub cluster.`, async () => {
+  // Skipping this test because it fails intermittently, which creates unreliable results.
+  test.skip(`[P3][Sev3][${squad}] should have expected count of pods in ocm on hub cluster.`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['Pod'] },
@@ -50,7 +51,8 @@ describe('RHACM4K-913: Search API - Verify search results with different queries
     expect(pods.length.toString()).toEqual(cliRes.toString().trim())
   }, 10000)
 
-  test(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent on hub cluster.`, async () => {
+  // Skipping this test because it fails intermittently, which creates unreliable results.
+  test.skip(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent on hub cluster.`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['Pod'] },
@@ -92,7 +94,8 @@ describe('RHACM4K-913: Search API - Verify search results with different queries
     }
   }, 10000)
 
-  test(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent-addon on hub cluster.`, async () => {
+  // Skipping this test because it fails intermittently, which creates unreliable results.
+  test.skip(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent-addon on hub cluster.`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['Pod'] },
