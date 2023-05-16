@@ -18,7 +18,7 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
     searchApiRoute = await getSearchApiRoute()
   })
 
-  test(`[P2][Sev2][${squad}] Search kind:Deployment name:console namespace:openshift-console.`, async () => {
+  test(`[P2][Sev2][${squad}] with query {kind:Deployment name:console namespace:openshift-console}`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['Deployment'] },
@@ -32,7 +32,7 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
     expect(res.body.data.searchResult[0].items[0].namespace).toEqual('openshift-console')
   }, 20000)
 
-  test(`[P2][Sev2][${squad}] Search kind:Pod status:Running namespace:open-cluster-management.`, async () => {
+  test(`[P2][Sev2][${squad}] with query {kind:Pod status:Running namespace:open-cluster-management}`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['Pod'] },
@@ -47,7 +47,7 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
     })
   }, 20000)
 
-  test(`[P2][Sev2][${squad}] Search kind:Pod cluster:local-cluster.`, async () => {
+  test(`[P2][Sev2][${squad}] with query {kind:Pod cluster:local-cluster}`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['Pod'] },
@@ -63,7 +63,7 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
   }, 20000)
 
   // Skipping this test because it fails intermittently, which creates unreliable results.
-  test.skip(`[P2][Sev2][${squad}] Search kind:ConfigMap namespace:open-cluster-management`, async () => {
+  test.skip(`[P2][Sev2][${squad}] with query {kind:ConfigMap namespace:open-cluster-management}`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['ConfigMap'] },
@@ -80,7 +80,7 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
   }, 20000)
 
   // Skipping this test because it fails intermittently, which creates unreliable results.
-  test.skip(`[P2][Sev2][${squad}] Search kind:Deployment namespace:open-cluster-management`, async () => {
+  test.skip(`[P2][Sev2][${squad}] with query {kind:Deployment namespace:open-cluster-management}`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['Deployment'] },
