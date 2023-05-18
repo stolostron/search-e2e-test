@@ -18,7 +18,7 @@ const clusterMode = {
   valueFn: () => cy.wrap('local-cluster'),
 }
 
-describe(`Search: Search in ${clusterMode.label} Cluster`, { tags: tags.env }, function () {
+describe(`Search in ${clusterMode.label} Cluster`, { tags: tags.env }, function () {
   before(function () {
     // Setting the cluster mode cluster as the current instance cluster.
     clusterMode.valueFn().as('clusterName')
@@ -29,7 +29,7 @@ describe(`Search: Search in ${clusterMode.label} Cluster`, { tags: tags.env }, f
     cy.visitAndLogin('/multicloud/home/search')
   })
 
-  context('Verify: search detail pages for yaml and logs', { tags: tags.modes }, function () {
+  context('Console-Search detail pages for yaml and logs', { tags: tags.modes }, function () {
     beforeEach(function () {
       searchPage.shouldFindNamespaceInCluster(clusterMode.namespace, this.clusterName)
     })
