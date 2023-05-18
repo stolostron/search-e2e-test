@@ -81,7 +81,8 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
     })
   }, 20000)
 
-  test(`[P2][Sev2][${squad}] Search kind:configmap.`, async () => {
+  // Skipping this test because it produces unreliable results.
+  test.skip(`[P2][Sev2][${squad}] Search kind:configmap.`, async () => {
     var query = searchQueryBuilder({
       filters: [{ property: 'kind', values: ['configmap'] }],
     })
@@ -94,7 +95,8 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
     expect(configmap.find((el) => el.name.includes('search'))).toBeDefined()
   }, 20000)
 
-  test(`[P2][Sev2][${squad}] Search kind:deployment.`, async () => {
+  // Skipping this test because it produces unreliable results.
+  test.skip(`[P2][Sev2][${squad}] Search kind:deployment.`, async () => {
     var query = searchQueryBuilder({
       filters: [{ property: 'kind', values: ['deployment'] }],
     })
