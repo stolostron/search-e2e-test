@@ -36,7 +36,7 @@ describe(`Search in ${clusterMode.label} Cluster`, { tags: tags.env }, function 
     })
   })
 
-  context('Console-Search verify search results with common filter and condition', { tags: tags.modes }, function () {
+  context('Console-Search verify results with common filter and condition', { tags: tags.modes }, function () {
     beforeEach(function () {
       searchPage.shouldFindNamespaceInCluster(clusterMode.namespace, this.clusterName)
     })
