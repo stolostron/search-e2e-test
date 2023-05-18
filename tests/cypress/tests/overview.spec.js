@@ -8,13 +8,13 @@
 import { squad, tags } from '../config'
 import { overviewPage } from '../views/overview'
 
-describe('RHACM4K-1419: Search: Overview page', { tags: tags.env }, function () {
+describe('RHACM4K-1419: Overview page', { tags: tags.env }, function () {
   beforeEach(function () {
     // Log into the cluster ACM console.
     cy.visitAndLogin('/multicloud/home/overview')
   })
 
-  context('UI - Overview page validation', { tags: tags.modes }, function () {
+  context('Console-Overview page validation', { tags: tags.modes }, function () {
     it(`[P1][Sev1][${squad}] should load and render the overview page`, function () {
       overviewPage.shouldLoad()
     })

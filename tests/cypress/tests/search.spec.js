@@ -16,7 +16,7 @@ const clusterMode = {
   valueFn: () => cy.wrap('local-cluster'),
 }
 
-describe(`Search: Search in ${clusterMode.label} Cluster`, { tags: tags.env }, function () {
+describe(`Search in ${clusterMode.label} Cluster`, { tags: tags.env }, function () {
   before(function () {
     // Setting the cluster mode cluster as the current instance cluster.
     clusterMode.valueFn().as('clusterName')
@@ -27,7 +27,7 @@ describe(`Search: Search in ${clusterMode.label} Cluster`, { tags: tags.env }, f
     cy.visitAndLogin('/multicloud/home/search')
   })
 
-  context('UI - Search page validation', { tags: tags.modes }, function () {
+  context('Console-Search page validation', { tags: tags.modes }, function () {
     it(`[P1][Sev1][${squad}] should load and render the search page`, function () {
       searchPage.shouldLoad()
       searchPage.shouldRenderSavedSearchesTab()
@@ -36,7 +36,7 @@ describe(`Search: Search in ${clusterMode.label} Cluster`, { tags: tags.env }, f
     })
   })
 
-  context('Verify: search results with common filter and condition', { tags: tags.modes }, function () {
+  context('Console-Search verify results with common filter and condition', { tags: tags.modes }, function () {
     beforeEach(function () {
       searchPage.shouldFindNamespaceInCluster(clusterMode.namespace, this.clusterName)
     })

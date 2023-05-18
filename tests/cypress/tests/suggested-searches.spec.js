@@ -9,13 +9,13 @@ import { squad, tags } from '../config'
 import { searchBar } from '../views/search'
 import { suggestedSearches } from '../views/suggestedSearches'
 
-describe('RHACM4K-411: Search: Verify the suggested search templates', { tags: tags.env }, function () {
+describe('RHACM4K-411: Verify the suggested search templates', { tags: tags.env }, function () {
   beforeEach(function () {
     // Log into the cluster ACM console.
     cy.visitAndLogin('/multicloud/home/search')
   })
 
-  context('verify: search page suggested search queries', { tags: tags.modes }, function () {
+  context('Console-Search suggested searches', { tags: tags.modes }, function () {
     it(`[P3][Sev3][${squad}] should see the workloads template & search tag in search items`, function () {
       suggestedSearches.whenSelectCardWithTitle('Workloads')
       searchBar.shouldContainTag('kind:DaemonSet,Deployment,Job,StatefulSet,ReplicaSet')
