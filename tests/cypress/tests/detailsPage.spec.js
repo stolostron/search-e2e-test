@@ -7,7 +7,6 @@
 
 import { SEARCH_API_V1, squad, tags } from '../config'
 import { searchPage, searchBar } from '../views/search'
-// import { deploymentDetailPage } from '../views/deploymentDetailPage'
 import { podDetailPage } from '../views/podDetailPage'
 
 const clusterMode = {
@@ -37,7 +36,7 @@ describe(`Search: Search in ${clusterMode.label} Cluster`, { tags: tags.env }, f
     it(`[P2][Sev2][${squad}] should see pod logs`, function () {
       searchBar.whenFilterByKind('Pod')
       searchBar.whenRunSearchQuery()
-      searchBar.whenUsePagination(50)
+      searchBar.whenUsePagination(100)
       searchPage.whenGoToResourceDetailItemPage('Pod', clusterMode.deployment, clusterMode.namespace)
       podDetailPage.whenClickOnLogsTab()
       if (!!SEARCH_API_V1) {
