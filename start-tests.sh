@@ -355,6 +355,8 @@ if [[ "$SKIP_UI_TEST" == false ]]; then
   fi
 
   log_color "cyan" "Running Console UI tests."
+  echo "Waiting 60 seconds..."
+  sleep 60; 
 
   if [ "$NODE_ENV" == "development" ]; then
     cypress run --browser $BROWSER $DISPLAY --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="${CYPRESS_TAGS:-}"
