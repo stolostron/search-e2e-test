@@ -350,11 +350,15 @@ if [[ "$SKIP_UI_TEST" == false ]]; then
   echo -e
 
   if [[ "$RECORD" == true ]]; then
-    echo -e "Preparing to run test within record mode. (Results will be displayed within dashboard)\n"
+    echo -e "Preparing to run cypress test within record mode. (Results will be displayed within dashboard)\n"
     cypress run --record --key $RECORD_KEY --browser $BROWSER $DISPLAY --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="${CYPRESS_TAGS:-}"
   fi
 
-  log_color "cyan" "Running Search UI tests."
+  log_color "cyan" "Running console cypress tests."
+  # NOTE: This reduces intermittent failures due to the console not being ready.
+  #       In the future we should replace the sleep with a check for the console being ready.
+  echo "Waiting 60 seconds for console to be ready..."
+  sleep 60; 
 
   if [ "$NODE_ENV" == "development" ]; then
     cypress run --browser $BROWSER $DISPLAY --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="${CYPRESS_TAGS:-}"
@@ -364,7 +368,7 @@ if [[ "$SKIP_UI_TEST" == false ]]; then
     cypress run --browser $BROWSER $DISPLAY --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="${CYPRESS_TAGS:-}"
   fi
 else
-  log_color "purple" "SKIP_UI_TEST" "was set to true. Skipping UI tests\n"
+  log_color "purple" "SKIP_UI_TEST" "was set to true. Skipping console cypress tests\n"
 fi
 
 UI_TEST_EXIT_CODE=$?
@@ -393,9 +397,9 @@ else
   echo "API tests passed. Exit code: ${API_TEST_EXIT_CODE}"
 fi
 if [[ $UI_TEST_EXIT_CODE -ne 0 ]]; then
-  echo "UI tests failed. Exit code: ${UI_TEST_EXIT_CODE}"
+  echo "Console cypress tests failed. Exit code: ${UI_TEST_EXIT_CODE}"
 else
-  echo "UI tests passed. Exit code: ${UI_TEST_EXIT_CODE}"
+  echo "Console cypress tests passed. Exit code: ${UI_TEST_EXIT_CODE}"
 fi
 
 
