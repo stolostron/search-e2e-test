@@ -7,7 +7,6 @@
 
 import { SEARCH_API_V1, squad, tags } from '../config'
 import { searchPage, searchBar } from '../views/search'
-// import { deploymentDetailPage } from '../views/deploymentDetailPage'
 import { podDetailPage } from '../views/podDetailPage'
 
 const clusterMode = {
