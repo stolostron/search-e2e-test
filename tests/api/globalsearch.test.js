@@ -20,7 +20,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC with Global Search Cluste
     # export ns=search-global-rbac; export usr0=u0;
     oc create namespace ${ns}
     oc create serviceaccount ${usr0} -n ${ns}
-    oc create clusterrole ${usr0} --verb=get --resource=searches,searches/allManagedData --apigroups=search.open-cluster-management.io
+    oc create clusterrole ${usr0} --verb=get --resource=searches.search.open-cluster-management.io,searches/allManagedData
     oc create clusterrolebinding ${usr0} --clusterrole=${usr0} --serviceaccount=${ns}:${usr0}
   
 
