@@ -3,18 +3,16 @@
 jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const squad = require('../../config').get('squadName')
-const SEARCH_API_V1 = require('../../config').get('SEARCH_API_V1')
 const { getUserContext, getSearchApiRoute } = require('../common-lib/clusterAccess')
 const { ValidateSearchData, validationTimeout } = require('../common-lib/validateSearchData')
 const { resolveSearchItems } = require('../common-lib/searchClient')
-const { execSync } = require('child_process')
 const { execCliCmdString, expectCli } = require('../common-lib/cliClient')
 const { sleep } = require('../common-lib/sleep')
 
-const ns = 'search-rbac'
+const ns = 'search-global-rbac'
 const [usr0] = ['global-search-user']
 
-describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
+describe(`[P2][Sev2][${squad}] Search API: Verify RBAC with Global Search Cluster role`, () => {
   beforeAll(async () => {
     // Using ServiceAccounts for rbac tests because configuration is simpler.
 
@@ -48,7 +46,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
     await execCliCmdString(teardownCmds)
   }, 10000)
 
-  describe(`with user ${usr0} (authorization to get searches)`, () => {
+  describe(`with user ${usr0} (authorized to get searches/allManagedData))`, () => {
     beforeAll(async () => {
       user = await getUserContext({ usr: usr0, ns })
     })
@@ -59,12 +57,11 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
     })
 
     test('should not receive ConfigMap', () => ValidateSearchData({ user, kind: 'configmap' }), validationTimeout)
- 
+
     test(`should not match any resources containing the keyword 'cm0' or 'cm1`, async () => {
       const items = await resolveSearchItems(user.token, { keywords: ['cm0', 'cm1'] })
       expect(items).toHaveLength(0)
       expect(items).toEqual([])
     })
+  })
 })
-})
-
