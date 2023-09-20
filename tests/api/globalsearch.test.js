@@ -17,7 +17,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC with Global Search Cluste
     // Using ServiceAccounts for rbac tests because configuration is simpler.
 
     const setupCmds = `
-    # export ns=search-rbac; export usr0=u0;
+    # export ns=search-global-rbac; export usr0=u0;
     oc create namespace ${ns}
     oc create serviceaccount ${usr0} -n ${ns}
     oc create clusterrole ${usr0} --verb=get --resource=searches,searches/allManagedData --apigroups=search.open-cluster-management.io
@@ -38,7 +38,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC with Global Search Cluste
 
   afterAll(async () => {
     const teardownCmds = `
-    # export ns=search-rbac; export usr0=u0
+    # export ns=search-global-rbac; export usr0=u0
     oc delete ns ${ns}
     oc delete clusterrolebinding ${usr0}
     oc delete clusterrole ${usr0}`
