@@ -281,10 +281,10 @@ export const searchBar = {
     searchBar.whenEnterTextInSearchBar('namespace', namespace, ignoreIfDoesNotExist)
   },
   /**
-   * Execute the search query by pressing the run search button on the Search page.
+   * Execute the search query by pressing the run search (right arrow) button on the Search page.
    */
   whenRunSearchQuery: () => {
-    cy.get('.pf-c-button').filter(':contains(Run search)').should('exist').and('be.visible').click()
+    cy.get('#run-search-button').should('exist').and('be.visible').click()
     searchPage.shouldFindNoSkeleton()
   },
   /**
