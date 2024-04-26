@@ -104,6 +104,44 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     })
   })
 
+  describe('using partial match', () => {
+    test(`should match resources containing the partial string 'typ*=*fru*' in label`, async () => {
+      const items = await resolveSearchItems(user.token, { filters: [{ property: 'label', values: ['typ*=*fru*'] }] })
+      expect(items).toHaveLength(1)
+      expect(items[0]).toHaveProperty('name', 'cm2-apple')
+    })
+
+    test('should match resources partially matching labelA OR labelB.', async () => {
+      const items = await resolveSearchItems(user.token, {
+        filters: [{ property: 'label', values: ['type=fru*', 'type=veg*'] }],
+      })
+      const names = items.map((i) => i.name)
+
+      expect(items).toHaveLength(3)
+      expect(names).toEqual(expect.arrayContaining(['cm2-apple', 'cm3-avocado', 'cm4-broccoli']))
+    })
+
+    test('should match resources partially matching labelA.', async () => {
+      const items = await resolveSearchItems(user.token, {
+        filters: [{ property: 'label', values: ['type*'] }],
+      })
+      const names = items.map((i) => i.name)
+
+      expect(items).toHaveLength(3)
+      expect(names).toEqual(expect.arrayContaining(['cm2-apple', 'cm3-avocado', 'cm4-broccoli']))
+    })
+
+    test('should match resources partially matching on kind.', async () => {
+      const items = await resolveSearchItems(user.token, {
+        filters: [{ property: 'kind', values: ['Conf*']}, { property: 'name', values: ['cm*'] }],
+      })
+      const names = items.map((i) => i.name)
+
+      expect(items).toHaveLength(5)
+      expect(names).toEqual(expect.arrayContaining(['cm0','cm1','cm2-apple', 'cm3-avocado', 'cm4-broccoli']))
+    })
+  })
+
   describe(`using the filter 'kind'`, () => {
     test('should be case sensitive (lowercase).', async () => {
       const [items, items2] = await Promise.all([
