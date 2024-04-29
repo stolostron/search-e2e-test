@@ -133,12 +133,15 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
 
     test('should match resources partially matching on kind.', async () => {
       const items = await resolveSearchItems(user.token, {
-        filters: [{ property: 'kind', values: ['Conf*']}, { property: 'name', values: ['cm*'] }],
+        filters: [
+          { property: 'kind', values: ['Conf*'] },
+          { property: 'name', values: ['cm*'] },
+        ],
       })
       const names = items.map((i) => i.name)
 
       expect(items).toHaveLength(5)
-      expect(names).toEqual(expect.arrayContaining(['cm0','cm1','cm2-apple', 'cm3-avocado', 'cm4-broccoli']))
+      expect(names).toEqual(expect.arrayContaining(['cm0', 'cm1', 'cm2-apple', 'cm3-avocado', 'cm4-broccoli']))
     })
   })
 
