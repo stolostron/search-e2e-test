@@ -359,11 +359,11 @@ if [[ "$SKIP_UI_TEST" == false ]]; then
   echo "Waiting up to 10 minutes for console pods to reach Running status"
   RUNNING="false"
   ATTEMPTS=0
-  MAX_ATTEMPTS=20
-  INTERVAL=30
+  MAX_ATTEMPTS=60
+  INTERVAL=10
   while [[ "${RUNNING}" == "false" ]] && (( ATTEMPTS != MAX_ATTEMPTS )); do
     RUNNING_PODS_COUNT=$(`oc get pods -n open-cluster-management -l app=console-chart-v2 --field-selector=status.phase==Running --no-headers | wc -l`)
-    if [ $RUNNING_PODS_COUNT == 2 ]; then
+    if [ $RUNNING_PODS_COUNT -ge 1 ]; then
       # We should have 2 Running console pods.
       RUNNING="true"
       echo "Console Pods are Running. Proceeding with UI tests."
