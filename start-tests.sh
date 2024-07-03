@@ -355,10 +355,23 @@ if [[ "$SKIP_UI_TEST" == false ]]; then
   fi
 
   log_color "cyan" "Running console cypress tests."
-  # NOTE: This reduces intermittent failures due to the console not being ready.
-  #       In the future we should replace the sleep with a check for the console being ready.
-  echo "Waiting 60 seconds for console to be ready..."
-  sleep 60; 
+
+  echo "Waiting up to 10 minutes for console pods to reach Running status"
+  RUNNING="false"
+  ATTEMPTS=0
+  MAX_ATTEMPTS=60
+  INTERVAL=10
+  while [[ "${RUNNING}" == "false" ]] && (( ATTEMPTS != MAX_ATTEMPTS )); do
+    RUNNING_PODS_COUNT=$(`oc get pods -n open-cluster-management -l app=console-chart-v2 --field-selector=status.phase==Running --no-headers | wc -l`)
+    if [ $RUNNING_PODS_COUNT -ge 1 ]; then
+      # We should have 2 Running console pods.
+      RUNNING="true"
+      echo "Console Pods are Running. Proceeding with UI tests."
+    else
+      echo "Console Pods are not Running. Waiting another ${INTERVAL}s for pod update (Retry $((++ATTEMPTS))/${MAX_ATTEMPTS})"
+      sleep ${INTERVAL}
+    fi
+  done
 
   if [ "$NODE_ENV" == "development" ]; then
     cypress run --browser $BROWSER $DISPLAY --spec "./tests/cypress/tests/**/*.spec.js" --reporter cypress-multi-reporters --env NODE_ENV=$NODE_ENV,grepTags="${CYPRESS_TAGS:-}"
