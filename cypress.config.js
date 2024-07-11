@@ -8,7 +8,6 @@ module.exports = defineConfig({
   numTestsKeptInMemory: 10,
   screenshotsFolder: 'results/screenshots',
   videosFolder: 'results/videos',
-  videoUploadOnPasses: false,
   watchForFileChanges: true,
   env: {
     OPTIONS_HUB_OC_IDP: 'kube:admin',
@@ -37,6 +36,7 @@ module.exports = defineConfig({
     // We've imported your old cypress plugins here.
     // You may want to clean this up later by importing these.
     setupNodeEvents(on, config) {
+      require('@cypress/grep/src/plugin')(config)
       return require('./tests/cypress/plugins/index.js')(on, config)
     },
     specPattern: 'tests/cypress/tests/**/*.spec.js',
