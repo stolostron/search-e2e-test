@@ -3,11 +3,9 @@
  * Copyright (c) 2020 Red Hat, Inc.
  ****************************************************************************** */
 
-/// <reference types="cypress" />
-
 import { SEARCH_API_V1, squad, tags } from '../config'
-import { searchPage, searchBar } from '../views/search'
 import { podDetailPage } from '../views/podDetailPage'
+import { searchBar, searchPage } from '../views/search'
 
 const clusterMode = {
   deployment: 'search-api',

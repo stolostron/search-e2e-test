@@ -3,8 +3,6 @@
  * Copyright (c) 2020 Red Hat, Inc.
  ****************************************************************************** */
 
-/// <reference types="cypress" />
-
 import { capitalize } from '../scripts/cliHelper'
 import { popupModal } from './popup'
 

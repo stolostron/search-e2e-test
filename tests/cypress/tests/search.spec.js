@@ -3,8 +3,6 @@
  * Copyright (c) 2020 Red Hat, Inc.
  ****************************************************************************** */
 
-/// <reference types="cypress" />
-
 import { SEARCH_API_V1, squad, tags } from '../config'
 import { searchBar, searchPage } from '../views/search'
 

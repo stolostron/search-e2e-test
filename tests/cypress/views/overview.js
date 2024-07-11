@@ -3,8 +3,6 @@
  * Copyright (c) 2021 Red Hat, Inc.
  ****************************************************************************** */
 
-/// <reference types="cypress" />
-
 import { searchPage } from '../views/search'
 
 /**
