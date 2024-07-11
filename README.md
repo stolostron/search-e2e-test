@@ -9,7 +9,8 @@ End-to-end tests for the Open Cluster Management search component. The tests con
 
 > Pre-requisites:
 >
-> - nodeJS
+> - nodeJS 20
+> - NPM 8
 > - OpenShift CLI
 > - yq command - [link](https://snapcraft.io/install/yq/fedora) for Fedora
 > - a browser - either chrome or firefox
