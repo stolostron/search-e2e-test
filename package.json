@@ -26,6 +26,10 @@
   },
   "author": "",
   "license": "SEE LICENSE IN LICENSE",
+  "engines": {
+    "node": "20.15.1",
+    "npm": "10.7.0"
+  },
   "dependencies": {
     "del": "^7.1.0",
     "jest": "^28.1.3",
