@@ -3,7 +3,6 @@
 jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const squad = require('../../config').get('squadName')
-const SEARCH_API_V1 = require('../../config').get('SEARCH_API_V1')
 const { getUserContext, getSearchApiRoute } = require('../common-lib/clusterAccess')
 const { execCliCmdString } = require('../common-lib/cliClient')
 const { resolveSearchCount, resolveSearchItems } = require('../common-lib/searchClient')
@@ -17,7 +16,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     let setupCommands = `# export ns=search-query; export usr=search-query-user
     oc create namespace ${ns}
     oc create serviceaccount ${usr} -n ${ns}
-    oc create role ${usr} --verb=list${SEARCH_API_V1 ? ',get' : ''} --resource=configmap,deployment,replicaset -n ${ns}
+    oc create role ${usr} --verb=list --resource=configmap,deployment,replicaset -n ${ns}
     oc create rolebinding ${usr} --role=${usr} --serviceaccount=${ns}:${usr} -n ${ns}
 
     oc create configmap cm0 -n ${ns} --from-literal=key=cm0
@@ -29,11 +28,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     oc create configmap cm4-broccoli -n ${ns} --from-literal=key=cm4
     oc label configmap cm4-broccoli -n ${ns} type=vegetable
 
-    oc create deployment ${usr} -n ${ns} --image=busybox --replicas=0 -- 'date; sleep 60;'
-
-    # The V1 implementation requires that user has access to list namespaces.
-    ${SEARCH_API_V1 ? `oc create clusterrole ${usr} --verb=list,get --resource=namespaces` : ''}
-    ${SEARCH_API_V1 ? `oc create clusterrolebinding ${usr} --clusterrole=${usr} --serviceaccount=${ns}:${usr}` : ''}`
+    oc create deployment ${usr} -n ${ns} --image=busybox --replicas=0 -- 'date; sleep 60;'`
 
     // Run the setup steps in parallel.
     const [route] = await Promise.all([getSearchApiRoute(), execCliCmdString(setupCommands)])
@@ -52,9 +47,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
 
   afterAll(async () => {
     let teardownCmds = `# export ns=search-query; export usr=search-query-user
-    oc delete ns ${ns}
-    ${SEARCH_API_V1 ? `oc delete clusterrole ${usr}` : ''}
-    ${SEARCH_API_V1 ? `oc delete clusterrolebinding ${usr}` : ''}`
+    oc delete ns ${ns}`
 
     await execCliCmdString(teardownCmds)
   }, 30000)
@@ -153,7 +146,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
       ])
 
       expect(items).toHaveLength(1)
-      expect(items2).toHaveLength(SEARCH_API_V1 ? 0 : 1)
+      expect(items2).toHaveLength(1)
     })
   })
 
