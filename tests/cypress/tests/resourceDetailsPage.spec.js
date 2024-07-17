@@ -5,6 +5,7 @@
 
 /// <reference types="cypress" />
 
+import { squad, tags } from '../config'
 import { podDetailPage } from '../views/podDetailPage'
 import { searchBar, searchPage } from '../views/search'
 
