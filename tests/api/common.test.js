@@ -3,7 +3,6 @@
 jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const squad = require('../../config').get('squadName')
-const SEARCH_API_V1 = require('../../config').get('SEARCH_API_V1')
 const { getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 

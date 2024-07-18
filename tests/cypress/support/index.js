@@ -18,9 +18,8 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
-import './commands'
-import { SEARCH_API_V1 } from '../config'
 import { cliHelper } from '../scripts/cliHelper'
+import './commands'
 
 require('cypress-terminal-report/src/installLogsCollector')()
 require('cypress-grep')()
@@ -33,30 +32,6 @@ const err = 'Test taking too long! It has been running for 5 minutes.'
 before(() => {
   // Log into hub cluster with oc command.
   cliHelper.login()
-
-  // This is needed for search V1 to deploy RedisGraph upstream. Without this search V1 won't be operational.
-  if (!!SEARCH_API_V1) {
-    cy.exec(`oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'`, {
-      failOnNonZeroExit: false,
-    }).then((res) => {
-      var namespace = res.stdout
-
-      cy.exec(`oc get srcho searchoperator -o jsonpath="{.status.deployredisgraph}" -n ${namespace}`, {
-        failOnNonZeroExit: false,
-      }).then((result) => {
-        if (result.stdout == 'true') {
-          cy.task('log', 'Redisgraph deployment is enabled.')
-        } else {
-          cy.task(
-            'log',
-            'Redisgraph deployment disabled, enabling and waiting 10 seconds for the search-redisgraph-0 pod.'
-          )
-          cy.exec(`oc set env deploy search-operator DEPLOY_REDISGRAPH="true" -n ${namespace}`)
-          return cy.wait(10 * 1000)
-        }
-      })
-    })
-  }
   cy.clearCookies()
 })
 
