@@ -3,7 +3,7 @@
  * Copyright (c) 2020 Red Hat, Inc.
  ****************************************************************************** */
 
-import { SEARCH_API_V1, squad, tags } from '../config'
+import { squad, tags } from '../config'
 import { podDetailPage } from '../views/podDetailPage'
 import { searchBar, searchPage } from '../views/search'
 
@@ -37,10 +37,6 @@ describe(`Search in ${clusterMode.label} Cluster`, { tags: tags.env }, function 
       searchBar.whenUsePagination(50)
       searchPage.whenGoToResourceDetailItemPage('Pod', clusterMode.deployment, clusterMode.namespace)
       podDetailPage.whenClickOnLogsTab()
-      if (!!SEARCH_API_V1) {
-        // This validation is only valid for V1.
-        podDetailPage.shouldSeeLogs('[INFO] [search-api]')
-      }
     })
 
     // TODO: Re-enable within a smaller PR.

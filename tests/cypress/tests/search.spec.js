@@ -3,7 +3,7 @@
  * Copyright (c) 2020 Red Hat, Inc.
  ****************************************************************************** */
 
-import { SEARCH_API_V1, squad, tags } from '../config'
+import { squad, tags } from '../config'
 import { searchBar, searchPage } from '../views/search'
 
 const clusterMode = {
@@ -50,11 +50,6 @@ describe(`Search in ${clusterMode.label} Cluster`, { tags: tags.env }, function 
       searchBar.whenRunSearchQuery()
       searchPage.whenExpandRelationshipTiles()
       searchPage.shouldFindRelationshipTile('Cluster')
-      if (!!SEARCH_API_V1) {
-        // TODO: Re-enable verification for V2.
-        searchPage.shouldFindRelationshipTile('Deployment')
-        searchPage.shouldFindRelationshipTile('Pod')
-      }
     })
   })
 })

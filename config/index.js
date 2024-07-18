@@ -17,7 +17,6 @@ nconf.env({ lowerCase: true, separator: '_' }).file({ file: optionsFile, format:
   CLUSTER_VIEWER_PWD: 'pass-viewer',
   contextPath: '/multicloud',
   squadName: 'observability-usa',
-  SEARCH_API_V1: false,
   timestamp,
 })
 
