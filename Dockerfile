@@ -1,11 +1,13 @@
 # Copyright (c) 2020 Red Hat, Inc.
 
-FROM mikefarah/yq:4.32.2 as builder
-FROM cypress/included:8.5.0 AS production
+FROM registry.ci.openshift.org/stolostron/builder:nodejs20-linux as builder
+FROM mikefarah/yq:4.32.2 as yq
+FROM cypress/included:10.0.0 AS production
 
 USER root
 
-COPY --from=builder /usr/bin/yq /usr/local/bin/yq
+COPY --from=yq /usr/bin/yq /usr/local/bin/yq
+COPY --from=builder /usr/bin/node /usr/bin/node
 
 RUN mkdir -p /search-e2e/cypress_cache
 ENV CYPRESS_CACHE_FOLDER=/search-e2e/cypress_cache
