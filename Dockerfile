@@ -12,18 +12,7 @@ COPY --from=builder /usr/bin/node /usr/bin/node
 RUN mkdir -p /search-e2e/cypress_cache
 ENV CYPRESS_CACHE_FOLDER=/search-e2e/cypress_cache
 WORKDIR /search-e2e
-
-COPY package.json .
-COPY package-lock.json .
-COPY cypress.config.js .
-COPY jest.config.js .
-COPY start-tests.sh .
-COPY install-dependencies.sh .
-COPY config ./config
-COPY tests ./tests
-COPY build ./build
-COPY scripts ./scripts
-COPY cicd-scripts/run-prow-e2e.sh .
+COPY . .
 
 RUN npm ci
 RUN sh install-dependencies.sh
