@@ -2,6 +2,7 @@
 
 FROM registry.ci.openshift.org/stolostron/builder:nodejs20-linux as builder
 FROM mikefarah/yq:4.32.2 as yq
+# Should match cypress version in package.json
 FROM cypress/included:13.13.0 AS production
 
 USER root
@@ -15,7 +16,7 @@ WORKDIR /search-e2e
 
 COPY package.json .
 COPY package-lock.json .
-COPY cypress.json .
+COPY cypress.config.json .
 COPY jest.config.js .
 COPY start-tests.sh .
 COPY install-dependencies.sh .
