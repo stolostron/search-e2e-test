@@ -16,7 +16,7 @@ WORKDIR /search-e2e
 
 COPY package.json .
 COPY package-lock.json .
-COPY cypress.config.json .
+COPY cypress.config.js .
 COPY jest.config.js .
 COPY start-tests.sh .
 COPY install-dependencies.sh .
