@@ -13,7 +13,12 @@ RUN mkdir -p /search-e2e/cypress_cache
 ENV CYPRESS_CACHE_FOLDER=/search-e2e/cypress_cache
 WORKDIR /search-e2e
 
-COPY . .
+COPY package.json .
+COPY package-lock.json .
+COPY cypress.json .
+COPY jest.config.js .
+COPY start-tests.sh .
+COPY install-dependencies.sh .
 COPY config ./config
 COPY tests ./tests
 COPY build ./build
