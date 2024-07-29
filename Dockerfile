@@ -2,7 +2,7 @@
 
 FROM registry.ci.openshift.org/stolostron/builder:nodejs20-linux as builder
 FROM mikefarah/yq:4.32.2 as yq
-FROM cypress/included:10.0.0 AS production
+FROM cypress/included:13.13.0 AS production
 
 USER root
 
