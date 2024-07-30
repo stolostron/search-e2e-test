@@ -26,7 +26,7 @@ COPY build ./build
 COPY scripts ./scripts
 COPY cicd-scripts/run-prow-e2e.sh .
 
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 RUN sh install-dependencies.sh
 
 RUN chmod -R go+w /search-e2e
