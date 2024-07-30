@@ -15,6 +15,12 @@ else
   log_color "purple" "BROWSER set (running in $BROWSER)\n"
 fi
 
+# Install OpenShift, Kubectl and htpasswd CLI if running in build.
+  if [[ -f /install-dependencies.sh ]]; then
+    log_color "cyan" "Installing oc, kubectl and htpasswd clis..."
+    source /install-dependencies.sh
+  fi
+
 # Create directory for kubeconfigs.
 mkdir -p ./kube/config
 
