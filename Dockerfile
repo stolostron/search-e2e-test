@@ -1,12 +1,12 @@
 # Copyright (c) 2020 Red Hat, Inc.
 
-FROM mikefarah/yq:4.32.2 as yq
+FROM mikefarah/yq:4.32.2 as builder
 # Should match cypress version in package.json
 FROM cypress/included:13.13.0 AS production
 
 USER root
 
-COPY --from=yq /usr/bin/yq /usr/local/bin/yq
+COPY --from=builder /usr/bin/yq /usr/local/bin/yq
 
 RUN mkdir -p /search-e2e/cypress_cache
 ENV CYPRESS_CACHE_FOLDER=/search-e2e/cypress_cache
