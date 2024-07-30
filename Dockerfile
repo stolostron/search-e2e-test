@@ -8,7 +8,7 @@ FROM cypress/included:13.13.0 AS production
 USER root
 
 COPY --from=yq /usr/bin/yq /usr/local/bin/yq
-COPY --from=builder /usr/bin/node /usr/bin/node
+COPY --from=builder /usr/bin/node /usr/local/bin/node
 
 RUN mkdir -p /search-e2e/cypress_cache
 ENV CYPRESS_CACHE_FOLDER=/search-e2e/cypress_cache
@@ -27,6 +27,7 @@ COPY scripts ./scripts
 COPY cicd-scripts/run-prow-e2e.sh .
 
 RUN npm ci
+RUN sh install-dependencies.sh
 
 RUN chmod -R go+w /search-e2e
 
