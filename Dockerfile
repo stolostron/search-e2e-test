@@ -1,6 +1,5 @@
 # Copyright (c) 2020 Red Hat, Inc.
 
-FROM registry.ci.openshift.org/stolostron/builder:nodejs20-linux as builder
 FROM mikefarah/yq:4.32.2 as yq
 # Should match cypress version in package.json
 FROM cypress/included:13.13.0 AS production
@@ -8,7 +7,6 @@ FROM cypress/included:13.13.0 AS production
 USER root
 
 COPY --from=yq /usr/bin/yq /usr/local/bin/yq
-# COPY --from=builder /usr/bin/node /usr/local/bin/node
 
 RUN mkdir -p /search-e2e/cypress_cache
 ENV CYPRESS_CACHE_FOLDER=/search-e2e/cypress_cache
@@ -26,7 +24,7 @@ COPY build ./build
 COPY scripts ./scripts
 COPY cicd-scripts/run-prow-e2e.sh .
 
-RUN npm ci --legacy-peer-deps
+RUN npm ci
 RUN sh install-dependencies.sh
 
 RUN chmod -R go+w /search-e2e
