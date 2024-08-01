@@ -3,8 +3,6 @@
  * Copyright (c) 2020 Red Hat, Inc.
  ****************************************************************************** */
 
-/// <reference types="cypress" />
-
 /**
  * Deployment resource details page that is accessible through the ACM Search page.
  */

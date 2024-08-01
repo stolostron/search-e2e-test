@@ -1,7 +1,8 @@
 # Copyright (c) 2020 Red Hat, Inc.
 
 FROM mikefarah/yq:4.32.2 as builder
-FROM cypress/included:8.5.0 AS production
+# Should match cypress version in package.json
+FROM cypress/included:13.13.0 AS production
 
 USER root
 
@@ -13,7 +14,7 @@ WORKDIR /search-e2e
 
 COPY package.json .
 COPY package-lock.json .
-COPY cypress.json .
+COPY cypress.config.js .
 COPY jest.config.js .
 COPY start-tests.sh .
 COPY install-dependencies.sh .

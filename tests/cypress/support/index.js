@@ -22,7 +22,6 @@ import { cliHelper } from '../scripts/cliHelper'
 import './commands'
 
 require('cypress-terminal-report/src/installLogsCollector')()
-require('cypress-grep')()
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 var timeoutID
@@ -36,7 +35,6 @@ before(() => {
 })
 
 beforeEach(() => {
-  Cypress.Cookies.preserveOnce('acm-access-token-cookie', '_oauth_proxy', 'XSRF-TOKEN', '_csrf')
   timeoutID = setTimeout(() => {
     console.error(err)
     throw Error(err)

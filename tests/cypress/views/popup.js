@@ -3,8 +3,6 @@
  * Copyright (c) 2020 Red Hat, Inc.
  ****************************************************************************** */
 
-/// <reference types="cypress" />
-
 export const popupModal = {
   shouldDeleteResource: () => {
     cy.get('button.pf-m-danger').should('exist').click()

@@ -3,8 +3,6 @@
  * Copyright (c) 2020 Red Hat, Inc.
  ****************************************************************************** */
 
-/// <reference types="cypress" />
-
 import { searchBar, searchPage } from './search'
 
 export const savedSearches = {

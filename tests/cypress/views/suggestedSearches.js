@@ -3,8 +3,6 @@
  * Copyright (c) 2021 Red Hat, Inc.
  ****************************************************************************** */
 
-/// <reference types="cypress" />
-
 /**
  * Suggested searches object for the Search page within the ACM console.
  */

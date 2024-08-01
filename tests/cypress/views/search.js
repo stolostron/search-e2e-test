@@ -3,8 +3,6 @@
  * Copyright (c) 2020 Red Hat, Inc.
  ****************************************************************************** */
 
-/// <reference types="cypress" />
-
 import { capitalize } from '../scripts/cliHelper'
 import { popupModal } from './popup'
 
@@ -82,9 +80,11 @@ export const searchPage = {
   shouldFindRelationshipTile: (kind) => {
     cy.get('.pf-c-accordion.pf-m-bordered')
       .should('exist')
-      .within(() => {
-        cy.get('.pf-c-skeleton').should('not.exist')
-        cy.get('.pf-c-accordion__toggle-text').filter(`:contains(${kind})`).should('exist')
+      .each(($div) => {
+        cy.wrap($div).within(() => {
+          cy.get('.pf-c-skeleton').should('not.exist')
+          cy.get('.pf-c-accordion__toggle-text').filter(`:contains(${kind})`).should('exist')
+        })
       })
   },
   /**

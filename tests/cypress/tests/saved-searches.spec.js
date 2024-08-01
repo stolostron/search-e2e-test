@@ -3,8 +3,6 @@
  * Copyright (c) 2020 Red Hat, Inc.
  ****************************************************************************** */
 
-/// <reference types="cypress" />
-
 import { squad, tags } from '../config'
 import { savedSearches } from '../views/savedSearches'
 import { searchBar, searchPage } from '../views/search'
