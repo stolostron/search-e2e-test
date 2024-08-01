@@ -1,8 +1,13 @@
 #!/bin/bash
-
 # Copyright Contributors to the Open Cluster Management project
 
+# Exit if command fails
+set -e 
+
 mkdir clis-unpacked
+
+# Install curl command
+apt-get -y update; apt-get -y install curl
 
 # Install OpenShift and Kubectl CLI.
 echo 'Installing oc and kubectl clis...'
@@ -18,6 +23,6 @@ echo -e 'oc and kubectl cli install completed.'
 
 # Install htpasswd utility
 echo 'Installing htpasswd utility...'
-apt-get update && apt-get install -y apache2-utils
+apt-get install -y apache2-utils
 
 echo 'htpasswd utilities install completed.'
