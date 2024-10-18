@@ -17,16 +17,21 @@ describe('RHACM4K-1419: Overview page', { tags: tags.env }, function () {
       overviewPage.shouldLoad()
     })
 
-    it(`[P2][Sev2][${squad}] should have clusters provider card`, function () {
-      overviewPage.shouldHaveClusterProviderCard()
+    it(`[P2][Sev2][${squad}] should have fleet summary section`, function () {
+      overviewPage.shouldHaveSummarySection()
     })
 
-    it(`[P2][Sev2][${squad}] should have clusters summary breakdown`, function () {
-      overviewPage.shouldHaveClusterSummary()
+    it(`[P2][Sev2][${squad}] should have insights section`, function () {
+      overviewPage.shouldHaveInsightsSection()
     })
 
-    it(`[P2][Sev2][${squad}] should have link to search page`, function () {
-      overviewPage.shouldHaveLinkToSearchPage()
+    it(`[P2][Sev2][${squad}] should have cluster health section`, function () {
+      overviewPage.shouldHaveClusterHealthSection()
     })
+
+    // Implement once there are saved searches in env.
+    // it(`[P2][Sev2][${squad}] should have saved search section`, function () {
+    //   overviewPage.shouldHaveSavedSearchSection()
+    // })
   })
 })
