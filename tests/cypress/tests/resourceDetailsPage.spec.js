@@ -23,7 +23,7 @@ describe(`Search in ${clusterMode.label} Cluster`, { tags: tags.env }, function 
 
   beforeEach(function () {
     // Log into the cluster ACM console.
-    cy.visitAndLogin('/multicloud/home/search')
+    cy.visitAndLogin('/multicloud/search')
   })
 
   context('Console-Search detail pages for yaml and logs', { tags: tags.modes }, function () {

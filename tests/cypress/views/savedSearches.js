@@ -37,7 +37,7 @@ export const savedSearches = {
     cy.get('.pf-c-dropdown__menu.pf-m-align-right').contains('Share').click()
     cy.get('input.pf-c-form-control')
       .invoke('val')
-      .then((inputText) => inputText.includes('/multicloud/home/search?filters={"textsearch"'))
+      .then((inputText) => inputText.includes('/multicloud/search?filters={"textsearch"'))
   },
   shouldExist: (queryName) => {
     cy.get('h4.pf-c-title.pf-m-md').should('contain', 'Saved searches').should('exist')
