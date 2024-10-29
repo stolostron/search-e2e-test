@@ -356,19 +356,22 @@ if [[ "$SKIP_UI_TEST" == false ]]; then
 
   log_color "cyan" "Running console cypress tests."
 
-  echo "Waiting up to 10 minutes for console pods to reach Running status"
-  RUNNING="false"
+  echo "Waiting up to 10 minutes for console & search pods to reach Running status"
+  CONSOLE_RUNNING="false"
+  SEARCH_RUNNING="false"
   ATTEMPTS=0
   MAX_ATTEMPTS=60
   INTERVAL=10
-  while [[ "${RUNNING}" == "false" ]] && (( ATTEMPTS != MAX_ATTEMPTS )); do
-    RUNNING_PODS_COUNT=($(oc get pods -n open-cluster-management -l app=console-chart-v2 --field-selector=status.phase==Running --no-headers | wc -l))
-    if [ "$RUNNING_PODS_COUNT" -ge 1 ]; then
-      # We should have 2 Running console pods.
+  while [[ "${CONSOLE_RUNNING}" == "false" ]] && [[ "${SEARCH_RUNNING}" == "false" ]] && (( ATTEMPTS != MAX_ATTEMPTS )); do
+    RUNNING_CONSOLE_PODS_COUNT=($(oc get pods -n open-cluster-management -l app=console-chart-v2 --field-selector=status.phase==Running --no-headers | wc -l))
+    # api, collector, indexer, postgres & operator
+    RUNNING_SEARCH_PODS_COUNT=($(oc get pods -n open-cluster-management -l app=search --field-selector=status.phase==Running --no-headers | wc -l))
+    if [ "$RUNNING_CONSOLE_PODS_COUNT" -ge 1 ] && [ "$RUNNING_SEARCH_PODS_COUNT" -ge 5 ]; then
+      # Should have 2 Running console pods & 5 Running search pods.
       RUNNING="true"
-      echo "Console Pods are Running. Proceeding with UI tests."
+      echo "Console & Search Pods are Running. Proceeding with UI tests."
     else
-      echo "Console Pods are not Running. Waiting another ${INTERVAL}s for pod update (Retry $((++ATTEMPTS))/${MAX_ATTEMPTS})"
+      echo "Console & Search Pods are not Running. Waiting another ${INTERVAL}s for pod update (Retry $((++ATTEMPTS))/${MAX_ATTEMPTS})"
       sleep ${INTERVAL}
     fi
   done
