@@ -3,8 +3,6 @@
  * Copyright (c) 2021 Red Hat, Inc.
  ****************************************************************************** */
 
-import { searchPage } from '../views/search'
-
 /**
  * Overview page object for the ACM console.
  */
@@ -17,50 +15,110 @@ export const overviewPage = {
     cy.get('.pf-c-skeleton').should('not.exist')
     cy.get('h1.pf-c-title').filter(':contains(Overview)').should('exist')
   },
+
   /**
-   * Verify that the Overview page should have a cluster provider card panel.
+   * Verify the Overview page should correctly display summary section.
+   * TODO - verify data & links
    */
-  shouldHaveClusterProviderCard: () => {
-    cy.get('.pf-l-gallery.pf-m-gutter').find('.pf-c-card.pf-m-selectable').should('exist')
-    cy.get('.pf-c-card__footer').should('exist').and('contain', 'Cluster')
-  },
-  /**
-   * Verify that the Overview page should have a summary of the test cluster environment.
-   */
-  shouldHaveClusterSummary: () => {
-    cy.get('article.pf-c-card')
-      .filter(':contains(Summary)')
+  shouldHaveSummarySection: () => {
+    cy.get('div.pf-c-card__title')
+      .filter(':contains(Clusters)')
       .should('exist')
+      .next()
       .within(() => {
-        cy.get('.pf-c-card__body').should('contain', 'Application').and('contain', 'Cluster').and('contain', 'Nodes')
+        cy.get('tspan').should('contain', 'total clusters')
+      })
+
+    cy.get('div.pf-c-card__title')
+      .filter(':contains(Application types)')
+      .should('exist')
+      .next()
+      .within(() => {
+        cy.get('span').should('contain', 'total applications')
+      })
+
+    cy.get('div.pf-c-card__title')
+      .filter(':contains(Policies)')
+      .should('exist')
+      .next()
+      .within(() => {
+        cy.get('span').should('contain', 'enabled policies')
+      })
+
+    cy.get('div.pf-c-card__title').filter(':contains(Cluster version)').should('exist')
+
+    cy.get('div.pf-c-card__title')
+      .filter(':contains(Nodes)')
+      .should('exist')
+      .next()
+      .within(() => {
+        cy.get('span').should('contain', 'total nodes')
+      })
+
+    cy.get('div.pf-c-card__title').filter(':contains(Worker core count)').should('exist')
+  },
+
+  /**
+   * Verify the Overview page should display insights section.
+   * TODO - verify data & links
+   */
+  shouldHaveInsightsSection: () => {
+    cy.get('div.pf-c-card__title').filter(':contains(Insights)').should('exist')
+
+    cy.get('div.pf-c-card__title')
+      .filter(':contains(Cluster recommendations)')
+      .should('exist')
+      .next()
+      .within(() => {
+        cy.get('span').should('contain', 'clusters affected')
+      })
+
+    cy.get('div.pf-c-card__title')
+      .filter(':contains(Update risk predictions)')
+      .should('exist')
+      .next()
+      .within(() => {
+        cy.get('span').should('contain', 'clusters need to be reviewed before updating')
       })
   },
-  /**
-   * Verify that the Overview page should have accessible links to the Search page.
-   */
-  shouldHaveLinkToSearchPage: () => {
-    cy.get('#clusters-summary a')
-      .should('exist')
-      .and('be.visible')
-      .then((clusters) => {
-        const numOfCluster = clusters.text()
 
-        if (numOfCluster > 0) {
-          cy.wrap(clusters).click()
-        } else {
-          cy.log(`${numOfCluster} detected within the overview cluster summary`)
-        }
+  /**
+   * Verify the Overview page should display cluster health section.
+   * TODO - verify data & links
+   */
+  shouldHaveClusterHealthSection: () => {
+    cy.get('div.pf-c-card__title').filter(':contains(Cluster health)').should('exist')
+
+    cy.get('div.pf-c-card__title')
+      .filter(':contains(Status)')
+      .should('exist')
+      .next()
+      .within(() => {
+        cy.get('tspan').should('contain', 'Ready')
       })
 
-    cy.get('.pf-c-chip-group__list').should('have.length', 1).invoke('text').should('eq', 'kind:Cluster')
+    cy.get('div.pf-c-card__title')
+      .filter(':contains(Violations)')
+      .should('exist')
+      .next()
+      .within(() => {
+        cy.get('tspan').should('contain', 'No violations')
+      })
 
-    searchPage.shouldLoadResults()
-    cy.get('.pf-c-accordion__toggle-text').filter(':contains(Cluster)')
-    cy.go('back')
+    cy.get('div.pf-c-card__title')
+      .filter(':contains(Cluster add-ons)')
+      .should('exist')
+      .next()
+      .within(() => {
+        cy.get('tspan').should('contain', 'Available')
+      })
+  },
 
-    cy.get('#nodes-summary a').should('exist').and('be.visible').click()
-
-    searchPage.shouldLoadResults()
-    cy.get('.pf-c-accordion__toggle-text').filter(':contains(Node)')
+  /**
+   * Verify the Overview page should display the saved search section.
+   * TODO - verify data & links once saved searches are populated in env.
+   */
+  shouldHaveSavedSearchSection: () => {
+    cy.get('div.pf-c-card__title').filter(':contains(Your view)').should('exist')
   },
 }

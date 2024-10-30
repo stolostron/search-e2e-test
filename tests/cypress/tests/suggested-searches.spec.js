@@ -10,7 +10,7 @@ import { suggestedSearches } from '../views/suggestedSearches'
 describe('RHACM4K-411: Verify the suggested search templates', { tags: tags.env }, function () {
   beforeEach(function () {
     // Log into the cluster ACM console.
-    cy.visitAndLogin('/multicloud/home/search')
+    cy.visitAndLogin('/multicloud/search')
   })
 
   context('Console-Search suggested searches', { tags: tags.modes }, function () {

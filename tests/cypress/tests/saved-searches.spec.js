@@ -18,7 +18,7 @@ const queryEditNamespaceDesc = `[Created by Search E2E automation] This is searc
 describe('RHACM4K-412 - Saved searches', { tags: tags.env }, function () {
   beforeEach(function () {
     // Log into the cluster ACM console.
-    cy.visitAndLogin('/multicloud/home/search')
+    cy.visitAndLogin('/multicloud/search')
   })
 
   context('Console-Search saved searches', { tags: tags.modes }, function () {
