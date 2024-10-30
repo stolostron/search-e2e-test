@@ -362,18 +362,45 @@ if [[ "$SKIP_UI_TEST" == false ]]; then
   ATTEMPTS=0
   MAX_ATTEMPTS=60
   INTERVAL=10
-  while [[ "${CONSOLE_RUNNING}" == "false" ]] && [[ "${SEARCH_RUNNING}" == "false" ]] && (( ATTEMPTS != MAX_ATTEMPTS )); do
+  while [[ "${CONSOLE_RUNNING}" == "false" ]] || [[ "${SEARCH_RUNNING}" == "false" ]] && (( ATTEMPTS != MAX_ATTEMPTS )); do
     RUNNING_CONSOLE_PODS_COUNT=($(oc get pods -n open-cluster-management -l app=console-chart-v2 --field-selector=status.phase==Running --no-headers | wc -l))
-    # api, collector, indexer, postgres & operator
     RUNNING_SEARCH_PODS_COUNT=($(oc get pods -n open-cluster-management -l app=search --field-selector=status.phase==Running --no-headers | wc -l))
-    if [ "$RUNNING_CONSOLE_PODS_COUNT" -ge 1 ] && [ "$RUNNING_SEARCH_PODS_COUNT" -ge 5 ]; then
+    if [ "${CONSOLE_RUNNING}" == "false" ] && [ "$RUNNING_CONSOLE_PODS_COUNT" -ge 1 ]; then
       # Should have 2 Running console pods & 5 Running search pods.
-      RUNNING="true"
-      echo "Console & Search Pods are Running. Proceeding with UI tests."
-    else
-      echo "Console & Search Pods are not Running. Waiting another ${INTERVAL}s for pod update (Retry $((++ATTEMPTS))/${MAX_ATTEMPTS})"
-      sleep ${INTERVAL}
+      CONSOLE_RUNNING="true"
+      echo "Console Pods are Running."
     fi
+    if [ "${SEARCH_RUNNING}" == "false" ] && [ "$RUNNING_SEARCH_PODS_COUNT" -ge 5 ]; then
+      # Should have 2 Running console pods & 5 Running search pods. api, collector, indexer, postgres & operator
+      SEARCH_RUNNING="true"
+      echo "Search Pods are Running."
+    fi
+    if [[ "$CONSOLE_RUNNING" == "false" || "$SEARCH_RUNNING" == "false" ]]; then
+      echo "Console and/or Search Pods are not Running. Waiting another ${INTERVAL}s for pod update (Retry $((++ATTEMPTS))/${MAX_ATTEMPTS})"
+      sleep ${INTERVAL}
+    else
+        echo "Proceeding with UI tests."
+    fi
+  done
+
+  echo "Waiting up to 10 minutes for search DB to populate."
+  IS_DB_POPULATED="false"
+  ATTEMPTS=0
+  MAX_ATTEMPTS=60
+  INTERVAL=10
+  oc create route passthrough search-api --service=search-search-api -n open-cluster-management
+  SEARCH_ROUTE_URL="https://$(oc get route search-api -n open-cluster-management | awk 'NR==2' |awk '{print $2;}')/searchapi/graphql"
+  USER_TOKEN=$(oc whoami -t)
+  while [[ "${IS_DB_POPULATED}" == "false" ]] && (( ATTEMPTS != MAX_ATTEMPTS )); do
+  SEARCH_PODS_SEARCH_RESULT=$(curl --insecure --location --request POST $SEARCH_ROUTE_URL --header "Authorization: Bearer $USER_TOKEN" --header 'Content-Type: application/json' --data-raw '{"query":"query q($input: [SearchInput]) { search(input: $input) { count } }","variables":{"input":[{"keywords":[],"filters":[{"property":"kind","values":["Pod"]},{"property":"label","values":["app=search"]}], "limit":100}]}}' | jq -r .data.search[0].count)
+  if [ "$SEARCH_PODS_SEARCH_RESULT" -ge 5 ]; then
+      # Should have 5 search pods in DB. api, collector, indexer, postgres & operator
+      IS_DB_POPULATED="true"
+      echo "Search Pods are present in the DB. Proceeding with UI tests."
+  else
+      echo "Search Pods are NOT present in the DB. Waiting another ${INTERVAL}s for update (Retry $((++ATTEMPTS))/${MAX_ATTEMPTS})"
+      sleep ${INTERVAL}
+  fi
   done
 
   if [ "$NODE_ENV" == "development" ]; then
