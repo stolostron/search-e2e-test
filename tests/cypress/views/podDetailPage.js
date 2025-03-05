@@ -25,7 +25,7 @@ export const podDetailPage = {
    * Navigate the test user to the kind pod resource's detail logs page.
    */
   whenClickOnLogsTab: () => {
-    cy.get('.pf-c-page__main-section').should('exist')
+    cy.get('.pf-v5-c-page__main-section').should('exist')
     cy.get('.pf-c-nav__link').filter(':contains(Logs)').should('exist').click()
   },
 }

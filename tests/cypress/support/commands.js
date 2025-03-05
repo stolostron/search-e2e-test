@@ -47,14 +47,14 @@ Cypress.Commands.add('visitAndLogin', (URL, OPTIONS_HUB_USER, OPTIONS_HUB_PASSWO
 
       cy.get('body').then((body) => {
         // Check if logged in
-        if (body.find('.pf-c-page__header').length === 0) {
+        if (body.find('.pf-v5-c-page__header').length === 0) {
           // Check if identity providers are configured
           if (body.find('form').length === 0) cy.contains(idp).click()
 
           cy.get('#inputUsername').click().focused().type(user)
           cy.get('#inputPassword').click().focused().type(password)
           cy.get('button[type="submit"]').click()
-          cy.get('.pf-c-page__main')
+          cy.get('.pf-v5-c-page__main')
         }
       })
     } else {
