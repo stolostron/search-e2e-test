@@ -12,6 +12,6 @@ export const suggestedSearches = {
    * @param {string} title The title of the suggested filter panel.
    */
   whenSelectCardWithTitle: (title) => {
-    cy.get('.pf-c-card__title').filter(`:contains(${title})`).should('exist').and('be.visible').click()
+    cy.get('.pf-v5-c-card__title').filter(`:contains(${title})`).should('exist').and('be.visible').click()
   },
 }
