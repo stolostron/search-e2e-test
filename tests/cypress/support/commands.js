@@ -47,14 +47,14 @@ Cypress.Commands.add('visitAndLogin', (URL, OPTIONS_HUB_USER, OPTIONS_HUB_PASSWO
 
       cy.get('body').then((body) => {
         // Check if logged in
-        if (body.find('.pf-c-page__header').length === 0) {
+        if (body.find('.pf-v5-c-page__header').length === 0) {
           // Check if identity providers are configured
           if (body.find('form').length === 0) cy.contains(idp).click()
 
           cy.get('#inputUsername').click().focused().type(user)
           cy.get('#inputPassword').click().focused().type(password)
           cy.get('button[type="submit"]').click()
-          cy.get('.pf-c-page__main')
+          cy.get('.pf-v5-c-page__main')
         }
       })
     } else {
@@ -139,7 +139,7 @@ Cypress.Commands.add('forEach', (selector, action, options) => {
 
 Cypress.Commands.add('logout', () => {
   cy.log('Attempt to logout existing user')
-  cy.get('.pf-c-app-launcher.pf-m-align-right.co-app-launcher.co-user-menu').then(($btn) => {
+  cy.get('.pf-v5-c-app-launcher.pf-m-align-right.co-app-launcher.co-user-menu').then(($btn) => {
     //logout when test starts since we need to use the app idp user
     cy.log('Logging out existing user').get($btn).click()
     if (Cypress.config().baseUrl.includes('localhost')) {

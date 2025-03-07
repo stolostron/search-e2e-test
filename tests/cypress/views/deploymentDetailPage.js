@@ -12,9 +12,9 @@ export const deploymentDetailPage = {
    * @param {string} expected The expected string within the logs returned inside of the pod container.
    */
   whenScaleReplicasTo: (replicas) => {
-    cy.get('.pf-c-page__main-section').should('exist')
+    cy.get('.pf-v5-c-page__main-section').should('exist')
     cy.get('p').filter(':contains(Read only)').should('exist')
-    cy.get('button.pf-c-button.pf-m-primary[aria-disabled="false"]').should('exist').click()
+    cy.get('button.pf-v5-c-button.pf-m-primary[aria-disabled="false"]').should('exist').click()
     cy.get('p').filter(':contains(Editing mode)').should('exist')
     cy.get('.react-monaco-editor-container')
       .should('exist')
