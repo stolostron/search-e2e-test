@@ -11,9 +11,9 @@ export const overviewPage = {
    * Verify that the Overview page should be loaded correctly.
    */
   shouldLoad: () => {
-    cy.get('.pf-c-empty-state__icon').should('not.exist')
-    cy.get('.pf-c-skeleton').should('not.exist')
-    cy.get('h1.pf-c-title').filter(':contains(Overview)').should('exist')
+    cy.get('.pf-v5-c-empty-state__icon').should('not.exist')
+    cy.get('.pf-v5-c-skeleton').should('not.exist')
+    cy.get('h1.pf-v5-c-title').filter(':contains(Overview)').should('exist')
   },
 
   /**
@@ -21,7 +21,7 @@ export const overviewPage = {
    * TODO - verify data & links
    */
   shouldHaveSummarySection: () => {
-    cy.get('div.pf-c-card__title')
+    cy.get('div.pf-v5-c-card__title')
       .filter(':contains(Clusters)')
       .should('exist')
       .next()
@@ -29,7 +29,7 @@ export const overviewPage = {
         cy.get('tspan').should('contain', 'total clusters')
       })
 
-    cy.get('div.pf-c-card__title')
+    cy.get('div.pf-v5-c-card__title')
       .filter(':contains(Application types)')
       .should('exist')
       .next()
@@ -37,7 +37,7 @@ export const overviewPage = {
         cy.get('span').should('contain', 'total applications')
       })
 
-    cy.get('div.pf-c-card__title')
+    cy.get('div.pf-v5-c-card__title')
       .filter(':contains(Policies)')
       .should('exist')
       .next()
@@ -45,9 +45,9 @@ export const overviewPage = {
         cy.get('span').should('contain', 'enabled policies')
       })
 
-    cy.get('div.pf-c-card__title').filter(':contains(Cluster version)').should('exist')
+    cy.get('div.pf-v5-c-card__title').filter(':contains(Cluster version)').should('exist')
 
-    cy.get('div.pf-c-card__title')
+    cy.get('div.pf-v5-c-card__title')
       .filter(':contains(Nodes)')
       .should('exist')
       .next()
@@ -55,7 +55,7 @@ export const overviewPage = {
         cy.get('span').should('contain', 'total nodes')
       })
 
-    cy.get('div.pf-c-card__title').filter(':contains(Worker core count)').should('exist')
+    cy.get('div.pf-v5-c-card__title').filter(':contains(Worker core count)').should('exist')
   },
 
   /**
@@ -63,9 +63,9 @@ export const overviewPage = {
    * TODO - verify data & links
    */
   shouldHaveInsightsSection: () => {
-    cy.get('div.pf-c-card__title').filter(':contains(Insights)').should('exist')
+    cy.get('div.pf-v5-c-card__title').filter(':contains(Insights)').should('exist')
 
-    cy.get('div.pf-c-card__title')
+    cy.get('div.pf-v5-c-card__title')
       .filter(':contains(Cluster recommendations)')
       .should('exist')
       .next()
@@ -73,7 +73,7 @@ export const overviewPage = {
         cy.get('span').should('contain', 'clusters affected')
       })
 
-    cy.get('div.pf-c-card__title')
+    cy.get('div.pf-v5-c-card__title')
       .filter(':contains(Update risk predictions)')
       .should('exist')
       .next()
@@ -87,9 +87,9 @@ export const overviewPage = {
    * TODO - verify data & links
    */
   shouldHaveClusterHealthSection: () => {
-    cy.get('div.pf-c-card__title').filter(':contains(Cluster health)').should('exist')
+    cy.get('div.pf-v5-c-card__title').filter(':contains(Cluster health)').should('exist')
 
-    cy.get('div.pf-c-card__title')
+    cy.get('div.pf-v5-c-card__title')
       .filter(':contains(Status)')
       .should('exist')
       .next()
@@ -97,7 +97,7 @@ export const overviewPage = {
         cy.get('tspan').should('contain', 'Ready')
       })
 
-    cy.get('div.pf-c-card__title')
+    cy.get('div.pf-v5-c-card__title')
       .filter(':contains(Violations)')
       .should('exist')
       .next()
@@ -105,7 +105,7 @@ export const overviewPage = {
         cy.get('tspan').should('contain', 'No violations')
       })
 
-    cy.get('div.pf-c-card__title')
+    cy.get('div.pf-v5-c-card__title')
       .filter(':contains(Cluster add-ons)')
       .should('exist')
       .next()
@@ -119,6 +119,6 @@ export const overviewPage = {
    * TODO - verify data & links once saved searches are populated in env.
    */
   shouldHaveSavedSearchSection: () => {
-    cy.get('div.pf-c-card__title').filter(':contains(Your view)').should('exist')
+    cy.get('div.pf-v5-c-card__title').filter(':contains(Your view)').should('exist')
   },
 }

@@ -12,20 +12,20 @@ export const podDetailPage = {
    * @param {string} expected The expected string within the logs returned inside of the pod container.
    */
   shouldSeeLogs: (expected) => {
-    cy.get('.pf-c-form__group-control .pf-c-select').should('exist').click()
-    cy.get('ul.pf-c-select__menu').should('exist').click()
+    cy.get('.pf-v5-c-form__group-control .pf-c-select').should('exist').click()
+    cy.get('ul.pf-v5-c-select__menu').should('exist').click()
 
     if (expected) {
-      cy.get('.pf-c-log-viewer__text').should('exist').and('contain', expected)
+      cy.get('.pf-v5-c-log-viewer__text').should('exist').and('contain', expected)
     } else {
-      cy.get('.pf-c-log-viewer__text').should('exist')
+      cy.get('.pf-v5-c-log-viewer__text').should('exist')
     }
   },
   /**
    * Navigate the test user to the kind pod resource's detail logs page.
    */
   whenClickOnLogsTab: () => {
-    cy.get('.pf-c-page__main-section').should('exist')
-    cy.get('.pf-c-nav__link').filter(':contains(Logs)').should('exist').click()
+    cy.get('.pf-v5-c-page__main-section').should('exist')
+    cy.get('.pf-v5-c-nav__link').filter(':contains(Logs)').should('exist').click()
   },
 }
