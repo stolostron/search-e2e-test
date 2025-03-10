@@ -60,7 +60,7 @@ export const searchPage = {
     cy.reloadUntil(
       () => {
         searchPage.shouldFindNoSkeleton()
-        return cy.ifContains('.pf-c-alert__title', SEARCH_MESSAGES_NO_RESULTS)
+        return cy.ifContains('.pf-v5-c-alert__title', SEARCH_MESSAGES_NO_RESULTS)
       },
       { interval: 5 }
     )
@@ -69,8 +69,8 @@ export const searchPage = {
    * Verify that the search page should contain no skeleton placeholder elements.
    */
   shouldFindNoSkeleton: () => {
-    cy.get('.pf-c-empty-state__icon').should('not.exist')
-    cy.get('.pf-c-skeleton').should('not.exist')
+    cy.get('.pf-v5-c-empty-state__icon').should('not.exist')
+    cy.get('.pf-v5-c-skeleton').should('not.exist')
   },
   /**
    * Verify that the Search page should contain the related kind resource tile with the correct resource count.
@@ -78,12 +78,12 @@ export const searchPage = {
    * @param {int} count
    */
   shouldFindRelationshipTile: (kind) => {
-    cy.get('.pf-c-accordion.pf-m-bordered')
+    cy.get('.pf-v5-c-accordion.pf-m-bordered')
       .should('exist')
       .each(($div) => {
         cy.wrap($div).within(() => {
-          cy.get('.pf-c-skeleton').should('not.exist')
-          cy.get('.pf-c-accordion__toggle-text').filter(`:contains(${kind})`).should('exist')
+          cy.get('.pf-v5-c-skeleton').should('not.exist')
+          cy.get('.pf-v5-c-accordion__toggle-text').filter(`:contains(${kind})`).should('exist')
         })
       })
   },
@@ -105,7 +105,7 @@ export const searchPage = {
   shouldFindResourceDetailItemCreatedFewSecondsAgo: (kind, name, namespace) => {
     cy.reloadUntil(
       () => {
-        cy.get('.pf-c-accordion__toggle-text')
+        cy.get('.pf-v5-c-accordion__toggle-text')
           .filter(`:contains(${capitalize(kind)})`)
           .should('exist')
           .then(() => {
@@ -131,17 +131,17 @@ export const searchPage = {
    */
   shouldLoad: () => {
     searchPage.shouldFindNoSkeleton()
-    cy.get('h1.pf-c-title').filter(':contains(Search)').should('exist')
-    cy.get('.pf-c-text-input-group__text-input').should('exist')
+    cy.get('h1.pf-v5-c-title').filter(':contains(Search)').should('exist')
+    cy.get('.pf-v5-c-text-input-group__text-input').should('exist')
   },
   /**
    * Verify that the Search page should have loaded the resource table.
    */
   shouldLoadResults: () => {
-    cy.get('.pf-c-accordion__toggle').should('exist').and('be.visible')
+    cy.get('.pf-v5-c-accordion__toggle').should('exist').and('be.visible')
 
     cy.get('body').then((body) => {
-      if (body.find('table.pf-c-table').length === 0) {
+      if (body.find('table.pf-v5-c-table').length === 0) {
         searchPage.whenOpenFirstResourceTableTile()
       }
     })
@@ -150,35 +150,35 @@ export const searchPage = {
    * Verify that the saved search tab is rendered on the Search page.
    */
   shouldRenderSavedSearchesTab: () => {
-    cy.get('.pf-c-dropdown__toggle-text').filter(':contains(Saved searches)').should('exist')
+    cy.get('.pf-v5-c-dropdown__toggle-text').filter(':contains(Saved searches)').should('exist')
   },
   /**
    * Verify that the search bar is rendered on the Search page.
    */
   shouldRenderSearchBar: () => {
-    cy.get('.pf-c-text-input-group__text-input').should('exist')
+    cy.get('.pf-v5-c-text-input-group__text-input').should('exist')
   },
   /**
    * Verify that the suggested searches header and tiles are rendered on the Search page.
    */
   shouldRenderSuggestedSearches: () => {
-    cy.get('h4.pf-c-title').filter(':contains(Suggested search templates)').should('exist')
-    cy.get('.pf-c-card.pf-m-selectable').should('exist')
+    cy.get('h4.pf-v5-c-title').filter(':contains(Suggested search templates)').should('exist')
+    cy.get('.pf-v5-c-card.pf-m-clickable').should('exist')
   },
   /**
    * Expands the related resources tiles located within the Search page.
    */
   whenExpandRelationshipTiles: () => {
-    cy.get('.pf-c-expandable-section__toggle').contains('Show related resources').should('exist').click()
+    cy.get('.pf-v5-c-expandable-section__toggle').contains('Show related resources').should('exist').click()
   },
   whenOpenFirstResourceTableTile: () => {
-    cy.get('.pf-c-accordion__toggle').should('exist').and('be.visible').first().click()
+    cy.get('.pf-v5-c-accordion__toggle').should('exist').and('be.visible').first().click()
   },
   whenOpenResourceTableTile: (kind) => {
-    cy.get('.pf-c-expandable-section')
+    cy.get('.pf-v5-c-expandable-section')
       .should('have.lengthOf.at.most', 2)
       .then(() => {
-        cy.get('.pf-c-expandable-section__toggle').contains(capitalize(kind)).click()
+        cy.get('.pf-v5-c-expandable-section__toggle').contains(capitalize(kind)).click()
       })
   },
   /**
@@ -189,7 +189,7 @@ export const searchPage = {
    * @returns {Cypress.Chainable} Table row of the targeted test resource.
    */
   whenGetResourceTableRow: (kind, name, namespace) => {
-    cy.get('table.pf-c-table').should('exist').and('be.visible')
+    cy.get('table.pf-v5-c-table').should('exist').and('be.visible')
     var row = cy.get('tr').filter(`:contains(${name})`)
 
     if (kind === 'Pod') return row.filter(`:contains(${namespace})`).filter(':contains(Running)').first()
@@ -203,8 +203,8 @@ export const searchPage = {
    * @param {string} namespace The namespace from which the resource object will be deleted.
    */
   whenDeleteResourceDetailItem: (kind, name, namespace) => {
-    searchPage.whenGetResourceTableRow(kind, name, namespace).find('.pf-c-dropdown__toggle').click()
-    cy.get('button.pf-c-dropdown__menu-item').should('contain', `Delete ${kind}`).click()
+    searchPage.whenGetResourceTableRow(kind, name, namespace).find('.pf-v5-c-dropdown__toggle').click()
+    cy.get('button.pf-v5-c-dropdown__menu-item').should('contain', `Delete ${kind}`).click()
     popupModal.whenAccept()
   },
   /**
@@ -229,23 +229,23 @@ export const searchPage = {
  */
 export const searchBar = {
   shouldContainTag: (filter) => {
-    cy.get('.pf-c-chip-group__list').should('contain', filter)
+    cy.get('.pf-v5-c-chip-group__list').should('contain', filter)
   },
   whenSuggestionsAreAvailable: (value, ignoreIfDoesNotExist) => {
     if (!ignoreIfDoesNotExist) {
-      cy.get('.pf-c-menu__list').children().should('have.length.above', 1)
+      cy.get('.pf-v5-c-menu__list').children().should('have.length.above', 1)
     }
-    cy.get('.pf-c-text-input-group__text-input').click().type(value)
+    cy.get('.pf-v5-c-text-input-group__text-input').click().type(value)
   },
   whenEnterTextInSearchBar: (property, value, ignoreIfDoesNotExist) => {
-    cy.get('.pf-c-text-input-group__text-input').click()
+    cy.get('.pf-v5-c-text-input-group__text-input').click()
     searchBar.whenSuggestionsAreAvailable(property, ignoreIfDoesNotExist)
 
-    cy.get('.pf-c-text-input-group__text-input').type(' ')
+    cy.get('.pf-v5-c-text-input-group__text-input').type(' ')
 
     if (value && value !== null) {
       searchBar.whenSuggestionsAreAvailable(value, ignoreIfDoesNotExist)
-      cy.get('.pf-c-text-input-group__text-input').type(' ')
+      cy.get('.pf-v5-c-text-input-group__text-input').type(' ')
     }
   },
   /**
@@ -292,13 +292,14 @@ export const searchBar = {
    * @param {int} size The amount of resources to be displayed within the table.
    */
   whenUsePagination: (size = 10) => {
-    cy.get('.pf-c-options-menu')
+    cy.get('.pf-v5-c-pagination')
       .should('exist')
       .and('be.visible')
       .first()
       .within(() => {
-        cy.get('.pf-c-options-menu__toggle-button').click()
-        cy.get(`button[data-action="per-page-${size}"]`).should('exist').click()
+        cy.get('button.pf-v5-c-menu-toggle').should('exist').click()
+        cy.get('.pf-v5-c-menu__content').should('exist')
+        cy.get(`li[data-action="per-page-${size}"]`).should('exist').click()
       })
   },
 }

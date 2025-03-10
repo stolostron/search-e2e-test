@@ -139,7 +139,7 @@ Cypress.Commands.add('forEach', (selector, action, options) => {
 
 Cypress.Commands.add('logout', () => {
   cy.log('Attempt to logout existing user')
-  cy.get('.pf-c-app-launcher.pf-m-align-right.co-app-launcher.co-user-menu').then(($btn) => {
+  cy.get('.pf-v5-c-app-launcher.pf-m-align-right.co-app-launcher.co-user-menu').then(($btn) => {
     //logout when test starts since we need to use the app idp user
     cy.log('Logging out existing user').get($btn).click()
     if (Cypress.config().baseUrl.includes('localhost')) {
