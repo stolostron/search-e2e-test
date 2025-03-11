@@ -8,6 +8,8 @@ USER root
 
 COPY --from=builder /usr/bin/yq /usr/local/bin/yq
 
+RUN apt-get update && apt-get install -y jq
+
 RUN mkdir -p /search-e2e/cypress_cache
 ENV CYPRESS_CACHE_FOLDER=/search-e2e/cypress_cache
 WORKDIR /search-e2e
