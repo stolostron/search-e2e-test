@@ -36,7 +36,8 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
 
     // Wait for the service account and search index to get updated.
     // Must wait 2 minutes because of the current RBAC cache.
-    await sleep(120000)
+    // another 1 minute grace period added to ensure resources indexed
+    await sleep(120000 + 60000)
   }, 1500000)
 
   // Keep separate from beforeAll because it slows execution and increases the chances of recovering during retry.
