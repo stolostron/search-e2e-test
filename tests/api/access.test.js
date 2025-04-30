@@ -37,7 +37,7 @@ describe(`[P1][Sev1][${squad}] Search API: Verify access:`, () => {
     return request(searchApiRoute)
       .post('/searchapi/graphql')
       .send(query)
-      .set({ Authorization: token }) // Missing Bearer.
+      .set({ Authorization: token }) // Missing Bearer token.
       .expect(200)
   })
 
