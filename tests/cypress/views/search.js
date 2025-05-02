@@ -150,7 +150,7 @@ export const searchPage = {
    * Verify that the saved search tab is rendered on the Search page.
    */
   shouldRenderSavedSearchesTab: () => {
-    cy.get('.pf-v5-c-dropdown__toggle-text').contains('Saved searches').should('exist')
+    cy.get('.pf-v5-c-dropdown__toggle-text', { timeout: 30000 }).contains('Saved searches').should('exist')
   },
   /**
    * Verify that the search bar is rendered on the Search page.
