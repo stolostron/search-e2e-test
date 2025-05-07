@@ -9,7 +9,7 @@ export const savedSearches = {
   editSavedSearch: (queryName, editedName, editedDesc) => {
     savedSearches.shouldExist(queryName)
     cy.get('.pf-v5-c-card__header').contains(queryName).parent().parent().parent().find('button').focus().click()
-    cy.get('.pf-v5-c-dropdown__menu.pf-m-align-right').contains('Edit').click()
+    cy.get('ul.pf-v5-c-menu__list').contains('Edit').click()
     cy.get('#add-query-name').clear().type(editedName)
     cy.get('#add-query-desc').clear().type(editedDesc)
     cy.get('.pf-v5-c-button.pf-m-primary').contains('Save').focus().click()
@@ -17,8 +17,8 @@ export const savedSearches = {
   },
   getSavedSearch: (queryName) => {
     savedSearches.shouldExist(queryName)
-    cy.get('button.pf-v5-c-dropdown__toggle').contains('Saved searches').click({ force: true })
-    cy.get('ul.pf-v5-c-dropdown__menu.pf-m-align-right').contains(queryName).click()
+    cy.get('button.pf-v5-c-menu-toggle').contains('Saved searches').click({ force: true })
+    cy.get('ul.pf-v5-c-menu__list').contains(queryName).click()
   },
   saveClusterNamespaceSearch: (cluster, namespace, queryName, queryDesc) => {
     searchPage.shouldFindNamespaceInCluster(namespace, cluster)
@@ -35,7 +35,7 @@ export const savedSearches = {
   shareSavedSearch: (queryName) => {
     savedSearches.shouldExist(queryName)
     cy.get('.pf-v5-c-card__header').contains(queryName).parent().parent().parent().find('button').focus().click()
-    cy.get('.pf-v5-c-dropdown__menu.pf-m-align-right').contains('Share').click()
+    cy.get('ul.pf-v5-c-menu__list').contains('Share').click()
     cy.get('input')
       .invoke('val')
       .then((inputText) => inputText.includes('/multicloud/search?filters={"textsearch"'))
@@ -47,7 +47,7 @@ export const savedSearches = {
   whenDeleteSavedSearch: (queryName) => {
     savedSearches.shouldExist(queryName)
     cy.get('.pf-v5-c-card__header').contains(queryName).parent().parent().parent().find('button').focus().click()
-    cy.get('.pf-v5-c-dropdown__menu.pf-m-align-right').contains('Delete').click()
+    cy.get('ul.pf-v5-c-menu__list').contains('Delete').click()
     cy.get('.pf-v5-c-button.pf-m-danger').contains('Delete').click()
     cy.get('.pf-v5-c-card__title').contains(queryName).should('not.exist')
   },
