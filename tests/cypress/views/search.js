@@ -150,7 +150,7 @@ export const searchPage = {
    * Verify that the saved search tab is rendered on the Search page.
    */
   shouldRenderSavedSearchesTab: () => {
-    cy.get('.pf-v5-c-dropdown__toggle-text').filter(':contains(Saved searches)').should('exist')
+    cy.get('.pf-v5-c-menu-toggle__text').filter(':contains(Saved searches)').should('exist')
   },
   /**
    * Verify that the search bar is rendered on the Search page.
@@ -163,7 +163,7 @@ export const searchPage = {
    */
   shouldRenderSuggestedSearches: () => {
     cy.get('h4.pf-v5-c-title').filter(':contains(Suggested search templates)').should('exist')
-    cy.get('.pf-v5-c-card.pf-m-clickable').should('exist')
+    cy.get('.pf-v5-c-card').should('exist')
   },
   /**
    * Expands the related resources tiles located within the Search page.
