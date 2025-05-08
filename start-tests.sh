@@ -53,11 +53,18 @@ fi
 
 # Check to see if OPTIONS_HUB_OC_IDP is unset or null.
 if [[ -z $OPTIONS_HUB_OC_IDP || "$OPTIONS_HUB_OC_IDP" == "null" ]]; then
-  log_color "purple" "OPTIONS_HUB_OC_IDP" "not exported or null; setting to 'kube:admin' (set ${PURPLE}OPTIONS_HUB_OC_IDP${NC} to execute the test with target identity provider)"
-  export OPTIONS_HUB_OC_IDP=kube:admin
+  log_color "purple" "OPTIONS_HUB_OC_IDP" "not exported or null, checking to see if the value is configured with environment variable.\n"
+  if [[ -z $OCP_HUB_IDP || "$OCP_HUB_IDP" == "null" || -z $OCP_HUB_CLUSTER_USER || "$OCP_HUB_CLUSTER_USER" == "null" ]]; then
+    log_color "purple" "OPTIONS_HUB_OC_IDP" "not exported or null; setting to 'kube:admin' (set ${PURPLE}OPTIONS_HUB_OC_IDP${NC} to execute the test with target identity provider)"
+    export OPTIONS_HUB_OC_IDP=kube:admin
 
-  log_color "purple" "OPTIONS_HUB_USER" "setting to default user: 'kubeadmin'\n"
-  export OPTIONS_HUB_USER=kubeadmin
+    log_color "purple" "OPTIONS_HUB_USER" "setting to default user: 'kubeadmin'\n"
+    export OPTIONS_HUB_USER=kubeadmin
+  else
+    log_color "purple" "OCP_HUB_IDP and OCP_HUB_CLUSTER_USER" "environment variables detected, using $OCP_HUB_IDP and $OCP_HUB_CLUSTER_USER for test.\n"
+    export OPTIONS_HUB_OC_IDP=$OCP_HUB_IDP
+    export OPTIONS_HUB_USER=$OCP_HUB_CLUSTER_USER
+  fi
 else
   log_color "purple" "OPTIONS_HUB_OC_IDP" "detected, using $OPTIONS_HUB_OC_IDP for test.\n"
 fi
