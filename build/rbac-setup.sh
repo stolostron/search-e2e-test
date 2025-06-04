@@ -12,6 +12,7 @@
 # using abosolute path, relative path is not working in travis
 
 set -e
+echo "a triggering change :)"
 
 RBAC_DIR=${TRAVIS_BUILD_DIR:-.}/tests/config/rbac_yaml
 
