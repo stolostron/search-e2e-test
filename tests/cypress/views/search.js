@@ -78,14 +78,8 @@ export const searchPage = {
    * @param {int} count
    */
   shouldFindRelationshipTile: (kind) => {
-    cy.get('.pf-v5-c-accordion.pf-m-bordered')
-      .should('exist')
-      .each(($div) => {
-        cy.wrap($div).within(() => {
-          cy.get('.pf-v5-c-skeleton').should('not.exist')
-          cy.get('.pf-v5-c-accordion__toggle-text').filter(`:contains(${kind})`).should('exist')
-        })
-      })
+    cy.get('.pf-v5-c-skeleton').should('not.exist')
+    cy.contains('.pf-v5-c-accordion__toggle-text', kind).should('exist')
   },
   /**
    * Verify that the Search page should contain the resource table containing the details of the specified resource object.
