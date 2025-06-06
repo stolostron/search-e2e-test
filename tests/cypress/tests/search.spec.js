@@ -14,7 +14,7 @@ const clusterMode = {
   valueFn: () => cy.wrap('local-cluster'),
 }
 
-describe(`Search in ${clusterMode.label} Cluster`, { tags: tags.env }, function () {
+describe(`RHACM4K-57212 - Search in ${clusterMode.label} Cluster`, { tags: tags.env }, function () {
   before(function () {
     // Setting the cluster mode cluster as the current instance cluster.
     clusterMode.valueFn().as('clusterName')
