@@ -33,12 +33,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     oc create configmap cm4-broccoli -n ${ns} --from-literal=key=cm4
     oc label configmap cm4-broccoli -n ${ns} type=vegetable
 
-    oc create deployment ${usr} -n ${ns} --image=busybox --replicas=0 -- 'date; sleep 60;'
-    
-    # TODO: Are these being used?
-    # Create additional resources for comprehensive testing
-    #oc create service clusterip test-service -n ${ns} --tcp=80:8080
-    #oc create secret generic test-secret -n ${ns} --from-literal=password=secret123`
+    oc create deployment ${usr} -n ${ns} --image=busybox --replicas=0 -- 'date; sleep 60;'`
 
     // Run the setup steps in parallel.
     const [route] = await Promise.all([getSearchApiRoute(), execCliCmdString(setupCommands)])
@@ -49,20 +44,20 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     // another 1 minute grace period added to ensure resources indexed
     console.log('Waiting 3 minutes for index update and cache expiration')
     await sleep(120000 + 60000)
-  }, 1500000)
+  }, 1500000) // WHY 25 minutes !?!?
 
   // Keep separate from beforeAll because it slows execution and increases the chances of recovering during retry.
   beforeEach(async () => {
-    await sleep(5000)
+    await sleep(5000) // WHY waiting 5 seconds ?!?
     user = await getUserContext({ usr, ns })
-  }, 10000)
+  }, 10000) // 10 seconds
 
   afterAll(async () => {
     let teardownCmds = `# export ns=search-query; export usr=search-query-user
     oc delete ns ${ns}`
 
     await execCliCmdString(teardownCmds)
-  }, 30000)
+  }, 30000) // 30 seconds
 
   describe(`using keywords`, () => {
     test(`should match any resources containing the keyword 'apple'`, async () => {
