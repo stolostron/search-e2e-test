@@ -1,7 +1,5 @@
 module.exports = {
-  globals: {
-    retry: 2,
-  },
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   globalSetup: './globalSetup.js',
   globalTeardown: './globalTeardown.js',
   verbose: true,
@@ -17,6 +15,6 @@ module.exports = {
       },
     ],
   ],
+  testMatch: ['**/queries.test.js'],
   testResultsProcessor: 'jest-junit',
-  testRunner: 'jest-circus/runner',
 }

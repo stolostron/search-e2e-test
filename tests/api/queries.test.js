@@ -1,6 +1,7 @@
 // Copyright Contributors to the Open Cluster Management project
 
-jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
+// Configure Jest retries and options.
+jest.retryTimes(globalThis.retry, globalThis.retryOptions)
 
 const squad = require('../../config').get('squadName')
 const { getUserContext, getSearchApiRoute } = require('../common-lib/clusterAccess')
@@ -15,6 +16,9 @@ const { sleep } = require('../common-lib/sleep')
 
 const usr = 'search-query-user'
 const ns = 'search-query'
+
+// Track test state
+let testFailureState = { previousTestFailed: false }
 
 describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`, () => {
   beforeAll(async () => {
@@ -39,17 +43,30 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     const [route] = await Promise.all([getSearchApiRoute(), execCliCmdString(setupCommands)])
     searchApiRoute = route
 
-    // Wait for the service account and search index to get updated.
-    // Must wait 2 minutes because of the current RBAC cache.
-    // another 1 minute grace period added to ensure resources indexed
-    console.log('Waiting 3 minutes for index update and cache expiration')
-    await sleep(120000 + 60000)
-  }, 1500000) // WHY 25 minutes !?!?
-
-  // Keep separate from beforeAll because it slows execution and increases the chances of recovering during retry.
-  beforeEach(async () => {
-    await sleep(5000) // WHY waiting 5 seconds ?!?
     user = await getUserContext({ usr, ns })
+
+    // Wait for the service account and search index to get updated.
+    console.log('Waiting for search index to be updated...')
+    let ready = false
+    let start = Date.now()
+    while (!ready) {
+      const items = await resolveSearchItems(user.token, { filters: [{ property: 'name', values: ['cm4-broccoli'] }] })
+      if (items.length > 0) {
+        ready = true
+      } else {
+        await sleep(1000)
+      }
+    }
+    console.log(`Search index ready after ${Date.now() - start} ms`)
+  }, 300000) // 5 minutes
+
+  beforeEach(async () => {
+    // Check if we need to take corrective action based on previous test failure
+    if (testFailureState.previousTestFailed) {
+      console.log(`Previous test failed, refreshing user context to fix possible authentication issues.`)
+
+      user = await getUserContext({ usr, ns })
+    }
   }, 10000) // 10 seconds
 
   afterAll(async () => {
@@ -58,6 +75,11 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
 
     await execCliCmdString(teardownCmds)
   }, 30000) // 30 seconds
+
+  afterEach(() => {
+    // Detect if current test failed using Jest's state
+    testFailureState.previousTestFailed = !!expect.getState().suppressedErrors?.length
+  })
 
   describe(`using keywords`, () => {
     test(`should match any resources containing the keyword 'apple'`, async () => {
