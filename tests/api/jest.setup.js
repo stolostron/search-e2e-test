@@ -10,4 +10,4 @@ globalThis.retryOptions = {
   logErrorsBeforeRetry: true,
 }
 
-console.log('Jest setup {retry:', globalThis.retry, ', retryOptions: ', globalThis.retryOptions, '}')
+// console.log('Jest setup {retry:', globalThis.retry, ', retryOptions: ', globalThis.retryOptions, '}')

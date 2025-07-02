@@ -15,6 +15,5 @@ module.exports = {
       },
     ],
   ],
-  testMatch: ['**/queries.test.js'],
   testResultsProcessor: 'jest-junit',
 }

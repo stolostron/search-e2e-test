@@ -23,7 +23,6 @@ describe(`[P2][Sev2][${squad}] Search API: Validate data in index`, () => {
   const clusterList = getClusterList(kubeconfigs)
 
   // Fetch API resources and filter out the kinds that aren't collected by search.
-  console.info("Ignoring resources that aren't collected by Search:", ignoreKindResourceList)
   const resourceList = fetchAPIResourcesWithListWatchMethods().filter(
     (resource) => !ignoreKindResourceList.includes(resource.kind)
   )

@@ -47,7 +47,6 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     user = await getUserContext({ usr, ns })
 
     // Wait for the service account and search index to get updated.
-    console.log('Waiting for search index to be updated...')
     let ready = false
     let start = Date.now()
     while (!ready) {
@@ -55,7 +54,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
       if (items.length > 0) {
         ready = true
       } else {
-        await sleep(1000)
+        await sleep(2000)
       }
     }
     console.log(`Search index ready after ${Date.now() - start} ms`)
@@ -68,7 +67,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
 
       user = await getUserContext({ usr, ns })
     }
-  }, 10000) // 10 seconds
+  })
 
   afterAll(async () => {
     let teardownCmds = `# export ns=search-query; export usr=search-query-user
