@@ -1,6 +1,7 @@
 // Copyright Contributors to the Open Cluster Management project
 
-jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
+// Configure Jest retries and options.
+jest.retryTimes(globalThis.retry, globalThis.retryOptions)
 
 const squad = require('../../config').get('squadName')
 const { getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
