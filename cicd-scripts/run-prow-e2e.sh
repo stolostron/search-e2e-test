@@ -11,7 +11,8 @@ echo -e "Shared dir: $SHARED_DIR\n"
 
 ls -la
 
-echo "Env from prow: ACM_RELEASE_VERSION: $ACM_RELEASE_VERSION"
+echo "Debug ENV from prow: ACM_RELEASE_VERSION: $ACM_RELEASE_VERSION"
+exit 1
 
 # Test env
 export BROWSER=chrome
