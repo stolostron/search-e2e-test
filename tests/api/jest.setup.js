@@ -6,7 +6,7 @@
 // Set global retry configuration
 globalThis.retry = 2
 globalThis.retryOptions = {
-  waitBeforeRetry: 15000,
+  waitBeforeRetry: 10000,
   logErrorsBeforeRetry: true,
 }
 
