@@ -11,6 +11,9 @@ echo -e "Shared dir: $SHARED_DIR\n"
 
 ls -la
 
+echo "Debug ENV from prow: ACM_RELEASE_VERSION: $ACM_RELEASE_VERSION"
+exit 1
+
 # Test env
 export BROWSER=chrome
 export OPTIONS_HUB_KUBECONFIG=${SHARED_DIR}/hub-1.kc
