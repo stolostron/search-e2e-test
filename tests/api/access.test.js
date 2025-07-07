@@ -41,7 +41,7 @@ describe(`[P1][Sev1][${squad}] Search API: Verify access:`, () => {
       .expect(200)
   })
 
-  test('should return results when searching for kind:pod.', () => {
+  test('should return results when searching for kind:pod.', () => { // FIXME Remove this comment
     return request(searchApiRoute)
       .post('/searchapi/graphql')
       .send(query)
