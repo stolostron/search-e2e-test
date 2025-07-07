@@ -321,6 +321,28 @@ if [[ "$PROW_MODE" == true ]]; then
   sleep 120
 fi
 
+if [[ "$SKIP_API_TEST" == "false" || "$SKIP_UI_TEST" == "false" ]]; then
+  echo "Waiting up to 10 minutes for search pods to reach Running status"
+  SEARCH_RUNNING="false"
+  ATTEMPTS=0
+  MAX_ATTEMPTS=60
+  INTERVAL=10
+  while [[ "${SEARCH_RUNNING}" == "false" ]] && (( ATTEMPTS != MAX_ATTEMPTS )); do
+    RUNNING_SEARCH_PODS_COUNT=($(oc get pods --all-namespaces -l app=search --field-selector=status.phase==Running --no-headers | wc -l))
+    if [ "${SEARCH_RUNNING}" == "false" ] && [ "$RUNNING_SEARCH_PODS_COUNT" -ge 5 ]; then
+      # Should have 5 Running search pods. api, collector, indexer, postgres & operator
+      SEARCH_RUNNING="true"
+      echo "Search Pods are Running."
+    fi
+    if [[ "$SEARCH_RUNNING" == "false" ]]; then
+      echo "Search Pods are not Running. Waiting another ${INTERVAL}s for pod update (Retry $((++ATTEMPTS))/${MAX_ATTEMPTS})"
+      sleep ${INTERVAL}
+    else
+        echo "Proceeding with test setup"
+    fi
+  done
+fi
+
 if [[ "$SKIP_API_TEST" == false ]]; then 
   log_color "cyan" "Running Search API tests."
 
@@ -363,28 +385,20 @@ if [[ "$SKIP_UI_TEST" == false ]]; then
   fi
 
   log_color "cyan" "Running console cypress tests."
-
-  echo "Waiting up to 10 minutes for console & search pods to reach Running status"
+  echo "Waiting up to 10 minutes for console pods to reach Running status"
   CONSOLE_RUNNING="false"
-  SEARCH_RUNNING="false"
   ATTEMPTS=0
   MAX_ATTEMPTS=60
   INTERVAL=10
-  while [[ "${CONSOLE_RUNNING}" == "false" ]] || [[ "${SEARCH_RUNNING}" == "false" ]] && (( ATTEMPTS != MAX_ATTEMPTS )); do
-    RUNNING_CONSOLE_PODS_COUNT=($(oc get pods -n open-cluster-management -l app=console-chart-v2 --field-selector=status.phase==Running --no-headers | wc -l))
-    RUNNING_SEARCH_PODS_COUNT=($(oc get pods -n open-cluster-management -l app=search --field-selector=status.phase==Running --no-headers | wc -l))
+  while [[ "${CONSOLE_RUNNING}" == "false" ]] && (( ATTEMPTS != MAX_ATTEMPTS )); do
+    RUNNING_CONSOLE_PODS_COUNT=($(oc get pods --all-namespaces -l app=console-chart-v2 --field-selector=status.phase==Running --no-headers | wc -l))
     if [ "${CONSOLE_RUNNING}" == "false" ] && [ "$RUNNING_CONSOLE_PODS_COUNT" -ge 1 ]; then
-      # Should have 2 Running console pods & 5 Running search pods.
+      # Should have 2 Running console pods.
       CONSOLE_RUNNING="true"
       echo "Console Pods are Running."
     fi
-    if [ "${SEARCH_RUNNING}" == "false" ] && [ "$RUNNING_SEARCH_PODS_COUNT" -ge 5 ]; then
-      # Should have 2 Running console pods & 5 Running search pods. api, collector, indexer, postgres & operator
-      SEARCH_RUNNING="true"
-      echo "Search Pods are Running."
-    fi
-    if [[ "$CONSOLE_RUNNING" == "false" || "$SEARCH_RUNNING" == "false" ]]; then
-      echo "Console and/or Search Pods are not Running. Waiting another ${INTERVAL}s for pod update (Retry $((++ATTEMPTS))/${MAX_ATTEMPTS})"
+    if [[ "$CONSOLE_RUNNING" == "false" ]]; then
+      echo "Console Pods are not Running. Waiting another ${INTERVAL}s for pod update (Retry $((++ATTEMPTS))/${MAX_ATTEMPTS})"
       sleep ${INTERVAL}
     else
         echo "Proceeding with UI tests."
