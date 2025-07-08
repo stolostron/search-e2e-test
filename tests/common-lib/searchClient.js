@@ -6,6 +6,7 @@
 const { fail } = require('assert')
 const request = require('supertest')
 const lodash = require('lodash')
+const console = require('console') // Overrides jest console logger with default.
 
 /**
  * Query the Search API using the given filters.

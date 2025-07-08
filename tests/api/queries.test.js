@@ -13,6 +13,7 @@ const {
   searchQueryBuilder,
 } = require('../common-lib/searchClient')
 const { sleep } = require('../common-lib/sleep')
+const console = require('console') // Overrides jest console logger with default.
 
 const usr = 'search-query-user'
 const ns = 'search-query'
@@ -46,12 +47,17 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     // Wait for the service account and search index to get updated.
     let ready = false
     let start = Date.now()
+    let logged = false
     while (!ready) {
       user = await getUserContext({ usr, ns })
       const items = await resolveSearchItems(user.token, { filters: [{ property: 'name', values: ['cm4-broccoli'] }] })
       if (items.length > 0) {
         ready = true
       } else {
+        if (!logged) {
+          console.log('Waiting while search index is refreshed.')
+          logged = true
+        }
         await sleep(2000)
       }
     }
@@ -59,12 +65,13 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
   }, 300000) // 5 minutes
 
   beforeEach(async () => {
-    if (attemptedTests[expect.getState().currentTestName]) {
-      console.log('Reset user context before retrying test.', expect.getState().currentTestName)
-      user = await getUserContext({ usr, ns })
-    } else {
-      attemptedTests[expect.getState().currentTestName] = true
-    }
+    user = await getUserContext({ usr, ns })
+    // if (attemptedTests[expect.getState().currentTestName]) {
+    //   console.log('Reseting user context before retrying test.')
+    //   user = await getUserContext({ usr, ns })
+    // } else {
+    //   attemptedTests[expect.getState().currentTestName] = true
+    // }
   })
 
   afterAll(async () => {
