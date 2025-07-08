@@ -6,7 +6,6 @@
 const { fail } = require('assert')
 const request = require('supertest')
 const lodash = require('lodash')
-const console = require('console') // Overrides jest console logger with default.
 
 /**
  * Query the Search API using the given filters.
@@ -82,10 +81,10 @@ function searchCountQuery({ keywords = [], filters = [], limit = 10000 }) {
 }
 
 /**
- * Collect metrics from the search requests to evaluate performace.
- * @object { time, token, firstRequest }
+ * Track used tokens.
+ * @object { time, token }
  */
-const metrics = []
+const usedTokens = []
 
 /**
  * Send a HTTP request to the API server and return the results. Expects the response to have a 200 status code.
@@ -108,17 +107,30 @@ function sendRequest(query, token, options = {}) {
     .expect(200)
     .then((r) => {
       const elapsed = Date.now() - startTime
-      const isFirstRequest = !metrics.map((m) => m.token).includes(token)
+      const isFirstRequest = !usedTokens.map((m) => m.token).includes(token)
+
+      if (!global.metrics) {
+        // FIXME: Remove this workaround before merging.
+        global.metrics = []
+      }
+      global.metrics.push({
+        startTime: startTime,
+        endTime: Date.now(),
+        time: elapsed,
+        firstRequest: isFirstRequest,
+        operation: query.operationName,
+        variables: `${JSON.stringify(query.variables)}`,
+      })
 
       if (elapsed > 4900) {
         fail(`Search-api request took more than 5 seconds. (ElapsedTime: ${elapsed.toFixed(2)} ms, isFirstRequest: ${isFirstRequest})
     operation: ${query.operationName}\t variables: ${JSON.stringify(query.variables)}`)
-      } else if (elapsed > 1000) {
-        console.log(`Slow search-api request. (ElapsedTime: ${elapsed.toFixed(2)} ms, isFirstRequest: ${isFirstRequest})
-    operation: ${query.operationName}\t variables: ${JSON.stringify(query.variables)}`)
       }
 
-      metrics.push({ time: elapsed, token, firstRequest: !metrics.map((m) => m.token).includes(token) })
+      if (!usedTokens.includes(token)) {
+        usedTokens.push({ token })
+      }
+
       return r
     })
 }

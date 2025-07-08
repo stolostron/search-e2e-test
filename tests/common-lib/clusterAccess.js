@@ -71,8 +71,7 @@ async function getSearchApiRoute() {
     execSync(
       `oc create route passthrough search-api-automation --service=search-search-api --insecure-policy=Redirect -n ${namespace}`
     )
-    await sleep(5000)
-    console.log('Created route search-api-automation.')
+    console.log('\nCreated route search-api-automation.')
     route = execSync(`oc get route search-api-automation -n ${namespace} -o jsonpath='{.spec.host}'`)
   }
   return `https://${route}`

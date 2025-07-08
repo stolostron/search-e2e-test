@@ -17,8 +17,6 @@ const console = require('console') // Overrides jest console logger with default
 const usr = 'search-query-user'
 const ns = 'search-query'
 
-const attemptedTests = {} // Track attempted tests to reset user context before retrying tests.
-
 describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`, () => {
   beforeAll(async () => {
     let setupCommands = `# export ns=search-query; export usr=search-query-user
@@ -54,7 +52,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
         ready = true
       } else {
         if (!logged) {
-          console.log('Waiting while search index is refreshed.')
+          console.log('Waiting while search index gets refreshed.')
           logged = true
         }
         await sleep(2000)
@@ -65,12 +63,6 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
 
   beforeEach(async () => {
     user = await getUserContext({ usr, ns })
-    // if (attemptedTests[expect.getState().currentTestName]) {
-    //   console.log('Reseting user context before retrying test.')
-    //   user = await getUserContext({ usr, ns })
-    // } else {
-    //   attemptedTests[expect.getState().currentTestName] = true
-    // }
   })
 
   afterAll(async () => {

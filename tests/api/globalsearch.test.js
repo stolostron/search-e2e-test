@@ -41,7 +41,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC with Global Search Cluste
     # export ns=search-global-rbac; export usr0=u0
     oc delete ns ${ns}
     oc delete clusterrolebinding ${usr0}
-    oc delete clusterrole ${usr0}`
+    # oc delete clusterrole ${usr0}`
 
     await execCliCmdString(teardownCmds)
   }, 10000)
