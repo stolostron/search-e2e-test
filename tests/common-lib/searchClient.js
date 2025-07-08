@@ -98,7 +98,7 @@ function sendRequest(query, token, options = {}) {
   // Disable SSL validation so we can connect to the search-api route.
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
 
-  // Monitor how long search took to return results.
+  // Monitor how long search takes to return results.
   const startTime = Date.now()
 
   return request(searchApiRoute)
@@ -108,20 +108,14 @@ function sendRequest(query, token, options = {}) {
     .expect(200)
     .then((r) => {
       const elapsed = Date.now() - startTime
+      const isFirstRequest = !metrics.map((m) => m.token).includes(token)
 
-      if (elapsed > 10000) {
-        fail(`Search request took more than 10 seconds. (ElapsedTime: ${elapsed.toFixed(2)} ms)
-    operation: ${query.operationName}
-    variables: ${JSON.stringify(query.variables)}`)
-      } else if (elapsed > 1000 && !metrics.map((m) => m.token).includes(token)) {
-        // First request takes longer, so we'll log if it takes more than 2 seconds.
-        console.log(`Search request took more than 1 second. (ElapsedTime: ${elapsed.toFixed(2)} ms)
-    operation: ${query.operationName}
-    variables: ${JSON.stringify(query.variables)}`)
-      } else if (elapsed > 2000) {
-        console.log(`Initial search request took more than 2 seconds. (ElapsedTime: ${elapsed.toFixed(2)} ms)
-    operation: ${query.operationName}
-    variables: ${JSON.stringify(query.variables)}`)
+      if (elapsed > 4900) {
+        fail(`Search-api request took more than 5 seconds. (ElapsedTime: ${elapsed.toFixed(2)} ms, isFirstRequest: ${isFirstRequest})
+    operation: ${query.operationName}\t variables: ${JSON.stringify(query.variables)}`)
+      } else if (elapsed > 1000) {
+        console.log(`Slow search-api request. (ElapsedTime: ${elapsed.toFixed(2)} ms, isFirstRequest: ${isFirstRequest})
+    operation: ${query.operationName}\t variables: ${JSON.stringify(query.variables)}`)
       }
 
       metrics.push({ time: elapsed, token, firstRequest: !metrics.map((m) => m.token).includes(token) })

@@ -1,6 +1,5 @@
 // Copyright Contributors to the Open Cluster Management project
 
-// Configure Jest retries and options.
 jest.retryTimes(globalThis.retry, globalThis.retryOptions)
 
 const squad = require('../../config').get('squadName')
