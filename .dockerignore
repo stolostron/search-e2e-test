@@ -1,6 +1,5 @@
 # /node_modules
 .gitignore
 .nvmrc
-.travis.yml
 options.yaml
 options.yaml.template
