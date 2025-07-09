@@ -90,7 +90,7 @@ function getTargetManagedCluster() {
       .split('\n')
       .filter((cluster) => cluster)
 
-    console.info('Found the following clusters:', managedClusters)
+    // console.info('Found the following clusters:', managedClusters)
 
     // Check to see if the managed cluster name exist wihin the environment.
     if (process.env.OPTIONS_MANAGED_CLUSTER_NAME) {
@@ -124,7 +124,7 @@ function getTargetManagedCluster() {
       targetCluster = managedClusters.find((c) => !c.includes('local-cluster'))
     }
 
-    console.info(`Preparing to test with managed cluster: ${targetCluster}`)
+    // console.info(`Preparing to test with managed cluster: ${targetCluster}`)
     return targetCluster
   } catch (err) {
     console.warn(err, 'Error getting managedclusters. Proceeding with the local cluster.')
