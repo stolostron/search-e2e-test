@@ -358,7 +358,7 @@ else
 fi
 
 API_TEST_EXIT_CODE=$?
-echo "\nAPI_TEST_EXIT_CODE is ${API_TEST_EXIT_CODE}"
+echo "API_TEST_EXIT_CODE is ${API_TEST_EXIT_CODE}"
 
 if [[ -z $RECORD ]]; then
   log_color "purple" "RECORD" "not exported; setting to false (set ${PURPLE}RECORD${NC} to true, if you wish to view results within dashboard)\n"
