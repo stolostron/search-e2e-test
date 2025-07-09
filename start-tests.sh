@@ -53,25 +53,25 @@ fi
 
 # Check to see if OPTIONS_HUB_OC_IDP is unset or null.
 if [[ -z $OPTIONS_HUB_OC_IDP || "$OPTIONS_HUB_OC_IDP" == "null" ]]; then
-  log_color "purple" "OPTIONS_HUB_OC_IDP" "not exported or null, checking to see if the value is configured with environment variable.\n"
-  if [[ -z $OCP_HUB_IDP || "$OCP_HUB_IDP" == "null" || -z $OCP_HUB_CLUSTER_USER || "$OCP_HUB_CLUSTER_USER" == "null" ]]; then
-    log_color "purple" "OPTIONS_HUB_OC_IDP" "not exported or null; setting to 'kube:admin' (set ${PURPLE}OPTIONS_HUB_OC_IDP${NC} to execute the test with target identity provider)"
-    export OPTIONS_HUB_OC_IDP=kube:admin
+  log_color "purple" "OPTIONS_HUB_OC_IDP" "not exported or null, setting to default: 'kube:admin'.\n"
+  export OPTIONS_HUB_OC_IDP=kube:admin
 
-    log_color "purple" "OPTIONS_HUB_USER" "setting to default user: 'kubeadmin'\n"
-    export OPTIONS_HUB_USER=kubeadmin
   else
-    log_color "purple" "OCP_HUB_IDP and OCP_HUB_CLUSTER_USER" "environment variables detected, using $OCP_HUB_IDP and $OCP_HUB_CLUSTER_USER for test.\n"
-    export OPTIONS_HUB_OC_IDP=$OCP_HUB_IDP
-    export OPTIONS_HUB_USER=$OCP_HUB_CLUSTER_USER
-  fi
-else
-  log_color "purple" "OPTIONS_HUB_OC_IDP" "detected, using $OPTIONS_HUB_OC_IDP for test.\n"
+    log_color "purple" "OPTIONS_HUB_OC_IDP" "detected, using $OPTIONS_HUB_OC_IDP for test.\n"
 fi
 
-# Check to see if OPTIONS_HUB_BASEDOMAIN, OPTIONS_HUB_USER, or OPTIONS_HUB_PASSWORD are missing. We need these to run the UI test.
-if [[ -z $OPTIONS_HUB_BASEDOMAIN || -z $OPTIONS_HUB_USER || -z $OPTIONS_HUB_PASSWORD ]]; then
-  log_color "red" "One or more exported variables are undefined for hub cluster." "(set ${PURPLE}OPTIONS_HUB_BASEDOMAIN, OPTIONS_HUB_USER, and OPTIONS_HUB_PASSWORD${NC} to execute the test with environment variables)\n"
+# Check to see if OPTIONS_HUB_USER is unset or null.
+if [[ -z $OPTIONS_HUB_USER || "$OPTIONS_HUB_USER" == "null" ]]; then
+  log_color "purple" "OPTIONS_HUB_USER" "not exported or null, setting to default user: 'kubeadmin'\n"
+  export OPTIONS_HUB_USER=kuebadmin
+
+  else
+    log_color "purple" "OPTIONS_HUB_USER" "detected, using $OPTIONS_HUB_USER for test.\n"
+fi
+
+# Check to see if OPTIONS_HUB_BASEDOMAIN, or OPTIONS_HUB_PASSWORD are missing. We need these to run the UI test.
+if [[ -z $OPTIONS_HUB_BASEDOMAIN || -z $OPTIONS_HUB_PASSWORD ]]; then
+  log_color "red" "One or more exported variables are undefined for hub cluster." "(set ${PURPLE}OPTIONS_HUB_BASEDOMAIN and OPTIONS_HUB_PASSWORD${NC} to execute the test with environment variables)\n"
 
   # Check to see if the kubeconfig for the hub cluster is available.
   if [[ ! -f $OPTIONS_HUB_KUBECONFIG ]]; then
