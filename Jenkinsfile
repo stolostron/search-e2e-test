@@ -66,15 +66,18 @@ pipeline {
                         echo "Aborting test.. OCP/ACM connection details are required for the test execution"
                         exit 1
                     else   
-                        npm install
+                        # npm install
                         if [[ \$SKIP_UI_TEST == 'false' && \$SKIP_API_TEST == 'false' ]]; then
                             # Both UI and API tests are enabled
+                            echo "# Both UI and API tests are enabled"
                             npm run test
                         elif [[ \$SKIP_UI_TEST == 'true' && \$SKIP_API_TEST == 'false' ]]; then
                             # UI tests skipped, API tests are enabled
+                            echo "# UI tests skipped, API tests are enabled"
                             SKIP_UI_TEST=true npm run test
                         elif [[ \$SKIP_UI_TEST == 'false' && \$SKIP_API_TEST == 'true' ]]; then
                             # UI tests are enabled, API tests are skipped
+                            echo "# UI tests are enabled, API tests are skipped"
                             SKIP_API_TEST=true npm run test
                         else
                             # Both UI and API tests are skipped (no command will run)
