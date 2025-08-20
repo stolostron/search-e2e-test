@@ -29,7 +29,7 @@ pipeline {
         stage('Clean') {
             steps {                
                 sh '''       
-                rm -rf test-output/cypress
+                rm -rf results
                 '''
             }
         }
@@ -86,8 +86,8 @@ pipeline {
     }
     post {
         always {
-            archiveArtifacts artifacts: 'test-output/cypress/**/*', followSymlinks: false
-            junit 'test-output/cypress/*.xml'
+            archiveArtifacts artifacts: 'results/*', followSymlinks: false
+            junit 'results/*.xml'
         }
     }
 }
