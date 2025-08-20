@@ -53,7 +53,7 @@ pipeline {
                     # export OPTIONS_HUB_BASEDOMAIN=${params.OCP_HUB_CLUSTER_BASEDOMAIN}
                     export BROWSER=${params.BROWSER}
                     export SKIP_API_TEST=${params.SKIP_API_TEST}
-                    export SKIP_UI_TEST=${params.SKIP_API_TEST}
+                    export SKIP_UI_TEST=${params.SKIP_UI_TEST}
                     echo "#### SKIP_UI_TEST"
                     echo $SKIP_UI_TEST
                     echo "##### SKIP_API_TEST"
