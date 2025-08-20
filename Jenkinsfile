@@ -47,39 +47,39 @@ pipeline {
             steps {
                 catchError(stageResult: 'UNSTABLE',  buildResult: null) { 
                 sh """
-                export OPTIONS_HUB_USER="${params.OCP_HUB_CLUSTER_USER}"
-                export OCP_HUB_CLUSTER_API_URL="${params.OCP_HUB_CLUSTER_API_URL}"
-                export OPTIONS_HUB_PASSWORD="${params.OCP_HUB_CLUSTER_PASSWORD}"
-                export OPTIONS_HUB_BASEDOMAIN="${params.OCP_HUB_CLUSTER_BASEDOMAIN}"
-                export BROWSER=${params.BROWSER}
-                export SKIP_API_TEST=${params.SKIP_API_TEST}
-                echo "1- ####"
-                export SKIP_UI_TEST=${params.SKIP_UI_TEST}
-                echo "2- ####"
+                    export OPTIONS_HUB_USER="${params.OCP_HUB_CLUSTER_USER}"
+                    export OCP_HUB_CLUSTER_API_URL="${params.OCP_HUB_CLUSTER_API_URL}"
+                    export OPTIONS_HUB_PASSWORD="${params.OCP_HUB_CLUSTER_PASSWORD}"
+                    export OPTIONS_HUB_BASEDOMAIN="${params.OCP_HUB_CLUSTER_BASEDOMAIN}"
+                    export BROWSER=${params.BROWSER}
+                    export SKIP_API_TEST=${params.SKIP_API_TEST}
+                    echo "1- ####"
+                    export SKIP_UI_TEST=$SKIP_UI_TEST
+                    echo "2- ####"
 
 
-                oc login --insecure-skip-tls-verify -u \$OCP_HUB_CLUSTER_USER -p \$OCP_HUB_CLUSTER_PASSWORD \$OCP_HUB_CLUSTER_API_URL
-                export OPTIONS_HUB_BASEDOMAIN=echo $(oc get ingress.config.openshift.io/cluster -ojson | jq -r '.spec.domain'").trim())
+                    oc login --insecure-skip-tls-verify -u \$OCP_HUB_CLUSTER_USER -p \$OCP_HUB_CLUSTER_PASSWORD \$OCP_HUB_CLUSTER_API_URL
+                    export OPTIONS_HUB_BASEDOMAIN=echo $(oc get ingress.config.openshift.io/cluster -ojson | jq -r '.spec.domain'").trim())
 
-                if [[ -z "${params.OCP_HUB_CLUSTER_USER}" || -z "${params.OCP_HUB_CLUSTER_PASSWORD}" || -z "${params.OCP_HUB_CLUSTER_API_URL}" ]]; then
-                    echo "Aborting test.. OCP/ACM connection details are required for the test execution"
-                    exit 1
-                else   
-                    npm install
-                    if [[ \$SKIP_UI_TEST == 'false' && \$SKIP_API_TEST == 'false' ]]; then
-                        # Both UI and API tests are enabled
-                        npm run test
-                    elif [[ \$SKIP_UI_TEST == 'true' && \$SKIP_API_TEST == 'false' ]]; then
-                        # UI tests skipped, API tests are enabled
-                        SKIP_UI_TEST=true npm run test
-                    elif [[ \$SKIP_UI_TEST == 'false' && \$SKIP_API_TEST == 'true' ]]; then
-                        # UI tests are enabled, API tests are skipped
-                        SKIP_API_TEST=true npm run test
-                    else
-                        # Both UI and API tests are skipped (no command will run)
-                        echo "Both UI and API tests are set to be skipped. No test command will be executed."
+                    if [[ -z "${params.OCP_HUB_CLUSTER_USER}" || -z "${params.OCP_HUB_CLUSTER_PASSWORD}" || -z "${params.OCP_HUB_CLUSTER_API_URL}" ]]; then
+                        echo "Aborting test.. OCP/ACM connection details are required for the test execution"
+                        exit 1
+                    else   
+                        npm install
+                        if [[ \$SKIP_UI_TEST == 'false' && \$SKIP_API_TEST == 'false' ]]; then
+                            # Both UI and API tests are enabled
+                            npm run test
+                        elif [[ \$SKIP_UI_TEST == 'true' && \$SKIP_API_TEST == 'false' ]]; then
+                            # UI tests skipped, API tests are enabled
+                            SKIP_UI_TEST=true npm run test
+                        elif [[ \$SKIP_UI_TEST == 'false' && \$SKIP_API_TEST == 'true' ]]; then
+                            # UI tests are enabled, API tests are skipped
+                            SKIP_API_TEST=true npm run test
+                        else
+                            # Both UI and API tests are skipped (no command will run)
+                            echo "Both UI and API tests are set to be skipped. No test command will be executed."
+                        fi
                     fi
-                fi
                 """
                 }
             }
