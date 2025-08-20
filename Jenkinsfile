@@ -51,10 +51,10 @@ pipeline {
                 export OCP_HUB_CLUSTER_API_URL="${params.OCP_HUB_CLUSTER_API_URL}"
                 export OPTIONS_HUB_PASSWORD="${params.OCP_HUB_CLUSTER_PASSWORD}"
                 export OPTIONS_HUB_BASEDOMAIN="${params.OCP_HUB_CLUSTER_BASEDOMAIN}"
-                export BROWSER="${params.BROWSER}"
-                export SKIP_API_TEST="${params.SKIP_API_TEST}"
+                export BROWSER=${params.BROWSER}
+                export SKIP_API_TEST=${params.SKIP_API_TEST}
                 echo "1- ####"
-                #export SKIP_UI_TEST="${params.SKIP_UI_TEST}"
+                export SKIP_UI_TEST=${params.SKIP_UI_TEST}
                 echo "2- ####"
 
 
