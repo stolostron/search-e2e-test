@@ -50,7 +50,7 @@ pipeline {
                     export OPTIONS_HUB_USER=${params.OCP_HUB_CLUSTER_USER}
                     # export OCP_HUB_CLUSTER_API_URL=${params.OCP_HUB_CLUSTER_API_URL}
                     export OPTIONS_HUB_PASSWORD=${params.OCP_HUB_CLUSTER_PASSWORD}
-                    export OPTIONS_HUB_BASEDOMAIN=${params.OCP_HUB_CLUSTER_BASEDOMAIN}
+                    # export OPTIONS_HUB_BASEDOMAIN=${params.OCP_HUB_CLUSTER_BASEDOMAIN}
                     export BROWSER=${params.BROWSER}
                     export SKIP_API_TEST=${params.SKIP_API_TEST}
                     echo "1- ####"
@@ -60,7 +60,7 @@ pipeline {
 
                     oc login --insecure-skip-tls-verify -u \$OCP_HUB_CLUSTER_USER -p \$OCP_HUB_CLUSTER_PASSWORD \$OCP_HUB_CLUSTER_API_URL
                     export OPTIONS_HUB_BASEDOMAIN=echo \$(oc get ingress.config.openshift.io/cluster -ojson | jq -r '.spec.domain'").trim())
-                    echo $OPTIONS_HUB_BASEDOMAIN
+                    echo \$OPTIONS_HUB_BASEDOMAIN
 
                     if [[ -z "${params.OCP_HUB_CLUSTER_USER}" || -z "${params.OCP_HUB_CLUSTER_PASSWORD}" || -z "${params.OCP_HUB_CLUSTER_API_URL}" ]]; then
                         echo "Aborting test.. OCP/ACM connection details are required for the test execution"
