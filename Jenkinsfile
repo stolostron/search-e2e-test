@@ -54,7 +54,7 @@ pipeline {
                 export BROWSER="${params.BROWSER}"
                 export SKIP_API_TEST="${params.SKIP_API_TEST}"
                 echo "1- ####"
-                export SKIP_UI_TEST="${params.SKIP_UI_TEST}"
+                #export SKIP_UI_TEST="${params.SKIP_UI_TEST}"
                 echo "2- ####"
 
 
