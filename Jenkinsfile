@@ -68,20 +68,16 @@ pipeline {
                         exit 1
                     else   
                         # npm install
-                        if [[ \$SKIP_UI_TEST == 'false' && \$SKIP_API_TEST == 'false' ]]; then
-                            # Both UI and API tests are enabled
+                        if [[ \$SKIP_UI_TEST == false && \$SKIP_API_TEST == false ]]; then
                             echo "# Both UI and API tests are enabled"
                             npm run test
-                        elif [[ \$SKIP_UI_TEST == 'true' && \$SKIP_API_TEST == 'false' ]]; then
-                            # UI tests skipped, API tests are enabled
+                        elif [[ \$SKIP_UI_TEST == true && \$SKIP_API_TEST == false ]]; then
                             echo "# UI tests skipped, API tests are enabled"
                             SKIP_UI_TEST=true npm run test
-                        elif [[ \$SKIP_UI_TEST == 'false' && \$SKIP_API_TEST == 'true' ]]; then
-                            # UI tests are enabled, API tests are skipped
+                        elif [[ \$SKIP_UI_TEST == false && \$SKIP_API_TEST == true ]]; then
                             echo "# UI tests are enabled, API tests are skipped"
                             SKIP_API_TEST=true npm run test
                         else
-                            # Both UI and API tests are skipped (no command will run)
                             echo "Both UI and API tests are set to be skipped. No test command will be executed."
                         fi
                     fi
