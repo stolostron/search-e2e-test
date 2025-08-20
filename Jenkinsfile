@@ -53,8 +53,11 @@ pipeline {
                 export OPTIONS_HUB_BASEDOMAIN="${params.OCP_HUB_CLUSTER_BASEDOMAIN}"
                 export BROWSER="${params.BROWSER}"
                 export SKIP_API_TEST="${params.SKIP_API_TEST}"
+                echo "1- ####"
                 export SKIP_UI_TEST="${params.SKIP_UI_TEST}"
-                
+                echo "2- ####"
+
+
                 oc login --insecure-skip-tls-verify -u \$OCP_HUB_CLUSTER_USER -p \$OCP_HUB_CLUSTER_PASSWORD \$OCP_HUB_CLUSTER_API_URL
                 export OPTIONS_HUB_BASEDOMAIN=echo $(oc get ingress.config.openshift.io/cluster -ojson | jq -r '.spec.domain'").trim())
 
