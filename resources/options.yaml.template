@@ -1,6 +1,7 @@
 options:
   identityProvider: BASE_OC_IDP
   hub:
+    acmNamespace: ACM_NAMESPACE
     baseDomain: BASE_DOMAIN
     user: BASE_USER
     password: BASE_PASSWORD

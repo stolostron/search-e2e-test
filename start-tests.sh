@@ -29,6 +29,7 @@ OPTIONS_MANAGED_KUBECONFIG=${OPTIONS_MANAGED_KUBECONFIG:-'/opt/.kube/import-kube
 # Check to see if the test config options file is mounted/available.
 if [[ -f $OPTIONS_FILE ]]; then
   log_color "yellow" "Using test config from: $OPTIONS_FILE\n"
+  export ACM_NAMESPACE=`yq e '.options.acmNamespace' $OPTIONS_FILE`
   export OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $OPTIONS_FILE`
   export OPTIONS_HUB_KUBECONTEXT=`yq e '.options.hub.kubecontext' $OPTIONS_FILE`
   export OPTIONS_HUB_OC_IDP=`yq e '.options.identityProvider' $OPTIONS_FILE`
@@ -39,6 +40,7 @@ if [[ -f $OPTIONS_FILE ]]; then
   export OPTIONS_MANAGED_KUBECONFIG=`yq e '.options.clusters[0].kubeconfig' $OPTIONS_FILE`
 elif [[ -f $USER_OPTIONS_FILE ]]; then
   log_color "yellow" "Using test config from: $USER_OPTIONS_FILE\n"
+  export ACM_NAMESPACE=`yq e '.options.acmNamespace' $USER_OPTIONS_FILE`
   export OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $USER_OPTIONS_FILE`
   export OPTIONS_HUB_KUBECONTEXT=`yq e '.options.hub.kubecontext' $USER_OPTIONS_FILE`
   export OPTIONS_HUB_OC_IDP=`yq e '.options.identityProvider' $USER_OPTIONS_FILE`
@@ -405,13 +407,16 @@ if [[ "$SKIP_UI_TEST" == false ]]; then
     fi
   done
 
+  if [[ -z $ACM_NAMESPACE || "$ACM_NAMESPACE" == "null" ]]; then
+    ACM_NAMESPACE="open-cluster-management"
+  fi
   echo "Waiting up to 10 minutes for search DB to populate."
   IS_DB_POPULATED="false"
   ATTEMPTS=0
   MAX_ATTEMPTS=60
   INTERVAL=10
-  oc create route passthrough search-api --service=search-search-api -n open-cluster-management
-  SEARCH_ROUTE_URL="https://$(oc get route search-api -n open-cluster-management | awk 'NR==2' |awk '{print $2;}')/searchapi/graphql"
+  oc create route passthrough search-api --service=search-search-api -n $ACM_NAMESPACE
+  SEARCH_ROUTE_URL="https://$(oc get route search-api -n $ACM_NAMESPACE | awk 'NR==2' |awk '{print $2;}')/searchapi/graphql"
   USER_TOKEN=$(oc whoami -t)
   while [[ "${IS_DB_POPULATED}" == "false" ]] && (( ATTEMPTS != MAX_ATTEMPTS )); do
   SEARCH_PODS_SEARCH_RESULT=$(curl --insecure --location --request POST $SEARCH_ROUTE_URL --header "Authorization: Bearer $USER_TOKEN" --header 'Content-Type: application/json' --data-raw '{"query":"query q($input: [SearchInput]) { search(input: $input) { count } }","variables":{"input":[{"keywords":[],"filters":[{"property":"kind","values":["Pod"]},{"property":"label","values":["app=search"]}], "limit":100}]}}' | jq -r .data.search[0].count)
