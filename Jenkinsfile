@@ -15,7 +15,6 @@ pipeline {
         string(name: 'OCP_HUB_CLUSTER_USER', defaultValue: 'kubeadmin', description: 'OCP Hub User Name. (Required)')
         string(name: 'OCP_HUB_CLUSTER_PASSWORD', defaultValue: '', description: 'OCP Hub Password. (Required)')
         string(name: 'OCP_HUB_CLUSTER_API_URL', defaultValue: '', description: 'OCP Hub API URL. (Required)')
-        string(name: 'OCP_HUB_CLUSTER_BASEDOMAIN', defaultValue: '', description: 'Base domain for the hub cluster ')
         string(name: 'ACM_NAMESPACE', defaultValue: 'ocm', description: 'The Namespace in which ACM is installed. Default is ocm')
         choice(name: 'BROWSER', choices: ['chrome', 'firefox', 'edge'], description:'Browser type. e.g. chrome, firefox, edge')
         choice(name: 'SKIP_API_TEST', choices: ['false','true'], description: 'Flag to skip the API tests')
@@ -26,16 +25,10 @@ pipeline {
         CI = 'true'
     }
     stages {
-        stage('Clean') {
-            steps {                
-                sh '''       
-                rm -rf results
-                '''
-            }
-        }
         stage('Build') {
             steps {                
-                sh '''       
+                sh '''  
+                rm -rf results     
                 export npm_config_unsafe_perm=true
                 npm config get unsafe-perm                    
                 npm ci
@@ -43,14 +36,13 @@ pipeline {
                 '''
             }
         }
-        stage('Test') {
+        stage('Search Tests') {
             steps {
                 catchError(stageResult: 'UNSTABLE',  buildResult: null) { 
                 sh """
                     export OPTIONS_HUB_USER=${params.OCP_HUB_CLUSTER_USER}
-                    # export OCP_HUB_CLUSTER_API_URL=${params.OCP_HUB_CLUSTER_API_URL}
                     export OPTIONS_HUB_PASSWORD=${params.OCP_HUB_CLUSTER_PASSWORD}
-                    export OPTIONS_HUB_BASEDOMAIN=${params.OCP_HUB_CLUSTER_BASEDOMAIN}
+                    export OPTIONS_HUB_BASEDOMAIN=${params.OCP_HUB_CLUSTER_API_URL}
                     export ACM_NAMESPACE=${params.ACM_NAMESPACE}
                     export BROWSER=${params.BROWSER}
                     export SKIP_API_TEST=${params.SKIP_API_TEST}
