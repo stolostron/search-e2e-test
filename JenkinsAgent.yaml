@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    label: search
+    owner: pics
+spec:
+  activeDeadlineSeconds: 18000
+  containers:
+  - name: jnlp
+    image: "image-registry.openshift-image-registry.svc:5000/dno--jenkins-csb-rhacm/tests-jenkins-agent:latest"
+    workingDir: '/home/jenkins'
+    env:
+      - name: HOME
+        value: '/home/jenkins'
+    resources:
+      limits:
+        cpu: 500m
+        memory: 300Mi
+      requests:
+        cpu: 50m
+        memory: 256Mi
+  - name: ci-container
+    # centos9-nodejs22
+    image: 'quay.io/vboulos/acmqe-automation/centos@sha256:e43b6b66ce2af7e72cd817442b4d37f2c0d8255d0e26bdb106e4fc8d8dd471b1'
+    registry: docker.io
+    ttyEnabled: true
+    alwaysPullImage: true
+    command: [ 'sleep', '365d' ]
+    workingDir: '/home/jenkins'
+    env:
+      - name: HOME
+        value: '/home/jenkins'
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 4Gi
+      requests:
+        cpu: 500m
+        memory: 1Gi
