@@ -19,7 +19,6 @@ COPY package-lock.json .
 COPY cypress.config.js .
 COPY jest.config.js .
 COPY start-tests.sh .
-COPY install-dependencies.sh .
 COPY config ./config
 COPY tests ./tests
 COPY build ./build
@@ -27,7 +26,7 @@ COPY scripts ./scripts
 COPY cicd-scripts/run-prow-e2e.sh .
 
 RUN npm ci
-RUN sh install-dependencies.sh
+RUN sh ./scripts/install-dependencies.sh
 
 RUN chmod -R go+w /search-e2e
 
