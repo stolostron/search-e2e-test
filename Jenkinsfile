@@ -3,12 +3,18 @@ pipeline {
         buildDiscarder(logRotator(daysToKeepStr: '30'))
         timeout(time: 8, unit: 'HOURS')
     }
+    // agent {
+    //     docker {
+    //         image 'quay.io/stolostron/acm-qe:centos9-nodejs22'
+    //         registryUrl 'https://quay.io/stolostron/acm-qe'
+    //         registryCredentialsId '0089f10c-7a3a-4d16-b5b0-3a2c9abedaa2'
+    //         args '--network host -u 0:0'
+    //     }
+    // }
     agent {
-        docker {
-            image 'quay.io/stolostron/acm-qe:centos9-nodejs22'
-            registryUrl 'https://quay.io/stolostron/acm-qe'
-            registryCredentialsId '0089f10c-7a3a-4d16-b5b0-3a2c9abedaa2'
-            args '--network host -u 0:0'
+        kubernetes {
+            defaultContainer 'search-container'
+            yamlFile 'JenkinsAgent.yaml'
         }
     }
     parameters {
