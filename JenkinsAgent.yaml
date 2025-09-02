@@ -20,7 +20,7 @@ spec:
       requests:
         cpu: 50m
         memory: 256Mi
-  - name: ci-container
+  - name: search-container
     # image: 'quay.io/stolostron/acm-qe@sha256:3e8c84ee47116bdc867983f89282cdc9bdb48bb92728baaaa762fec05ed81324'
     # centos9-nodejs22
     image: 'quay.io/vboulos/acmqe-automation/centos@sha256:e43b6b66ce2af7e72cd817442b4d37f2c0d8255d0e26bdb106e4fc8d8dd471b1'
