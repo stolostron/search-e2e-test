@@ -131,7 +131,18 @@ if [[ ! -z $CYPRESS_OPTIONS_HUB_PASSWORD && "$CYPRESS_OPTIONS_HUB_PASSWORD" != "
   export KUBECONFIG=./kube/config/hub-kubeconfig
   touch $KUBECONFIG
 
-  oc login --server=${CYPRESS_OPTIONS_HUB_BASEDOMAIN} -u $CYPRESS_OPTIONS_HUB_USER -p $CYPRESS_OPTIONS_HUB_PASSWORD --insecure-skip-tls-verify
+  # ensure server starts with https://api.
+  server=$CYPRESS_OPTIONS_HUB_BASEDOMAIN
+  if [[ ! $server =~ ^https://api\. ]]; then
+    server="https://api.${server}"
+  fi
+
+  # ensure server ends with port :6443
+  if [[ ! $server =~ :6443$ ]]; then
+    server="${server}:6443"
+  fi
+
+  oc login --server=${server} -u $CYPRESS_OPTIONS_HUB_USER -p $CYPRESS_OPTIONS_HUB_PASSWORD --insecure-skip-tls-verify
   export OPTIONS_HUB_KUBECONFIG=$KUBECONFIG
   export CYPRESS_OPTIONS_HUB_KUBECONFIG=$OPTIONS_HUB_KUBECONFIG
 
