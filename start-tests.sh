@@ -116,7 +116,12 @@ export CYPRESS_OPTIONS_HUB_PASSWORD=$OPTIONS_HUB_PASSWORD
 export CYPRESS_OPTIONS_HUB_USER=$OPTIONS_HUB_USER
 
 # Export base url for cluster.
-export BASE_URL=https://console-openshift-console.apps.$OPTIONS_HUB_BASEDOMAIN
+normalized_url=$OPTIONS_HUB_BASEDOMAIN
+# Remove https://api. if present
+normalized_url="${normalized_url#https://api.}"
+# Remove :6443 if present
+normalized_url="${normalized_url%:6443}"
+export BASE_URL=https://console-openshift-console.apps.$normalized_url
 export CYPRESS_BASE_URL=$BASE_URL
 
 echo -e
