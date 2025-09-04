@@ -32,6 +32,8 @@
 import 'cypress-wait-until'
 import { getOpt } from '../scripts/utils'
 
+const PF_VERSION = '.pf-v6'
+
 Cypress.Commands.add('visitAndLogin', (URL, OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OPTIONS_HUB_OC_IDP) => {
   var user = OPTIONS_HUB_USER || Cypress.env('OPTIONS_HUB_USER')
   var password = OPTIONS_HUB_PASSWORD || Cypress.env('OPTIONS_HUB_PASSWORD')
@@ -39,7 +41,7 @@ Cypress.Commands.add('visitAndLogin', (URL, OPTIONS_HUB_USER, OPTIONS_HUB_PASSWO
 
   cy.visit(URL, { failOnStatusCode: false })
   // Wait until the login page loads
-  cy.waitUntil(() => cy.get('.pf-c-login__main').should('exist'))
+  cy.waitUntil(() => cy.get(`${PF_VERSION}-c-login__main, .pf-c-login__main`).should('exist'))
   // If user is not logged in log them in otherwise proceed with tests
   cy.url().then((res) => {
     if (res.includes('oauth-openshift')) {
@@ -47,14 +49,14 @@ Cypress.Commands.add('visitAndLogin', (URL, OPTIONS_HUB_USER, OPTIONS_HUB_PASSWO
 
       cy.get('body').then((body) => {
         // Check if logged in
-        if (body.find('.pf-v5-c-page__header').length === 0) {
+        if (body.find(`${PF_VERSION}-c-page__header, .pf-c-page__header`).length === 0) {
           // Check if identity providers are configured
           if (body.find('form').length === 0) cy.contains(idp).click()
 
           cy.get('#inputUsername').click().focused().type(user)
           cy.get('#inputPassword').click().focused().type(password)
           cy.get('button[type="submit"]').click()
-          cy.get('.pf-v5-c-page__main')
+          cy.get(`${PF_VERSION}-c-page__main, .pf-c-page__main`)
         }
       })
     } else {
