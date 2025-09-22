@@ -7,6 +7,7 @@ const { getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterA
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 
 const _ = require('lodash')
+const acmNamespace = process.env.CYPRESS_ACM_NAMESPACE
 
 describe('RHACM4K-1696: Search API - Verify search result with common filter and conditions', () => {
   beforeAll(async () => {
@@ -31,11 +32,11 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
     expect(res.body.data.searchResult[0].items[0].namespace).toEqual('openshift-console')
   }, 20000)
 
-  test(`[P2][Sev2][${squad}] with query {kind:Pod status:Running namespace:open-cluster-management}`, async () => {
+  test(`[P2][Sev2][${squad}] with query {kind:Pod status:Running namespace:${acmNamespace}}`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['Pod'] },
-        { property: 'namespace', values: ['open-cluster-management'] },
+        { property: 'namespace', values: [acmNamespace] },
         { property: 'status', values: ['Running'] },
       ],
     })
