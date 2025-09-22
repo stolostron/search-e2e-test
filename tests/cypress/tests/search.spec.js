@@ -9,7 +9,7 @@ import { searchBar, searchPage } from '../views/search'
 const clusterMode = {
   deployment: 'search-api',
   label: 'Local',
-  namespace: 'open-cluster-management',
+  namespace: Cypress.env('ACM_NAMESPACE'),
   skip: false,
   valueFn: () => cy.wrap('local-cluster'),
 }
