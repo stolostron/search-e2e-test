@@ -336,7 +336,34 @@ if [[ "$PROW_MODE" == true ]]; then
   sleep 120
 fi
 
-if [[ "$SKIP_API_TEST" == false ]]; then 
+if [[ "$SKIP_API_TEST" == "false" || "$SKIP_UI_TEST" == "false" ]]; then
+  echo "Waiting up to 10 minutes for search pods to reach Running status"
+  SEARCH_RUNNING="false"
+  ATTEMPTS=0
+  MAX_ATTEMPTS=60
+  INTERVAL=10
+  while [[ "${SEARCH_RUNNING}" == "false" ]] && (( ATTEMPTS != MAX_ATTEMPTS )); do
+    RUNNING_SEARCH_PODS_COUNT=($(oc get pods --all-namespaces -l app=search --field-selector=status.phase==Running --no-headers | wc -l))
+    if [ "${SEARCH_RUNNING}" == "false" ] && [ "$RUNNING_SEARCH_PODS_COUNT" -ge 5 ]; then
+      # Should have 5 Running search pods. api, collector, indexer, postgres & operator
+      SEARCH_RUNNING="true"
+      echo "Search Pods are Running."
+    fi
+    if [[ "$SEARCH_RUNNING" == "false" ]]; then
+      echo "Search Pods are not Running. Waiting another ${INTERVAL}s for pod update (Retry $((++ATTEMPTS))/${MAX_ATTEMPTS})"
+      sleep ${INTERVAL}
+    else
+        echo "Proceeding with test setup"
+    fi
+  done
+fi
+
+if [[ -z $ACM_NAMESPACE || "$ACM_NAMESPACE" == "null" ]]; then
+  ACM_NAMESPACE="open-cluster-management"
+fi
+export CYPRESS_ACM_NAMESPACE=$ACM_NAMESPACE
+
+if [[ "$SKIP_API_TEST" == false ]]; then
   log_color "cyan" "Running Search API tests."
 
   # Added a test mode for prow. This will help will the output being shown within the prow logs.
@@ -411,8 +438,8 @@ if [[ "$SKIP_UI_TEST" == false ]]; then
   ATTEMPTS=0
   MAX_ATTEMPTS=60
   INTERVAL=10
-  oc create route passthrough search-api --service=search-search-api -n open-cluster-management
-  SEARCH_ROUTE_URL="https://$(oc get route search-api -n open-cluster-management | awk 'NR==2' |awk '{print $2;}')/searchapi/graphql"
+  oc create route passthrough search-api --service=search-search-api -n $ACM_NAMESPACE
+  SEARCH_ROUTE_URL="https://$(oc get route search-api -n $ACM_NAMESPACE | awk 'NR==2' |awk '{print $2;}')/searchapi/graphql"
   USER_TOKEN=$(oc whoami -t)
   while [[ "${IS_DB_POPULATED}" == "false" ]] && (( ATTEMPTS != MAX_ATTEMPTS )); do
   SEARCH_PODS_SEARCH_RESULT=$(curl --insecure --location --request POST $SEARCH_ROUTE_URL --header "Authorization: Bearer $USER_TOKEN" --header 'Content-Type: application/json' --data-raw '{"query":"query q($input: [SearchInput]) { search(input: $input) { count } }","variables":{"input":[{"keywords":[],"filters":[{"property":"kind","values":["Pod"]},{"property":"label","values":["app=search"]}], "limit":100}]}}' | jq -r .data.search[0].count)

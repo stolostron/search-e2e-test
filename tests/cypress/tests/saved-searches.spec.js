@@ -7,7 +7,7 @@ import { squad, tags } from '../config'
 import { savedSearches } from '../views/savedSearches'
 import { searchBar, searchPage } from '../views/search'
 
-const namespace = 'open-cluster-management'
+const namespace = Cypress.env('ACM_NAMESPACE')
 
 const queryDefaultNamespaceName = `${namespace}-default`
 const queryDefaultNamespaceDesc = `This is searching that the cluster should have ${namespace} namespace.`
