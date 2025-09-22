@@ -360,6 +360,11 @@ if [[ "$SKIP_API_TEST" == "false" || "$SKIP_UI_TEST" == "false" ]]; then
   done
 fi
 
+if [[ -z $ACM_NAMESPACE || "$ACM_NAMESPACE" == "null" ]]; then
+  ACM_NAMESPACE="open-cluster-management"
+fi
+export CYPRESS_ACM_NAMESPACE=$ACM_NAMESPACE
+
 if [[ "$SKIP_API_TEST" == false ]]; then 
   log_color "cyan" "Running Search API tests."
 
@@ -422,10 +427,6 @@ if [[ "$SKIP_UI_TEST" == false ]]; then
     fi
   done
 
-  if [[ -z $ACM_NAMESPACE || "$ACM_NAMESPACE" == "null" ]]; then
-    ACM_NAMESPACE="open-cluster-management"
-  fi
-  export CYPRESS_ACM_NAMESPACE=$ACM_NAMESPACE
   echo "Waiting up to 10 minutes for search DB to populate."
   IS_DB_POPULATED="false"
   ATTEMPTS=0
