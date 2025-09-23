@@ -1,6 +1,6 @@
 // Copyright Contributors to the Open Cluster Management project
 
-jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
+jest.retryTimes(globalThis.retry, globalThis.retryOptions)
 
 const { execSync } = require('child_process')
 
