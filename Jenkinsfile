@@ -31,6 +31,17 @@ pipeline {
         CI = 'true'
     }
     stages {
+        stage('Checkout Search Code') {
+            steps {
+                echo "Checking out branch specified by parameter: ${params.GIT_BRANCH}"
+                // This checkout happens AFTER Jenkins has loaded the parameters.
+                git(
+                    url: 'https://github.com/stolostron/search-e2e-test.git',
+                    branch: params.GIT_BRANCH,
+                    credentialsId: 'vincent-github-creds'
+                )
+            }
+        }
         stage('Build') {
             steps {                
                 sh '''  
