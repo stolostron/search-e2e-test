@@ -25,12 +25,23 @@ pipeline {
         choice(name: 'BROWSER', choices: ['chrome', 'firefox', 'edge', 'electron'], description:'Browser type. e.g. chrome, firefox, edge')
         choice(name: 'SKIP_API_TEST', choices: ['false','true'], description: 'Flag to skip the API tests')
         choice(name: 'SKIP_UI_TEST', choices: ['false','true'], description: 'Flag to skip the UI tests')
-        string(name: 'GIT_BRANCH', defaultValue: 'main', description: 'The GIT branch for CLC to checkout')
+        string(name: 'GIT_BRANCH', defaultValue: 'main', description: 'The GIT branch for Search to checkout')
     }
     environment {
         CI = 'true'
     }
     stages {
+        stage('Checkout Search Code') {
+            steps {
+                echo "Checking out branch specified by parameter: ${params.GIT_BRANCH}"
+                // This checkout happens AFTER Jenkins has loaded the parameters.
+                git(
+                    url: 'https://github.com/stolostron/search-e2e-test.git',
+                    branch: params.GIT_BRANCH,
+                    credentialsId: 'vincent-github-creds'
+                )
+            }
+        }
         stage('Build') {
             steps {                
                 sh '''  
