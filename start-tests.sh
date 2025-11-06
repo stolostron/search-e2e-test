@@ -58,17 +58,17 @@ if [[ -z $OPTIONS_HUB_OC_IDP || "$OPTIONS_HUB_OC_IDP" == "null" ]]; then
   log_color "purple" "OPTIONS_HUB_OC_IDP" "not exported or null, setting to default: 'kube:admin'.\n"
   export OPTIONS_HUB_OC_IDP=kube:admin
 
-  else
-    log_color "purple" "OPTIONS_HUB_OC_IDP" "detected, using $OPTIONS_HUB_OC_IDP for test.\n"
+else
+  log_color "purple" "OPTIONS_HUB_OC_IDP" "detected, using $OPTIONS_HUB_OC_IDP for test.\n"
 fi
 
 # Check to see if OPTIONS_HUB_USER is unset or null.
 if [[ -z $OPTIONS_HUB_USER || "$OPTIONS_HUB_USER" == "null" ]]; then
   log_color "purple" "OPTIONS_HUB_USER" "not exported or null, setting to default user: 'kubeadmin'\n"
-  export OPTIONS_HUB_USER=kuebadmin
+  export OPTIONS_HUB_USER=kubeadmin
 
-  else
-    log_color "purple" "OPTIONS_HUB_USER" "detected, using $OPTIONS_HUB_USER for test.\n"
+else
+  log_color "purple" "OPTIONS_HUB_USER" "detected, using $OPTIONS_HUB_USER for test.\n"
 fi
 
 # Check to see if OPTIONS_HUB_BASEDOMAIN, or OPTIONS_HUB_PASSWORD are missing. We need these to run the UI test.
