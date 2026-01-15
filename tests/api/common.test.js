@@ -7,7 +7,7 @@ const { getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterA
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 
 const _ = require('lodash')
-const acmNamespace = process.env.CYPRESS_ACM_NAMESPACE
+const acmNamespace = process.env.CYPRESS_ACM_NAMESPACE || 'open-cluster-management'
 
 describe('RHACM4K-1696: Search API - Verify search result with common filter and conditions', () => {
   beforeAll(async () => {
