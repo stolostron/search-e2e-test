@@ -10,11 +10,16 @@ export const savedSearches = {
   editSavedSearch: (queryName, editedName, editedDesc) => {
     savedSearches.shouldExist(queryName)
     cy.get(pf.layout.bullseye).should('not.exist')
-    cy.get(pf.card.header).contains(queryName).parent().parent().parent().find('button').click()
+    // Find the card containing the query name and click its kebab menu
+    cy.get(pf.card.base).contains(queryName).closest(pf.card.base).find('button').click()
     cy.get(`ul${pf.menu.list}`).contains('Edit').click()
+    cy.get(pf.modal.box).should('exist')
     cy.get('#add-query-name').clear().type(editedName)
     cy.get('#add-query-desc').clear().type(editedDesc)
-    cy.contains('button', 'Save').click()
+    // Click Save button within the modal
+    cy.get(pf.modal.box).within(() => {
+      cy.contains('button', 'Save').click()
+    })
     cy.get(pf.modal.box).should('not.exist')
     cy.get(pf.layout.bullseye).should('not.exist')
     savedSearches.shouldExist(editedName)
@@ -22,17 +27,21 @@ export const savedSearches = {
   getSavedSearch: (queryName) => {
     savedSearches.shouldExist(queryName)
     cy.get(pf.layout.bullseye).should('not.exist')
-    cy.get(pf.menuToggle.button).contains('Saved searches').click({ force: true })
-    cy.get(`ul${pf.menu.list}`).contains(queryName).click()
+    // Click on the saved search card to load that search
+    cy.get(pf.card.base).contains(queryName).click()
   },
   saveClusterNamespaceSearch: (cluster, namespace, queryName, queryDesc) => {
     searchPage.shouldFindNamespaceInCluster(namespace, cluster)
     searchBar.whenRunSearchQuery()
-    cy.contains('button', 'Save search').click()
-    cy.get(pf.modal.header).should('exist')
+    // Click "Save search" - could be button or link
+    cy.contains('Save search').click()
+    cy.get(pf.modal.box).should('exist')
     cy.get('#add-query-name').type(queryName)
     cy.get('#add-query-desc').type(queryDesc)
-    cy.contains('button', 'Save').click()
+    // Click Save button within the modal
+    cy.get(pf.modal.box).within(() => {
+      cy.contains('button', 'Save').click()
+    })
     // Wait for modal to close and loading overlay to disappear
     cy.get(pf.modal.box).should('not.exist')
     cy.get(pf.layout.bullseye).should('not.exist')
@@ -43,7 +52,8 @@ export const savedSearches = {
   shareSavedSearch: (queryName) => {
     savedSearches.shouldExist(queryName)
     cy.get(pf.layout.bullseye).should('not.exist')
-    cy.get(pf.card.header).contains(queryName).parent().parent().parent().find('button').click()
+    // Find the card containing the query name and click its kebab menu
+    cy.get(pf.card.base).contains(queryName).closest(pf.card.base).find('button').click()
     cy.get(`ul${pf.menu.list}`).contains('Share').click()
     cy.get('input')
       .invoke('val')
@@ -57,7 +67,8 @@ export const savedSearches = {
   whenDeleteSavedSearch: (queryName) => {
     savedSearches.shouldExist(queryName)
     cy.get(pf.layout.bullseye).should('not.exist')
-    cy.get(pf.card.header).contains(queryName).parent().parent().parent().find('button').click()
+    // Find the card containing the query name and click its kebab menu
+    cy.get(pf.card.base).contains(queryName).closest(pf.card.base).find('button').click()
     cy.get(`ul${pf.menu.list}`).contains('Delete').click()
     cy.contains('button', 'Delete').click()
     cy.get(pf.modal.box).should('not.exist')

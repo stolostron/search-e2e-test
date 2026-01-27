@@ -111,6 +111,12 @@ export const pf = {
     link: pfClass('nav__link'),
   },
 
+  // Tabs
+  tabs: {
+    link: pfClass('tabs__link'),
+    item: pfClass('tabs__item'),
+  },
+
   // Page
   page: {
     header: pfClass('page__header'),
@@ -148,7 +154,7 @@ export const pf = {
   title: {
     h1: `h1${pfClass('title')}`,
     h4: `h4${pfClass('title')}`,
-    h4Md: `h4${pfClass('title')}`,  // PF6 dropped size modifiers on title
+    h4Md: `h4${pfClass('title')}`, // PF6 dropped size modifiers on title
     div: `div${pfClass('title')}`,
   },
 

@@ -28,6 +28,7 @@ export const podDetailPage = {
    */
   whenClickOnLogsTab: () => {
     cy.get(pf.page.mainSection).should('exist')
-    cy.get(pf.nav.link).filter(':contains(Logs)').should('exist').click()
+    // In PF6, these are tabs not nav links
+    cy.contains('Logs').should('exist').click()
   },
 }

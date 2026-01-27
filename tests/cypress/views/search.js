@@ -287,14 +287,16 @@ export const searchBar = {
    * @param {int} size The amount of resources to be displayed within the table.
    */
   whenUsePagination: (size = 10) => {
+    // Click the pagination menu toggle
     cy.get(pf.pagination.base)
       .should('exist')
       .and('be.visible')
       .first()
-      .within(() => {
-        cy.get(pf.menuToggle.button).should('exist').click()
-        cy.get(pf.menu.content).should('exist')
-        cy.get(`li[data-action="per-page-${size}"]`).should('exist').click()
-      })
+      .find(pf.menuToggle.button)
+      .should('exist')
+      .click()
+    // Menu content is rendered as a portal outside pagination, so find it at document level
+    cy.get(pf.menu.content).should('exist')
+    cy.get(`li[data-action="per-page-${size}"]`).should('exist').click()
   },
 }
