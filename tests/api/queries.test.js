@@ -491,7 +491,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
       const elapsed = Date.now() - startTime
 
       expect(items.length).toBeGreaterThan(0)
-      expect(elapsed).toBeLessThan(10000) // Should complete within 5 seconds
+      expect(elapsed).toBeLessThan(10000) // Should complete within 10 seconds
     })
 
     test('should handle concurrent requests efficiently', async () => {
