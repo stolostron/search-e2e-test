@@ -224,7 +224,7 @@ export const searchPage = {
  */
 export const searchBar = {
   shouldContainTag: (filter) => {
-    cy.get(pf.chipGroup.list).should('contain', filter)
+    cy.get(pf.labelGroup.list).should('contain', filter)
   },
   whenSuggestionsAreAvailable: (value, ignoreIfDoesNotExist) => {
     if (!ignoreIfDoesNotExist) {

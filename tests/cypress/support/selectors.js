@@ -45,9 +45,14 @@ export const pf = {
     title: pfClass('card__title'),
   },
 
-  // Chip Group
+  // Label Group (was Chip Group in PF5)
+  labelGroup: {
+    list: pfClass('label-group__list'),
+  },
+
+  // Chip Group (legacy alias for Label Group)
   chipGroup: {
-    list: pfClass('chip-group__list'),
+    list: pfClass('label-group__list'),
   },
 
   // Dropdown
@@ -139,11 +144,11 @@ export const pf = {
     textInput: pfClass('text-input-group__text-input'),
   },
 
-  // Title
+  // Title (PF6 uses different size classes)
   title: {
     h1: `h1${pfClass('title')}`,
     h4: `h4${pfClass('title')}`,
-    h4Md: `h4${pfClass('title')}${pfMod('md')}`,
+    h4Md: `h4${pfClass('title')}`,  // PF6 dropped size modifiers on title
     div: `div${pfClass('title')}`,
   },
 
