@@ -3,18 +3,20 @@
  * Copyright (c) 2020 Red Hat, Inc.
  ****************************************************************************** */
 
+import { pf } from '../support/selectors'
+
 export const popupModal = {
   shouldDeleteResource: () => {
-    cy.get('button.pf-m-danger').should('exist').click()
-    cy.get('.pf-v5-c-alert pf-m-inline pf-m-danger').should('not.exist')
+    cy.get(pf.button.danger).should('exist').click()
+    cy.get(pf.alert.inlineDanger).should('not.exist')
   },
   shouldLoad: () => {
-    cy.get('.pf-v5-c-modal-box').should('exist')
-    cy.get('.pf-v5-c-alert__title').should('not.exist')
+    cy.get(pf.modal.box).should('exist')
+    cy.get(pf.alert.title).should('not.exist')
   },
   shouldNotExist: () => {
-    cy.get('.pf-v5-c-modal-box').should('not.exist')
-    cy.get('button.pf-m-danger').should('not.exist')
+    cy.get(pf.modal.box).should('not.exist')
+    cy.get(pf.button.danger).should('not.exist')
   },
   whenAccept: () => {
     popupModal.shouldLoad()
