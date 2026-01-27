@@ -152,6 +152,11 @@ export const pf = {
     div: `div${pfClass('title')}`,
   },
 
+  // Layout - Bullseye (loading overlay)
+  layout: {
+    bullseye: '.pf-v6-l-bullseye',
+  },
+
   // Modifiers
   mod: {
     primary: pfMod('primary'),
