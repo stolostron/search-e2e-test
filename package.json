@@ -34,7 +34,8 @@
     "log4js": "^6.9.1",
     "nconf": "^0.12.1",
     "nconf-yaml": "^1.0.2",
-    "supertest": "^7.0.0"
+    "supertest": "^7.0.0",
+    "ws": "^8.19.0"
   },
   "devDependencies": {
     "@cypress/grep": "^4.1.0",
