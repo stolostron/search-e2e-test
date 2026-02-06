@@ -33,7 +33,6 @@ describe(`[P2][Sev2][${squad}] RHACM4K-61828:Subscription API`, () => {
 
     ws.onopen = () => {
       ws.send('{"type":"connection_init","payload":{"Authorization":"Bearer ' + token + '"}}')
-      //   ws.close()
     }
 
     // Wait for the connection to be acknowledged.
