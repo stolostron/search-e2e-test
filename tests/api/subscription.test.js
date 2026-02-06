@@ -46,6 +46,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-61828:Subscription API`, () => {
 
   it('should fail authentication with invalid token', async () => {
     let msgCount = 0
+    let connectionClosed = false
     const ws = new WebSocket(`${searchApiRoute}/searchapi/graphql`, 'graphql-transport-ws', {
       rejectUnauthorized: false,
     })
@@ -54,16 +55,19 @@ describe(`[P2][Sev2][${squad}] RHACM4K-61828:Subscription API`, () => {
       msgCount++
     }
     ws.onclose = () => {
-      expect(msgCount).toBe(0)
+      connectionClosed = true
     }
     ws.onopen = () => {
       ws.send('{"type":"connection_init","payload":{"Authorization":"Bearer invalid-token"}}')
     }
 
-    // Wait for the connection to be established.
-    await new Promise((resolve) => setTimeout(resolve, 100))
+    // Wait for the connection to be closed.
+    while (!connectionClosed) {
+      await new Promise((resolve) => setTimeout(resolve, 10))
+    }
+    expect(connectionClosed).toBe(true)
     expect(msgCount).toBe(0)
-    ws.close()
+    expect(ws.readyState).toBe(WebSocket.CLOSED)
   })
 
   it('should receive ping messages', async () => {
