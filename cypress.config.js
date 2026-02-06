@@ -10,6 +10,7 @@ module.exports = defineConfig({
   videosFolder: 'results/videos',
   watchForFileChanges: true,
   env: {
+    ACM_NAMESPACE: 'ocm',
     OPTIONS_HUB_OC_IDP: 'kube:admin',
     OPTIONS_HUB_USER: 'kubeadmin',
     OPTIONS_MANAGED_USER: 'kubeadmin',
