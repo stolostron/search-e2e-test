@@ -31,8 +31,7 @@
 
 import 'cypress-wait-until'
 import { getOpt } from '../scripts/utils'
-
-const PF_VERSION = '.pf-v6'
+import { pf } from './selectors'
 
 Cypress.Commands.add('visitAndLogin', (URL, OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OPTIONS_HUB_OC_IDP) => {
   var user = OPTIONS_HUB_USER || Cypress.env('OPTIONS_HUB_USER')
@@ -41,7 +40,7 @@ Cypress.Commands.add('visitAndLogin', (URL, OPTIONS_HUB_USER, OPTIONS_HUB_PASSWO
 
   cy.visit(URL, { failOnStatusCode: false })
   // Wait until the login page loads
-  cy.waitUntil(() => cy.get(`${PF_VERSION}-c-login__main, .pf-c-login__main`).should('exist'))
+  cy.waitUntil(() => cy.get(pf.login.main).should('exist'))
   // If user is not logged in log them in otherwise proceed with tests
   cy.url().then((res) => {
     if (res.includes('oauth-openshift')) {
@@ -49,18 +48,18 @@ Cypress.Commands.add('visitAndLogin', (URL, OPTIONS_HUB_USER, OPTIONS_HUB_PASSWO
 
       cy.get('body').then((body) => {
         // Check if logged in
-        if (body.find(`${PF_VERSION}-c-page__header, .pf-c-page__header`).length === 0) {
+        if (body.find(pf.page.header).length === 0) {
           // Check if identity providers are configured
           if (body.find('form').length === 0) cy.contains(idp).click()
 
           cy.get('#inputUsername').click().focused().type(user)
           cy.get('#inputPassword').click().focused().type(password)
           cy.get('button[type="submit"]').click()
-          cy.get(`${PF_VERSION}-c-page__main, .pf-c-page__main`)
+          cy.get(pf.page.main).should('exist')
         }
       })
     } else {
-      cy.log('Confirmed that the user is logged. Procceding with the test.')
+      cy.log('Confirmed that the user is logged. Proceeding with the test.')
     }
   })
 })
@@ -141,7 +140,7 @@ Cypress.Commands.add('forEach', (selector, action, options) => {
 
 Cypress.Commands.add('logout', () => {
   cy.log('Attempt to logout existing user')
-  cy.get('.pf-v5-c-app-launcher.pf-m-align-right.co-app-launcher.co-user-menu').then(($btn) => {
+  cy.get(`${pf.appLauncher.alignRight}.co-app-launcher.co-user-menu`).then(($btn) => {
     //logout when test starts since we need to use the app idp user
     cy.log('Logging out existing user').get($btn).click()
     if (Cypress.config().baseUrl.includes('localhost')) {

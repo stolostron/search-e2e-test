@@ -3,6 +3,8 @@
  * Copyright (c) 2020 Red Hat, Inc.
  ****************************************************************************** */
 
+import { pf } from '../support/selectors'
+
 /**
  * Deployment resource details page that is accessible through the ACM Search page.
  */
@@ -12,9 +14,9 @@ export const deploymentDetailPage = {
    * @param {string} expected The expected string within the logs returned inside of the pod container.
    */
   whenScaleReplicasTo: (replicas) => {
-    cy.get('.pf-v5-c-page__main-section').should('exist')
+    cy.get(pf.page.mainSection).should('exist')
     cy.get('p').filter(':contains(Read only)').should('exist')
-    cy.get('button.pf-v5-c-button.pf-m-primary[aria-disabled="false"]').should('exist').click()
+    cy.get(`${pf.button.primary}[aria-disabled="false"]`).should('exist').click()
     cy.get('p').filter(':contains(Editing mode)').should('exist')
     cy.get('.react-monaco-editor-container')
       .should('exist')
@@ -31,7 +33,7 @@ export const deploymentDetailPage = {
       .click()
       .focused()
       .type('{del}' + replicas)
-    cy.get('button.pf-m-primary').filter(':contains("Save")').should('exist').click()
+    cy.get(`button${pf.mod.primary}`).filter(':contains("Save")').should('exist').click()
     cy.get('p').filter(':contains(Read only)').should('exist')
     cy.reload()
   },
