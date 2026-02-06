@@ -121,6 +121,8 @@ normalized_url=$OPTIONS_HUB_BASEDOMAIN
 normalized_url="${normalized_url#https://api.}"
 # Remove :6443 if present
 normalized_url="${normalized_url%:6443}"
+# Remove :443 if present
+normalized_url="${normalized_url%:443}"
 export BASE_URL=https://console-openshift-console.apps.$normalized_url
 export CYPRESS_BASE_URL=$BASE_URL
 
@@ -144,8 +146,8 @@ if [[ ! -z $CYPRESS_OPTIONS_HUB_PASSWORD && "$CYPRESS_OPTIONS_HUB_PASSWORD" != "
     server="https://api.${server}"
   fi
 
-  # ensure server ends with port :6443
-  if [[ ! $server =~ :6443$ ]]; then
+  # ensure server ends with port :6443 or :443, default to :6443 due to being more common FUTURE: determine appropriate port in advance
+  if [[ ! $server =~ :6443$ && ! $server =~ :443$ ]]; then
     server="${server}:6443"
   fi
 
