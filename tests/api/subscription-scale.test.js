@@ -34,9 +34,11 @@ describe(`[P2][Sev2][${squad}] Subscription API: Scale tests`, () => {
 
       wsItem.ws.onmessage = (event) => {
         const eventData = JSON.parse(event.data)
-        if (eventData.type === 'next' && event.data.includes('INSERT') && event.data.includes('ConfigMap')) {
-          wsItem.gotConfigMap = true
-          wsItem.msgCount++ // Ignore ping messages.
+        if (eventData.type === 'next') {
+          if (event.data.includes('INSERT') && event.data.includes('ConfigMap')) {
+            wsItem.gotConfigMap = true
+            wsItem.msgCount++ // Ignore ping messages.
+          }
         } else if (eventData.type === 'ping') {
           wsItem.ws.send('{"type":"pong"}')
         } else {
