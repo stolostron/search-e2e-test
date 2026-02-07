@@ -20,15 +20,8 @@ describe(`[P2][Sev2][${squad}] Subscription API: Scale tests`, () => {
     websocketUrl = searchApiRoute.replace('https://', 'wss://')
   })
 
-  // BUGS:
-  // 1. When ConfigMaps are created rapidly, the server only sends 1 message and immediately
-  //    after it sends the complete message.
-  // 2. When a connection is abnormally closed (stopping a running test), the server is unable to
-  //    register new subscriptions. The websocket connects, but is unable to receive messages.
-  //    WORKAROUND: Restart the server.
-  //
-  const totalWebsockets = 5 // TODO: Goal is 50 concurrent websocket connections.
-  const totalConfigMaps = 2 // TODO: Goal is about 1 ConfigMap per second.
+  const totalWebsockets = 50
+  const totalConfigMaps = 60 // About 1 ConfigMap per second.
   it.only(`should receive events for ${totalWebsockets} concurrent websocket connections`, async () => {
     const wsList = Array.from({ length: totalWebsockets }, (_, index) => ({
       id: index,
@@ -46,17 +39,8 @@ describe(`[P2][Sev2][${squad}] Subscription API: Scale tests`, () => {
           wsItem.msgCount++ // Ignore ping messages.
         } else if (eventData.type === 'ping') {
           wsItem.ws.send('{"type":"pong"}')
-        } else if (eventData.type === 'error') {
-          console.log('WebSocket error:', event)
-          expect.fail('Unexpected Websocket error')
-        } else if (eventData.type === 'complete') {
-          console.log('Received WebSocket complete message: ', wsItem.id, 'data: ', event.data)
-          // BUG: When ConfigMaps are created rapidly. The server only sends 1 message and
-          // immediately after it sends the complete message.
-          // WORKAROUND: Re-subscribe to continue receiving messages.
-          wsItem.ws.send(
-            `{"id":"0000-000${wsItem.id}","type":"subscribe","payload":{"query":"subscription watch($input: SearchInput) { watch(input: $input) { uid operation newData oldData timestamp } }","variables":{"input":{"keywords":[],"filters":[{"property":"kind","values":["ConfigMap"]}]}},"operationName":"watch"}}`
-          )
+        } else {
+          console.log('Unexpected message from websocket: ', wsItem.id, 'data: ', event.data)
         }
       }
 
@@ -67,22 +51,21 @@ describe(`[P2][Sev2][${squad}] Subscription API: Scale tests`, () => {
     }
 
     // Wait for the WebSocket connections to be established.
-    await sleep(200)
+    await sleep(100)
 
     // Create ConfigMap resources.
     for (let i = 0; i < totalConfigMaps; i++) {
       // Create a ConfigMap resource.
       await execCliCmdString(`oc create configmap test-cm-scale-${i} -n default`)
-      await sleep(6000)
     }
 
     // Wait for the events to be received on each websocket.
     for (const wsItem of wsList) {
       while (wsItem.msgCount < totalConfigMaps) {
-        console.log(
-          `Waiting for messages on websocket ${wsItem.id} expected: ${totalConfigMaps} current: ${wsItem.msgCount}`
-        )
-        await sleep(1000)
+        // console.log(
+        //   `Waiting for messages on websocket ${wsItem.id} expected: ${totalConfigMaps} current: ${wsItem.msgCount}`
+        // )
+        await sleep(100)
       }
     }
 
