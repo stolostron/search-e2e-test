@@ -117,7 +117,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-61828:Subscription API`, () => {
 
     // Create a ConfigMap resource.
     await execCliCmdString('oc create configmap test-cm -n default')
-    // await execCliCmdString('oc create configmap test-cm-2 -n default')
+    await execCliCmdString('oc create configmap test-cm-2 -n default')
 
     // Wait for the event to be received.
     while (!gotConfigMap) {
@@ -130,6 +130,6 @@ describe(`[P2][Sev2][${squad}] RHACM4K-61828:Subscription API`, () => {
 
   afterAll(async () => {
     await execCliCmdString('oc delete configmap test-cm -n default')
-    // await execCliCmdString('oc delete configmap test-cm-2 -n default')
+    await execCliCmdString('oc delete configmap test-cm-2 -n default')
   })
 })

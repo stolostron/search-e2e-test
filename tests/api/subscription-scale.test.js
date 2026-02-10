@@ -78,8 +78,10 @@ describe(`[P2][Sev2][${squad}] Subscription API: Scale tests`, () => {
   }, 90000)
 
   afterAll(async () => {
+    let cmNames = []
     for (let i = 0; i < totalConfigMaps; i++) {
-      await execCliCmdString(`oc delete configmap test-cm-scale-${i} -n default`)
+      cmNames.push(`test-cm-scale-${i}`)
     }
+    await execCliCmdString(`oc delete configmap ${cmNames.join(' ')} -n default`)
   })
 })
