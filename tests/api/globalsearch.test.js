@@ -1,6 +1,6 @@
 // Copyright Contributors to the Open Cluster Management project
 
-jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
+jest.retryTimes(globalThis.retry, globalThis.retryOptions)
 
 const squad = require('../../config').get('squadName')
 const { getUserContext, getSearchApiRoute } = require('../common-lib/clusterAccess')
@@ -20,7 +20,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC with Global Search Cluste
     # export ns=search-global-rbac; export usr0=u0;
     oc create namespace ${ns}
     oc create serviceaccount ${usr0} -n ${ns}
-    oc create clusterrole ${usr0} --verb=get --resource=searches.search.open-cluster-management.io,searches/allManagedData
+    # oc create clusterrole ${usr0} --verb=get --resource=searches.search.open-cluster-management.io,searches/allManagedData
     oc create clusterrolebinding ${usr0} --clusterrole=${usr0} --serviceaccount=${ns}:${usr0}
   
 
@@ -41,7 +41,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC with Global Search Cluste
     # export ns=search-global-rbac; export usr0=u0
     oc delete ns ${ns}
     oc delete clusterrolebinding ${usr0}
-    oc delete clusterrole ${usr0}`
+    # oc delete clusterrole ${usr0}`
 
     await execCliCmdString(teardownCmds)
   }, 10000)

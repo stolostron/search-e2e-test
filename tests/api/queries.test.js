@@ -1,6 +1,6 @@
 // Copyright Contributors to the Open Cluster Management project
 
-jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
+jest.retryTimes(globalThis.retry, globalThis.retryOptions)
 
 const squad = require('../../config').get('squadName')
 const { getUserContext, getSearchApiRoute } = require('../common-lib/clusterAccess')
@@ -12,6 +12,7 @@ const {
   searchQueryBuilder,
 } = require('../common-lib/searchClient')
 const { sleep } = require('../common-lib/sleep')
+const console = require('console') // Overrides jest console logger with default.
 
 const usr = 'search-query-user'
 const ns = 'search-query'
@@ -41,17 +42,28 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     searchApiRoute = route
 
     // Wait for the service account and search index to get updated.
-    // Must wait 2 minutes because of the current RBAC cache.
-    // another 1 minute grace period added to ensure resources indexed
-    console.log('Waiting 3 minutes for index update and cache expiration')
-    await sleep(120000 + 60000)
-  }, 1500000)
+    let ready = false
+    let start = Date.now()
+    let logged = false
+    while (!ready) {
+      user = await getUserContext({ usr, ns })
+      const items = await resolveSearchItems(user.token, { filters: [{ property: 'name', values: ['cm4-broccoli'] }] })
+      if (items.length > 0) {
+        ready = true
+      } else {
+        if (!logged) {
+          console.log('Waiting while search index gets refreshed.')
+          logged = true
+        }
+        await sleep(2000)
+      }
+    }
+    console.log(`Search index ready after ${Date.now() - start} ms`)
+  }, 300000) // 5 minutes
 
-  // Keep separate from beforeAll because it slows execution and increases the chances of recovering during retry.
   beforeEach(async () => {
-    await sleep(5000)
     user = await getUserContext({ usr, ns })
-  }, 10000) // 10 seconds
+  })
 
   afterAll(async () => {
     let teardownCmds = `# export ns=search-query; export usr=search-query-user
