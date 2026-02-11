@@ -1,6 +1,6 @@
 // Copyright Contributors to the Open Cluster Management project
 
-// Scale tests for the subscription API.
+// Test multiple concurrent websocket connections to the subscription API.
 
 const squad = require('../../config').get('squadName')
 
@@ -25,7 +25,6 @@ describe(`[P2][Sev2][${squad}] Subscription API: Scale tests`, () => {
   it.only(`should receive events for ${totalWebsockets} concurrent websocket connections`, async () => {
     const wsList = Array.from({ length: totalWebsockets }, (_, index) => ({
       id: index,
-      gotConfigMap: false,
       msgCount: 0,
     }))
 
@@ -36,8 +35,7 @@ describe(`[P2][Sev2][${squad}] Subscription API: Scale tests`, () => {
         const eventData = JSON.parse(event.data)
         if (eventData.type === 'next') {
           if (event.data.includes('INSERT') && event.data.includes('ConfigMap')) {
-            wsItem.gotConfigMap = true
-            wsItem.msgCount++ // Ignore ping messages.
+            wsItem.msgCount++ // Count ConfigMap INSERT events only.
           }
         } else if (eventData.type === 'ping') {
           wsItem.ws.send('{"type":"pong"}')
@@ -46,28 +44,24 @@ describe(`[P2][Sev2][${squad}] Subscription API: Scale tests`, () => {
         }
       }
 
-      // Start the subscriptions.
+      // Start the subscriptions on each websocket.
       wsItem.ws.send(
         `{"id":"0000-000${wsItem.id}","type":"subscribe","payload":{"query":"subscription watch($input: SearchInput) { watch(input: $input) { uid operation newData oldData timestamp } }","variables":{"input":{"keywords":[],"filters":[{"property":"kind","values":["ConfigMap"]}]}},"operationName":"watch"}}`
       )
     }
 
-    // Wait for the WebSocket connections to be established.
-    await sleep(100)
+    // Wait for the WebSocket connections and subscriptions to be established.
+    await sleep(50)
 
     // Create ConfigMap resources.
     for (let i = 0; i < totalConfigMaps; i++) {
-      // Create a ConfigMap resource.
       await execCliCmdString(`oc create configmap test-cm-scale-${i} -n default`)
     }
 
     // Wait for the events to be received on each websocket.
     for (const wsItem of wsList) {
       while (wsItem.msgCount < totalConfigMaps) {
-        // console.log(
-        //   `Waiting for messages on websocket ${wsItem.id} expected: ${totalConfigMaps} current: ${wsItem.msgCount}`
-        // )
-        await sleep(100)
+        await sleep(10)
       }
     }
 
