@@ -5,8 +5,9 @@
 const squad = require('../../config').get('squadName')
 
 const WebSocket = require('ws')
-const { execCliCmdString, expectCli } = require('../common-lib/cliClient')
+const { execCliCmdString } = require('../common-lib/cliClient')
 const { getKubeadminToken, getSearchApiRoute } = require('../common-lib/clusterAccess')
+const { createWebSocket } = require('../common-lib/websocketHelper')
 
 let websocketUrl = ''
 describe(`[P2][Sev2][${squad}] RHACM4K-61828:Subscription API`, () => {
@@ -94,16 +95,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-61828:Subscription API`, () => {
 
   it('should receive resource events', async () => {
     let gotConfigMap = false
-    const ws = new WebSocket(`${websocketUrl}/searchapi/graphql`, 'graphql-transport-ws', {
-      rejectUnauthorized: false,
-    })
-
-    ws.onopen = () => {
-      ws.send('{"type":"connection_init","payload":{"Authorization":"Bearer ' + token + '"}}')
-      ws.send(
-        '{"id":"0000-0001","type":"subscribe","payload":{"query":"subscription watch($input: SearchInput) { watch(input: $input) { uid operation newData oldData timestamp } }","variables":{"input":{"keywords":[],"filters":[{"property":"kind","values":["ConfigMap"]},{"property":"name","values":["test-cm"]}]}},"operationName":"watch"}}'
-      )
-    }
+    const ws = await createWebSocket(`${websocketUrl}/searchapi/graphql`, token)
 
     ws.onmessage = (event) => {
       const eventData = JSON.parse(event.data)
@@ -111,12 +103,16 @@ describe(`[P2][Sev2][${squad}] RHACM4K-61828:Subscription API`, () => {
         gotConfigMap = true
       }
     }
+    ws.send(
+      '{"id":"0000-0002","type":"subscribe","payload":{"query":"subscription watch($input: SearchInput) { watch(input: $input) { uid operation newData oldData timestamp } }","variables":{"input":{"keywords":[],"filters":[{"property":"kind","values":["ConfigMap"]},{"property":"name","values":["test-cm"]}]}},"operationName":"watch"}}'
+    )
 
     // Wait for the WebSocket connection to be established.
     await new Promise((resolve) => setTimeout(resolve, 50))
 
     // Create a ConfigMap resource.
     await execCliCmdString('oc create configmap test-cm -n default')
+    await execCliCmdString('oc create configmap test-cm-2 -n default')
 
     // Wait for the event to be received.
     while (!gotConfigMap) {
@@ -125,9 +121,51 @@ describe(`[P2][Sev2][${squad}] RHACM4K-61828:Subscription API`, () => {
 
     expect(gotConfigMap).toBe(true)
     ws.close()
-  }, 6000) // Should receive message within 5 seconds. Additional 1 second grace period.
+  }, 11000) // Should receive message within 5 seconds, but worst case it takes 2 sync cycles.
+
+  it('should receive events with large payloads', async () => {
+    let receivedInsert = false
+    let receivedUpdate = false
+    const ws = await createWebSocket(`${websocketUrl}/searchapi/graphql`, token)
+
+    ws.onmessage = (event) => {
+      const eventData = JSON.parse(event.data)
+      if (eventData.type === 'next' && event.data.includes('INSERT') && event.data.includes('ConfigMap')) {
+        receivedInsert = true
+      } else if (eventData.type === 'next' && event.data.includes('UPDATE') && event.data.includes('ConfigMap')) {
+        receivedUpdate = true
+      }
+    }
+    ws.send(
+      '{"id":"0000-0003","type":"subscribe","payload":{"query":"subscription watch($input: SearchInput) { watch(input: $input) { uid operation newData oldData timestamp } }","variables":{"input":{"keywords":[],"filters":[{"property":"kind","values":["ConfigMap"]},{"property":"name","values":["test-cm-large"]}]}},"operationName":"watch"}}'
+    )
+
+    // Wait for the WebSocket connection to be established.
+    await new Promise((resolve) => setTimeout(resolve, 50))
+
+    // Create a ConfigMap resource with a large payload.
+    labels = []
+    for (let i = 0; i < 100; i++) {
+      labels.push(`this-is-a-looooooong-label-${i}=${'a'.repeat(60)}`)
+    }
+
+    await execCliCmdString('oc create configmap test-cm-large -n default')
+
+    // Wait for the event to be received.
+    while (!receivedInsert) {
+      await new Promise((resolve) => setTimeout(resolve, 10))
+    }
+    await execCliCmdString(`oc label configmap test-cm-large -n default ${labels.join(' ')}`)
+    while (!receivedUpdate) {
+      await new Promise((resolve) => setTimeout(resolve, 10))
+    }
+    expect(receivedUpdate).toBe(true)
+    ws.close()
+  }, 21000)
 
   afterAll(async () => {
     await execCliCmdString('oc delete configmap test-cm -n default')
+    await execCliCmdString('oc delete configmap test-cm-2 -n default')
+    await execCliCmdString('oc delete configmap test-cm-large -n default')
   })
 })
