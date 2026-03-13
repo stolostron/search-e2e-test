@@ -33,25 +33,20 @@ async function getResourcesFromSearch({
 
 /**
  * Builds and returns a graphQl query requesting items.
- * Current supported input keys: `keywords`, `filters`, and `limit`
- * @param {keywords:[], filters:[], limit:number } input The input parameters that will be used to build the query object.
+ * Supported input keys: `keywords`, `filters`, `limit`, `offset`, `orderBy`
+ * @param {keywords:[], filters:[], limit:number, offset:number, orderBy:string, includeCount:boolean } input The input parameters.
  * @returns {object} The graphQl query object.
  */
-function searchQueryBuilder({ keywords = [], filters = [], limit = 10000 }) {
-  // Return query built from passed arguments.
+function searchQueryBuilder({ keywords = [], filters = [], limit = 10000, offset, orderBy, includeCount = false }) {
+  const input = { keywords, filters, limit }
+  if (offset !== undefined) input.offset = offset
+  if (orderBy !== undefined) input.orderBy = orderBy
+
+  const fields = includeCount ? 'count\n    items' : 'items'
   const query = {
     operationName: 'searchResult',
-    variables: {
-      input: [
-        {
-          keywords: keywords,
-          filters: filters,
-          limit: limit,
-        },
-      ],
-    },
-    query:
-      'query searchResult($input: [SearchInput]) {\n  searchResult: search(input: $input) {\n    items\n    __typename\n  }\n}\n',
+    variables: { input: [input] },
+    query: `query searchResult($input: [SearchInput]) {\n  searchResult: search(input: $input) {\n    ${fields}\n    __typename\n  }\n}\n`,
   }
   return query
 }
