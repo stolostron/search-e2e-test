@@ -2,7 +2,7 @@
 
 FROM mikefarah/yq:4.32.2 as builder
 # Should match cypress version in package.json
-FROM cypress/included:13.13.0 AS production
+FROM cypress/included:13.13.3 AS production
 
 USER root
 
