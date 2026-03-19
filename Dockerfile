@@ -2,12 +2,14 @@
 
 FROM mikefarah/yq:4.32.2 as builder
 # Should match cypress version in package.json
-FROM cypress/included:13.13.0 AS production
+FROM cypress/included:13.17.0 AS production
 
 USER root
 
 COPY --from=builder /usr/bin/yq /usr/local/bin/yq
 
+# Resolve issue with invalid public key during apt-get update
+RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | tee /etc/apt/trusted.gpg.d/google.asc >/dev/null
 RUN apt-get update && apt-get install -y jq
 
 RUN mkdir -p /search-e2e/cypress_cache
