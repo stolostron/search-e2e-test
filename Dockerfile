@@ -8,6 +8,7 @@ USER root
 
 COPY --from=builder /usr/bin/yq /usr/local/bin/yq
 
+RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo tee /etc/apt/trusted.gpg.d/google.asc >/dev/null
 RUN apt-get update && apt-get install -y jq
 
 RUN mkdir -p /search-e2e/cypress_cache
