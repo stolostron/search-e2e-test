@@ -2,14 +2,13 @@
 
 FROM mikefarah/yq:4.32.2 as builder
 # Should match cypress version in package.json
-FROM cypress/included:13.13.3 AS production
+FROM cypress/included:13.17.0 AS production
 
 USER root
 
 COPY --from=builder /usr/bin/yq /usr/local/bin/yq
 
-# RUN apt-get update && apt-get install -y jq
-RUN apt-get install -y jq
+RUN apt-get update && apt-get install -y jq
 
 RUN mkdir -p /search-e2e/cypress_cache
 ENV CYPRESS_CACHE_FOLDER=/search-e2e/cypress_cache
