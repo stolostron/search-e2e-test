@@ -116,22 +116,14 @@ export CYPRESS_OPTIONS_HUB_PASSWORD=$OPTIONS_HUB_PASSWORD
 export CYPRESS_OPTIONS_HUB_USER=$OPTIONS_HUB_USER
 
 # Export base url for cluster.
-# Query the actual console route instead of constructing it to handle ROSA HCP and other cluster types
-CONSOLE_ROUTE=$(oc get route console -n openshift-console -o jsonpath='{.spec.host}' 2>/dev/null)
-if [[ -z $CONSOLE_ROUTE ]]; then
-  log_color "yellow" "Could not query console route, falling back to URL construction"
-  normalized_url=$OPTIONS_HUB_BASEDOMAIN
-  # Remove https://api. if present
-  normalized_url="${normalized_url#https://api.}"
-  # Remove :6443 if present
-  normalized_url="${normalized_url%:6443}"
-  # Remove :443 if present
-  normalized_url="${normalized_url%:443}"
-  export BASE_URL=https://console-openshift-console.apps.$normalized_url
-else
-  export BASE_URL=https://$CONSOLE_ROUTE
-  log_color "green" "Detected console route: $BASE_URL"
-fi
+normalized_url=$OPTIONS_HUB_BASEDOMAIN
+# Remove https://api. if present
+normalized_url="${normalized_url#https://api.}"
+# Remove :6443 if present
+normalized_url="${normalized_url%:6443}"
+# Remove :443 if present
+normalized_url="${normalized_url%:443}"
+export BASE_URL=https://console-openshift-console.apps.$normalized_url
 export CYPRESS_BASE_URL=$BASE_URL
 
 echo -e
@@ -171,6 +163,16 @@ if [[ ! -z $CYPRESS_OPTIONS_HUB_PASSWORD && "$CYPRESS_OPTIONS_HUB_PASSWORD" != "
 fi
 
 echo -e "Logged in as user: $(oc whoami)\n"
+
+# Query the actual console route instead of constructing it to handle ROSA HCP and other cluster types
+CONSOLE_ROUTE=$(oc get route console -n openshift-console -o jsonpath='{.spec.host}' 2>/dev/null)
+if [[ -n $CONSOLE_ROUTE ]]; then
+  export BASE_URL=https://$CONSOLE_ROUTE
+  export CYPRESS_BASE_URL=$BASE_URL
+  log_color "green" "Detected console route: $BASE_URL\n"
+else
+  log_color "yellow" "Could not query console route, using constructed URL: $BASE_URL\n"
+fi
 
 export CYPRESS_ACM_VERSION=`oc get subscriptions.operators.coreos.com -A -o yaml | grep currentCSV:\ advanced-cluster-management | awk '{$1=$1};1' | sed "s/currentCSV:\ advanced-cluster-management.v//"`
 log_color "green" "Testing with ACM Version": "$CYPRESS_ACM_VERSION\n"
