@@ -6,7 +6,7 @@
 jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const squad = require('../../config').get('squadName')
-const { getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
+const { getSearchApiRoute, getKubeadminToken, getLocalClusterName } = require('../common-lib/clusterAccess')
 const { execCliCmdString } = require('../common-lib/cliClient')
 const {
   resolveSearchCount,
@@ -55,7 +55,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify pagination functionality`, ()
   const baseFilters = [
     { property: 'kind', values: ['ConfigMap'] },
     { property: 'namespace', values: [ns] },
-    { property: 'cluster', values: ['local-cluster'] },
+    { property: 'cluster', values: [getLocalClusterName()] },
   ]
 
   test('should return correct total count', async () => {

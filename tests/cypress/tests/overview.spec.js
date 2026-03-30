@@ -6,7 +6,7 @@
 import { squad, tags } from '../config'
 import { overviewPage } from '../views/overview'
 
-describe('RHACM4K-1419: Overview page', { tags: tags.env }, function () {
+describe('RHACM4K-1419: Overview page', { tags: tags.env, defaultCommandTimeout: 30000 }, function () {
   beforeEach(function () {
     // Log into the cluster ACM console.
     cy.visitAndLogin('/multicloud/home/overview')

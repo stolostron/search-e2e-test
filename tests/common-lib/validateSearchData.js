@@ -3,6 +3,7 @@
 const { getResourcesFromSearch } = require('./searchClient')
 const { getResourcesFromOC } = require('./cliClient')
 const { sleep } = require('./sleep')
+const { getLocalClusterName } = require('./clusterAccess')
 
 /**
  * Common function to validate that the data in search matches
@@ -16,7 +17,7 @@ async function ValidateSearchData({
   user,
   kind,
   apigroup = '',
-  cluster = { type: 'hub', name: 'local-cluster' },
+  cluster = { type: 'hub', name: getLocalClusterName() },
   namespace = '--all-namespaces',
   retries = 12, // Default to 12 because some tests create namespaces and RBAC cache takes up to 60 seconds to update.
   retryWait = 5000,

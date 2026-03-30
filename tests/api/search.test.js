@@ -5,7 +5,12 @@ jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 const { execSync } = require('child_process')
 
 const squad = require('../../config').get('squadName')
-const { getKubeConfig, getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
+const {
+  getKubeConfig,
+  getSearchApiRoute,
+  getKubeadminToken,
+  getLocalClusterName,
+} = require('../common-lib/clusterAccess')
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 
 describe('RHACM4K-913: Search API - Verify search results with different queries', () => {
@@ -14,6 +19,12 @@ describe('RHACM4K-913: Search API - Verify search results with different queries
 
   // Get managed cluster
   var import_kubeconfig = kubeconfigs.find((k) => k.includes('import'))
+
+  // Get ACM namespace
+  const acmNamespace = execSync("oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'").toString().trim()
+  if (!acmNamespace) {
+    throw new Error('Unable to resolve the ACM namespace')
+  }
 
   beforeAll(async () => {
     // Log in and get access token
@@ -33,32 +44,30 @@ describe('RHACM4K-913: Search API - Verify search results with different queries
     }
   })
 
-  // Skipping this test because it fails intermittently, which creates unreliable results.
-  test.skip(`[P3][Sev3][${squad}] should have expected count of pods in ocm on hub cluster.`, async () => {
+  test(`[P3][Sev3][${squad}] should have expected count of pods in ocm on hub cluster.`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['Pod'] },
-        { property: 'namespace', values: ['open-cluster-management'] },
+        { property: 'namespace', values: [acmNamespace] },
         { property: 'status', values: ['Running'] },
-        { property: 'cluster', values: ['local-cluster'] },
+        { property: 'cluster', values: [getLocalClusterName()] },
       ],
     })
     const [searchRes, cliRes] = await Promise.all([
       sendRequest(query, token),
-      execSync('oc get pods -n open-cluster-management --field-selector=status.phase==Running --no-headers | wc -l'),
+      execSync(`oc get pods -n ${acmNamespace} --field-selector=status.phase==Running --no-headers | wc -l`),
     ])
     const pods = searchRes.body.data.searchResult[0].items
     expect(pods.length.toString()).toEqual(cliRes.toString().trim())
   }, 10000)
 
-  // Skipping this test because it fails intermittently, which creates unreliable results.
-  test.skip(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent on hub cluster.`, async () => {
+  test(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent on hub cluster.`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['Pod'] },
         { property: 'namespace', values: ['open-cluster-management-agent'] },
         { property: 'status', values: ['Running'] },
-        { property: 'cluster', values: ['local-cluster'] },
+        { property: 'cluster', values: [getLocalClusterName()] },
       ],
     })
     const [searchRes, cliRes] = await Promise.all([
@@ -94,14 +103,13 @@ describe('RHACM4K-913: Search API - Verify search results with different queries
     }
   }, 10000)
 
-  // Skipping this test because it fails intermittently, which creates unreliable results.
-  test.skip(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent-addon on hub cluster.`, async () => {
+  test(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent-addon on hub cluster.`, async () => {
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['Pod'] },
         { property: 'namespace', values: ['open-cluster-management-agent-addon'] },
         { property: 'status', values: ['Running'] },
-        { property: 'cluster', values: ['local-cluster'] },
+        { property: 'cluster', values: [getLocalClusterName()] },
       ],
     })
     const [searchRes, cliRes] = await Promise.all([

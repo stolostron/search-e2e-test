@@ -5,7 +5,7 @@ jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 const { execSync } = require('child_process')
 
 const squad = require('../../config').get('squadName')
-const { getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
+const { getSearchApiRoute, getKubeadminToken, getLocalClusterName } = require('../common-lib/clusterAccess')
 // const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 
 describe('RHACM4K-1709: Search - Search using filters', () => {
@@ -67,7 +67,7 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
       ],
     },
     { filters: [{ property: 'startedAt', values: ['month'] }] },
-    { filters: [{ property: 'cluster', values: ['local-cluster'] }] },
+    { filters: [{ property: 'cluster', values: [getLocalClusterName()] }] },
     { filters: [{ property: 'port', values: ['8443/TCP'] }] },
     { filters: [{ property: 'type', values: ['ClusterIP'] }] },
     // {
