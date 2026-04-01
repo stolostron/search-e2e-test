@@ -186,6 +186,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
                 keywords: [],
                 filters: [
                   { property: 'kind', values: ['ConfigMap'] },
+                  { property: 'namespace', values: ['default'] },
                   { property: 'name', values: ['!=test-cm-not-equal-1'] },
                 ],
               },
@@ -236,6 +237,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
                 keywords: [],
                 filters: [
                   { property: 'kind', values: ['ConfigMap'] },
+                  { property: 'namespace', values: ['default'] },
                   { property: 'name', values: ['!test-cm-bang-1'] },
                 ],
               },
@@ -347,6 +349,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
                 keywords: [],
                 filters: [
                   { property: 'kind', values: ['Deployment'] },
+                  { property: 'namespace', values: ['default'] },
                   { property: 'desired', values: ['>2'] },
                 ],
               },
@@ -398,6 +401,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
                 keywords: [],
                 filters: [
                   { property: 'kind', values: ['Deployment'] },
+                  { property: 'namespace', values: ['default'] },
                   { property: 'desired', values: ['>=3'] },
                 ],
               },
@@ -447,6 +451,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
                 keywords: [],
                 filters: [
                   { property: 'kind', values: ['Deployment'] },
+                  { property: 'namespace', values: ['default'] },
                   { property: 'desired', values: ['<5'] },
                 ],
               },
@@ -496,6 +501,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
                 keywords: [],
                 filters: [
                   { property: 'kind', values: ['Deployment'] },
+                  { property: 'namespace', values: ['default'] },
                   { property: 'desired', values: ['<=3'] },
                 ],
               },
@@ -557,6 +563,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
                 keywords: [],
                 filters: [
                   { property: 'kind', values: ['ConfigMap'] },
+                  { property: 'namespace', values: ['default'] },
                   { property: 'name', values: ['>test-alpha'] },
                 ],
               },
@@ -603,6 +610,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
                 keywords: [],
                 filters: [
                   { property: 'kind', values: ['ConfigMap'] },
+                  { property: 'namespace', values: ['default'] },
                   { property: 'name', values: ['<test-beta'] },
                 ],
               },
@@ -652,6 +660,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
                 keywords: [],
                 filters: [
                   { property: 'kind', values: ['ConfigMap'] },
+                  { property: 'namespace', values: ['default'] },
                   { property: 'name', values: ['test-cm-wildcard-*'] },
                 ],
               },
@@ -696,6 +705,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
                 keywords: [],
                 filters: [
                   { property: 'kind', values: ['ConfigMap'] },
+                  { property: 'namespace', values: ['default'] },
                   { property: 'name', values: ['!=test-cm-wildcard-*'] },
                 ],
               },
