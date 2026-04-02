@@ -11,6 +11,18 @@ const { createWebSocket } = require('../common-lib/websocketHelper')
 
 let websocketUrl = ''
 let token = ''
+const testNamespace = 'automation-subscription-operators'
+
+// Helper function for bounded waiting with timeout
+async function waitFor(predicate, timeoutMs = 5000, intervalMs = 50) {
+  const deadline = Date.now() + timeoutMs
+  while (!predicate()) {
+    if (Date.now() > deadline) {
+      throw new Error('Timed out waiting for condition')
+    }
+    await new Promise((resolve) => setTimeout(resolve, intervalMs))
+  }
+}
 
 describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operators`, () => {
   beforeAll(async () => {
@@ -20,7 +32,10 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
     // Create a route to access the Search API.
     const searchApiRoute = await getSearchApiRoute()
     websocketUrl = searchApiRoute.replace('https://', 'wss://')
-  })
+
+    // Create test namespace
+    await execCliCmdString(`oc create namespace ${testNamespace} --dry-run=client -o yaml | oc apply -f -`)
+  }, 15000)
 
   describe('Equality operators', () => {
     it('should filter with default equality operator (=)', async () => {
@@ -56,15 +71,14 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
         })
       )
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-      await execCliCmdString('oc create configmap test-cm-equality -n default')
-
-      while (!receivedInsert) {
-        await new Promise((resolve) => setTimeout(resolve, 10))
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 50))
+        await execCliCmdString(`oc create configmap test-cm-equality -n ${testNamespace}`)
+        await waitFor(() => receivedInsert)
+        expect(receivedInsert).toBe(true)
+      } finally {
+        ws.close()
       }
-
-      expect(receivedInsert).toBe(true)
-      ws.close()
     }, 11000)
 
     it('should filter with explicit equality operator (=value)', async () => {
@@ -100,15 +114,14 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
         })
       )
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-      await execCliCmdString('oc create configmap test-cm-explicit-eq -n default')
-
-      while (!receivedInsert) {
-        await new Promise((resolve) => setTimeout(resolve, 10))
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 50))
+        await execCliCmdString(`oc create configmap test-cm-explicit-eq -n ${testNamespace}`)
+        await waitFor(() => receivedInsert)
+        expect(receivedInsert).toBe(true)
+      } finally {
+        ws.close()
       }
-
-      expect(receivedInsert).toBe(true)
-      ws.close()
     }, 11000)
 
     it('should match kind case-insensitively with equality operator', async () => {
@@ -144,15 +157,14 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
         })
       )
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-      await execCliCmdString('oc create configmap test-cm-case -n default')
-
-      while (!receivedInsert) {
-        await new Promise((resolve) => setTimeout(resolve, 10))
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 50))
+        await execCliCmdString(`oc create configmap test-cm-case -n ${testNamespace}`)
+        await waitFor(() => receivedInsert)
+        expect(receivedInsert).toBe(true)
+      } finally {
+        ws.close()
       }
-
-      expect(receivedInsert).toBe(true)
-      ws.close()
     }, 11000)
   })
 
@@ -196,8 +208,8 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
       )
 
       await new Promise((resolve) => setTimeout(resolve, 50))
-      await execCliCmdString('oc create configmap test-cm-not-equal-1 -n default')
-      await execCliCmdString('oc create configmap test-cm-not-equal-2 -n default')
+      await execCliCmdString(`oc create configmap test-cm-not-equal-1 -n ${testNamespace}`)
+      await execCliCmdString(`oc create configmap test-cm-not-equal-2 -n ${testNamespace}`)
 
       // Wait to see if we receive the correct CM
       await new Promise((resolve) => setTimeout(resolve, 3000))
@@ -246,8 +258,8 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
       )
 
       await new Promise((resolve) => setTimeout(resolve, 50))
-      await execCliCmdString('oc create configmap test-cm-bang-1 -n default')
-      await execCliCmdString('oc create configmap test-cm-bang-2 -n default')
+      await execCliCmdString(`oc create configmap test-cm-bang-1 -n ${testNamespace}`)
+      await execCliCmdString(`oc create configmap test-cm-bang-2 -n ${testNamespace}`)
 
       await new Promise((resolve) => setTimeout(resolve, 3000))
 
@@ -262,7 +274,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
 
       ws.onmessage = (event) => {
         const eventData = JSON.parse(event.data)
-        if (eventData.type === 'next' && event.data.includes('INSERT') && event.data.includes('Secret')) {
+        if (eventData.type === 'next' && event.data.includes('INSERT') && event.data.includes('test-secret-ne')) {
           receivedSecret = true
         }
       }
@@ -280,7 +292,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
                 keywords: [],
                 filters: [
                   { property: 'kind', values: ['!=configmap'] }, // Should exclude ConfigMap (case-insensitive)
-                  { property: 'namespace', values: ['default'] },
+                  { property: 'namespace', values: [testNamespace] },
                 ],
               },
             },
@@ -289,15 +301,14 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
         })
       )
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-      await execCliCmdString('oc create secret generic test-secret-ne -n default --from-literal=key=value')
-
-      while (!receivedSecret) {
-        await new Promise((resolve) => setTimeout(resolve, 10))
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 50))
+        await execCliCmdString(`oc create secret generic test-secret-ne -n ${testNamespace} --from-literal=key=value`)
+        await waitFor(() => receivedSecret)
+        expect(receivedSecret).toBe(true)
+      } finally {
+        ws.close()
       }
-
-      expect(receivedSecret).toBe(true)
-      ws.close()
     }, 11000)
   })
 
@@ -305,13 +316,13 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
     beforeAll(async () => {
       // Create Deployments with different replica counts for numeric testing
       await execCliCmdString(
-        'oc create deployment test-deploy-2rep --image=registry.access.redhat.com/ubi8/ubi-minimal:latest -n default --replicas=2'
+        'oc create deployment test-deploy-2rep --image=registry.access.redhat.com/ubi8/ubi-minimal:latest -n ${testNamespace} --replicas=2'
       )
       await execCliCmdString(
-        'oc create deployment test-deploy-3rep --image=registry.access.redhat.com/ubi8/ubi-minimal:latest -n default --replicas=3'
+        'oc create deployment test-deploy-3rep --image=registry.access.redhat.com/ubi8/ubi-minimal:latest -n ${testNamespace} --replicas=3'
       )
       await execCliCmdString(
-        'oc create deployment test-deploy-5rep --image=registry.access.redhat.com/ubi8/ubi-minimal:latest -n default --replicas=5'
+        'oc create deployment test-deploy-5rep --image=registry.access.redhat.com/ubi8/ubi-minimal:latest -n ${testNamespace} --replicas=5'
       )
 
       // Wait for resources to be indexed
@@ -347,6 +358,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
                 keywords: [],
                 filters: [
                   { property: 'kind', values: ['Deployment'] },
+                  { property: 'namespace', values: [testNamespace] },
                   { property: 'desired', values: ['>2'] },
                 ],
               },
@@ -359,8 +371,8 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
       await new Promise((resolve) => setTimeout(resolve, 50))
 
       // Scale deployments to trigger events
-      await execCliCmdString('oc scale deployment test-deploy-3rep -n default --replicas=3')
-      await execCliCmdString('oc scale deployment test-deploy-5rep -n default --replicas=5')
+      await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=3`)
+      await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=5`)
 
       await new Promise((resolve) => setTimeout(resolve, 5000))
 
@@ -398,6 +410,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
                 keywords: [],
                 filters: [
                   { property: 'kind', values: ['Deployment'] },
+                  { property: 'namespace', values: [testNamespace] },
                   { property: 'desired', values: ['>=3'] },
                 ],
               },
@@ -408,8 +421,8 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
       )
 
       await new Promise((resolve) => setTimeout(resolve, 50))
-      await execCliCmdString('oc scale deployment test-deploy-3rep -n default --replicas=4')
-      await execCliCmdString('oc scale deployment test-deploy-5rep -n default --replicas=6')
+      await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=4`)
+      await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=6`)
 
       await new Promise((resolve) => setTimeout(resolve, 5000))
 
@@ -447,6 +460,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
                 keywords: [],
                 filters: [
                   { property: 'kind', values: ['Deployment'] },
+                  { property: 'namespace', values: [testNamespace] },
                   { property: 'desired', values: ['<5'] },
                 ],
               },
@@ -457,8 +471,8 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
       )
 
       await new Promise((resolve) => setTimeout(resolve, 50))
-      await execCliCmdString('oc scale deployment test-deploy-2rep -n default --replicas=3')
-      await execCliCmdString('oc scale deployment test-deploy-3rep -n default --replicas=4')
+      await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=3`)
+      await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=4`)
 
       await new Promise((resolve) => setTimeout(resolve, 5000))
 
@@ -496,6 +510,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
                 keywords: [],
                 filters: [
                   { property: 'kind', values: ['Deployment'] },
+                  { property: 'namespace', values: [testNamespace] },
                   { property: 'desired', values: ['<=3'] },
                 ],
               },
@@ -506,8 +521,8 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
       )
 
       await new Promise((resolve) => setTimeout(resolve, 50))
-      await execCliCmdString('oc scale deployment test-deploy-2rep -n default --replicas=2')
-      await execCliCmdString('oc scale deployment test-deploy-3rep -n default --replicas=3')
+      await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=2`)
+      await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=3`)
 
       await new Promise((resolve) => setTimeout(resolve, 5000))
 
@@ -520,9 +535,9 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
   describe('String (lexicographic) comparison operators', () => {
     beforeAll(async () => {
       // Create ConfigMaps with different names for lexicographic testing
-      await execCliCmdString('oc create configmap test-alpha -n default')
-      await execCliCmdString('oc create configmap test-beta -n default')
-      await execCliCmdString('oc create configmap test-gamma -n default')
+      await execCliCmdString(`oc create configmap test-alpha -n ${testNamespace}`)
+      await execCliCmdString(`oc create configmap test-beta -n ${testNamespace}`)
+      await execCliCmdString(`oc create configmap test-gamma -n ${testNamespace}`)
 
       // Wait for resources to be indexed
       await new Promise((resolve) => setTimeout(resolve, 5000))
@@ -557,6 +572,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
                 keywords: [],
                 filters: [
                   { property: 'kind', values: ['ConfigMap'] },
+                  { property: 'namespace', values: [testNamespace] },
                   { property: 'name', values: ['>test-alpha'] },
                 ],
               },
@@ -568,9 +584,9 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
 
       await new Promise((resolve) => setTimeout(resolve, 50))
       // Recreate to trigger INSERT events
-      await execCliCmdString('oc delete configmap test-beta test-gamma -n default --ignore-not-found=true')
-      await execCliCmdString('oc create configmap test-beta -n default')
-      await execCliCmdString('oc create configmap test-gamma -n default')
+      await execCliCmdString(`oc delete configmap test-beta test-gamma -n ${testNamespace} --ignore-not-found=true`)
+      await execCliCmdString(`oc create configmap test-beta -n ${testNamespace}`)
+      await execCliCmdString(`oc create configmap test-gamma -n ${testNamespace}`)
 
       await new Promise((resolve) => setTimeout(resolve, 5000))
 
@@ -603,6 +619,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
                 keywords: [],
                 filters: [
                   { property: 'kind', values: ['ConfigMap'] },
+                  { property: 'namespace', values: [testNamespace] },
                   { property: 'name', values: ['<test-beta'] },
                 ],
               },
@@ -613,8 +630,8 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
       )
 
       await new Promise((resolve) => setTimeout(resolve, 50))
-      await execCliCmdString('oc delete configmap test-alpha -n default --ignore-not-found=true')
-      await execCliCmdString('oc create configmap test-alpha -n default')
+      await execCliCmdString(`oc delete configmap test-alpha -n ${testNamespace} --ignore-not-found=true`)
+      await execCliCmdString(`oc create configmap test-alpha -n ${testNamespace}`)
 
       await new Promise((resolve) => setTimeout(resolve, 5000))
 
@@ -661,15 +678,14 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
         })
       )
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-      await execCliCmdString('oc create configmap test-cm-wildcard-match -n default')
-
-      while (!receivedCM) {
-        await new Promise((resolve) => setTimeout(resolve, 10))
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 50))
+        await execCliCmdString(`oc create configmap test-cm-wildcard-match -n ${testNamespace}`)
+        await waitFor(() => receivedCM)
+        expect(receivedCM).toBe(true)
+      } finally {
+        ws.close()
       }
-
-      expect(receivedCM).toBe(true)
-      ws.close()
     }, 11000)
 
     it('should NOT support wildcards with != operator', async () => {
@@ -696,6 +712,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
                 keywords: [],
                 filters: [
                   { property: 'kind', values: ['ConfigMap'] },
+                  { property: 'namespace', values: [testNamespace] },
                   { property: 'name', values: ['!=test-cm-wildcard-*'] },
                 ],
               },
@@ -706,7 +723,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
       )
 
       await new Promise((resolve) => setTimeout(resolve, 50))
-      await execCliCmdString('oc create configmap test-cm-wildcard-nomatch -n default')
+      await execCliCmdString(`oc create configmap test-cm-wildcard-nomatch -n ${testNamespace}`)
 
       await new Promise((resolve) => setTimeout(resolve, 2000))
 
@@ -717,36 +734,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
   })
 
   afterAll(async () => {
-    // Clean up all test resources
-    const configmaps = [
-      'test-cm-equality',
-      'test-cm-explicit-eq',
-      'test-cm-case',
-      'test-cm-not-equal-1',
-      'test-cm-not-equal-2',
-      'test-cm-bang-1',
-      'test-cm-bang-2',
-      'test-alpha',
-      'test-beta',
-      'test-gamma',
-      'test-cm-wildcard-match',
-      'test-cm-wildcard-nomatch',
-    ]
-
-    const deployments = ['test-deploy-2rep', 'test-deploy-3rep', 'test-deploy-5rep']
-
-    const secrets = ['test-secret-ne']
-
-    for (const cm of configmaps) {
-      await execCliCmdString(`oc delete configmap ${cm} -n default --ignore-not-found=true`)
-    }
-
-    for (const deploy of deployments) {
-      await execCliCmdString(`oc delete deployment ${deploy} -n default --ignore-not-found=true`)
-    }
-
-    for (const secret of secrets) {
-      await execCliCmdString(`oc delete secret ${secret} -n default --ignore-not-found=true`)
-    }
+    // Clean up test namespace (deletes all resources within it)
+    await execCliCmdString(`oc delete namespace ${testNamespace} --ignore-not-found=true`)
   }, 60000)
 })
