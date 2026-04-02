@@ -3,7 +3,12 @@
 jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const squad = require('../../config').get('squadName')
-const { getKubeConfig, getKubeadminToken, getSearchApiRoute } = require('../common-lib/clusterAccess')
+const {
+  getKubeConfig,
+  getKubeadminToken,
+  getSearchApiRoute,
+  getLocalClusterName,
+} = require('../common-lib/clusterAccess')
 const { fetchAPIResourcesWithListWatchMethods, getClusterList, shouldUseAPIGroup } = require('../common-lib/index')
 const { ValidateSearchData, validationTimeout } = require('../common-lib/validateSearchData')
 
@@ -44,7 +49,7 @@ describe(`[P2][Sev2][${squad}] Search API: Validate data in index`, () => {
         // This test checks the validation logic in case that a CRD gets removed.
         test(
           `check for a CRD that doesn't exist [kind:MissingCRD]`,
-          async () => ValidateSearchData({ user, kind: 'MissingCRD', cluster: { name: 'local-cluster' } }),
+          async () => ValidateSearchData({ user, kind: 'MissingCRD', cluster: { name: getLocalClusterName() } }),
           validationTimeout
         )
 

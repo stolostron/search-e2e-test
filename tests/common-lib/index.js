@@ -1,6 +1,7 @@
 // Copyright Contributors to the Open Cluster Management project
 
 const { execSync } = require('child_process')
+const { getLocalClusterName } = require('./clusterAccess')
 
 /**
  * Fetches all namespaced resources that has methods list and watch.
@@ -48,7 +49,7 @@ function fetchAPIResourcesWithListWatchMethods() {
 function getClusterList(kubeconfigs = []) {
   const clusters = [
     {
-      name: 'local-cluster',
+      name: getLocalClusterName(),
       skip: false,
       type: 'hub',
     },
@@ -108,7 +109,8 @@ function getTargetManagedCluster() {
       )
     }
 
-    if (managedClusters.length === 1 && managedClusters.find((c) => c.includes('local-cluster'))) {
+    // if (managedClusters.length === 1 && managedClusters.find((c) => c.includes('local-cluster'))) {
+    if (managedClusters.length === 1 && managedClusters.find((c) => c == getLocalClusterName())) {
       console.info(
         `Managed cluster list only contains one managed cluster: ${managedClusters}. Proceeding to test only the local-cluster.`
       )
@@ -121,7 +123,7 @@ function getTargetManagedCluster() {
     }
 
     if (targetCluster === undefined) {
-      targetCluster = managedClusters.find((c) => !c.includes('local-cluster'))
+      targetCluster = managedClusters.find((c) => !c.includes(getLocalClusterName()))
     }
 
     console.info(`Preparing to test with managed cluster: ${targetCluster}`)

@@ -3,7 +3,7 @@
 jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const squad = require('../../config').get('squadName')
-const { getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
+const { getSearchApiRoute, getKubeadminToken, getLocalClusterName } = require('../common-lib/clusterAccess')
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 const _ = require('lodash')
 
@@ -19,7 +19,7 @@ describe('RHACM4K-1695: Search - verify managed cluster info in the search page'
   test(`[P1][Sev1][${squad}] Search - verify managed cluster info in the search page.`, async () => {
     var query = searchQueryBuilder({
       filters: [
-        { property: 'name', values: ['!local-cluster'] },
+        { property: 'name', values: ['!' + getLocalClusterName()] },
         { property: 'ManagedClusterJoined', values: ['True'] },
       ],
     })
@@ -29,7 +29,7 @@ describe('RHACM4K-1695: Search - verify managed cluster info in the search page'
 
       query = searchQueryBuilder({
         filters: [
-          { property: 'cluster', values: ['!local-cluster'] },
+          { property: 'cluster', values: ['!' + getLocalClusterName()] },
           { property: 'kind', values: ['Pod'] },
           { property: 'namespace', values: ['open-cluster-management-agent'] },
         ],

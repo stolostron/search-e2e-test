@@ -6,6 +6,7 @@
 const { fail } = require('assert')
 const request = require('supertest')
 const lodash = require('lodash')
+const { getLocalClusterName } = require('./clusterAccess')
 
 /**
  * Query the Search API using the given filters.
@@ -20,7 +21,7 @@ async function getResourcesFromSearch({
   kind,
   apigroup,
   namespace = '--all-namespaces',
-  cluster = { type: 'hub', name: 'local-cluster' },
+  cluster = { type: 'hub', name: getLocalClusterName() },
 }) {
   // Build the search api query.
   const filters = formatFilters(kind, apigroup, namespace, cluster)
@@ -131,7 +132,12 @@ function sendRequest(query, token, options = {}) {
  * @param {Object} cluster The cluster to filter the resources against.
  * @returns {[filter]} Formatted array of object filters.
  */
-function formatFilters(kind, group, namespace = '--all-namespaces', cluster = { type: 'hub', name: 'local-cluster' }) {
+function formatFilters(
+  kind,
+  group,
+  namespace = '--all-namespaces',
+  cluster = { type: 'hub', name: getLocalClusterName() }
+) {
   const filter = []
 
   // Add namespace filter

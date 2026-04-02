@@ -11,7 +11,7 @@ const clusterMode = {
   label: 'Local',
   namespace: Cypress.env('ACM_NAMESPACE'),
   skip: false,
-  valueFn: () => cy.wrap('local-cluster'),
+  valueFn: () => cy.wrap(Cypress.env('LOCAL_CLUSTER')),
 }
 
 describe(`RHACM4K-57212 - Search in ${clusterMode.label} Cluster`, { tags: tags.env }, function () {

@@ -8,6 +8,7 @@ import { savedSearches } from '../views/savedSearches'
 import { searchBar, searchPage } from '../views/search'
 
 const namespace = Cypress.env('ACM_NAMESPACE')
+const localClusterName = Cypress.env('LOCAL_CLUSTER')
 
 const queryDefaultNamespaceName = `${namespace}-default`
 const queryDefaultNamespaceDesc = `This is searching that the cluster should have ${namespace} namespace.`
@@ -15,7 +16,7 @@ const queryDefaultNamespaceDesc = `This is searching that the cluster should hav
 const queryEditNamespaceName = `[E2E] ${namespace}-edit`
 const queryEditNamespaceDesc = `[Created by Search E2E automation] This is searching that the cluster should have ${namespace} namespace.`
 
-describe('RHACM4K-412 - Saved searches', { tags: tags.env }, function () {
+describe('RHACM4K-412 - Saved searches', { tags: tags.env, defaultCommandTimeout: 30000 }, function () {
   beforeEach(function () {
     // Log into the cluster ACM console.
     cy.visitAndLogin('/multicloud/search')
@@ -30,7 +31,7 @@ describe('RHACM4K-412 - Saved searches', { tags: tags.env }, function () {
 
     it(`[P3][Sev3][${squad}] should save current search`, function () {
       savedSearches.saveClusterNamespaceSearch(
-        'local-cluster',
+        localClusterName,
         namespace,
         queryDefaultNamespaceName,
         queryDefaultNamespaceDesc

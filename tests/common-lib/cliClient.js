@@ -1,6 +1,7 @@
 // Copyright Contributors to the Open Cluster Management project
 
 const { execSync } = require('child_process')
+const { getLocalClusterName } = require('./clusterAccess')
 
 /**
  * Execute a string of commands separated by \n.
@@ -35,7 +36,7 @@ function getResourcesFromOC({
   kind,
   apigroup,
   namespace = '--all-namespaces',
-  cluster = { type: 'hub', name: 'local-cluster' },
+  cluster = { type: 'hub', name: getLocalClusterName() },
 }) {
   if (!kind) {
     console.error('Error in test code, kind is required when calling getResourcesFromOC(). Received:', kind)
