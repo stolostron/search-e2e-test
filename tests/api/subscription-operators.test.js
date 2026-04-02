@@ -34,7 +34,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
     websocketUrl = searchApiRoute.replace('https://', 'wss://')
 
     // Create test namespace
-    await execCliCmdString(`oc create namespace ${testNamespace} --dry-run=client -o yaml | oc apply -f -`)
+    await execCliCmdString(`oc create namespace ${testNamespace}`)
   }, 15000)
 
   describe('Equality operators', () => {
