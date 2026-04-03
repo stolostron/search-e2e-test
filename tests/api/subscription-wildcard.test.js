@@ -11,6 +11,7 @@ const { createWebSocket } = require('../common-lib/websocketHelper')
 
 let token = ''
 let websocketUrl = ''
+const testNamespace = 'automation-subscription-wildcard'
 
 const WATCH_QUERY =
   'subscription watch($input: SearchInput) { watch(input: $input) { uid operation newData oldData timestamp } }'
@@ -42,19 +43,15 @@ describe(`[P2][Sev2][${squad}] ACM-27856: Subscription API - Wildcard Filter Sup
     token = getKubeadminToken()
     const searchApiRoute = await getSearchApiRoute()
     websocketUrl = searchApiRoute.replace('https://', 'wss://')
-  })
+
+    // Create test namespace
+    await execCliCmdString(`oc create namespace ${testNamespace}`)
+  }, 15000)
 
   afterAll(async () => {
-    await execCliCmdString(`
-      oc delete configmap test-wc-alpha -n default --ignore-not-found
-      oc delete configmap test-wc-beta -n default --ignore-not-found
-      oc delete configmap test-wc-other -n default --ignore-not-found
-      oc delete configmap wc-suffix-test -n default --ignore-not-found
-      oc delete configmap wc-contains-wildcard-cm -n default --ignore-not-found
-      oc delete configmap wc-kind-test -n default --ignore-not-found
-      oc delete configmap wc-case-test -n default --ignore-not-found
-    `)
-  })
+    // Clean up test namespace (deletes all resources within it)
+    await execCliCmdString(`oc delete namespace ${testNamespace} --ignore-not-found=true`)
+  }, 30000)
 
   it(
     'should receive events matching a prefix wildcard filter on name (test-wc-*)',
@@ -76,14 +73,15 @@ describe(`[P2][Sev2][${squad}] ACM-27856: Subscription API - Wildcard Filter Sup
       ws.send(
         buildSubscribeMsg('wc-0001', [
           { property: 'kind', values: ['ConfigMap'] },
+          { property: 'namespace', values: [testNamespace] },
           { property: 'name', values: ['test-wc-*'] },
         ])
       )
 
       await new Promise((resolve) => setTimeout(resolve, 100))
 
-      await execCliCmdString('oc create configmap test-wc-alpha -n default')
-      await execCliCmdString('oc create configmap test-wc-beta -n default')
+      await execCliCmdString(`oc create configmap test-wc-alpha -n ${testNamespace}`)
+      await execCliCmdString(`oc create configmap test-wc-beta -n ${testNamespace}`)
 
       const received = await waitFor(() => matchCount >= 2)
       expect(received).toBe(true)
@@ -110,12 +108,13 @@ describe(`[P2][Sev2][${squad}] ACM-27856: Subscription API - Wildcard Filter Sup
       ws.send(
         buildSubscribeMsg('wc-0002', [
           { property: 'kind', values: ['ConfigMap'] },
+          { property: 'namespace', values: [testNamespace] },
           { property: 'name', values: ['prefix-wc-*'] },
         ])
       )
 
       await new Promise((resolve) => setTimeout(resolve, 100))
-      await execCliCmdString('oc create configmap test-wc-other -n default')
+      await execCliCmdString(`oc create configmap test-wc-other -n ${testNamespace}`)
 
       // Wait long enough to confirm no matching event is delivered.
       await new Promise((resolve) => setTimeout(resolve, 3000))
@@ -141,12 +140,13 @@ describe(`[P2][Sev2][${squad}] ACM-27856: Subscription API - Wildcard Filter Sup
       ws.send(
         buildSubscribeMsg('wc-0003', [
           { property: 'kind', values: ['ConfigMap'] },
+          { property: 'namespace', values: [testNamespace] },
           { property: 'name', values: ['*-test'] },
         ])
       )
 
       await new Promise((resolve) => setTimeout(resolve, 100))
-      await execCliCmdString('oc create configmap wc-suffix-test -n default')
+      await execCliCmdString(`oc create configmap wc-suffix-test -n ${testNamespace}`)
 
       const received = await waitFor(() => gotMatch)
       expect(received).toBe(true)
@@ -175,12 +175,13 @@ describe(`[P2][Sev2][${squad}] ACM-27856: Subscription API - Wildcard Filter Sup
       ws.send(
         buildSubscribeMsg('wc-0004', [
           { property: 'kind', values: ['ConfigMap'] },
+          { property: 'namespace', values: [testNamespace] },
           { property: 'name', values: ['*wildcard*'] },
         ])
       )
 
       await new Promise((resolve) => setTimeout(resolve, 100))
-      await execCliCmdString('oc create configmap wc-contains-wildcard-cm -n default')
+      await execCliCmdString(`oc create configmap wc-contains-wildcard-cm -n ${testNamespace}`)
 
       const received = await waitFor(() => gotMatch)
       expect(received).toBe(true)
@@ -205,12 +206,13 @@ describe(`[P2][Sev2][${squad}] ACM-27856: Subscription API - Wildcard Filter Sup
       ws.send(
         buildSubscribeMsg('wc-0005', [
           { property: 'kind', values: ['ConfigMap*'] },
+          { property: 'namespace', values: [testNamespace] },
           { property: 'name', values: ['wc-kind-test'] },
         ])
       )
 
       await new Promise((resolve) => setTimeout(resolve, 100))
-      await execCliCmdString('oc create configmap wc-kind-test -n default')
+      await execCliCmdString(`oc create configmap wc-kind-test -n ${testNamespace}`)
 
       const received = await waitFor(() => gotMatch)
       expect(received).toBe(true)
@@ -236,12 +238,13 @@ describe(`[P2][Sev2][${squad}] ACM-27856: Subscription API - Wildcard Filter Sup
       ws.send(
         buildSubscribeMsg('wc-0006', [
           { property: 'kind', values: ['configmap*'] },
+          { property: 'namespace', values: [testNamespace] },
           { property: 'name', values: ['wc-case-test'] },
         ])
       )
 
       await new Promise((resolve) => setTimeout(resolve, 100))
-      await execCliCmdString('oc create configmap wc-case-test -n default')
+      await execCliCmdString(`oc create configmap wc-case-test -n ${testNamespace}`)
 
       // Wait to confirm no event arrives for the case-mismatched filter.
       await new Promise((resolve) => setTimeout(resolve, 3000))
