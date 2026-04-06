@@ -162,11 +162,12 @@ function shouldUseAPIGroup(kind, resourceList, requiredList = []) {
  */
 async function waitFor(condition, timeoutMs = 10000, intervalMs = 50) {
   const start = Date.now()
-  while (!condition()) {
-    if (Date.now() - start > timeoutMs) return false
+  while (true) {
+    const matched = await Promise.resolve().then(() => condition())
+    if (matched) return true
+    if (Date.now() - start >= timeoutMs) return false
     await new Promise((resolve) => setTimeout(resolve, intervalMs))
   }
-  return true
 }
 
 exports.fetchAPIResourcesWithListWatchMethods = fetchAPIResourcesWithListWatchMethods
