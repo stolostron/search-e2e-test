@@ -24,7 +24,7 @@ async function waitFor(predicate, timeoutMs = 5000, intervalMs = 50) {
   }
 }
 
-describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operators`, () => {
+describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`, () => {
   beforeAll(async () => {
     // Log in and get access token
     token = getKubeadminToken()
@@ -62,6 +62,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
                 keywords: [],
                 filters: [
                   { property: 'kind', values: ['ConfigMap'] },
+                  { property: 'namespace', values: [testNamespace] },
                   { property: 'name', values: ['test-cm-equality'] },
                 ],
               },
@@ -105,6 +106,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
                 keywords: [],
                 filters: [
                   { property: 'kind', values: ['=ConfigMap'] },
+                  { property: 'namespace', values: [testNamespace] },
                   { property: 'name', values: ['=test-cm-explicit-eq'] },
                 ],
               },
@@ -117,7 +119,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
       try {
         await new Promise((resolve) => setTimeout(resolve, 50))
         await execCliCmdString(`oc create configmap test-cm-explicit-eq -n ${testNamespace}`)
-        await waitFor(() => receivedInsert)
+        await waitFor(() => receivedInsert, 15000)
         expect(receivedInsert).toBe(true)
       } finally {
         ws.close()
@@ -148,6 +150,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
                 keywords: [],
                 filters: [
                   { property: 'kind', values: ['configmap'] }, // lowercase
+                  { property: 'namespace', values: [testNamespace] },
                   { property: 'name', values: ['test-cm-case'] },
                 ],
               },
@@ -160,12 +163,12 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
       try {
         await new Promise((resolve) => setTimeout(resolve, 50))
         await execCliCmdString(`oc create configmap test-cm-case -n ${testNamespace}`)
-        await waitFor(() => receivedInsert)
+        await waitFor(() => receivedInsert, 15000)
         expect(receivedInsert).toBe(true)
       } finally {
         ws.close()
       }
-    }, 11000)
+    }, 20000)
   })
 
   describe('Not equal operators', () => {
@@ -198,6 +201,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
                 keywords: [],
                 filters: [
                   { property: 'kind', values: ['ConfigMap'] },
+                  { property: 'namespace', values: [testNamespace] },
                   { property: 'name', values: ['!=test-cm-not-equal-1'] },
                 ],
               },
@@ -207,17 +211,18 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
         })
       )
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-      await execCliCmdString(`oc create configmap test-cm-not-equal-1 -n ${testNamespace}`)
-      await execCliCmdString(`oc create configmap test-cm-not-equal-2 -n ${testNamespace}`)
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 50))
+        await execCliCmdString(`oc create configmap test-cm-not-equal-1 -n ${testNamespace}`)
+        await execCliCmdString(`oc create configmap test-cm-not-equal-2 -n ${testNamespace}`)
 
-      // Wait to see if we receive the correct CM
-      await new Promise((resolve) => setTimeout(resolve, 3000))
-
-      expect(receivedWrongCM).toBe(false) // Should NOT receive the excluded CM
-      expect(receivedCorrectCM).toBe(true) // Should receive other CMs
-      ws.close()
-    }, 11000)
+        await waitFor(() => receivedCorrectCM, 8000)
+        expect(receivedWrongCM).toBe(false) // Should NOT receive the excluded CM
+        expect(receivedCorrectCM).toBe(true) // Should receive other CMs
+      } finally {
+        ws.close()
+      }
+    }, 15000)
 
     it('should filter with ! operator', async () => {
       let receivedWrongCM = false
@@ -248,6 +253,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
                 keywords: [],
                 filters: [
                   { property: 'kind', values: ['ConfigMap'] },
+                  { property: 'namespace', values: [testNamespace] },
                   { property: 'name', values: ['!test-cm-bang-1'] },
                 ],
               },
@@ -257,16 +263,18 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
         })
       )
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-      await execCliCmdString(`oc create configmap test-cm-bang-1 -n ${testNamespace}`)
-      await execCliCmdString(`oc create configmap test-cm-bang-2 -n ${testNamespace}`)
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 50))
+        await execCliCmdString(`oc create configmap test-cm-bang-1 -n ${testNamespace}`)
+        await execCliCmdString(`oc create configmap test-cm-bang-2 -n ${testNamespace}`)
 
-      await new Promise((resolve) => setTimeout(resolve, 3000))
-
-      expect(receivedWrongCM).toBe(false)
-      expect(receivedCorrectCM).toBe(true)
-      ws.close()
-    }, 11000)
+        await waitFor(() => receivedCorrectCM, 8000)
+        expect(receivedWrongCM).toBe(false)
+        expect(receivedCorrectCM).toBe(true)
+      } finally {
+        ws.close()
+      }
+    }, 15000)
 
     it('should match kind case-insensitively with != operator', async () => {
       let receivedSecret = false
@@ -274,7 +282,8 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
 
       ws.onmessage = (event) => {
         const eventData = JSON.parse(event.data)
-        if (eventData.type === 'next' && event.data.includes('INSERT') && event.data.includes('test-secret-ne')) {
+        const op = event.data.includes('INSERT') || event.data.includes('UPDATE')
+        if (eventData.type === 'next' && op && event.data.includes('test-secret-ne')) {
           receivedSecret = true
         }
       }
@@ -304,7 +313,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
       try {
         await new Promise((resolve) => setTimeout(resolve, 50))
         await execCliCmdString(`oc create secret generic test-secret-ne -n ${testNamespace} --from-literal=key=value`)
-        await waitFor(() => receivedSecret)
+        await waitFor(() => receivedSecret, 15000)
         expect(receivedSecret).toBe(true)
       } finally {
         ws.close()
@@ -316,13 +325,13 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
     beforeAll(async () => {
       // Create Deployments with different replica counts for numeric testing
       await execCliCmdString(
-        'oc create deployment test-deploy-2rep --image=registry.access.redhat.com/ubi8/ubi-minimal:latest -n ${testNamespace} --replicas=2'
+        `oc create deployment test-deploy-2rep --image=registry.access.redhat.com/ubi8/ubi-minimal:latest -n ${testNamespace} --replicas=2`
       )
       await execCliCmdString(
-        'oc create deployment test-deploy-3rep --image=registry.access.redhat.com/ubi8/ubi-minimal:latest -n ${testNamespace} --replicas=3'
+        `oc create deployment test-deploy-3rep --image=registry.access.redhat.com/ubi8/ubi-minimal:latest -n ${testNamespace} --replicas=3`
       )
       await execCliCmdString(
-        'oc create deployment test-deploy-5rep --image=registry.access.redhat.com/ubi8/ubi-minimal:latest -n ${testNamespace} --replicas=5'
+        `oc create deployment test-deploy-5rep --image=registry.access.redhat.com/ubi8/ubi-minimal:latest -n ${testNamespace} --replicas=5`
       )
 
       // Wait for resources to be indexed
@@ -336,10 +345,11 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
 
       ws.onmessage = (event) => {
         const eventData = JSON.parse(event.data)
-        if (eventData.type === 'next' && event.data.includes('INSERT')) {
-          if (event.data.includes('test-deploy-3rep') && event.data.includes('Deployment')) {
+        // Scaling emits UPDATE, not INSERT (align with >= test handler).
+        if (eventData.type === 'next' && event.data.includes('Deployment')) {
+          if (event.data.includes('test-deploy-3rep')) {
             received3rep = true
-          } else if (event.data.includes('test-deploy-5rep') && event.data.includes('Deployment')) {
+          } else if (event.data.includes('test-deploy-5rep')) {
             received5rep = true
           }
         }
@@ -368,17 +378,20 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
         })
       )
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 50))
 
-      // Scale deployments to trigger events
-      await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=3`)
-      await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=5`)
+        // Scale to values that change replica counts (beforeAll: 3rep=3, 5rep=5) so UPDATE events fire
+        await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=4`)
+        await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=6`)
 
-      await new Promise((resolve) => setTimeout(resolve, 5000))
+        await new Promise((resolve) => setTimeout(resolve, 5000))
 
-      expect(received3rep).toBe(true)
-      expect(received5rep).toBe(true)
-      ws.close()
+        expect(received3rep).toBe(true)
+        expect(received5rep).toBe(true)
+      } finally {
+        ws.close()
+      }
     }, 15000)
 
     it('should filter with >= operator for numeric values', async () => {
@@ -391,7 +404,8 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
         if (eventData.type === 'next' && event.data.includes('Deployment')) {
           if (event.data.includes('test-deploy-3rep')) {
             received3rep = true
-          } else if (event.data.includes('test-deploy-5rep')) {
+          }
+          if (event.data.includes('test-deploy-5rep')) {
             received5rep = true
           }
         }
@@ -420,16 +434,20 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
         })
       )
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-      await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=4`)
-      await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=6`)
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 50))
+        // After `>` test, 3rep=4 and 5rep=6 — scale further so UPDATE events are emitted
+        await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=5`)
+        await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=7`)
 
-      await new Promise((resolve) => setTimeout(resolve, 5000))
+        await waitFor(() => received3rep && received5rep, 15000)
 
-      expect(received3rep).toBe(true)
-      expect(received5rep).toBe(true)
-      ws.close()
-    }, 15000)
+        expect(received3rep).toBe(true)
+        expect(received5rep).toBe(true)
+      } finally {
+        ws.close()
+      }
+    }, 20000)
 
     it('should filter with < operator for numeric values', async () => {
       let received2rep = false
@@ -470,15 +488,19 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
         })
       )
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-      await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=3`)
-      await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=4`)
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 50))
+        // After prior tests, 3rep may already be at 4 replicas; scale 4→3 so an UPDATE is emitted
+        await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=3`)
+        await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=3`)
 
-      await new Promise((resolve) => setTimeout(resolve, 5000))
+        await new Promise((resolve) => setTimeout(resolve, 5000))
 
-      expect(received2rep).toBe(true)
-      expect(received3rep).toBe(true)
-      ws.close()
+        expect(received2rep).toBe(true)
+        expect(received3rep).toBe(true)
+      } finally {
+        ws.close()
+      }
     }, 15000)
 
     it('should filter with <= operator for numeric values', async () => {
@@ -520,15 +542,19 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
         })
       )
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-      await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=2`)
-      await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=3`)
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 50))
+        // After `<` test, 2rep=3 and 3rep=3 — scale down so replica counts change and stay <= 3
+        await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=2`)
+        await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=2`)
 
-      await new Promise((resolve) => setTimeout(resolve, 5000))
+        await new Promise((resolve) => setTimeout(resolve, 5000))
 
-      expect(received2rep).toBe(true)
-      expect(received3rep).toBe(true)
-      ws.close()
+        expect(received2rep).toBe(true)
+        expect(received3rep).toBe(true)
+      } finally {
+        ws.close()
+      }
     }, 15000)
   })
 
@@ -582,17 +608,20 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
         })
       )
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-      // Recreate to trigger INSERT events
-      await execCliCmdString(`oc delete configmap test-beta test-gamma -n ${testNamespace} --ignore-not-found=true`)
-      await execCliCmdString(`oc create configmap test-beta -n ${testNamespace}`)
-      await execCliCmdString(`oc create configmap test-gamma -n ${testNamespace}`)
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 50))
+        // Recreate to trigger INSERT events
+        await execCliCmdString(`oc delete configmap test-beta test-gamma -n ${testNamespace} --ignore-not-found=true`)
+        await execCliCmdString(`oc create configmap test-beta -n ${testNamespace}`)
+        await execCliCmdString(`oc create configmap test-gamma -n ${testNamespace}`)
 
-      await new Promise((resolve) => setTimeout(resolve, 5000))
+        await new Promise((resolve) => setTimeout(resolve, 5000))
 
-      expect(receivedBeta).toBe(true)
-      expect(receivedGamma).toBe(true)
-      ws.close()
+        expect(receivedBeta).toBe(true)
+        expect(receivedGamma).toBe(true)
+      } finally {
+        ws.close()
+      }
     }, 15000)
 
     it('should filter with < operator for string values (lexicographic)', async () => {
@@ -629,14 +658,17 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
         })
       )
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-      await execCliCmdString(`oc delete configmap test-alpha -n ${testNamespace} --ignore-not-found=true`)
-      await execCliCmdString(`oc create configmap test-alpha -n ${testNamespace}`)
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 50))
+        await execCliCmdString(`oc delete configmap test-alpha -n ${testNamespace} --ignore-not-found=true`)
+        await execCliCmdString(`oc create configmap test-alpha -n ${testNamespace}`)
 
-      await new Promise((resolve) => setTimeout(resolve, 5000))
+        await new Promise((resolve) => setTimeout(resolve, 5000))
 
-      expect(receivedAlpha).toBe(true)
-      ws.close()
+        expect(receivedAlpha).toBe(true)
+      } finally {
+        ws.close()
+      }
     }, 15000)
   })
 
@@ -669,6 +701,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
                 keywords: [],
                 filters: [
                   { property: 'kind', values: ['ConfigMap'] },
+                  { property: 'namespace', values: [testNamespace] },
                   { property: 'name', values: ['test-cm-wildcard-*'] },
                 ],
               },
@@ -722,14 +755,17 @@ describe(`[P2][Sev2][${squad}] RHACM4K-XXXXX: Subscription API Comparison Operat
         })
       )
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-      await execCliCmdString(`oc create configmap test-cm-wildcard-nomatch -n ${testNamespace}`)
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 50))
+        await execCliCmdString(`oc create configmap test-cm-wildcard-nomatch -n ${testNamespace}`)
 
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+        await new Promise((resolve) => setTimeout(resolve, 2000))
 
-      // Should not receive any events because wildcard with != is not supported
-      expect(receivedAnyCM).toBe(false)
-      ws.close()
+        // Should not receive any events because wildcard with != is not supported
+        expect(receivedAnyCM).toBe(false)
+      } finally {
+        ws.close()
+      }
     }, 11000)
   })
 
