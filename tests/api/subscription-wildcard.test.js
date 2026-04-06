@@ -51,34 +51,37 @@ describe(`[P2][Sev2][${squad}] ACM-27856: Subscription API - Wildcard Filter Sup
       let matchCount = 0
       const ws = await createWebSocket(`${websocketUrl}/searchapi/graphql`, token)
 
-      ws.onmessage = (event) => {
-        const eventData = JSON.parse(event.data)
-        if (
-          eventData.type === 'next' &&
-          event.data.includes('INSERT') &&
-          (event.data.includes('test-wc-alpha') || event.data.includes('test-wc-beta'))
-        ) {
-          matchCount++
+      try {
+        ws.onmessage = (event) => {
+          const eventData = JSON.parse(event.data)
+          if (
+            eventData.type === 'next' &&
+            event.data.includes('INSERT') &&
+            (event.data.includes('test-wc-alpha') || event.data.includes('test-wc-beta'))
+          ) {
+            matchCount++
+          }
         }
+
+        ws.send(
+          buildSubscribeMsg('wc-0001', [
+            { property: 'kind', values: ['ConfigMap'] },
+            { property: 'namespace', values: [testNamespace] },
+            { property: 'name', values: ['test-wc-*'] },
+          ])
+        )
+
+        await new Promise((resolve) => setTimeout(resolve, 100))
+
+        await execCliCmdString(`oc create configmap test-wc-alpha -n ${testNamespace}`)
+        await execCliCmdString(`oc create configmap test-wc-beta -n ${testNamespace}`)
+
+        const received = await waitFor(() => matchCount >= 2)
+        expect(received).toBe(true)
+        expect(matchCount).toBeGreaterThanOrEqual(2)
+      } finally {
+        ws.close()
       }
-
-      ws.send(
-        buildSubscribeMsg('wc-0001', [
-          { property: 'kind', values: ['ConfigMap'] },
-          { property: 'namespace', values: [testNamespace] },
-          { property: 'name', values: ['test-wc-*'] },
-        ])
-      )
-
-      await new Promise((resolve) => setTimeout(resolve, 100))
-
-      await execCliCmdString(`oc create configmap test-wc-alpha -n ${testNamespace}`)
-      await execCliCmdString(`oc create configmap test-wc-beta -n ${testNamespace}`)
-
-      const received = await waitFor(() => matchCount >= 2)
-      expect(received).toBe(true)
-      expect(matchCount).toBeGreaterThanOrEqual(2)
-      ws.close()
     },
     TEST_TIMEOUT
   )
@@ -89,29 +92,32 @@ describe(`[P2][Sev2][${squad}] ACM-27856: Subscription API - Wildcard Filter Sup
       let gotUnexpected = false
       const ws = await createWebSocket(`${websocketUrl}/searchapi/graphql`, token)
 
-      ws.onmessage = (event) => {
-        const eventData = JSON.parse(event.data)
-        // Subscribe to 'prefix-wc-*' — 'test-wc-other' should not match.
-        if (eventData.type === 'next' && event.data.includes('INSERT') && event.data.includes('test-wc-other')) {
-          gotUnexpected = true
+      try {
+        ws.onmessage = (event) => {
+          const eventData = JSON.parse(event.data)
+          // Subscribe to 'prefix-wc-*' — 'test-wc-other' should not match.
+          if (eventData.type === 'next' && event.data.includes('INSERT') && event.data.includes('test-wc-other')) {
+            gotUnexpected = true
+          }
         }
+
+        ws.send(
+          buildSubscribeMsg('wc-0002', [
+            { property: 'kind', values: ['ConfigMap'] },
+            { property: 'namespace', values: [testNamespace] },
+            { property: 'name', values: ['prefix-wc-*'] },
+          ])
+        )
+
+        await new Promise((resolve) => setTimeout(resolve, 100))
+        await execCliCmdString(`oc create configmap test-wc-other -n ${testNamespace}`)
+
+        // Wait long enough to confirm no matching event is delivered.
+        await new Promise((resolve) => setTimeout(resolve, 3000))
+        expect(gotUnexpected).toBe(false)
+      } finally {
+        ws.close()
       }
-
-      ws.send(
-        buildSubscribeMsg('wc-0002', [
-          { property: 'kind', values: ['ConfigMap'] },
-          { property: 'namespace', values: [testNamespace] },
-          { property: 'name', values: ['prefix-wc-*'] },
-        ])
-      )
-
-      await new Promise((resolve) => setTimeout(resolve, 100))
-      await execCliCmdString(`oc create configmap test-wc-other -n ${testNamespace}`)
-
-      // Wait long enough to confirm no matching event is delivered.
-      await new Promise((resolve) => setTimeout(resolve, 3000))
-      expect(gotUnexpected).toBe(false)
-      ws.close()
     },
     TEST_TIMEOUT
   )
@@ -122,27 +128,30 @@ describe(`[P2][Sev2][${squad}] ACM-27856: Subscription API - Wildcard Filter Sup
       let gotMatch = false
       const ws = await createWebSocket(`${websocketUrl}/searchapi/graphql`, token)
 
-      ws.onmessage = (event) => {
-        const eventData = JSON.parse(event.data)
-        if (eventData.type === 'next' && event.data.includes('INSERT') && event.data.includes('wc-suffix-test')) {
-          gotMatch = true
+      try {
+        ws.onmessage = (event) => {
+          const eventData = JSON.parse(event.data)
+          if (eventData.type === 'next' && event.data.includes('INSERT') && event.data.includes('wc-suffix-test')) {
+            gotMatch = true
+          }
         }
+
+        ws.send(
+          buildSubscribeMsg('wc-0003', [
+            { property: 'kind', values: ['ConfigMap'] },
+            { property: 'namespace', values: [testNamespace] },
+            { property: 'name', values: ['*-test'] },
+          ])
+        )
+
+        await new Promise((resolve) => setTimeout(resolve, 100))
+        await execCliCmdString(`oc create configmap wc-suffix-test -n ${testNamespace}`)
+
+        const received = await waitFor(() => gotMatch)
+        expect(received).toBe(true)
+      } finally {
+        ws.close()
       }
-
-      ws.send(
-        buildSubscribeMsg('wc-0003', [
-          { property: 'kind', values: ['ConfigMap'] },
-          { property: 'namespace', values: [testNamespace] },
-          { property: 'name', values: ['*-test'] },
-        ])
-      )
-
-      await new Promise((resolve) => setTimeout(resolve, 100))
-      await execCliCmdString(`oc create configmap wc-suffix-test -n ${testNamespace}`)
-
-      const received = await waitFor(() => gotMatch)
-      expect(received).toBe(true)
-      ws.close()
     },
     TEST_TIMEOUT
   )
@@ -153,31 +162,34 @@ describe(`[P2][Sev2][${squad}] ACM-27856: Subscription API - Wildcard Filter Sup
       let gotMatch = false
       const ws = await createWebSocket(`${websocketUrl}/searchapi/graphql`, token)
 
-      ws.onmessage = (event) => {
-        const eventData = JSON.parse(event.data)
-        if (
-          eventData.type === 'next' &&
-          event.data.includes('INSERT') &&
-          event.data.includes('wc-contains-wildcard-cm')
-        ) {
-          gotMatch = true
+      try {
+        ws.onmessage = (event) => {
+          const eventData = JSON.parse(event.data)
+          if (
+            eventData.type === 'next' &&
+            event.data.includes('INSERT') &&
+            event.data.includes('wc-contains-wildcard-cm')
+          ) {
+            gotMatch = true
+          }
         }
+
+        ws.send(
+          buildSubscribeMsg('wc-0004', [
+            { property: 'kind', values: ['ConfigMap'] },
+            { property: 'namespace', values: [testNamespace] },
+            { property: 'name', values: ['*wildcard*'] },
+          ])
+        )
+
+        await new Promise((resolve) => setTimeout(resolve, 100))
+        await execCliCmdString(`oc create configmap wc-contains-wildcard-cm -n ${testNamespace}`)
+
+        const received = await waitFor(() => gotMatch)
+        expect(received).toBe(true)
+      } finally {
+        ws.close()
       }
-
-      ws.send(
-        buildSubscribeMsg('wc-0004', [
-          { property: 'kind', values: ['ConfigMap'] },
-          { property: 'namespace', values: [testNamespace] },
-          { property: 'name', values: ['*wildcard*'] },
-        ])
-      )
-
-      await new Promise((resolve) => setTimeout(resolve, 100))
-      await execCliCmdString(`oc create configmap wc-contains-wildcard-cm -n ${testNamespace}`)
-
-      const received = await waitFor(() => gotMatch)
-      expect(received).toBe(true)
-      ws.close()
     },
     TEST_TIMEOUT
   )
@@ -188,27 +200,30 @@ describe(`[P2][Sev2][${squad}] ACM-27856: Subscription API - Wildcard Filter Sup
       let gotMatch = false
       const ws = await createWebSocket(`${websocketUrl}/searchapi/graphql`, token)
 
-      ws.onmessage = (event) => {
-        const eventData = JSON.parse(event.data)
-        if (eventData.type === 'next' && event.data.includes('INSERT') && event.data.includes('wc-kind-test')) {
-          gotMatch = true
+      try {
+        ws.onmessage = (event) => {
+          const eventData = JSON.parse(event.data)
+          if (eventData.type === 'next' && event.data.includes('INSERT') && event.data.includes('wc-kind-test')) {
+            gotMatch = true
+          }
         }
+
+        ws.send(
+          buildSubscribeMsg('wc-0005', [
+            { property: 'kind', values: ['ConfigMap*'] },
+            { property: 'namespace', values: [testNamespace] },
+            { property: 'name', values: ['wc-kind-test'] },
+          ])
+        )
+
+        await new Promise((resolve) => setTimeout(resolve, 100))
+        await execCliCmdString(`oc create configmap wc-kind-test -n ${testNamespace}`)
+
+        const received = await waitFor(() => gotMatch)
+        expect(received).toBe(true)
+      } finally {
+        ws.close()
       }
-
-      ws.send(
-        buildSubscribeMsg('wc-0005', [
-          { property: 'kind', values: ['ConfigMap*'] },
-          { property: 'namespace', values: [testNamespace] },
-          { property: 'name', values: ['wc-kind-test'] },
-        ])
-      )
-
-      await new Promise((resolve) => setTimeout(resolve, 100))
-      await execCliCmdString(`oc create configmap wc-kind-test -n ${testNamespace}`)
-
-      const received = await waitFor(() => gotMatch)
-      expect(received).toBe(true)
-      ws.close()
     },
     TEST_TIMEOUT
   )
@@ -219,29 +234,32 @@ describe(`[P2][Sev2][${squad}] ACM-27856: Subscription API - Wildcard Filter Sup
       let gotMatch = false
       const ws = await createWebSocket(`${websocketUrl}/searchapi/graphql`, token)
 
-      ws.onmessage = (event) => {
-        const eventData = JSON.parse(event.data)
-        if (eventData.type === 'next' && event.data.includes('INSERT') && event.data.includes('wc-case-test')) {
-          gotMatch = true
+      try {
+        ws.onmessage = (event) => {
+          const eventData = JSON.parse(event.data)
+          if (eventData.type === 'next' && event.data.includes('INSERT') && event.data.includes('wc-case-test')) {
+            gotMatch = true
+          }
         }
+
+        // 'configmap*' (all lowercase) should NOT match kind 'ConfigMap' (mixed case).
+        ws.send(
+          buildSubscribeMsg('wc-0006', [
+            { property: 'kind', values: ['configmap*'] },
+            { property: 'namespace', values: [testNamespace] },
+            { property: 'name', values: ['wc-case-test'] },
+          ])
+        )
+
+        await new Promise((resolve) => setTimeout(resolve, 100))
+        await execCliCmdString(`oc create configmap wc-case-test -n ${testNamespace}`)
+
+        // Wait to confirm no event arrives for the case-mismatched filter.
+        await new Promise((resolve) => setTimeout(resolve, 3000))
+        expect(gotMatch).toBe(false)
+      } finally {
+        ws.close()
       }
-
-      // 'configmap*' (all lowercase) should NOT match kind 'ConfigMap' (mixed case).
-      ws.send(
-        buildSubscribeMsg('wc-0006', [
-          { property: 'kind', values: ['configmap*'] },
-          { property: 'namespace', values: [testNamespace] },
-          { property: 'name', values: ['wc-case-test'] },
-        ])
-      )
-
-      await new Promise((resolve) => setTimeout(resolve, 100))
-      await execCliCmdString(`oc create configmap wc-case-test -n ${testNamespace}`)
-
-      // Wait to confirm no event arrives for the case-mismatched filter.
-      await new Promise((resolve) => setTimeout(resolve, 3000))
-      expect(gotMatch).toBe(false)
-      ws.close()
     },
     TEST_TIMEOUT
   )
