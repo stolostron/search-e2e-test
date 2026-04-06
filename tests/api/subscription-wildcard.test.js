@@ -8,6 +8,7 @@ const squad = require('../../config').get('squadName')
 const { execCliCmdString } = require('../common-lib/cliClient')
 const { getKubeadminToken, getSearchApiRoute } = require('../common-lib/clusterAccess')
 const { createWebSocket } = require('../common-lib/websocketHelper')
+const { waitFor } = require('../common-lib')
 
 let token = ''
 let websocketUrl = ''
@@ -27,15 +28,6 @@ function buildSubscribeMsg(id, filters) {
       operationName: 'watch',
     },
   })
-}
-
-async function waitFor(condition, timeoutMs = 10000, intervalMs = 50) {
-  const start = Date.now()
-  while (!condition()) {
-    if (Date.now() - start > timeoutMs) return false
-    await new Promise((resolve) => setTimeout(resolve, intervalMs))
-  }
-  return true
 }
 
 describe(`[P2][Sev2][${squad}] ACM-27856: Subscription API - Wildcard Filter Support`, () => {

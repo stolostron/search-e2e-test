@@ -153,8 +153,25 @@ function shouldUseAPIGroup(kind, resourceList, requiredList = []) {
   return _.length > 1 || requiredList.includes(kind)
 }
 
+/**
+ * Waits for a condition to become true within a timeout period.
+ * @param {Function} condition The condition function to evaluate.
+ * @param {number} timeoutMs Maximum time to wait in milliseconds (default: 10000).
+ * @param {number} intervalMs Polling interval in milliseconds (default: 50).
+ * @returns `bool` True if condition was met, false if timeout occurred.
+ */
+async function waitFor(condition, timeoutMs = 10000, intervalMs = 50) {
+  const start = Date.now()
+  while (!condition()) {
+    if (Date.now() - start > timeoutMs) return false
+    await new Promise((resolve) => setTimeout(resolve, intervalMs))
+  }
+  return true
+}
+
 exports.fetchAPIResourcesWithListWatchMethods = fetchAPIResourcesWithListWatchMethods
 exports.getClusterList = getClusterList
 exports.getTargetManagedCluster = getTargetManagedCluster
 exports.removeEmptyEntries = removeEmptyEntries
 exports.shouldUseAPIGroup = shouldUseAPIGroup
+exports.waitFor = waitFor
