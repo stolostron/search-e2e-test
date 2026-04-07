@@ -531,7 +531,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
 
     it('should filter with <= operator for numeric values', async () => {
       let received2rep = false
-      let received3rep = false
+      let received5rep = false
       const ws = await createWebSocket(`${websocketUrl}/searchapi/graphql`, token)
 
       ws.onmessage = (event) => {
@@ -540,8 +540,8 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
           if (event.data.includes('test-deploy-2rep')) {
             received2rep = true
           }
-          if (event.data.includes('test-deploy-3rep')) {
-            received3rep = true
+          if (event.data.includes('test-deploy-5rep')) {
+            received5rep = true
           }
         }
       }
@@ -571,14 +571,14 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
 
       try {
         await new Promise((resolve) => setTimeout(resolve, 50))
-        // Baseline 2,3,5 — both targets <= 3 and both change (2→3, 5→3)
+        // Baseline 2,3,5 — both targets <= 3 and both change (2→3, 5→3); 3rep stays at 3 (no scale to self)
         await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=3`)
-        await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=3`)
+        await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=3`)
 
         await new Promise((resolve) => setTimeout(resolve, 5000))
 
         expect(received2rep).toBe(true)
-        expect(received3rep).toBe(true)
+        expect(received5rep).toBe(true)
       } finally {
         ws.close()
       }
