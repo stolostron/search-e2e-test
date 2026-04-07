@@ -1,6 +1,6 @@
 // Copyright Contributors to the Open Cluster Management project
 
-const config = require('../../config')
+// const config = require('../../config')
 const { sleep } = require('./sleep')
 const { execSync } = require('child_process')
 const fs = require('fs')
@@ -114,9 +114,26 @@ async function getUserContext({ usr, ns }) {
   }
 }
 
+/**
+ * Get the local cluster name for the target cluster environment.
+ * @returns {string} The local cluster name.
+ */
+let localClusterName
+function getLocalClusterName() {
+  if (localClusterName) {
+    return localClusterName
+  }
+  localClusterName = execSync("oc get managedcluster -l local-cluster -o jsonpath='{.items[0].metadata.name}'")
+    .toString()
+    .trim()
+  if (!localClusterName) throw new Error('Unable to resolve the local cluster name')
+  return localClusterName
+}
+
 exports.deleteResource = deleteResource
 exports.getKubeConfig = getKubeConfig
 exports.getUserContext = getUserContext
 exports.getResource = getResource
 exports.getSearchApiRoute = getSearchApiRoute
 exports.getKubeadminToken = getKubeadminToken
+exports.getLocalClusterName = getLocalClusterName

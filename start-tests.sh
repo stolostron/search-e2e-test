@@ -29,7 +29,7 @@ OPTIONS_MANAGED_KUBECONFIG=${OPTIONS_MANAGED_KUBECONFIG:-'/opt/.kube/import-kube
 # Check to see if the test config options file is mounted/available.
 if [[ -f $OPTIONS_FILE ]]; then
   log_color "yellow" "Using test config from: $OPTIONS_FILE\n"
-  export ACM_NAMESPACE=`yq e '.options.acmNamespace' $OPTIONS_FILE`
+  export ACM_NAMESPACE=`yq e '.options.hub.acmNamespace' $OPTIONS_FILE`
   export OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $OPTIONS_FILE`
   export OPTIONS_HUB_KUBECONTEXT=`yq e '.options.hub.kubecontext' $OPTIONS_FILE`
   export OPTIONS_HUB_OC_IDP=`yq e '.options.identityProvider' $OPTIONS_FILE`
@@ -40,7 +40,7 @@ if [[ -f $OPTIONS_FILE ]]; then
   export OPTIONS_MANAGED_KUBECONFIG=`yq e '.options.clusters[0].kubeconfig' $OPTIONS_FILE`
 elif [[ -f $USER_OPTIONS_FILE ]]; then
   log_color "yellow" "Using test config from: $USER_OPTIONS_FILE\n"
-  export ACM_NAMESPACE=`yq e '.options.acmNamespace' $USER_OPTIONS_FILE`
+  export ACM_NAMESPACE=`yq e '.options.hub.acmNamespace' $USER_OPTIONS_FILE`
   export OPTIONS_HUB_BASEDOMAIN=`yq e '.options.hub.baseDomain' $USER_OPTIONS_FILE`
   export OPTIONS_HUB_KUBECONTEXT=`yq e '.options.hub.kubecontext' $USER_OPTIONS_FILE`
   export OPTIONS_HUB_OC_IDP=`yq e '.options.identityProvider' $USER_OPTIONS_FILE`
@@ -170,10 +170,18 @@ log_color "green" "Testing with ACM Version": "$CYPRESS_ACM_VERSION\n"
 installNamespace=`oc get subscriptions.operators.coreos.com --all-namespaces | grep advanced-cluster-management | awk '{print $1}'`
 
 # Search for managed clusters.
-MANAGED_CLUSTERS=($(oc get managedclusters -o custom-columns='name:.metadata.name' --no-headers))
+MANAGED_CLUSTERS=($(oc get managedclusters -l '!local-cluster' -o custom-columns='name:.metadata.name' --no-headers))
+
+# Search for local cluster.
+LOCAL_CLUSTER=$(oc get managedclusters -l 'local-cluster' -o jsonpath='{.items[0].metadata.name}' | tr -d '\n')
+if [[ -z $LOCAL_CLUSTER ]]; then
+  log_color "red" "Unable to resolve the local managed cluster name from the hub cluster."
+  exit 1
+fi
+export CYPRESS_LOCAL_CLUSTER="$LOCAL_CLUSTER"
 
 # Check to see if there are any managed cluster available.
-if [[ ${#MANAGED_CLUSTERS[@]} == "1" && ${MANAGED_CLUSTERS[0]} =~ "local-cluster" ]]; then
+if [[ ${#MANAGED_CLUSTERS[@]} -lt 1 ]]; then
   echo -e "No managable clusters detected for the hub cluster: $CYPRESS_OPTIONS_HUB_BASEDOMAIN.\n"
   export SKIP_MANAGED_CLUSTER_TEST=true
 else

@@ -1,6 +1,7 @@
 // Copyright Contributors to the Open Cluster Management project
 
 const { execSync } = require('child_process')
+const { getLocalClusterName } = require('./clusterAccess')
 
 /**
  * Fetches all namespaced resources that has methods list and watch.
@@ -48,7 +49,7 @@ function fetchAPIResourcesWithListWatchMethods() {
 function getClusterList(kubeconfigs = []) {
   const clusters = [
     {
-      name: 'local-cluster',
+      name: getLocalClusterName(),
       skip: false,
       type: 'hub',
     },
@@ -108,7 +109,8 @@ function getTargetManagedCluster() {
       )
     }
 
-    if (managedClusters.length === 1 && managedClusters.find((c) => c.includes('local-cluster'))) {
+    // if (managedClusters.length === 1 && managedClusters.find((c) => c.includes('local-cluster'))) {
+    if (managedClusters.length === 1 && managedClusters.find((c) => c == getLocalClusterName())) {
       console.info(
         `Managed cluster list only contains one managed cluster: ${managedClusters}. Proceeding to test only the local-cluster.`
       )
@@ -121,7 +123,7 @@ function getTargetManagedCluster() {
     }
 
     if (targetCluster === undefined) {
-      targetCluster = managedClusters.find((c) => !c.includes('local-cluster'))
+      targetCluster = managedClusters.find((c) => !c.includes(getLocalClusterName()))
     }
 
     console.info(`Preparing to test with managed cluster: ${targetCluster}`)
@@ -153,8 +155,26 @@ function shouldUseAPIGroup(kind, resourceList, requiredList = []) {
   return _.length > 1 || requiredList.includes(kind)
 }
 
+/**
+ * Waits for a condition to become true within a timeout period.
+ * @param {Function} condition The condition function to evaluate.
+ * @param {number} timeoutMs Maximum time to wait in milliseconds (default: 10000).
+ * @param {number} intervalMs Polling interval in milliseconds (default: 50).
+ * @returns `bool` True if condition was met, false if timeout occurred.
+ */
+async function waitFor(condition, timeoutMs = 10000, intervalMs = 50) {
+  const start = Date.now()
+  while (true) {
+    const matched = await Promise.resolve().then(() => condition())
+    if (matched) return true
+    if (Date.now() - start >= timeoutMs) return false
+    await new Promise((resolve) => setTimeout(resolve, intervalMs))
+  }
+}
+
 exports.fetchAPIResourcesWithListWatchMethods = fetchAPIResourcesWithListWatchMethods
 exports.getClusterList = getClusterList
 exports.getTargetManagedCluster = getTargetManagedCluster
 exports.removeEmptyEntries = removeEmptyEntries
 exports.shouldUseAPIGroup = shouldUseAPIGroup
+exports.waitFor = waitFor

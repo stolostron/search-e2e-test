@@ -3,7 +3,7 @@
 jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const squad = require('../../config').get('squadName')
-const { getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
+const { getSearchApiRoute, getKubeadminToken, getLocalClusterName } = require('../common-lib/clusterAccess')
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 
 const _ = require('lodash')
@@ -51,7 +51,7 @@ describe('RHACM4K-1696: Search API - Verify search result with common filter and
     var query = searchQueryBuilder({
       filters: [
         { property: 'kind', values: ['Pod'] },
-        { property: 'cluster', values: ['local-cluster'] },
+        { property: 'cluster', values: [getLocalClusterName()] },
         { property: 'status', values: ['Running'] },
       ],
     })

@@ -55,7 +55,8 @@ Cypress.Commands.add('visitAndLogin', (URL, OPTIONS_HUB_USER, OPTIONS_HUB_PASSWO
           cy.get('#inputUsername').click().focused().type(user)
           cy.get('#inputPassword').click().focused().type(password)
           cy.get('button[type="submit"]').click()
-          cy.get(pf.page.main).should('exist')
+          cy.url().should('include', '/multicloud')
+          cy.get(pf.page.main, { timeout: 3 * 60 * 1000 }).should('exist')
         }
       })
     } else {
