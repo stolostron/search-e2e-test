@@ -11,7 +11,7 @@ const { createWebSocket } = require('../common-lib/websocketHelper')
 
 let websocketUrl = ''
 let token = ''
-const testNamespace = 'automation-subscription-operators'
+const testNamespace = `automation-subscription-operators-${Date.now()}`
 
 // Helper function for bounded waiting with timeout
 async function waitFor(predicate, timeoutMs = 5000, intervalMs = 50) {
@@ -363,21 +363,28 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
     }, 60000)
 
     it('should filter with > operator for numeric values', async () => {
+      let received2rep = false // Boundary proof: must stay false — 2 is not >2
       let received3rep = false
       let received5rep = false
       const ws = await createWebSocket(`${websocketUrl}/searchapi/graphql`, token)
 
       ws.onmessage = (event) => {
         const eventData = JSON.parse(event.data)
-        // Scaling emits UPDATE, not INSERT (align with >= test handler).
-        if (eventData.type === 'next' && event.data.includes('Deployment')) {
-          if (event.data.includes('test-deploy-3rep')) {
-            received3rep = true
-          }
-          if (event.data.includes('test-deploy-5rep')) {
-            received5rep = true
-          }
+        if (eventData.type !== 'next') return
+        const watch = eventData?.payload?.data?.watch
+        if (!watch || watch.operation !== 'UPDATE') return
+        let newData
+        try {
+          newData = JSON.parse(watch.newData)
+        } catch {
+          return
         }
+        const desired = Number(newData?.desired)
+        // Track any 2rep event to detect server-side filter regression (2 is not >2)
+        if (newData?.name === 'test-deploy-2rep') received2rep = true
+        // Exact target values to avoid false positives from late beforeEach baseline events
+        if (newData?.name === 'test-deploy-3rep' && desired === 4) received3rep = true
+        if (newData?.name === 'test-deploy-5rep' && desired === 6) received5rep = true
       }
 
       // Subscribe with > operator - should match replicas > 2
@@ -406,34 +413,49 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       try {
         await new Promise((resolve) => setTimeout(resolve, 50))
 
-        // Baseline 2,3,5 from beforeEach — scale so desired > 2 and UPDATEs fire
+        // Boundary proof: scale 2rep to trigger UPDATEs at the cutoff (desired=2) and below (desired=1)
+        // The subscription filter >2 must exclude both; if server wrongly applies >=2, received2rep flips.
+        await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=1`)
+        await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=2`)
+        await settleMs()
+        expect(received2rep).toBe(false) // Strict boundary: 2 is not >2
+
+        // Scale 3rep 3→4 and 5rep 5→6: both are >2, both UPDATEs must be received
         await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=4`)
         await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=6`)
 
-        await new Promise((resolve) => setTimeout(resolve, 5000))
+        await waitFor(() => received3rep && received5rep, 15000)
 
         expect(received3rep).toBe(true)
         expect(received5rep).toBe(true)
       } finally {
         ws.close()
       }
-    }, 25000)
+    }, 35000)
 
     it('should filter with >= operator for numeric values', async () => {
+      let received2rep = false // Boundary proof: must stay false — 2 is not >=3
       let received3rep = false
       let received5rep = false
       const ws = await createWebSocket(`${websocketUrl}/searchapi/graphql`, token)
 
       ws.onmessage = (event) => {
         const eventData = JSON.parse(event.data)
-        if (eventData.type === 'next' && event.data.includes('Deployment')) {
-          if (event.data.includes('test-deploy-3rep')) {
-            received3rep = true
-          }
-          if (event.data.includes('test-deploy-5rep')) {
-            received5rep = true
-          }
+        if (eventData.type !== 'next') return
+        const watch = eventData?.payload?.data?.watch
+        if (!watch || watch.operation !== 'UPDATE') return
+        let newData
+        try {
+          newData = JSON.parse(watch.newData)
+        } catch {
+          return
         }
+        const desired = Number(newData?.desired)
+        // Track any 2rep event to detect regression (2 is not >=3)
+        if (newData?.name === 'test-deploy-2rep') received2rep = true
+        // Exact target values to avoid false positives from late beforeEach baseline events
+        if (newData?.name === 'test-deploy-3rep' && desired === 5) received3rep = true
+        if (newData?.name === 'test-deploy-5rep' && desired === 7) received5rep = true
       }
 
       // Subscribe with >= operator - should match desired >= 3
@@ -461,7 +483,13 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
 
       try {
         await new Promise((resolve) => setTimeout(resolve, 50))
-        // Baseline 2,3,5 from beforeEach — scale so desired stays >= 3 and UPDATEs fire
+
+        // Boundary proof: scale 2rep (baseline=2) down to 1 — neither 1 nor 2 is >=3
+        await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=1`)
+        await settleMs()
+        expect(received2rep).toBe(false) // Strict boundary: values <3 must be excluded
+
+        // Scale 3rep 3→5 and 5rep 5→7: both >=3, both UPDATEs must be received
         await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=5`)
         await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=7`)
 
@@ -472,23 +500,31 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       } finally {
         ws.close()
       }
-    }, 25000)
+    }, 30000)
 
     it('should filter with < operator for numeric values', async () => {
       let received2rep = false
       let received3rep = false
+      let received5rep = false // Boundary proof: must stay false — 5 (and 6) are not <5
       const ws = await createWebSocket(`${websocketUrl}/searchapi/graphql`, token)
 
       ws.onmessage = (event) => {
         const eventData = JSON.parse(event.data)
-        if (eventData.type === 'next' && event.data.includes('Deployment')) {
-          if (event.data.includes('test-deploy-2rep')) {
-            received2rep = true
-          }
-          if (event.data.includes('test-deploy-3rep')) {
-            received3rep = true
-          }
+        if (eventData.type !== 'next') return
+        const watch = eventData?.payload?.data?.watch
+        if (!watch || watch.operation !== 'UPDATE') return
+        let newData
+        try {
+          newData = JSON.parse(watch.newData)
+        } catch {
+          return
         }
+        const desired = Number(newData?.desired)
+        // Exact target values to avoid false positives from late beforeEach baseline events
+        if (newData?.name === 'test-deploy-2rep' && desired === 3) received2rep = true
+        if (newData?.name === 'test-deploy-3rep' && desired === 4) received3rep = true
+        // Track any 5rep event to detect regression (5 and 6 are not <5)
+        if (newData?.name === 'test-deploy-5rep') received5rep = true
       }
 
       // Subscribe with < operator - should match desired < 5
@@ -516,34 +552,50 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
 
       try {
         await new Promise((resolve) => setTimeout(resolve, 50))
-        // Baseline 2,3,5 — both targets stay < 5 and differ from baseline so UPDATEs fire
+
+        // Boundary proof: scale 5rep through 6 (>5) then back to 5 (=cutoff) — neither is <5
+        // If server wrongly treats <5 as <=5, it would send the UPDATE at desired=5.
+        await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=6`)
+        await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=5`)
+        await settleMs()
+        expect(received5rep).toBe(false) // Strict boundary: 5 (and 6) are not <5
+
+        // Scale 2rep 2→3 and 3rep 3→4: both <5, both UPDATEs must be received
         await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=3`)
         await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=4`)
 
-        await new Promise((resolve) => setTimeout(resolve, 5000))
+        await waitFor(() => received2rep && received3rep, 15000)
 
         expect(received2rep).toBe(true)
         expect(received3rep).toBe(true)
       } finally {
         ws.close()
       }
-    }, 25000)
+    }, 30000)
 
     it('should filter with <= operator for numeric values', async () => {
       let received2rep = false
       let received5rep = false
+      let receivedExclusion = false // Boundary proof: 5rep at desired=4 must stay false — 4 is not <=3
       const ws = await createWebSocket(`${websocketUrl}/searchapi/graphql`, token)
 
       ws.onmessage = (event) => {
         const eventData = JSON.parse(event.data)
-        if (eventData.type === 'next' && event.data.includes('Deployment')) {
-          if (event.data.includes('test-deploy-2rep')) {
-            received2rep = true
-          }
-          if (event.data.includes('test-deploy-5rep')) {
-            received5rep = true
-          }
+        if (eventData.type !== 'next') return
+        const watch = eventData?.payload?.data?.watch
+        if (!watch || watch.operation !== 'UPDATE') return
+        let newData
+        try {
+          newData = JSON.parse(watch.newData)
+        } catch {
+          return
         }
+        const desired = Number(newData?.desired)
+        // Exact target values to avoid false positives from late beforeEach baseline events
+        if (newData?.name === 'test-deploy-2rep' && desired === 3) received2rep = true
+        if (newData?.name === 'test-deploy-5rep' && desired === 3) received5rep = true
+        // Boundary proof: 5rep scaled to 4 must NOT be received (4 > 3)
+        if (newData?.name === 'test-deploy-5rep' && desired === 4) receivedExclusion = true
       }
 
       // Subscribe with <= operator - should match desired <= 3
@@ -571,18 +623,24 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
 
       try {
         await new Promise((resolve) => setTimeout(resolve, 50))
-        // Baseline 2,3,5 — both targets <= 3 and both change (2→3, 5→3); 3rep stays at 3 (no scale to self)
+
+        // Boundary proof: scale 5rep 5→4 — desired=4 is not <=3, must not be received
+        await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=4`)
+        await settleMs()
+        expect(receivedExclusion).toBe(false) // Strict boundary: 4 is not <=3
+
+        // Scale 2rep 2→3 (<=3) and 5rep 4→3 (<=3): both UPDATEs must be received
         await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=3`)
         await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=3`)
 
-        await new Promise((resolve) => setTimeout(resolve, 5000))
+        await waitFor(() => received2rep && received5rep, 15000)
 
         expect(received2rep).toBe(true)
         expect(received5rep).toBe(true)
       } finally {
         ws.close()
       }
-    }, 25000)
+    }, 30000)
   })
 
   describe('String (lexicographic) comparison operators', () => {
@@ -597,6 +655,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
     }, 30000)
 
     it('should filter with > operator for string values (lexicographic)', async () => {
+      let receivedAlpha = false // Boundary proof: must stay false — "test-alpha" is not >"test-alpha"
       let receivedBeta = false
       let receivedGamma = false
       const ws = await createWebSocket(`${websocketUrl}/searchapi/graphql`, token)
@@ -604,11 +663,10 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       ws.onmessage = (event) => {
         const eventData = JSON.parse(event.data)
         if (eventData.type === 'next' && event.data.includes('INSERT')) {
-          if (event.data.includes('test-beta')) {
-            receivedBeta = true
-          } else if (event.data.includes('test-gamma')) {
-            receivedGamma = true
-          }
+          // Independent ifs so all matching names are captured in one event
+          if (event.data.includes('"test-alpha"')) receivedAlpha = true
+          if (event.data.includes('"test-beta"')) receivedBeta = true
+          if (event.data.includes('"test-gamma"')) receivedGamma = true
         }
       }
 
@@ -637,28 +695,39 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
 
       try {
         await new Promise((resolve) => setTimeout(resolve, 50))
-        // Recreate to trigger INSERT events
+
+        // Boundary proof: recreate test-alpha — "test-alpha" is the cutoff, not >"test-alpha"
+        await execCliCmdString(`oc delete configmap test-alpha -n ${testNamespace} --ignore-not-found=true`)
+        await execCliCmdString(`oc create configmap test-alpha -n ${testNamespace}`)
+        await settleMs()
+        expect(receivedAlpha).toBe(false) // Strict boundary: "test-alpha" is not >"test-alpha"
+
+        // Recreate test-beta and test-gamma to trigger INSERTs that satisfy >test-alpha
         await execCliCmdString(`oc delete configmap test-beta test-gamma -n ${testNamespace} --ignore-not-found=true`)
         await execCliCmdString(`oc create configmap test-beta -n ${testNamespace}`)
         await execCliCmdString(`oc create configmap test-gamma -n ${testNamespace}`)
 
-        await new Promise((resolve) => setTimeout(resolve, 5000))
+        await waitFor(() => receivedBeta && receivedGamma, 10000)
 
         expect(receivedBeta).toBe(true)
         expect(receivedGamma).toBe(true)
       } finally {
         ws.close()
       }
-    }, 15000)
+    }, 20000)
 
     it('should filter with < operator for string values (lexicographic)', async () => {
       let receivedAlpha = false
+      let receivedBeta = false // Boundary proof: must stay false — "test-beta" is not <"test-beta"
+      let receivedGamma = false // Boundary proof: must stay false — "test-gamma" > "test-beta"
       const ws = await createWebSocket(`${websocketUrl}/searchapi/graphql`, token)
 
       ws.onmessage = (event) => {
         const eventData = JSON.parse(event.data)
-        if (eventData.type === 'next' && event.data.includes('INSERT') && event.data.includes('test-alpha')) {
-          receivedAlpha = true
+        if (eventData.type === 'next' && event.data.includes('INSERT')) {
+          if (event.data.includes('"test-alpha"')) receivedAlpha = true
+          if (event.data.includes('"test-beta"')) receivedBeta = true
+          if (event.data.includes('"test-gamma"')) receivedGamma = true
         }
       }
 
@@ -687,16 +756,26 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
 
       try {
         await new Promise((resolve) => setTimeout(resolve, 50))
+
+        // Boundary proof: recreate test-beta and test-gamma — both are >=test-beta, must be excluded
+        await execCliCmdString(`oc delete configmap test-beta test-gamma -n ${testNamespace} --ignore-not-found=true`)
+        await execCliCmdString(`oc create configmap test-beta -n ${testNamespace}`)
+        await execCliCmdString(`oc create configmap test-gamma -n ${testNamespace}`)
+        await settleMs()
+        expect(receivedBeta).toBe(false) // Strict boundary: "test-beta" is not <"test-beta"
+        expect(receivedGamma).toBe(false) // "test-gamma" > "test-beta", also excluded
+
+        // Recreate test-alpha to trigger INSERT that satisfies <test-beta
         await execCliCmdString(`oc delete configmap test-alpha -n ${testNamespace} --ignore-not-found=true`)
         await execCliCmdString(`oc create configmap test-alpha -n ${testNamespace}`)
 
-        await new Promise((resolve) => setTimeout(resolve, 5000))
+        await waitFor(() => receivedAlpha, 10000)
 
         expect(receivedAlpha).toBe(true)
       } finally {
         ws.close()
       }
-    }, 15000)
+    }, 20000)
   })
 
   describe('Wildcard behavior with operators', () => {
@@ -784,7 +863,15 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
 
       try {
         await new Promise((resolve) => setTimeout(resolve, 50))
+
+        // test-cm-wildcard-nomatch: name starts with "test-cm-wildcard-" (matches the wildcard pattern)
+        // If != wrongly applied wildcard semantics, this CM would be EXCLUDED (name matches pattern) — receivedAnyCM stays false.
         await execCliCmdString(`oc create configmap test-cm-wildcard-nomatch -n ${testNamespace}`)
+
+        // test-cm-no-wildcard: name does NOT match "test-cm-wildcard-*".
+        // If != wrongly applied wildcard semantics, this CM would be INCLUDED (name doesn't match pattern) — receivedAnyCM flips to true.
+        // This second CM is the critical falsification test for wrong wildcard-with-!= behavior.
+        await execCliCmdString(`oc create configmap test-cm-no-wildcard -n ${testNamespace}`)
 
         await new Promise((resolve) => setTimeout(resolve, 2000))
 
