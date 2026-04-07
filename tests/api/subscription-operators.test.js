@@ -8,21 +8,11 @@ const squad = require('../../config').get('squadName')
 const { execCliCmdString } = require('../common-lib/cliClient')
 const { getKubeadminToken, getSearchApiRoute } = require('../common-lib/clusterAccess')
 const { createWebSocket } = require('../common-lib/websocketHelper')
+const { waitFor } = require('../common-lib')
 
 let websocketUrl = ''
 let token = ''
 const testNamespace = `automation-subscription-operators-${Date.now()}`
-
-// Helper function for bounded waiting with timeout
-async function waitFor(predicate, timeoutMs = 5000, intervalMs = 50) {
-  const deadline = Date.now() + timeoutMs
-  while (!predicate()) {
-    if (Date.now() > deadline) {
-      throw new Error('Timed out waiting for condition')
-    }
-    await new Promise((resolve) => setTimeout(resolve, intervalMs))
-  }
-}
 
 /** Short pause so late subscription events can arrive before asserting negatives. */
 async function settleMs(ms = 300) {
