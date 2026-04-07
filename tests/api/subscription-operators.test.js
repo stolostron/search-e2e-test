@@ -70,7 +70,8 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       try {
         await new Promise((resolve) => setTimeout(resolve, 50))
         await execCliCmdString(`oc create configmap test-cm-equality -n ${testNamespace}`)
-        await waitFor(() => receivedInsert)
+        const received = await waitFor(() => receivedInsert)
+        expect(received).toBe(true)
         expect(receivedInsert).toBe(true)
       } finally {
         ws.close()
@@ -114,7 +115,8 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       try {
         await new Promise((resolve) => setTimeout(resolve, 50))
         await execCliCmdString(`oc create configmap test-cm-explicit-eq -n ${testNamespace}`)
-        await waitFor(() => receivedInsert, 15000)
+        const received = await waitFor(() => receivedInsert, 15000)
+        expect(received).toBe(true)
         expect(receivedInsert).toBe(true)
       } finally {
         ws.close()
@@ -158,7 +160,8 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       try {
         await new Promise((resolve) => setTimeout(resolve, 50))
         await execCliCmdString(`oc create configmap test-cm-case -n ${testNamespace}`)
-        await waitFor(() => receivedInsert, 15000)
+        const received = await waitFor(() => receivedInsert, 15000)
+        expect(received).toBe(true)
         expect(receivedInsert).toBe(true)
       } finally {
         ws.close()
@@ -211,7 +214,8 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
         await execCliCmdString(`oc create configmap test-cm-not-equal-1 -n ${testNamespace}`)
         await execCliCmdString(`oc create configmap test-cm-not-equal-2 -n ${testNamespace}`)
 
-        await waitFor(() => receivedCorrectCM, 8000)
+        const received = await waitFor(() => receivedCorrectCM, 8000)
+        expect(received).toBe(true)
         await settleMs()
         expect(receivedWrongCM).toBe(false) // Should NOT receive the excluded CM
         expect(receivedCorrectCM).toBe(true) // Should receive other CMs
@@ -264,7 +268,8 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
         await execCliCmdString(`oc create configmap test-cm-bang-1 -n ${testNamespace}`)
         await execCliCmdString(`oc create configmap test-cm-bang-2 -n ${testNamespace}`)
 
-        await waitFor(() => receivedCorrectCM, 8000)
+        const received = await waitFor(() => receivedCorrectCM, 8000)
+        expect(received).toBe(true)
         await settleMs()
         expect(receivedWrongCM).toBe(false)
         expect(receivedCorrectCM).toBe(true)
@@ -317,7 +322,8 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
         await new Promise((resolve) => setTimeout(resolve, 50))
         await execCliCmdString(`oc create configmap test-cm-ne-kind-proof -n ${testNamespace} --from-literal=k=v`)
         await execCliCmdString(`oc create secret generic test-secret-ne -n ${testNamespace} --from-literal=key=value`)
-        await waitFor(() => receivedSecret, 15000)
+        const received = await waitFor(() => receivedSecret, 15000)
+        expect(received).toBe(true)
         await settleMs()
         expect(receivedConfigMapProof).toBe(false)
         expect(receivedSecret).toBe(true)
@@ -414,8 +420,8 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
         await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=4`)
         await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=6`)
 
-        await waitFor(() => received3rep && received5rep, 15000)
-
+        const receivedUpdates = await waitFor(() => received3rep && received5rep, 15000)
+        expect(receivedUpdates).toBe(true)
         expect(received3rep).toBe(true)
         expect(received5rep).toBe(true)
       } finally {
@@ -483,8 +489,8 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
         await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=5`)
         await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=7`)
 
-        await waitFor(() => received3rep && received5rep, 15000)
-
+        const receivedUpdates = await waitFor(() => received3rep && received5rep, 15000)
+        expect(receivedUpdates).toBe(true)
         expect(received3rep).toBe(true)
         expect(received5rep).toBe(true)
       } finally {
@@ -554,8 +560,8 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
         await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=3`)
         await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=4`)
 
-        await waitFor(() => received2rep && received3rep, 15000)
-
+        const receivedUpdates = await waitFor(() => received2rep && received3rep, 15000)
+        expect(receivedUpdates).toBe(true)
         expect(received2rep).toBe(true)
         expect(received3rep).toBe(true)
       } finally {
@@ -623,8 +629,8 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
         await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=3`)
         await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=3`)
 
-        await waitFor(() => received2rep && received5rep, 15000)
-
+        const receivedUpdates = await waitFor(() => received2rep && received5rep, 15000)
+        expect(receivedUpdates).toBe(true)
         expect(received2rep).toBe(true)
         expect(received5rep).toBe(true)
       } finally {
@@ -697,8 +703,8 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
         await execCliCmdString(`oc create configmap test-beta -n ${testNamespace}`)
         await execCliCmdString(`oc create configmap test-gamma -n ${testNamespace}`)
 
-        await waitFor(() => receivedBeta && receivedGamma, 10000)
-
+        const receivedUpdates = await waitFor(() => receivedBeta && receivedGamma, 10000)
+        expect(receivedUpdates).toBe(true)
         expect(receivedBeta).toBe(true)
         expect(receivedGamma).toBe(true)
       } finally {
@@ -759,8 +765,8 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
         await execCliCmdString(`oc delete configmap test-alpha -n ${testNamespace} --ignore-not-found=true`)
         await execCliCmdString(`oc create configmap test-alpha -n ${testNamespace}`)
 
-        await waitFor(() => receivedAlpha, 10000)
-
+        const received = await waitFor(() => receivedAlpha, 10000)
+        expect(received).toBe(true)
         expect(receivedAlpha).toBe(true)
       } finally {
         ws.close()
@@ -810,7 +816,8 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       try {
         await new Promise((resolve) => setTimeout(resolve, 50))
         await execCliCmdString(`oc create configmap test-cm-wildcard-match -n ${testNamespace}`)
-        await waitFor(() => receivedCM)
+        const received = await waitFor(() => receivedCM)
+        expect(received).toBe(true)
         expect(receivedCM).toBe(true)
       } finally {
         ws.close()
