@@ -12,7 +12,7 @@ const { waitFor } = require('../common-lib')
 
 let token = ''
 let websocketUrl = ''
-const testNamespace = 'automation-subscription-wildcard'
+const testNamespace = `automation-subscription-wildcard-${Date.now()}`
 
 const WATCH_QUERY =
   'subscription watch($input: SearchInput) { watch(input: $input) { uid operation newData oldData timestamp } }'
