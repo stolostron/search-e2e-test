@@ -24,6 +24,11 @@ async function waitFor(predicate, timeoutMs = 5000, intervalMs = 50) {
   }
 }
 
+/** Short pause so late subscription events can arrive before asserting negatives. */
+async function settleMs(ms = 300) {
+  await new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`, () => {
   beforeAll(async () => {
     // Log in and get access token
@@ -124,7 +129,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       } finally {
         ws.close()
       }
-    }, 11000)
+    }, 20000)
 
     it('should match kind case-insensitively with equality operator', async () => {
       let receivedInsert = false
@@ -217,12 +222,13 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
         await execCliCmdString(`oc create configmap test-cm-not-equal-2 -n ${testNamespace}`)
 
         await waitFor(() => receivedCorrectCM, 8000)
+        await settleMs()
         expect(receivedWrongCM).toBe(false) // Should NOT receive the excluded CM
         expect(receivedCorrectCM).toBe(true) // Should receive other CMs
       } finally {
         ws.close()
       }
-    }, 15000)
+    }, 16000)
 
     it('should filter with ! operator', async () => {
       let receivedWrongCM = false
@@ -269,22 +275,29 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
         await execCliCmdString(`oc create configmap test-cm-bang-2 -n ${testNamespace}`)
 
         await waitFor(() => receivedCorrectCM, 8000)
+        await settleMs()
         expect(receivedWrongCM).toBe(false)
         expect(receivedCorrectCM).toBe(true)
       } finally {
         ws.close()
       }
-    }, 15000)
+    }, 16000)
 
     it('should match kind case-insensitively with != operator', async () => {
       let receivedSecret = false
+      let receivedConfigMapProof = false
       const ws = await createWebSocket(`${websocketUrl}/searchapi/graphql`, token)
 
       ws.onmessage = (event) => {
         const eventData = JSON.parse(event.data)
         const op = event.data.includes('INSERT') || event.data.includes('UPDATE')
-        if (eventData.type === 'next' && op && event.data.includes('test-secret-ne')) {
-          receivedSecret = true
+        if (eventData.type === 'next' && op) {
+          if (event.data.includes('test-cm-ne-kind-proof')) {
+            receivedConfigMapProof = true
+          }
+          if (event.data.includes('test-secret-ne')) {
+            receivedSecret = true
+          }
         }
       }
 
@@ -312,13 +325,16 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
 
       try {
         await new Promise((resolve) => setTimeout(resolve, 50))
+        await execCliCmdString(`oc create configmap test-cm-ne-kind-proof -n ${testNamespace} --from-literal=k=v`)
         await execCliCmdString(`oc create secret generic test-secret-ne -n ${testNamespace} --from-literal=key=value`)
         await waitFor(() => receivedSecret, 15000)
+        await settleMs()
+        expect(receivedConfigMapProof).toBe(false)
         expect(receivedSecret).toBe(true)
       } finally {
         ws.close()
       }
-    }, 11000)
+    }, 20000)
   })
 
   describe('Numeric comparison operators', () => {
@@ -338,6 +354,14 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       await new Promise((resolve) => setTimeout(resolve, 10000))
     }, 40000)
 
+    beforeEach(async () => {
+      // Deterministic baseline for each relational test (avoids order-dependent replica counts)
+      await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=2`)
+      await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=3`)
+      await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=5`)
+      await new Promise((resolve) => setTimeout(resolve, 3000))
+    }, 60000)
+
     it('should filter with > operator for numeric values', async () => {
       let received3rep = false
       let received5rep = false
@@ -349,7 +373,8 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
         if (eventData.type === 'next' && event.data.includes('Deployment')) {
           if (event.data.includes('test-deploy-3rep')) {
             received3rep = true
-          } else if (event.data.includes('test-deploy-5rep')) {
+          }
+          if (event.data.includes('test-deploy-5rep')) {
             received5rep = true
           }
         }
@@ -381,7 +406,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       try {
         await new Promise((resolve) => setTimeout(resolve, 50))
 
-        // Scale to values that change replica counts (beforeAll: 3rep=3, 5rep=5) so UPDATE events fire
+        // Baseline 2,3,5 from beforeEach — scale so desired > 2 and UPDATEs fire
         await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=4`)
         await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=6`)
 
@@ -392,7 +417,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       } finally {
         ws.close()
       }
-    }, 15000)
+    }, 25000)
 
     it('should filter with >= operator for numeric values', async () => {
       let received3rep = false
@@ -436,7 +461,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
 
       try {
         await new Promise((resolve) => setTimeout(resolve, 50))
-        // After `>` test, 3rep=4 and 5rep=6 — scale further so UPDATE events are emitted
+        // Baseline 2,3,5 from beforeEach — scale so desired stays >= 3 and UPDATEs fire
         await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=5`)
         await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=7`)
 
@@ -447,7 +472,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       } finally {
         ws.close()
       }
-    }, 20000)
+    }, 25000)
 
     it('should filter with < operator for numeric values', async () => {
       let received2rep = false
@@ -459,7 +484,8 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
         if (eventData.type === 'next' && event.data.includes('Deployment')) {
           if (event.data.includes('test-deploy-2rep')) {
             received2rep = true
-          } else if (event.data.includes('test-deploy-3rep')) {
+          }
+          if (event.data.includes('test-deploy-3rep')) {
             received3rep = true
           }
         }
@@ -490,9 +516,9 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
 
       try {
         await new Promise((resolve) => setTimeout(resolve, 50))
-        // After prior tests, 3rep may already be at 4 replicas; scale 4→3 so an UPDATE is emitted
+        // Baseline 2,3,5 — both targets stay < 5 and differ from baseline so UPDATEs fire
         await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=3`)
-        await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=3`)
+        await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=4`)
 
         await new Promise((resolve) => setTimeout(resolve, 5000))
 
@@ -501,7 +527,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       } finally {
         ws.close()
       }
-    }, 15000)
+    }, 25000)
 
     it('should filter with <= operator for numeric values', async () => {
       let received2rep = false
@@ -513,7 +539,8 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
         if (eventData.type === 'next' && event.data.includes('Deployment')) {
           if (event.data.includes('test-deploy-2rep')) {
             received2rep = true
-          } else if (event.data.includes('test-deploy-3rep')) {
+          }
+          if (event.data.includes('test-deploy-3rep')) {
             received3rep = true
           }
         }
@@ -544,9 +571,9 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
 
       try {
         await new Promise((resolve) => setTimeout(resolve, 50))
-        // After `<` test, 2rep=3 and 3rep=3 — scale down so replica counts change and stay <= 3
-        await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=2`)
-        await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=2`)
+        // Baseline 2,3,5 — both targets <= 3 and both change (2→3, 5→3)
+        await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=3`)
+        await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=3`)
 
         await new Promise((resolve) => setTimeout(resolve, 5000))
 
@@ -555,7 +582,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       } finally {
         ws.close()
       }
-    }, 15000)
+    }, 25000)
   })
 
   describe('String (lexicographic) comparison operators', () => {
