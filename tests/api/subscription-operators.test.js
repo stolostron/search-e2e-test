@@ -68,7 +68,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       )
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 50))
+        await new Promise((resolve) => setTimeout(resolve, 100))
         await execCliCmdString(`oc create configmap test-cm-equality -n ${testNamespace}`)
         const received = await waitFor(() => receivedInsert)
         expect(received).toBe(true)
@@ -113,7 +113,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       )
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 50))
+        await new Promise((resolve) => setTimeout(resolve, 100))
         await execCliCmdString(`oc create configmap test-cm-explicit-eq -n ${testNamespace}`)
         const received = await waitFor(() => receivedInsert, 15000)
         expect(received).toBe(true)
@@ -158,7 +158,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       )
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 50))
+        await new Promise((resolve) => setTimeout(resolve, 100))
         await execCliCmdString(`oc create configmap test-cm-case -n ${testNamespace}`)
         const received = await waitFor(() => receivedInsert, 15000)
         expect(received).toBe(true)
@@ -210,7 +210,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       )
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 50))
+        await new Promise((resolve) => setTimeout(resolve, 100))
         await execCliCmdString(`oc create configmap test-cm-not-equal-1 -n ${testNamespace}`)
         await execCliCmdString(`oc create configmap test-cm-not-equal-2 -n ${testNamespace}`)
 
@@ -264,7 +264,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       )
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 50))
+        await new Promise((resolve) => setTimeout(resolve, 100))
         await execCliCmdString(`oc create configmap test-cm-bang-1 -n ${testNamespace}`)
         await execCliCmdString(`oc create configmap test-cm-bang-2 -n ${testNamespace}`)
 
@@ -319,7 +319,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       )
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 50))
+        await new Promise((resolve) => setTimeout(resolve, 100))
         await execCliCmdString(`oc create configmap test-cm-ne-kind-proof -n ${testNamespace} --from-literal=k=v`)
         await execCliCmdString(`oc create secret generic test-secret-ne -n ${testNamespace} --from-literal=key=value`)
         const received = await waitFor(() => receivedSecret, 15000)
@@ -355,7 +355,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=2`)
       await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=3`)
       await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=5`)
-      await new Promise((resolve) => setTimeout(resolve, 3000))
+      await new Promise((resolve) => setTimeout(resolve, 5000))
     }, 60000)
 
     it('should filter with > operator for numeric values', async () => {
@@ -407,7 +407,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       )
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 50))
+        await new Promise((resolve) => setTimeout(resolve, 100))
 
         // Boundary proof: scale 2rep to trigger UPDATEs at the cutoff (desired=2) and below (desired=1)
         // The subscription filter >2 must exclude both; if server wrongly applies >=2, received2rep flips.
@@ -478,7 +478,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       )
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 50))
+        await new Promise((resolve) => setTimeout(resolve, 100))
 
         // Boundary proof: scale 2rep (baseline=2) down to 1 — neither 1 nor 2 is >=3
         await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=1`)
@@ -547,7 +547,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       )
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 50))
+        await new Promise((resolve) => setTimeout(resolve, 100))
 
         // Boundary proof: scale 5rep through 6 (>5) then back to 5 (=cutoff) — neither is <5
         // If server wrongly treats <5 as <=5, it would send the UPDATE at desired=5.
@@ -618,7 +618,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       )
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 50))
+        await new Promise((resolve) => setTimeout(resolve, 100))
 
         // Boundary proof: scale 5rep 5→4 — desired=4 is not <=3, must not be received
         await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=4`)
@@ -690,7 +690,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       )
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 50))
+        await new Promise((resolve) => setTimeout(resolve, 100))
 
         // Boundary proof: recreate test-alpha — "test-alpha" is the cutoff, not >"test-alpha"
         await execCliCmdString(`oc delete configmap test-alpha -n ${testNamespace} --ignore-not-found=true`)
@@ -751,7 +751,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       )
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 50))
+        await new Promise((resolve) => setTimeout(resolve, 100))
 
         // Boundary proof: recreate test-beta and test-gamma — both are >=test-beta, must be excluded
         await execCliCmdString(`oc delete configmap test-beta test-gamma -n ${testNamespace} --ignore-not-found=true`)
@@ -814,7 +814,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       )
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 50))
+        await new Promise((resolve) => setTimeout(resolve, 100))
         await execCliCmdString(`oc create configmap test-cm-wildcard-match -n ${testNamespace}`)
         const received = await waitFor(() => receivedCM)
         expect(received).toBe(true)
@@ -859,7 +859,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       )
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 50))
+        await new Promise((resolve) => setTimeout(resolve, 100))
 
         // test-cm-wildcard-nomatch: name starts with "test-cm-wildcard-" (matches the wildcard pattern)
         // If != wrongly applied wildcard semantics, this CM would be EXCLUDED (name matches pattern) — receivedAnyCM stays false.
