@@ -355,7 +355,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=2`)
       await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=3`)
       await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=5`)
-      await new Promise((resolve) => setTimeout(resolve, 5000))
+      await new Promise((resolve) => setTimeout(resolve, 8000))
     }, 60000)
 
     it('should filter with > operator for numeric values', async () => {
@@ -407,13 +407,13 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       )
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 100))
+        await new Promise((resolve) => setTimeout(resolve, 500))
 
         // Boundary proof: scale 2rep to trigger UPDATEs at the cutoff (desired=2) and below (desired=1)
         // The subscription filter >2 must exclude both; if server wrongly applies >=2, received2rep flips.
         await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=1`)
         await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=2`)
-        await settleMs()
+        await settleMs(500)
         expect(received2rep).toBe(false) // Strict boundary: 2 is not >2
 
         // Scale 3rep 3→4 and 5rep 5→6: both are >2, both UPDATEs must be received
@@ -478,11 +478,11 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       )
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 100))
+        await new Promise((resolve) => setTimeout(resolve, 500))
 
         // Boundary proof: scale 2rep (baseline=2) down to 1 — neither 1 nor 2 is >=3
         await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=1`)
-        await settleMs()
+        await settleMs(500)
         expect(received2rep).toBe(false) // Strict boundary: values <3 must be excluded
 
         // Scale 3rep 3→5 and 5rep 5→7: both >=3, both UPDATEs must be received
@@ -547,13 +547,13 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       )
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 100))
+        await new Promise((resolve) => setTimeout(resolve, 500))
 
         // Boundary proof: scale 5rep through 6 (>5) then back to 5 (=cutoff) — neither is <5
         // If server wrongly treats <5 as <=5, it would send the UPDATE at desired=5.
         await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=6`)
         await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=5`)
-        await settleMs()
+        await settleMs(500)
         expect(received5rep).toBe(false) // Strict boundary: 5 (and 6) are not <5
 
         // Scale 2rep 2→3 and 3rep 3→4: both <5, both UPDATEs must be received
@@ -618,11 +618,11 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       )
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 100))
+        await new Promise((resolve) => setTimeout(resolve, 500))
 
         // Boundary proof: scale 5rep 5→4 — desired=4 is not <=3, must not be received
         await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=4`)
-        await settleMs()
+        await settleMs(500)
         expect(receivedExclusion).toBe(false) // Strict boundary: 4 is not <=3
 
         // Scale 2rep 2→3 (<=3) and 5rep 4→3 (<=3): both UPDATEs must be received
