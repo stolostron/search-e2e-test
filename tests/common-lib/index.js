@@ -13,25 +13,24 @@ function fetchAPIResourcesWithListWatchMethods() {
   const resourceList = []
 
   try {
-    execSync("oc api-resources --namespaced -o wide --sort-by=kind | grep -E 'list.*watch|watch.*list'")
+    execSync('oc api-resources --namespaced --sort-by=kind --verbs=list,watch --no-headers')
       .toString()
       .split('\n')
       .filter((resources) => resources)
       .forEach((res) => {
-        var obj = { apigroup: '', kind: '' }
-
-        // We need to start off with slicing the string before the methods are listed. (i.e [get, list, watch])
-        // After the string is sliced, we need to split the string and filter out any empty data or whitespace.
-        const item = res
-          .slice(0, res.indexOf('['))
-          .split(' ')
-          .filter((data) => data)
+        // split the string and filter out any empty data or whitespace.
+        const item = res.split(' ').filter((data) => data)
 
         if (item) {
-          obj.kind = item[item.length - 1].toLowerCase() // Kind is the last item.
-          obj.apigroup = item.length < 5 ? item[1].split('/')[0] : item[2].split('/')[0]
+          const groupVersion = item.length < 5 ? item[1] : item[2]
+          // Remove the /version from the apigroup.
+          const apigroup = groupVersion.includes('/') ? groupVersion.split('/')[0] : ''
 
-          resourceList.push(obj)
+          resourceList.push({
+            kind_plural: item[0],
+            kind: item[item.length - 1], // Kind is the last item.
+            apigroup: apigroup,
+          })
         }
       })
   } catch (e) {
