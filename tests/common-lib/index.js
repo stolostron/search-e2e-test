@@ -18,20 +18,18 @@ function fetchAPIResourcesWithListWatchMethods() {
       .split('\n')
       .filter((resources) => resources)
       .forEach((res) => {
-        // split the string and filter out any empty data or whitespace.
+        // Split the string and filter out any empty data or whitespace.
         const item = res.split(' ').filter((data) => data)
 
-        if (item) {
-          const groupVersion = item.length < 5 ? item[1] : item[2]
-          // Remove the /version from the apigroup.
-          const apigroup = groupVersion.includes('/') ? groupVersion.split('/')[0] : ''
+        // Remove the /version from the apigroup.
+        const groupVersion = item.length < 5 ? item[1] : item[2]
+        const apigroup = groupVersion.includes('/') ? groupVersion.split('/')[0] : ''
 
-          resourceList.push({
-            kind_plural: item[0],
-            kind: item[item.length - 1], // Kind is the last item.
-            apigroup: apigroup,
-          })
-        }
+        resourceList.push({
+          kind_plural: item[0],
+          kind: item[item.length - 1], // Kind is the last item.
+          apigroup: apigroup,
+        })
       })
   } catch (e) {
     console.error(e)
