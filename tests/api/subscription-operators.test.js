@@ -347,7 +347,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       )
 
       // Wait for resources to be indexed
-      await new Promise((resolve) => setTimeout(resolve, 10000))
+      await new Promise((resolve) => setTimeout(resolve, 6000))
     }, 40000)
 
     beforeEach(async () => {
@@ -355,7 +355,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
       await execCliCmdString(`oc scale deployment test-deploy-2rep -n ${testNamespace} --replicas=2`)
       await execCliCmdString(`oc scale deployment test-deploy-3rep -n ${testNamespace} --replicas=3`)
       await execCliCmdString(`oc scale deployment test-deploy-5rep -n ${testNamespace} --replicas=5`)
-      await new Promise((resolve) => setTimeout(resolve, 8000))
+      await new Promise((resolve) => setTimeout(resolve, 6000))
     }, 60000)
 
     it('should filter with > operator for numeric values', async () => {
@@ -369,18 +369,13 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
         if (eventData.type !== 'next') return
         const watch = eventData?.payload?.data?.watch
         if (!watch || watch.operation !== 'UPDATE') return
-        let newData
-        try {
-          newData = JSON.parse(watch.newData)
-        } catch {
-          return
-        }
-        const desired = Number(newData?.desired)
+
+        const desired = Number(watch.newData?.desired)
         // Track any 2rep event to detect server-side filter regression (2 is not >2)
-        if (newData?.name === 'test-deploy-2rep') received2rep = true
+        if (watch.newData?.name === 'test-deploy-2rep') received2rep = true
         // Exact target values to avoid false positives from late beforeEach baseline events
-        if (newData?.name === 'test-deploy-3rep' && desired === 4) received3rep = true
-        if (newData?.name === 'test-deploy-5rep' && desired === 6) received5rep = true
+        if (watch.newData?.name === 'test-deploy-3rep' && desired === 4) received3rep = true
+        if (watch.newData?.name === 'test-deploy-5rep' && desired === 6) received5rep = true
       }
 
       // Subscribe with > operator - should match replicas > 2
@@ -440,18 +435,13 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
         if (eventData.type !== 'next') return
         const watch = eventData?.payload?.data?.watch
         if (!watch || watch.operation !== 'UPDATE') return
-        let newData
-        try {
-          newData = JSON.parse(watch.newData)
-        } catch {
-          return
-        }
-        const desired = Number(newData?.desired)
+
+        const desired = Number(watch.newData?.desired)
         // Track any 2rep event to detect regression (2 is not >=3)
-        if (newData?.name === 'test-deploy-2rep') received2rep = true
+        if (watch.newData?.name === 'test-deploy-2rep') received2rep = true
         // Exact target values to avoid false positives from late beforeEach baseline events
-        if (newData?.name === 'test-deploy-3rep' && desired === 5) received3rep = true
-        if (newData?.name === 'test-deploy-5rep' && desired === 7) received5rep = true
+        if (watch.newData?.name === 'test-deploy-3rep' && desired === 5) received3rep = true
+        if (watch.newData?.name === 'test-deploy-5rep' && desired === 7) received5rep = true
       }
 
       // Subscribe with >= operator - should match desired >= 3
@@ -509,18 +499,13 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
         if (eventData.type !== 'next') return
         const watch = eventData?.payload?.data?.watch
         if (!watch || watch.operation !== 'UPDATE') return
-        let newData
-        try {
-          newData = JSON.parse(watch.newData)
-        } catch {
-          return
-        }
-        const desired = Number(newData?.desired)
+
+        const desired = Number(watch.newData?.desired)
         // Exact target values to avoid false positives from late beforeEach baseline events
-        if (newData?.name === 'test-deploy-2rep' && desired === 3) received2rep = true
-        if (newData?.name === 'test-deploy-3rep' && desired === 4) received3rep = true
+        if (watch.newData?.name === 'test-deploy-2rep' && desired === 3) received2rep = true
+        if (watch.newData?.name === 'test-deploy-3rep' && desired === 4) received3rep = true
         // Track any 5rep event to detect regression (5 and 6 are not <5)
-        if (newData?.name === 'test-deploy-5rep') received5rep = true
+        if (watch.newData?.name === 'test-deploy-5rep') received5rep = true
       }
 
       // Subscribe with < operator - should match desired < 5
@@ -580,18 +565,13 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
         if (eventData.type !== 'next') return
         const watch = eventData?.payload?.data?.watch
         if (!watch || watch.operation !== 'UPDATE') return
-        let newData
-        try {
-          newData = JSON.parse(watch.newData)
-        } catch {
-          return
-        }
-        const desired = Number(newData?.desired)
+
+        const desired = Number(watch.newData?.desired)
         // Exact target values to avoid false positives from late beforeEach baseline events
-        if (newData?.name === 'test-deploy-2rep' && desired === 3) received2rep = true
-        if (newData?.name === 'test-deploy-5rep' && desired === 3) received5rep = true
+        if (watch.newData?.name === 'test-deploy-2rep' && desired === 3) received2rep = true
+        if (watch.newData?.name === 'test-deploy-5rep' && desired === 3) received5rep = true
         // Boundary proof: 5rep scaled to 4 must NOT be received (4 > 3)
-        if (newData?.name === 'test-deploy-5rep' && desired === 4) receivedExclusion = true
+        if (watch.newData?.name === 'test-deploy-5rep' && desired === 4) receivedExclusion = true
       }
 
       // Subscribe with <= operator - should match desired <= 3
