@@ -167,6 +167,55 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
         ws.close()
       }
     }, 20000)
+
+    it('should match kind case-insensitively with explicit equality operator (=configmap)', async () => {
+      let receivedInsert = false
+      const ws = await createWebSocket(`${websocketUrl}/searchapi/graphql`, token)
+
+      ws.onmessage = (event) => {
+        const eventData = JSON.parse(event.data)
+        if (
+          eventData.type === 'next' &&
+          event.data.includes('INSERT') &&
+          event.data.includes('test-cm-explicit-case')
+        ) {
+          receivedInsert = true
+        }
+      }
+
+      // Subscribe with explicit = operator and lowercase kind
+      ws.send(
+        JSON.stringify({
+          id: '0003b',
+          type: 'subscribe',
+          payload: {
+            query:
+              'subscription watch($input: SearchInput) { watch(input: $input) { uid operation newData oldData timestamp } }',
+            variables: {
+              input: {
+                keywords: [],
+                filters: [
+                  { property: 'kind', values: ['=configmap'] }, // = and lowercase
+                  { property: 'namespace', values: [testNamespace] },
+                  { property: 'name', values: ['test-cm-explicit-case'] },
+                ],
+              },
+            },
+            operationName: 'watch',
+          },
+        })
+      )
+
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 100))
+        await execCliCmdString(`oc create configmap test-cm-explicit-case -n ${testNamespace}`)
+        const received = await waitFor(() => receivedInsert, 15000)
+        expect(received).toBe(true)
+        expect(receivedInsert).toBe(true)
+      } finally {
+        ws.close()
+      }
+    }, 20000)
   })
 
   describe('Not equal operators', () => {
@@ -322,6 +371,62 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
         await new Promise((resolve) => setTimeout(resolve, 100))
         await execCliCmdString(`oc create configmap test-cm-ne-kind-proof -n ${testNamespace} --from-literal=k=v`)
         await execCliCmdString(`oc create secret generic test-secret-ne -n ${testNamespace} --from-literal=key=value`)
+        const received = await waitFor(() => receivedSecret, 15000)
+        expect(received).toBe(true)
+        await settleMs()
+        expect(receivedConfigMapProof).toBe(false)
+        expect(receivedSecret).toBe(true)
+      } finally {
+        ws.close()
+      }
+    }, 20000)
+
+    it('should filter with != operator using proper case (!=ConfigMap)', async () => {
+      let receivedSecret = false
+      let receivedConfigMapProof = false
+      const ws = await createWebSocket(`${websocketUrl}/searchapi/graphql`, token)
+
+      ws.onmessage = (event) => {
+        const eventData = JSON.parse(event.data)
+        const op = event.data.includes('INSERT') || event.data.includes('UPDATE')
+        if (eventData.type === 'next' && op) {
+          if (event.data.includes('test-cm-ne-case-proof')) {
+            receivedConfigMapProof = true
+          }
+          if (event.data.includes('test-secret-ne-case')) {
+            receivedSecret = true
+          }
+        }
+      }
+
+      // Subscribe with != for kind using proper case
+      ws.send(
+        JSON.stringify({
+          id: '0006b',
+          type: 'subscribe',
+          payload: {
+            query:
+              'subscription watch($input: SearchInput) { watch(input: $input) { uid operation newData oldData timestamp } }',
+            variables: {
+              input: {
+                keywords: [],
+                filters: [
+                  { property: 'kind', values: ['!=ConfigMap'] }, // Should exclude ConfigMap
+                  { property: 'namespace', values: [testNamespace] },
+                ],
+              },
+            },
+            operationName: 'watch',
+          },
+        })
+      )
+
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 100))
+        await execCliCmdString(`oc create configmap test-cm-ne-case-proof -n ${testNamespace} --from-literal=k=v`)
+        await execCliCmdString(
+          `oc create secret generic test-secret-ne-case -n ${testNamespace} --from-literal=key=value`
+        )
         const received = await waitFor(() => receivedSecret, 15000)
         expect(received).toBe(true)
         await settleMs()
