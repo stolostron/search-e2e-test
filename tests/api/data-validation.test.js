@@ -14,7 +14,7 @@ const { ValidateSearchData, validationTimeout } = require('../common-lib/validat
 
 // Set list to ignore resources that aren't being collected by Search.
 // When using the oc command clusterclaim doesn't include the namespace, therefore, for testing purposes, we will omit that resource object.
-const ignoreKindResourceList = ['clusterclaim', 'event', 'networkattachmentdefinition']
+const ignoreKindResourceList = ['ClusterClaim', 'Event', 'NetworkAttachmentDefinition']
 
 // Set list of resources that require filtering by api group.
 const requireAPIGroup = []
