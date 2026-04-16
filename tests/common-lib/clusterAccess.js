@@ -130,6 +130,21 @@ function getLocalClusterName() {
   return localClusterName
 }
 
+/**
+ * Return the route to access the Thanos querier API in the target cluster.
+ * @returns {string} The route to the Thanos querier API.
+ */
+let thanosRoute
+async function getThanosQuerierRoute() {
+  if (thanosRoute) {
+    return `https://${thanosRoute}`
+  }
+  thanosRoute = execSync(`oc get route thanos-querier -n openshift-monitoring -o jsonpath='{.spec.host}'`, {
+    stdio: [],
+  }).toString()
+  return `https://${thanosRoute}`
+}
+
 exports.deleteResource = deleteResource
 exports.getKubeConfig = getKubeConfig
 exports.getUserContext = getUserContext
@@ -137,3 +152,4 @@ exports.getResource = getResource
 exports.getSearchApiRoute = getSearchApiRoute
 exports.getKubeadminToken = getKubeadminToken
 exports.getLocalClusterName = getLocalClusterName
+exports.getThanosQuerierRoute = getThanosQuerierRoute

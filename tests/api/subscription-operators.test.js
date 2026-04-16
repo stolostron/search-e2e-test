@@ -6,12 +6,15 @@
 const squad = require('../../config').get('squadName')
 
 const { execCliCmdString } = require('../common-lib/cliClient')
-const { getKubeadminToken, getSearchApiRoute } = require('../common-lib/clusterAccess')
+const { getKubeadminToken, getSearchApiRoute, getThanosQuerierRoute } = require('../common-lib/clusterAccess')
 const { createWebSocket } = require('../common-lib/websocketHelper')
 const { waitFor } = require('../common-lib')
+const request = require('supertest')
+const https = require('https')
 
 let websocketUrl = ''
 let token = ''
+let thanosQuerierApi = ''
 const testNamespace = `automation-subscription-operators-${Date.now()}`
 
 /** Short pause so late subscription events can arrive before asserting negatives. */
@@ -27,6 +30,9 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
     // Create a route to access the Search API.
     const searchApiRoute = await getSearchApiRoute()
     websocketUrl = searchApiRoute.replace('https://', 'wss://')
+
+    // Query Thanos API
+    thanosQuerierApi = await getThanosQuerierRoute()
 
     // Create test namespace
     await execCliCmdString(`oc create namespace ${testNamespace}`)
@@ -963,6 +969,77 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
         ws.close()
       }
     }, 11000)
+  })
+
+  describe('Openshift metrics for active Search Subscriptions', () => {
+    it(
+      'should return metrics for active subscriptions',
+      async () => {
+        let receivedData = false
+        const ws = await createWebSocket(`${websocketUrl}/searchapi/graphql`, token)
+
+        //query Thanos metrics
+        async function queryMetrics(metricsName) {
+          const agent = new https.Agent({ rejectUnauthorized: false })
+          return request(thanosQuerierApi)
+            .get(`/api/v1/query?query=${metricsName}`)
+            .agent(agent)
+            .set({ Authorization: `Bearer ${token}` })
+            .expect(200)
+            .then((r) => {
+              return r
+            })
+        }
+
+        ws.onmessage = (event) => {
+          const eventData = JSON.parse(event.data)
+          if (eventData.type === 'next') {
+            receivedData = true
+          }
+        }
+
+        // Subscribe with no filter
+        ws.send(
+          JSON.stringify({
+            id: '0017',
+            type: 'subscribe',
+            payload: {
+              query:
+                'subscription watch($input: SearchInput) { watch(input: $input) { uid operation newData oldData timestamp } }',
+              variables: {},
+              operationName: 'watch',
+            },
+          })
+        )
+
+        try {
+          let metricsName = 'search_api_subscriptions_active'
+          let retries = 0
+          const maxRetries = 10
+          await new Promise((resolve) => setTimeout(resolve, 100))
+          await execCliCmdString(`oc create configmap test-cm-metrics -n ${testNamespace}`)
+          await waitFor(() => receivedData)
+          let resp = await queryMetrics(metricsName)
+
+          // Retry until metric updates or max retries reached
+          while (resp.body.data.result[0].value[1] === '0' && retries < maxRetries) {
+            await new Promise((resolve) => setTimeout(resolve, 5000))
+            resp = await queryMetrics(metricsName)
+            retries++
+          }
+
+          // Ensure we didn't exhaust retries (metric should have updated)
+          expect(retries).toBeLessThan(maxRetries)
+
+          // Verify metric content
+          expect(resp.body.data.result[0].metric['__name__']).toEqual(metricsName)
+          expect(resp.body.data.result[0].value[1]).toEqual('1')
+        } finally {
+          ws.close()
+        }
+      },
+      60 * 1000
+    )
   })
 
   afterAll(async () => {
