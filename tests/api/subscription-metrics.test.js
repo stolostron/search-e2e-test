@@ -69,7 +69,7 @@ describe(`[P2][Sev2][${squad}] RHACM-61294: Openshift Metrics of active Search S
         const maxRetries = 10
         // Retry until metric updates or max retries reached
         resp = await queryMetrics(metricsName)
-        while (resp.body.data.result[0].value[1] != subscriptionCount && retries < maxRetries) {
+        while (parseInt(resp.body.data.result[0].value[1]) < subscriptionCount && retries < maxRetries) {
           await new Promise((resolve) => setTimeout(resolve, 5000))
           resp = await queryMetrics(metricsName)
           retries++
