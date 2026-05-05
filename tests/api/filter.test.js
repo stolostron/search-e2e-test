@@ -6,7 +6,89 @@ const { execSync } = require('child_process')
 
 const squad = require('../../config').get('squadName')
 const { getSearchApiRoute, getKubeadminToken, getLocalClusterName } = require('../common-lib/clusterAccess')
-// const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
+const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
+
+const RELATIVE_DATE_VALUES = new Set(['hour', 'day', 'week', 'month', 'year'])
+
+// Order matches search-v2-api getOperatorFromString (longer prefixes first).
+const FILTER_OPERATORS = ['<=', '>=', '!=', '!', '<', '>', '=']
+
+function parseFilterValue(trimmedValue) {
+  const s = String(trimmedValue).trim()
+  for (const prefix of FILTER_OPERATORS) {
+    if (s.startsWith(prefix)) {
+      return { operator: prefix, operand: s.slice(prefix.length).trim() }
+    }
+  }
+  return { operator: null, operand: s }
+}
+
+function isNumericOperand(operand) {
+  const n = Number(operand)
+  return operand !== '' && !Number.isNaN(n) && Number.isFinite(n)
+}
+
+function itemValueMatches(actual, expectedTrimmed) {
+  if (Array.isArray(actual)) {
+    return actual.some((el) => itemValueMatches(el, expectedTrimmed))
+  }
+  if (actual === false && expectedTrimmed === 'false') {
+    return true
+  }
+  if (actual === true && expectedTrimmed === 'true') {
+    return true
+  }
+  const str = actual === null || actual === undefined ? '' : String(actual).trim()
+  return str === expectedTrimmed || str.includes(expectedTrimmed)
+}
+
+function assertItemsMatchFilter(items, property, filterValues) {
+  expect(items.length).toBeGreaterThan(0)
+  const fv = String(filterValues[0]).trim()
+
+  if (RELATIVE_DATE_VALUES.has(fv)) {
+    items.forEach((item) => {
+      const value = item[property]
+      expect(value).toBeDefined()
+      expect(String(value).trim().length).toBeGreaterThan(0)
+      expect(Number.isNaN(Date.parse(String(value)))).toBe(false)
+    })
+    return
+  }
+
+  const { operator, operand } = parseFilterValue(fv)
+  if (operator && isNumericOperand(operand)) {
+    const expectedNum = Number(operand)
+    items.forEach((item) => {
+      const actualNum = Number(item[property])
+      expect(Number.isNaN(actualNum)).toBe(false)
+      switch (operator) {
+        case '=':
+          expect(actualNum).toBe(expectedNum)
+          break
+        case '>':
+          expect(actualNum).toBeGreaterThan(expectedNum)
+          break
+        case '<':
+          expect(actualNum).toBeLessThan(expectedNum)
+          break
+        case '>=':
+          expect(actualNum).toBeGreaterThanOrEqual(expectedNum)
+          break
+        case '<=':
+          expect(actualNum).toBeLessThanOrEqual(expectedNum)
+          break
+        default:
+          throw new Error(`Unsupported filter operator "${operator}" for ${property}=${fv}`)
+      }
+    })
+    return
+  }
+
+  items.forEach((item) => {
+    expect(itemValueMatches(item[property], fv)).toBe(true)
+  })
+}
 
 describe('RHACM4K-1709: Search - Search using filters', () => {
   beforeAll(async () => {
@@ -23,7 +105,6 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
     { filters: [{ property: 'desired', values: ['=0'] }] },
     { filters: [{ property: 'current', values: ['=0'] }] },
     { filters: [{ property: 'ready', values: ['=0'] }] },
-    { filters: [{ property: 'available', values: ['=0'] }] },
     { filters: [{ property: 'restarts', values: ['=0'] }] },
     { filters: [{ property: 'parallelism', values: ['=1'] }] },
     { filters: [{ property: 'completions', values: ['=1'] }] },
@@ -38,7 +119,9 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
       filters: [
         {
           property: 'podIP',
-          values: [execSync("oc get pods -n openshift-console -o=jsonpath='{.items[0].status.podIP}'").toString()],
+          values: [
+            execSync("oc get pods -n openshift-console -o=jsonpath='{.items[0].status.podIP}'").toString().trim(),
+          ],
         },
       ],
     },
@@ -46,7 +129,9 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
       filters: [
         {
           property: 'hostIP',
-          values: [execSync("oc get pods -n openshift-console -o=jsonpath='{.items[0].status.hostIP}'").toString()],
+          values: [
+            execSync("oc get pods -n openshift-console -o=jsonpath='{.items[0].status.hostIP}'").toString().trim(),
+          ],
         },
       ],
     },
@@ -54,7 +139,7 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
       filters: [
         {
           property: 'kubernetesVersion',
-          values: [execSync("oc get nodes -o=jsonpath='{.items[0].status.nodeInfo.kubeletVersion}'").toString()],
+          values: [execSync("oc get nodes -o=jsonpath='{.items[0].status.nodeInfo.kubeletVersion}'").toString().trim()],
         },
       ],
     },
@@ -62,53 +147,31 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
       filters: [
         {
           property: 'memory',
-          values: [execSync("oc get managedclusters -o=jsonpath='{.items[0].status.capacity.memory}'").toString()],
+          values: [
+            execSync("oc get managedclusters -o=jsonpath='{.items[0].status.capacity.memory}'").toString().trim(),
+          ],
         },
       ],
     },
     { filters: [{ property: 'startedAt', values: ['month'] }] },
     { filters: [{ property: 'cluster', values: [getLocalClusterName()] }] },
-    { filters: [{ property: 'port', values: ['8443/TCP'] }] },
     { filters: [{ property: 'type', values: ['ClusterIP'] }] },
-    // {
-    //   filters: [
-    //     {
-    //       property: 'capacity',
-    //       values: [execSync("oc get pv -o=jsonpath='{.items[0].spec.capacity.storage}'").toString()],
-    //     },
-    //   ],
-    // },
     {
       filters: [
         {
           property: 'clusterIP',
-          values: [execSync("oc get service --all-namespaces -o=jsonpath='{.items[0].spec.clusterIP}'").toString()],
+          values: [
+            execSync("oc get service --all-namespaces -o=jsonpath='{.items[0].spec.clusterIP}'").toString().trim(),
+          ],
         },
       ],
     },
     { filters: [{ property: 'lastSchedule', values: ['month'] }] },
-    { filters: [{ property: 'suspend', values: ['false'] }] },
-    // {
-    //   filters: [
-    //     {
-    //       property: 'request',
-    //       values: [execSync("oc get pv -o=jsonpath='{.items[0].spec.capacity.storage}'").toString()],
-    //     },
-    //   ],
-    // },
-    // {
-    //   filters: [
-    //     {
-    //       property: 'volumeName',
-    //       values: [execSync("oc get pv -o=jsonpath='{.items[0].metadata.name}'").toString()],
-    //     },
-    //   ],
-    // },
     {
       filters: [
         {
           property: 'architecture',
-          values: [execSync("oc get nodes -o=jsonpath='{.items[0].status.nodeInfo.architecture}'").toString()],
+          values: [execSync("oc get nodes -o=jsonpath='{.items[0].status.nodeInfo.architecture}'").toString().trim()],
         },
       ],
     },
@@ -116,46 +179,26 @@ describe('RHACM4K-1709: Search - Search using filters', () => {
       filters: [
         {
           property: 'osImage',
-          values: [execSync("oc get nodes -o=jsonpath='{.items[0].status.nodeInfo.osImage}'").toString()],
+          values: [execSync("oc get nodes -o=jsonpath='{.items[0].status.nodeInfo.osImage}'").toString().trim()],
         },
       ],
     },
-    // {
-    //   filters: [
-    //     {
-    //       property: 'claimRef',
-    //       values: [
-    //         execSync(
-    //           'oc get pv -o=jsonpath=\'{range .items[0]}{.spec.claimRef.namespace}{"/"}{.spec.claimRef.name}{end}\''
-    //         ).toString(),
-    //       ],
-    //     },
-    //   ],
-    // },
-    // {
-    //   filters: [
-    //     {
-    //       property: 'reclaimPolicy',
-    //       values: [execSync("oc get pv -o=jsonpath='{.items[0].spec.persistentVolumeReclaimPolicy}'").toString()],
-    //     },
-    //   ],
-    // },
     {
       filters: [
         {
           property: 'consoleURL',
-          values: [execSync('oc whoami --show-console').toString()],
+          values: [execSync('oc whoami --show-console').toString().trim()],
         },
       ],
     },
   ]
 
   filtersRegistry.forEach((value) => {
-    // This test is disabled because it's missing the result validation.
-    test.todo(`[P2][Sev2][${squad}] should filter by ${value.filters[0].property}`)
-    // test(`[P2][Sev2][${squad}] should filter by ${value.filters[0].property}`, async () => {
-    //   var query = searchQueryBuilder(value)
-    //   var res = await sendRequest(query, token)
-    // }, 20000)
+    test(`[P2][Sev2][${squad}] should filter by ${value.filters[0].property}`, async () => {
+      const query = searchQueryBuilder(value)
+      const res = await sendRequest(query, token)
+      const items = res.body.data.searchResult[0].items
+      assertItemsMatchFilter(items, value.filters[0].property, value.filters[0].values)
+    }, 20000)
   })
 })
