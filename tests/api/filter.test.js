@@ -47,11 +47,24 @@ function assertItemsMatchFilter(items, property, filterValues) {
   const fv = String(filterValues[0]).trim()
 
   if (RELATIVE_DATE_VALUES.has(fv)) {
+    const now = Date.now()
+    const maxAgeMs = {
+      hour: 60 * 60 * 1000,
+      day: 24 * 60 * 60 * 1000,
+      week: 7 * 24 * 60 * 60 * 1000,
+      month: 30 * 24 * 60 * 60 * 1000,
+      year: 365 * 24 * 60 * 60 * 1000,
+    }
+    const lowerBound = now - maxAgeMs[fv]
+
     items.forEach((item) => {
       const value = item[property]
       expect(value).toBeDefined()
       expect(String(value).trim().length).toBeGreaterThan(0)
-      expect(Number.isNaN(Date.parse(String(value)))).toBe(false)
+      const parsedTime = Date.parse(String(value))
+      expect(Number.isNaN(parsedTime)).toBe(false)
+      expect(parsedTime).toBeLessThanOrEqual(now)
+      expect(parsedTime).toBeGreaterThanOrEqual(lowerBound)
     })
     return
   }
@@ -65,6 +78,10 @@ function assertItemsMatchFilter(items, property, filterValues) {
       switch (operator) {
         case '=':
           expect(actualNum).toBe(expectedNum)
+          break
+        case '!=':
+        case '!':
+          expect(actualNum).not.toBe(expectedNum)
           break
         case '>':
           expect(actualNum).toBeGreaterThan(expectedNum)
@@ -86,7 +103,11 @@ function assertItemsMatchFilter(items, property, filterValues) {
   }
 
   items.forEach((item) => {
-    expect(itemValueMatches(item[property], fv)).toBe(true)
+    if (operator === '!=' || operator === '!') {
+      expect(itemValueMatches(item[property], operand)).toBe(false)
+    } else {
+      expect(itemValueMatches(item[property], fv)).toBe(true)
+    }
   })
 }
 
