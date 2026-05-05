@@ -143,7 +143,8 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
       const hasErr = Array.isArray(r.body.errors) && r.body.errors.length > 0
       const items = r.body?.data?.searchResult?.[0]?.items
       const empty = !items || items.length === 0
-      expect(hasErr || r.status !== 200 || empty).toBe(true)
+      expect(r.status !== 200 || hasErr).toBe(true)
+      expect(empty).toBe(true)
     })
   })
 
