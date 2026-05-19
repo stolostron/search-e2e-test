@@ -145,6 +145,18 @@ async function getThanosQuerierRoute() {
   return `https://${thanosRoute}`
 }
 
+/**
+ * Return ACM namespace.
+ * @returns {string} The  ACM namespace.
+ */
+let acmNamespace
+function getAcmNamespace() {
+  acmNamespace = execSync("oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'").toString().trim()
+  if (!acmNamespace) {
+    throw new Error('Unable to resolve the ACM namespace')
+  }
+  return acmNamespace
+}
 exports.deleteResource = deleteResource
 exports.getKubeConfig = getKubeConfig
 exports.getUserContext = getUserContext
@@ -153,3 +165,4 @@ exports.getSearchApiRoute = getSearchApiRoute
 exports.getKubeadminToken = getKubeadminToken
 exports.getLocalClusterName = getLocalClusterName
 exports.getThanosQuerierRoute = getThanosQuerierRoute
+exports.getAcmNamespace = getAcmNamespace
