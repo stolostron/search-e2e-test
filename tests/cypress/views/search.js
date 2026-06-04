@@ -70,6 +70,7 @@ export const searchPage = {
    * Verify that the search page should contain no skeleton placeholder elements.
    */
   shouldFindNoSkeleton: () => {
+    cy.wait(500) // wait 500 ms for empty state / skeleton to disappear before we assert they don't exist in case of slow console
     cy.get(pf.emptyState.icon).should('not.exist')
     cy.get(pf.skeleton.base).should('not.exist')
   },
