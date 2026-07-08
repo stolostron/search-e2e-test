@@ -54,14 +54,14 @@ async function waitForCollectorRestart(namespace, expectEnabled, timeoutMs = 120
   while (Date.now() - start < timeoutMs) {
     try {
       const envOutput = execSync(
-        `oc get pod -n ${namespace} -l component=search-collector -o jsonpath='{.items[*].spec.containers[0].env[?(@.name=="FEATURE_CONFIGURABLE_COLLECTION")].value}'`,
+        `oc get pod -n ${namespace} -l name=search-collector -o jsonpath='{.items[*].spec.containers[0].env[?(@.name=="FEATURE_CONFIGURABLE_COLLECTION")].value}'`,
         { stdio: ['pipe', 'pipe', 'ignore'] }
       )
         .toString()
         .trim()
 
       const ready = execSync(
-        `oc get pod -n ${namespace} -l component=search-collector -o jsonpath='{.items[*].status.conditions[?(@.type=="Ready")].status}'`,
+        `oc get pod -n ${namespace} -l name=search-collector -o jsonpath='{.items[*].status.conditions[?(@.type=="Ready")].status}'`,
         { stdio: ['pipe', 'pipe', 'ignore'] }
       )
         .toString()
@@ -88,7 +88,13 @@ function applyCollectorConfig(namespace, name, rules) {
   const manifest = {
     apiVersion: 'search.open-cluster-management.io/v1alpha1',
     kind: 'CollectorConfig',
-    metadata: { name, namespace },
+    metadata: {
+      name,
+      namespace,
+      labels: {
+        'search.open-cluster-management.io/config-type': 'integration',
+      },
+    },
     spec: { collectionRules: rules },
   }
   execSync(`echo '${JSON.stringify(manifest)}' | oc apply -f -`)
@@ -117,7 +123,6 @@ const COLLECTOR_CONFIG_NAME = 'e2e-test-config'
 
 describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
   let token
-  let searchApiRoute
   let acmNamespace
 
   beforeAll(async () => {
@@ -228,15 +233,14 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
   // ACM-18531
   test(`[P2][Sev2][${squad}] should collect custom fields defined in CollectorConfig`, async () => {
     // Apply a CollectorConfig that adds a custom field to ConfigMaps.
-    // Use metadata.resourceVersion — a lightweight scalar present on every resource.
     applyCollectorConfig(acmNamespace, COLLECTOR_CONFIG_NAME, [
       {
         action: 'include',
         resourceSelector: { apiGroups: [''], kinds: ['ConfigMap'] },
         fields: [
           {
-            name: 'resourceVersion',
-            jsonPath: '{.metadata.resourceVersion}',
+            name: 'customUID',
+            jsonPath: '{.metadata.uid}',
           },
         ],
       },
@@ -253,7 +257,7 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
 
     expect(items).toHaveLength(1)
     expect(items[0].name).toBe('cc-test-cm')
-    expect(items[0]).toHaveProperty('resourceVersion')
+    expect(items[0]).toHaveProperty('customUID')
   }, 60000)
 
   test(`[P2][Sev2][${squad}] should clean up CollectorConfig and restore default behavior`, async () => {
@@ -272,6 +276,6 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
 
     expect(items).toHaveLength(1)
     expect(items[0].name).toBe('cc-test-cm')
-    expect(items[0]).not.toHaveProperty('resourceVersion')
+    expect(items[0]).not.toHaveProperty('customUID')
   }, 60000)
 })

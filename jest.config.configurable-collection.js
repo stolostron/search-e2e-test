@@ -6,15 +6,15 @@ module.exports = {
   globalTeardown: './globalTeardown.js',
   verbose: true,
   rootDir: './tests/api',
-  testPathIgnorePatterns: ['configurable-collection.test.js'],
+  testMatch: ['**/configurable-collection.test.js'],
   reporters: [
     'default',
     [
       'jest-junit',
       {
-        suiteName: 'Search API tests',
+        suiteName: 'Configurable Collection tests',
         outputDirectory: 'results',
-        outputName: 'api-tests.xml',
+        outputName: 'configurable-collection-tests.xml',
       },
     ],
   ],
