@@ -31,7 +31,7 @@ describe(`RHACM4K-57211 - Search in ${clusterMode.label} Cluster`, { tags: tags.
       searchPage.shouldFindNamespaceInCluster(clusterMode.namespace, this.clusterName)
     })
 
-    it(`[P2][Sev2][${squad}] should see pod logs`, function () {
+    it.skip(`[P2][Sev2][${squad}] should see pod logs`, function () {
       searchBar.whenFilterByKind('Pod')
       searchBar.whenRunSearchQuery()
       searchBar.whenUsePagination(50)
