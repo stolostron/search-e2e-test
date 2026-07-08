@@ -145,6 +145,28 @@ async function getThanosQuerierRoute() {
   return `https://${thanosRoute}`
 }
 
+/**
+ * Resolve the ACM namespace from the MultiClusterHub resource.
+ * Falls back to 'open-cluster-management' if MCH is not found.
+ * @returns {string} The ACM namespace.
+ */
+function resolveAcmNamespace() {
+  if (process.env.CYPRESS_ACM_NAMESPACE) {
+    return process.env.CYPRESS_ACM_NAMESPACE
+  }
+  try {
+    return (
+      execSync("oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'", {
+        stdio: ['pipe', 'pipe', 'ignore'],
+      })
+        .toString()
+        .trim() || 'open-cluster-management'
+    )
+  } catch (_) {
+    return 'open-cluster-management'
+  }
+}
+
 exports.deleteResource = deleteResource
 exports.getKubeConfig = getKubeConfig
 exports.getUserContext = getUserContext
@@ -153,3 +175,4 @@ exports.getSearchApiRoute = getSearchApiRoute
 exports.getKubeadminToken = getKubeadminToken
 exports.getLocalClusterName = getLocalClusterName
 exports.getThanosQuerierRoute = getThanosQuerierRoute
+exports.resolveAcmNamespace = resolveAcmNamespace
