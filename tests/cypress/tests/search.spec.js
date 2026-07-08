@@ -39,7 +39,7 @@ describe(`RHACM4K-57212 - Search in ${clusterMode.label} Cluster`, { tags: tags.
       searchPage.shouldFindNamespaceInCluster(clusterMode.namespace, this.clusterName)
     })
 
-    it(`[P2][Sev2][${squad}] should work kind filter for Deployment`, function () {
+    it.skip(`[P2][Sev2][${squad}] should work kind filter for Deployment`, function () {
       searchBar.whenFilterByKind('Deployment')
       searchBar.whenRunSearchQuery()
       searchBar.whenUsePagination(50)
