@@ -6,7 +6,7 @@ module.exports = {
   globalTeardown: './globalTeardown.js',
   verbose: true,
   rootDir: './tests/api',
-  testPathIgnorePatterns: ['configurable-collection.test.js'],
+  testPathIgnorePatterns: ['/node_modules/', 'configurable-collection.test.js'],
   reporters: [
     'default',
     [
