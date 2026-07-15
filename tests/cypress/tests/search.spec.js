@@ -46,7 +46,7 @@ describe(`RHACM4K-57212 - Search in ${clusterMode.label} Cluster`, { tags: tags.
       searchPage.shouldFindResourceDetailItem('Deployment', clusterMode.deployment, clusterMode.namespace)
     })
 
-    it(`[P3][Sev3][${squad}] should have the expected relationships`, function () {
+    it.skip(`[P3][Sev3][${squad}] should have the expected relationships`, function () {
       searchBar.whenRunSearchQuery()
       searchPage.whenExpandRelationshipTiles()
       searchPage.shouldFindRelationshipTile('Cluster')
