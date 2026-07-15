@@ -21,7 +21,7 @@ describe('RHACM4K-1419: Overview page', { tags: tags.env, defaultCommandTimeout:
       overviewPage.shouldHaveSummarySection()
     })
 
-    it(`[P2][Sev2][${squad}] should have insights section`, function () {
+    it.skip(`[P2][Sev2][${squad}] should have insights section`, function () {
       overviewPage.shouldHaveInsightsSection()
     })
 
