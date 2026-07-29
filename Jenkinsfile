@@ -53,6 +53,33 @@ pipeline {
                 '''
             }
         }
+        stage('Enable Configurable Collection') {
+            steps {
+                sh """
+                    oc login --insecure-skip-tls-verify -u ${params.OCP_HUB_CLUSTER_USER} -p ${params.OCP_HUB_CLUSTER_PASSWORD} ${params.OCP_HUB_CLUSTER_API_URL}
+                    oc patch search search-v2-operator -n ${params.ACM_NAMESPACE} --type merge -p '{"spec":{"deployments":{"collector":{"envVar":[{"name":"FEATURE_CONFIGURABLE_COLLECTION","value":"true"}]}}}}'
+
+                    echo "Waiting for collector pod to restart with feature flag enabled..."
+                    TIMEOUT=120
+                    ELAPSED=0
+                    while [ \$ELAPSED -lt \$TIMEOUT ]; do
+                        ENV_VAL=\$(oc get pod -n ${params.ACM_NAMESPACE} -l name=search-collector -o jsonpath='{.items[*].spec.containers[0].env[?(@.name=="FEATURE_CONFIGURABLE_COLLECTION")].value}' 2>/dev/null || true)
+                        READY=\$(oc get pod -n ${params.ACM_NAMESPACE} -l name=search-collector -o jsonpath='{.items[*].status.conditions[?(@.type=="Ready")].status}' 2>/dev/null || true)
+                        if [ "\$ENV_VAL" = "true" ] && [ "\$READY" = "True" ]; then
+                            echo "Collector is ready with FEATURE_CONFIGURABLE_COLLECTION enabled."
+                            break
+                        fi
+                        echo "  Still waiting... (\$ELAPSED/\$TIMEOUT seconds)"
+                        sleep 5
+                        ELAPSED=\$((ELAPSED + 5))
+                    done
+                    if [ \$ELAPSED -ge \$TIMEOUT ]; then
+                        echo "ERROR: Timed out waiting for collector to restart with feature flag."
+                        exit 1
+                    fi
+                """
+            }
+        }
         stage('Search Tests') {
             steps {
                 catchError(stageResult: 'UNSTABLE',  buildResult: null) { 
