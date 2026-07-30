@@ -1,4 +1,2 @@
-# Qodo config
-[checks]
-# Disable Qodo from running by default
-enable_auto_checks_feedback = false
+[config]
+disable_auto_feedback = true
