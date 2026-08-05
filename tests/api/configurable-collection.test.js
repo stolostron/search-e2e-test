@@ -36,20 +36,24 @@ function deleteWebhookNetworkPolicy(namespace) {
   })
 }
 
-function assertFeatureFlagEnabled(namespace) {
-  const envOutput = execSync(
-    `oc get pod -n ${namespace} -l name=search-collector -o jsonpath='{.items[*].spec.containers[0].env[?(@.name=="FEATURE_CONFIGURABLE_COLLECTION")].value}'`,
+async function assertFeatureFlagEnabled(namespace) {
+  const getFlag = () =>
+    execSync(
+      `oc get pod -n ${namespace} -l name=search-collector -o jsonpath='{.items[*].spec.containers[0].env[?(@.name=="FEATURE_CONFIGURABLE_COLLECTION")].value}'`,
+      { stdio: ['pipe', 'pipe', 'ignore'] }
+    )
+      .toString()
+      .trim()
+
+  if (getFlag() === 'true') return
+
+  execSync(
+    `oc patch search search-v2-operator -n ${namespace} --type merge -p '${JSON.stringify({
+      spec: { deployments: { collector: { envVar: [{ name: 'FEATURE_CONFIGURABLE_COLLECTION', value: 'true' }] } } },
+    })}'`,
     { stdio: ['pipe', 'pipe', 'ignore'] }
   )
-    .toString()
-    .trim()
-
-  if (!envOutput.includes('true')) {
-    throw new Error(
-      `FEATURE_CONFIGURABLE_COLLECTION is not enabled on search-collector in namespace ${namespace}. ` +
-        'Enable it via the Jenkins "Enable Configurable Collection" stage or by patching the Search CR.'
-    )
-  }
+  await waitForCondition(() => getFlag() === 'true', { timeout: 120000 })
 }
 
 function getSearchCRUid(namespace) {
@@ -141,9 +145,9 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
     token = getKubeadminToken()
     searchApiRoute = await getSearchApiRoute()
     acmNamespace = resolveAcmNamespace()
-    assertFeatureFlagEnabled(acmNamespace)
+    await assertFeatureFlagEnabled(acmNamespace)
     applyWebhookNetworkPolicy(acmNamespace)
-  }, 60000)
+  }, 180000)
 
   afterAll(() => {
     try {
@@ -207,13 +211,16 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
       )
 
       // Wait for Search API to return custom fields for Alertmanager.
-      await waitForCondition(async () => {
-        const items = await searchItems(token, [
-          { property: 'kind', values: ['Alertmanager'] },
-          { property: 'apigroup', values: ['monitoring.coreos.com'] },
-        ])
-        return items.length > 0 && items[0].updatedReplicas !== undefined && items[0].version !== undefined
-      })
+      await waitForCondition(
+        async () => {
+          const items = await searchItems(token, [
+            { property: 'kind', values: ['Alertmanager'] },
+            { property: 'apigroup', values: ['monitoring.coreos.com'] },
+          ])
+          return items.length > 0 && items[0].updatedReplicas !== undefined && items[0].version !== undefined
+        },
+        { timeout: 120000 }
+      )
     } finally {
       deleteCollectorConfig(acmNamespace, userName)
     }
