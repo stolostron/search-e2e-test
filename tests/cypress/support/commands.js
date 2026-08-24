@@ -32,7 +32,7 @@
 import 'cypress-wait-until'
 import { getOpt } from '../scripts/utils'
 
-const PF_VERSION = '.pf-v6'
+const PF_VERSION = '.pf-v5'
 
 Cypress.Commands.add('visitAndLogin', (URL, OPTIONS_HUB_USER, OPTIONS_HUB_PASSWORD, OPTIONS_HUB_OC_IDP) => {
   var user = OPTIONS_HUB_USER || Cypress.env('OPTIONS_HUB_USER')
