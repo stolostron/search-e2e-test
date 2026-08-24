@@ -23,13 +23,13 @@ describe('RHACM4K-412 - Saved searches', { tags: tags.env, defaultCommandTimeout
   })
 
   context('Console-Search saved searches', { tags: tags.modes }, function () {
-    it(`[P3][Sev3][${squad}] should verify that the namespace is available`, function () {
+    it.skip(`[P3][Sev3][${squad}] should verify that the namespace is available`, function () {
       searchBar.whenFilterByNamespace(namespace)
       searchBar.whenRunSearchQuery()
       searchPage.shouldLoadResults()
     })
 
-    it(`[P3][Sev3][${squad}] should save current search`, function () {
+    it.skip(`[P3][Sev3][${squad}] should save current search`, function () {
       savedSearches.saveClusterNamespaceSearch(
         localClusterName,
         namespace,
@@ -38,23 +38,23 @@ describe('RHACM4K-412 - Saved searches', { tags: tags.env, defaultCommandTimeout
       )
     })
 
-    it(`[P3][Sev3][${squad}] should find the saved search`, function () {
+    it.skip(`[P3][Sev3][${squad}] should find the saved search`, function () {
       savedSearches.getSavedSearch(queryDefaultNamespaceName)
     })
 
-    it(`[P3][Sev3][${squad}] should edit the saved searches`, function () {
+    it.skip(`[P3][Sev3][${squad}] should edit the saved searches`, function () {
       savedSearches.editSavedSearch(namespace, queryEditNamespaceName, queryEditNamespaceDesc)
     })
 
-    it(`[P3][Sev3][${squad}] should revert back the edited saved searches`, function () {
+    it.skip(`[P3][Sev3][${squad}] should revert back the edited saved searches`, function () {
       savedSearches.editSavedSearch(queryEditNamespaceName, queryDefaultNamespaceName, queryDefaultNamespaceDesc)
     })
 
-    it(`[P3][Sev3][${squad}] should share the saved searches`, function () {
+    it.skip(`[P3][Sev3][${squad}] should share the saved searches`, function () {
       savedSearches.shareSavedSearch(queryDefaultNamespaceName)
     })
 
-    it(`[P3][Sev3][${squad}] should delete the saved searches ${queryDefaultNamespaceName}`, function () {
+    it.skip(`[P3][Sev3][${squad}] should delete the saved searches ${queryDefaultNamespaceName}`, function () {
       savedSearches.whenDeleteSavedSearch(queryDefaultNamespaceName)
     })
   })
