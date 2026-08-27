@@ -10,6 +10,7 @@ const {
   getSearchApiRoute,
   getKubeadminToken,
   getLocalClusterName,
+  getAcmNamespace,
 } = require('../common-lib/clusterAccess')
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 
@@ -21,10 +22,7 @@ describe('RHACM4K-913: Search API - Verify search results with different queries
   var import_kubeconfig = kubeconfigs.find((k) => k.includes('import'))
 
   // Get ACM namespace
-  const acmNamespace = execSync("oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'").toString().trim()
-  if (!acmNamespace) {
-    throw new Error('Unable to resolve the ACM namespace')
-  }
+  const acmNamespace = getAcmNamespace()
 
   beforeAll(async () => {
     // Log in and get access token
