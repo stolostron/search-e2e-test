@@ -29,6 +29,7 @@ describe(`[P2][Sev2][${squad}] Subscription API: Scale tests`, () => {
     }))
 
     for (const wsItem of wsList) {
+      // Initialize each websocket connection.
       wsItem.ws = await createWebSocket(`${websocketUrl}/searchapi/graphql`, token)
 
       wsItem.ws.onmessage = (event) => {
