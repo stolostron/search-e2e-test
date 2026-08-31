@@ -293,7 +293,7 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
         return (config.spec.collectionRules || []).some(
           (rule) =>
             rule.action === 'include' &&
-            (rule.resourceSelector?.apiGroups || []).includes('operators.coreos.com') &&
+            (rule.resourceSelector?.apiGroups || []).some((group) => group === 'operators.coreos.com') &&
             (rule.resourceSelector?.kinds || []).includes('*')
         )
       } catch (_) {
