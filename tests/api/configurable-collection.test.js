@@ -9,33 +9,6 @@ const { getSearchApiRoute, getKubeadminToken, resolveAcmNamespace } = require('.
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 const { sleep } = require('../common-lib/sleep')
 
-const webhookNetworkPolicyName = 'search-operator-e2e-webhook-access'
-
-function applyWebhookNetworkPolicy(namespace) {
-  const manifest = {
-    apiVersion: 'networking.k8s.io/v1',
-    kind: 'NetworkPolicy',
-    metadata: { name: webhookNetworkPolicyName, namespace },
-    spec: {
-      podSelector: { matchLabels: { 'control-plane': 'controller-manager' } },
-      policyTypes: ['Ingress'],
-      ingress: [
-        {
-          from: [{ namespaceSelector: { matchLabels: { 'policy-group.network.openshift.io/host-network': '' } } }],
-          ports: [{ port: 9443, protocol: 'TCP' }],
-        },
-      ],
-    },
-  }
-  execSync(`echo '${JSON.stringify(manifest)}' | oc apply -f -`, { stdio: ['pipe', 'pipe', 'ignore'] })
-}
-
-function deleteWebhookNetworkPolicy(namespace) {
-  execSync(`oc delete networkpolicy ${webhookNetworkPolicyName} -n ${namespace} --ignore-not-found`, {
-    stdio: ['pipe', 'pipe', 'ignore'],
-  })
-}
-
 async function assertFeatureFlagEnabled(namespace) {
   const getFlag = () =>
     execSync(
@@ -146,7 +119,6 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
     searchApiRoute = await getSearchApiRoute()
     acmNamespace = resolveAcmNamespace()
     await assertFeatureFlagEnabled(acmNamespace)
-    applyWebhookNetworkPolicy(acmNamespace)
   }, 180000)
 
   afterAll(() => {
@@ -157,9 +129,6 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
       deleteCollectorConfig(acmNamespace, 'test-integration-config', {
         asServiceAccount: `system:serviceaccount:${acmNamespace}:search-v2-operator`,
       })
-    } catch (_) {}
-    try {
-      deleteWebhookNetworkPolicy(acmNamespace)
     } catch (_) {}
   }, 120000)
 
