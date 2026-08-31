@@ -8,17 +8,11 @@
     "prepare": "husky install",
     "rbac:clean": "./build/rbac-clean.sh",
     "rbac:setup": "./build/rbac-setup.sh",
-    "test": "npm run test:clean-reports && npm run test:headless && npm run test:merge-reports",
+    "test": "npm run test:clean-reports && ./start-tests.sh",
     "test:api": "jest --colors --verbose",
     "test:api:prow": "jest --verbose",
     "test:clean-reports": "rm -rf ./results",
-    "test:debug": "cross-env NODE_ENV=debug ./start-tests.sh",
-    "test:headed": "cross-env NODE_ENV=development LIVE_MODE=true ./start-tests.sh",
-    "test:headless": "cross-env NODE_ENV=development ./start-tests.sh",
-    "test:merge-json": "npx mochawesome-merge results/json/*.json -o results/json/mochawesome-merge-results.json",
-    "test:merge-reports": "npm run test:merge-xml && npm run test:merge-json",
-    "test:merge-xml": "npx junit-merge --dir=results -o results/merge-test-results.xml",
-    "test:production": "cross-env NODE_ENV=production ./start-tests.sh"
+    "test:debug": "cross-env NODE_ENV=debug ./start-tests.sh"
   },
   "repository": {
     "type": "git",
@@ -38,26 +32,11 @@
     "ws": "^8.19.0"
   },
   "devDependencies": {
-    "@cypress/grep": "^4.1.0",
-    "browserlist": "^1.0.1",
-    "chromedriver": "^126.0.4",
     "cross-env": "^7.0.3",
-    "cypress": "13.17.0",
-    "cypress-multi-reporters": "^1.6.4",
-    "cypress-terminal-report": "^6.1.0",
-    "cypress-wait-until": "^3.0.1",
-    "eslint-plugin-cypress": "^3.3.0",
-    "geckodriver": "^4.4.1",
     "husky": "^8.0.3",
     "jest-circus": "^29.7.0",
     "jshint": "^2.13.6",
-    "junit-report-merger": "^7.0.0",
-    "mocha": "^10.6.0",
-    "mocha-junit-reporter": "^2.2.1",
-    "mochawesome": "^7.1.3",
-    "mochawesome-merge": "^4.3.0",
-    "prettier": "^3.3.2",
-    "selenium-standalone": "^10.0.0"
+    "prettier": "^3.3.2"
   },
   "prettier": {
     "semi": false,
