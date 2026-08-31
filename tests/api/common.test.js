@@ -2,27 +2,14 @@
 
 jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
-const { execSync } = require('child_process')
-
 const squad = require('../../config').get('squadName')
-const { getSearchApiRoute, getKubeadminToken, getLocalClusterName } = require('../common-lib/clusterAccess')
+const {
+  getSearchApiRoute,
+  getKubeadminToken,
+  getLocalClusterName,
+  resolveAcmNamespace,
+} = require('../common-lib/clusterAccess')
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
-
-function resolveAcmNamespace() {
-  if (process.env.CYPRESS_ACM_NAMESPACE) {
-    return process.env.CYPRESS_ACM_NAMESPACE
-  }
-  try {
-    const v = execSync("oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'", {
-      stdio: ['pipe', 'pipe', 'ignore'],
-    })
-      .toString()
-      .trim()
-    return v || 'open-cluster-management'
-  } catch (_) {
-    return 'open-cluster-management'
-  }
-}
 
 const acmNamespace = resolveAcmNamespace()
 
