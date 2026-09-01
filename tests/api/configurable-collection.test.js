@@ -286,16 +286,12 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
 
   // ACM-37052 - RHACM4K-65858
   test(`[P2][Sev2][${squad}] ACM-37052: should collect and index a ClusterServiceVersion covered by the seeded olm-integration CollectorConfig`, async () => {
-    // The seeded olm-integration CollectorConfig must include operators.coreos.com/*.
+    // Gate on olm-integration existing; its rules are asserted in the seed test below.
+    // TODO: Assert a specific attribute once an integration config targets non-default resources.
     await waitForCondition(() => {
       try {
-        const config = getCollectorConfig(acmNamespace, 'olm-integration')
-        return (config.spec.collectionRules || []).some(
-          (rule) =>
-            rule.action === 'include' &&
-            (rule.resourceSelector?.apiGroups || []).some((group) => group === 'operators.coreos.com') &&
-            (rule.resourceSelector?.kinds || []).includes('*')
-        )
+        getCollectorConfig(acmNamespace, 'olm-integration')
+        return true
       } catch (_) {
         return false
       }
