@@ -232,7 +232,7 @@ done
 if [[ -z $ACM_NAMESPACE || "$ACM_NAMESPACE" == "null" ]]; then
   ACM_NAMESPACE="open-cluster-management"
 fi
-export CYPRESS_ACM_NAMESPACE=$ACM_NAMESPACE
+export ACM_NAMESPACE=$ACM_NAMESPACE
 
 log_color "cyan" "Running Search API tests."
 

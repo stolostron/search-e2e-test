@@ -24,19 +24,16 @@ nconf.env({ lowerCase: true, separator: '_' }).file({ file: optionsFile, format:
 try {
   nconf.required(['options:hub:baseDomain', 'options:hub:user', 'options:hub:password'])
 } catch {
-  if (process.env.OPTIONS_HUB_BASEDOMAIN || process.env.CYPRESS_OPTIONS_HUB_BASEDOMAIN) {
-    nconf.set(
-      'options:hub:baseDomain',
-      process.env.OPTIONS_HUB_BASEDOMAIN || process.env.CYPRESS_OPTIONS_HUB_BASEDOMAIN
-    )
+  if (process.env.OPTIONS_HUB_BASEDOMAIN) {
+    nconf.set('options:hub:baseDomain', process.env.OPTIONS_HUB_BASEDOMAIN)
   }
 
-  if (process.env.OPTIONS_HUB_USER || process.env.CYPRESS_OPTIONS_HUB_USER) {
-    nconf.set('options:hub:user', process.env.OPTIONS_HUB_USER || process.env.CYPRESS_OPTIONS_HUB_USER)
+  if (process.env.OPTIONS_HUB_USER) {
+    nconf.set('options:hub:user', process.env.OPTIONS_HUB_USER)
   }
 
-  if (process.env.OPTIONS_HUB_PASSWORD || process.env.CYPRESS_OPTIONS_HUB_PASSWORD) {
-    nconf.set('options:hub:password', process.env.OPTIONS_HUB_PASSWORD || process.env.CYPRESS_OPTIONS_HUB_PASSWORD)
+  if (process.env.OPTIONS_HUB_PASSWORD) {
+    nconf.set('options:hub:password', process.env.OPTIONS_HUB_PASSWORD)
   }
 }
 

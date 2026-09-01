@@ -20,12 +20,12 @@ if [ ! -d ${RBAC_DIR} ]; then
   exit 1
 fi
 
-if [[ -z ${OPTIONS_HUB_PASSWORD} && -z ${CYPRESS_OPTIONS_HUB_PASSWORD} ]]; then
-  echo "Error: RBAC password not set in variable OPTIONS_HUB_PASSWORD or CYPRESS_OPTIONS_HUB_PASSWORD."
+if [[ -z ${OPTIONS_HUB_PASSWORD} ]]; then
+  echo "Error: RBAC password not set in variable OPTIONS_HUB_PASSWORD."
   exit 1
 fi
 
-passwd=${OPTIONS_HUB_PASSWORD:-CYPRESS_OPTIONS_HUB_PASSWORD}
+passwd=${OPTIONS_HUB_PASSWORD}
 
 if ! which htpasswd &>/dev/null; then
   if which apt-get &>/dev/null; then

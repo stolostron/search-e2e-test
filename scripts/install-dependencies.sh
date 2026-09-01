@@ -6,8 +6,20 @@ set -e
 
 mkdir clis-unpacked
 
-# Install curl command
-apt-get -y update; apt-get -y install curl
+# Install curl and htpasswd utility
+if command -v apt-get >/dev/null 2>&1; then
+  apt-get update
+  apt-get install -y curl apache2-utils
+elif command -v microdnf >/dev/null 2>&1; then
+  microdnf install -y tar gzip httpd-tools
+  microdnf clean all
+elif command -v dnf >/dev/null 2>&1; then
+  dnf install -y tar gzip httpd-tools
+  dnf clean all
+else
+  echo 'Error: no supported package manager found (apt-get, microdnf, dnf).'
+  exit 1
+fi
 
 # Install OpenShift and Kubectl CLI.
 echo 'Installing oc and kubectl clis...'
@@ -20,9 +32,5 @@ mv ./clis-unpacked/kubectl /usr/local/bin/kubectl
 rm -rf ./clis-unpacked
 
 echo -e 'oc and kubectl cli install completed.'
-
-# Install htpasswd utility
-echo 'Installing htpasswd utility...'
-apt-get install -y apache2-utils
 
 echo 'htpasswd utilities install completed.'

@@ -12,7 +12,6 @@ echo -e "Shared dir: $SHARED_DIR\n"
 ls -la
 
 # Test env
-export BROWSER=chrome
 export OPTIONS_HUB_KUBECONFIG=${SHARED_DIR}/hub-1.kc
 export OPTIONS_KUBECONFIG_MOUNT_PATH=${SHARED_DIR}/managed-1.kc
 export OPTIONS_MANAGED_KUBECONFIG=${OPTIONS_KUBECONFIG_MOUNT_PATH}

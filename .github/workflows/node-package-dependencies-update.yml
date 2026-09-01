@@ -57,8 +57,7 @@ jobs:
         id: updated
         run: |
           echo "Preparing to update all outdated package modules to latest versions"
-          echo "Ignoring package update for cypress"
-          npx npm-check-updates -u -x cypress >> .github/logs/update-log-$(date +%m-%d-%y).md
+          npx npm-check-updates -u >> .github/logs/update-log-$(date +%m-%d-%y).md
 
       - name: Installing updated node modules package dependencies within the project
         id: reinstall
