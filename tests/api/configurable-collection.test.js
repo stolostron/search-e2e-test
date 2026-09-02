@@ -9,6 +9,8 @@ const { getSearchApiRoute, getKubeadminToken, resolveAcmNamespace } = require('.
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 const { sleep } = require('../common-lib/sleep')
 
+const backupLabel = 'cluster.open-cluster-management.io/backup'
+
 async function assertFeatureFlagEnabled(namespace) {
   const getFlag = () =>
     execSync(
@@ -85,13 +87,27 @@ function deleteCollectorConfig(namespace, name, options = {}) {
   })
 }
 
-function getMergedCollectorConfig(namespace) {
-  const output = execSync(`oc get collectorconfig merged-collector-config -n ${namespace} -o json`, {
+function getCollectorConfig(namespace, name) {
+  const output = execSync(`oc get collectorconfig ${name} -n ${namespace} -o json`, {
     stdio: ['pipe', 'pipe', 'ignore'],
   })
     .toString()
     .trim()
   return JSON.parse(output)
+}
+
+function getMergedCollectorConfig(namespace) {
+  return getCollectorConfig(namespace, 'merged-collector-config')
+}
+
+function getIntegrationCollectorConfigs(namespace) {
+  const output = execSync(
+    `oc get collectorconfig -n ${namespace} -l search.open-cluster-management.io/config-type=integration -o json`,
+    { stdio: ['pipe', 'pipe', 'ignore'] }
+  )
+    .toString()
+    .trim()
+  return JSON.parse(output).items || []
 }
 
 async function searchItems(token, filters) {
@@ -236,6 +252,145 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
       })
     } finally {
       deleteCollectorConfig(acmNamespace, userName)
+    }
+  }, 180000)
+
+  // ACM-20052 - RHACM4K backup label
+  test(`[P2][Sev2][${squad}] ACM-20052: should auto-add backup label to user CollectorConfig but not to merged-collector-config`, async () => {
+    const userName = 'user-collector-config'
+
+    try {
+      // Create a user CollectorConfig without specifying any labels.
+      applyCollectorConfig(acmNamespace, userName, [
+        {
+          action: 'include',
+          resourceSelector: { apiGroups: ['monitoring.coreos.com'], kinds: ['Alertmanager'] },
+          fields: [{ name: 'version', jsonPath: '{.spec.version}', type: 'string' }],
+        },
+      ])
+
+      // Operator should automatically add the backup label to the user CollectorConfig.
+      const userLabels = await waitForCondition(() => {
+        const labels = getCollectorConfig(acmNamespace, userName).metadata.labels || {}
+        return labels[backupLabel] !== undefined && labels
+      })
+      expect(userLabels[backupLabel]).toBe('')
+
+      // The operator-managed merged-collector-config must NOT receive the backup label.
+      const mergedLabels = getMergedCollectorConfig(acmNamespace).metadata.labels || {}
+      expect(mergedLabels).not.toHaveProperty(backupLabel)
+    } finally {
+      deleteCollectorConfig(acmNamespace, userName)
+    }
+  }, 180000)
+
+  // ACM-37052 - RHACM4K-65858
+  test(`[P2][Sev2][${squad}] ACM-37052: should collect and index a ClusterServiceVersion covered by the seeded olm-integration CollectorConfig`, async () => {
+    // Gate on olm-integration existing; its rules are asserted in the seed test below.
+    // TODO: Assert a specific attribute once an integration config targets non-default resources.
+    await waitForCondition(() => {
+      try {
+        getCollectorConfig(acmNamespace, 'olm-integration')
+        return true
+      } catch (_) {
+        return false
+      }
+    })
+
+    // Select an existing ClusterServiceVersion from the cluster.
+    const [csvNamespace, csvName] = execSync(
+      `oc get csv -A -o jsonpath='{.items[0].metadata.namespace}{" "}{.items[0].metadata.name}'`,
+      { stdio: ['pipe', 'pipe', 'ignore'] }
+    )
+      .toString()
+      .trim()
+      .split(' ')
+
+    expect(csvNamespace).toBeTruthy()
+    expect(csvName).toBeTruthy()
+
+    // Search must return the selected ClusterServiceVersion, which is covered by olm-integration.
+    const csvFilters = [
+      { property: 'kind', values: ['ClusterServiceVersion'] },
+      { property: 'name', values: [csvName] },
+      { property: 'namespace', values: [csvNamespace] },
+    ]
+
+    const item = await waitForCondition(
+      async () => {
+        const items = await searchItems(token, csvFilters)
+        return items.find((i) => i.name === csvName && i.namespace === csvNamespace)
+      },
+      { timeout: 120000 }
+    )
+
+    expect(item.kind).toBe('ClusterServiceVersion')
+    expect(item.name).toBe(csvName)
+    expect(item.namespace).toBe(csvNamespace)
+    expect(item.apigroup).toBe('operators.coreos.com')
+  }, 180000)
+
+  // ACM-37052 - RHACM4K-65807
+  test(`[P2][Sev2][${squad}] ACM-37052: should seed the built-in integration CollectorConfigs with expected metadata and rules`, async () => {
+    // The seven built-in integration CollectorConfigs and the apiGroups each one collects.
+    const expectedConfigs = {
+      'app-lifecycle-integration': ['apps.open-cluster-management.io', 'app.k8s.io'],
+      'argo-integration': ['argoproj.io'],
+      'cnv-integration': [
+        'kubevirt.io',
+        'cdi.kubevirt.io',
+        'migrations.kubevirt.io',
+        'clone.kubevirt.io',
+        'instancetype.kubevirt.io',
+        'snapshot.kubevirt.io',
+        'networkaddonsoperator.network.kubevirt.io',
+        'k8s.cni.cncf.io',
+        'storage.k8s.io',
+        'snapshot.storage.k8s.io',
+        'snapshot.storage.kubevirt.io',
+      ],
+      'gatekeeper-integration': ['constraints.gatekeeper.sh'],
+      'grc-integration': ['policy.open-cluster-management.io', 'wgpolicyk8s.io'],
+      'kyverno-integration': ['kyverno.io', 'policies.kyverno.io'],
+      'olm-integration': ['operators.coreos.com'],
+    }
+
+    const searchUid = getSearchCRUid(acmNamespace)
+
+    // Wait until every expected built-in integration config has been seeded by the operator.
+    const configs = await waitForCondition(() => {
+      const seeded = getIntegrationCollectorConfigs(acmNamespace)
+      const names = seeded.map((c) => c.metadata.name)
+      return Object.keys(expectedConfigs).every((name) => names.includes(name)) && seeded
+    })
+
+    const byName = {}
+    for (const config of configs) {
+      byName[config.metadata.name] = config
+    }
+
+    for (const [name, expectedApiGroups] of Object.entries(expectedConfigs)) {
+      const config = byName[name]
+      expect(config).toBeDefined()
+
+      const labels = config.metadata.labels || {}
+      expect(labels['search.open-cluster-management.io/config-type']).toBe('integration')
+
+      // ACM-42665 (fix: stolostron/search-v2-operator#866): operator-owned integration
+      // CollectorConfigs must NOT carry the backup label, so Velero's restore relabel
+      // patch is not denied by the Search webhook.
+      expect(labels).not.toHaveProperty(backupLabel)
+
+      const owner = (config.metadata.ownerReferences || [])[0] || {}
+      expect(owner.kind).toBe('Search')
+      expect(owner.name).toBe('search-v2-operator')
+      expect(owner.uid).toBe(searchUid)
+
+      const rules = config.spec.collectionRules || []
+      expect(rules).toHaveLength(1)
+      expect(rules[0].action).toBe('include')
+      expect(rules[0].resourceSelector.kinds).toEqual(['*'])
+      expect([...rules[0].resourceSelector.apiGroups].sort()).toEqual([...expectedApiGroups].sort())
     }
   }, 180000)
 })
