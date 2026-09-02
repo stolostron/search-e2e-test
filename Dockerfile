@@ -1,14 +1,14 @@
 # Copyright (c) 2020 Red Hat, Inc.
 
 FROM mikefarah/yq:4.32.2 as builder
-FROM cypress/included:8.5.0 AS production
+FROM registry.redhat.io/ubi9/nodejs-24-minimal:latest AS production
 
 USER root
 
 COPY --from=builder /usr/bin/yq /usr/local/bin/yq
 
-RUN mkdir -p /search-e2e/cypress_cache
-ENV CYPRESS_CACHE_FOLDER=/search-e2e/cypress_cache
+RUN microdnf install -y jq && microdnf clean all
+
 WORKDIR /search-e2e
 
 COPY package.json .
