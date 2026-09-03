@@ -56,7 +56,6 @@ function applyCollectorConfig(namespace, name, rules, options = {}) {
   }
 
   const asFlag = options.asServiceAccount ? ` --as=${options.asServiceAccount}` : ''
-  // silent: pipe stderr so expected webhook rejections don't spam the test log.
   const execOptions = options.silent ? { stdio: ['pipe', 'pipe', 'pipe'] } : {}
   execSync(`echo '${JSON.stringify(manifest)}' | oc apply${asFlag} -f -`, execOptions)
 }
@@ -72,10 +71,8 @@ function deleteResource(kind, name, namespace) {
 
 const pauseImage = 'registry.k8s.io/pause:3.9'
 
-// API-server phrasing wrapped around every admission webhook rejection.
 const webhookDenied = /denied the request/
 
-// Build Search API filters from the properties that are set.
 function itemFilters({ kind, apigroup, namespace, name }) {
   const filters = []
   if (kind) filters.push({ property: 'kind', values: [kind] })
@@ -85,7 +82,6 @@ function itemFilters({ kind, apigroup, namespace, name }) {
   return filters
 }
 
-// Match a collection rule by action and (optionally) an apiGroup/kind it selects.
 function matchesRule(rule, { action, apiGroup, kind }) {
   if (action && rule.action !== action) return false
   if (apiGroup && !(rule.resourceSelector?.apiGroups || []).includes(apiGroup)) return false
@@ -175,9 +171,7 @@ async function searchItems(token, filters) {
   return res.body.data.searchResult[0].items || []
 }
 
-// Poll the Search API until the filtered resource is indexed, resolving to the matching items.
-// Optional `match` requires every returned item to satisfy it.
-// Negative cases are asserted separately over an observation window.
+// Poll Search until matching resources are indexed.
 async function waitForIndexed(token, filters, { match } = {}, options = {}) {
   return waitForCondition(async () => {
     const items = await searchItems(token, filters)
@@ -196,7 +190,6 @@ async function waitForCondition(fn, { interval = 5000, timeout = 60000 } = {}) {
   throw new Error(`waitForCondition timed out after ${timeout}ms`)
 }
 
-// Wait until the merged config has (present) or no longer has (present:false) a rule matching `matcher`.
 async function waitForMergedRule(namespace, matcher, { present = true } = {}, options = {}) {
   return waitForCondition(() => {
     const has = getMergedCollectorConfig(namespace).spec.collectionRules.some(matcher)
@@ -204,8 +197,7 @@ async function waitForMergedRule(namespace, matcher, { present = true } = {}, op
   }, options)
 }
 
-// Assert a filtered resource stays absent from the Search index for the whole window,
-// so indexing lag can't make an exclusion assertion pass prematurely.
+// Observe the full window to avoid false passes caused by indexing lag.
 async function expectRemainsUnindexed(token, filters, { duration = 20000, interval = 5000 } = {}) {
   const end = Date.now() + duration
   while (Date.now() < end) {
