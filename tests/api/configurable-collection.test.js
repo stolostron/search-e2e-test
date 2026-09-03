@@ -490,7 +490,7 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
   test(`[P2][Sev2][${squad}] ACM-35522: should reject invalid exclude rules via the admission webhook`, () => {
     const userName = 'user-collector-config'
     const invalidRules = [
-      // Wildcard kinds on a protected apiGroup (would exclude ManagedCluster).
+      // Wildcard exclude on a protected API group.
       [{ action: 'exclude', resourceSelector: { apiGroups: ['cluster.open-cluster-management.io'], kinds: ['*'] } }],
       // Global wildcard exclusion.
       [{ action: 'exclude', resourceSelector: { apiGroups: ['*'], kinds: ['*'] } }],
@@ -524,13 +524,13 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
   // ACM-35522 - RHACM4K-65232
   test(`[P2][Sev2][${squad}] ACM-35522: should apply a specific include that overrides an earlier wildcard exclude`, async () => {
     const userName = 'user-collector-config'
-    // Unique namespace per run to avoid collisions with stale Search records left by a previous run of this test.
+    // Unique namespace per run to avoid collisions with stale Search records.
     const ns = `collector-rule-${Date.now().toString(36)}`
     const deployName = 'rule-test-deployment'
     const stsName = 'rule-test-statefulset'
 
     try {
-      // Rule order matters: wildcard exclude first, then a specific include with a custom field.
+      // Wildcard exclude first, then a specific include to verify last-match-wins.
       applyCollectorConfig(acmNamespace, userName, [
         { action: 'exclude', resourceSelector: { apiGroups: ['apps'], kinds: ['*'] } },
         {
@@ -540,7 +540,7 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
         },
       ])
 
-      // Merged config preserves the order: the wildcard exclude must come before the specific include.
+      // Verify the merged config preserves the rule order.
       await waitForCondition(() => {
         const rules = getMergedCollectorConfig(acmNamespace).spec.collectionRules
         const excludeIdx = rules.findIndex((r) => matchesRule(r, { action: 'exclude', apiGroup: 'apps', kind: '*' }))
@@ -556,7 +556,7 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
       applyResource(makeDeployment(ns, deployName))
       applyResource(makeStatefulSet(ns, stsName))
 
-      // Deployment wins via the specific include and carries the custom field.
+      // Deployment is re-included and exposes the configured custom field.
       const deployments = await waitForIndexed(
         token,
         itemFilters({ kind: 'Deployment', apigroup: 'apps', namespace: ns, name: deployName }),
@@ -565,13 +565,13 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
       )
       expect(String(deployments[0].testReplicas)).toBe('1')
 
-      // StatefulSet stays excluded by the wildcard exclude (no later include re-adds it).
+      // StatefulSet remains excluded by apps/*.
       await expectRemainsUnindexed(
         token,
         itemFilters({ kind: 'StatefulSet', apigroup: 'apps', namespace: ns, name: stsName })
       )
 
-      // Resources outside the apps group are unaffected — the namespace's default ConfigMap is still indexed.
+      // Resources outside the apps API group remain unaffected.
       await waitForIndexed(
         token,
         itemFilters({ kind: 'ConfigMap', namespace: ns, name: 'kube-root-ca.crt' }),
@@ -591,8 +591,7 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
     const integrationName = 'test-integration-config'
     const userName = 'user-collector-config'
     const operatorSA = `system:serviceaccount:${acmNamespace}:search-v2-operator`
-    // Unique namespace per run so Search records (keyed by cluster+namespace+name+kind) can never
-    // collide with stale records left by a previous run of this test.
+    // Unique namespace per run to avoid collisions with stale Search records from previous runs
     const ns = `collector-dynamic-${Date.now().toString(36)}`
     const deployName = 'dynamic-test-deployment'
     const deployName2 = 'dynamic-test-deployment-excluded'
@@ -601,18 +600,15 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
     const includesDeployment = (r) => matchesRule(r, { action: 'include', apiGroup: 'apps', kind: 'Deployment' })
 
     try {
-      // Integration config includes apps/Deployment.
       applyIntegrationCollectorConfig(acmNamespace, integrationName, [
         { action: 'include', resourceSelector: { apiGroups: ['apps'], kinds: ['Deployment'] } },
       ])
       await waitForMergedRule(acmNamespace, includesDeployment)
-
-      // A Deployment is collected while the integration include is active.
       applyResource({ apiVersion: 'v1', kind: 'Namespace', metadata: { name: ns } })
       applyResource(makeDeployment(ns, deployName))
       await waitForIndexed(token, deployFilter(deployName), {}, { timeout: 120000 })
 
-      // User excludes that overlap the integration include are rejected dynamically by the webhook.
+      // Overlapping user excludes are rejected while the integration include is active.
       expect(() =>
         applyCollectorConfig(
           acmNamespace,
@@ -625,23 +621,18 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
         webhookDenied
       )
 
-      // Delete the collected Deployment while apps/Deployment is still watched, so the collector
-      // receives the delete event and clears its Search record. Confirming removal now avoids leaving
-      // a stale record: once the exclude below stops the watch, a later delete would be missed.
+      // Delete while still watched to avoid leaving a stale Search record after exclusion.
       deleteResource('deployment', deployName, ns)
       await waitForCondition(async () => (await searchItems(token, deployFilter(deployName))).length === 0, {
         timeout: 120000,
       })
-
-      // Remove the integration config entirely (Story: integration present -> blocked, absent -> allowed).
       deleteCollectorConfig(acmNamespace, integrationName, { asServiceAccount: operatorSA })
       await waitForMergedRule(acmNamespace, includesDeployment, { present: false })
 
-      // The same user exclude is now accepted because no integration config needs apps/Deployment.
+      // The same user exclude is now accepted.
       expect(() => applyCollectorConfig(acmNamespace, userName, appsWildcardExclude)).not.toThrow()
       await waitForMergedRule(acmNamespace, (r) => matchesRule(r, { action: 'exclude', apiGroup: 'apps', kind: '*' }))
 
-      // A Deployment created after the exclude takes effect must never be indexed.
       applyResource(makeDeployment(ns, deployName2))
       await expectRemainsUnindexed(token, deployFilter(deployName2))
     } finally {
