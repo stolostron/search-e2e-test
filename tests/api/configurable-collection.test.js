@@ -5,7 +5,12 @@ jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 const { execSync } = require('child_process')
 
 const squad = require('../../config').get('squadName')
-const { getSearchApiRoute, getKubeadminToken, resolveAcmNamespace } = require('../common-lib/clusterAccess')
+const {
+  getSearchApiRoute,
+  getKubeadminToken,
+  getLocalClusterName,
+  resolveAcmNamespace,
+} = require('../common-lib/clusterAccess')
 const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
 const { sleep } = require('../common-lib/sleep')
 
@@ -73,12 +78,13 @@ const pauseImage = 'registry.k8s.io/pause:3.9'
 
 const webhookDenied = /denied the request/
 
-function itemFilters({ kind, apigroup, namespace, name }) {
+function itemFilters({ kind, apigroup, namespace, name, cluster }) {
   const filters = []
   if (kind) filters.push({ property: 'kind', values: [kind] })
   if (apigroup) filters.push({ property: 'apigroup', values: [apigroup] })
   if (namespace) filters.push({ property: 'namespace', values: [namespace] })
   if (name) filters.push({ property: 'name', values: [name] })
+  if (cluster) filters.push({ property: 'cluster', values: [cluster] })
   return filters
 }
 
@@ -210,11 +216,14 @@ async function expectRemainsUnindexed(token, filters, { duration = 20000, interv
 describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
   let token
   let acmNamespace
+  // Filter cluster-wide resources to local-cluster since CollectorConfig only affects the hub collector.
+  let localCluster
 
   beforeAll(async () => {
     token = getKubeadminToken()
     searchApiRoute = await getSearchApiRoute()
     acmNamespace = resolveAcmNamespace()
+    localCluster = getLocalClusterName()
     await assertFeatureFlagEnabled(acmNamespace)
   }, 180000)
 
@@ -279,11 +288,11 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
       // Wait for Search API to return custom fields for Alertmanager.
       await waitForCondition(
         async () => {
-          const items = await searchItems(token, [
-            { property: 'kind', values: ['Alertmanager'] },
-            { property: 'apigroup', values: ['monitoring.coreos.com'] },
-          ])
-          return items.length > 0 && items[0].updatedReplicas !== undefined && items[0].version !== undefined
+          const items = await searchItems(
+            token,
+            itemFilters({ kind: 'Alertmanager', apigroup: 'monitoring.coreos.com', cluster: localCluster })
+          )
+          return items.length > 0 && items.every((i) => i.updatedReplicas !== undefined && i.version !== undefined)
         },
         { timeout: 120000 }
       )
@@ -298,10 +307,11 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
   // ACM-32738 - RHACM4K-65204
   test(`[P2][Sev2][${squad}] ACM-32738: should respect configured priorities when collecting additionalPrinterColumns`, async () => {
     const userName = 'user-collector-config'
-    const machineFilters = [
-      { property: 'kind', values: ['Machine'] },
-      { property: 'apigroup', values: ['machine.openshift.io'] },
-    ]
+    const machineFilters = itemFilters({
+      kind: 'Machine',
+      apigroup: 'machine.openshift.io',
+      cluster: localCluster,
+    })
     const p0Fields = ['Phase', 'Type', 'Region', 'Zone', 'Age']
     const p1Fields = ['Node', 'ProviderID', 'State']
     const makeRule = (priority) => [
@@ -319,12 +329,14 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
 
       await waitForCondition(async () => {
         const items = await searchItems(token, machineFilters)
-        return items.length > 0 && p0Fields.every((f) => items[0][f] !== undefined)
+        return items.length > 0 && items.every((i) => p0Fields.every((f) => i[f] !== undefined))
       })
 
       const items = await searchItems(token, machineFilters)
-      for (const field of p1Fields) {
-        expect(items[0]).not.toHaveProperty(field)
+      for (const item of items) {
+        for (const field of p1Fields) {
+          expect(item).not.toHaveProperty(field)
+        }
       }
 
       // Priority 1: should collect all fields including Node, ProviderID, State.
@@ -332,7 +344,7 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
 
       await waitForCondition(async () => {
         const items = await searchItems(token, machineFilters)
-        return items.length > 0 && [...p0Fields, ...p1Fields].every((f) => items[0][f] !== undefined)
+        return items.length > 0 && items.every((i) => [...p0Fields, ...p1Fields].every((f) => i[f] !== undefined))
       })
     } finally {
       deleteCollectorConfig(acmNamespace, userName)
@@ -394,11 +406,12 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
     expect(csvName).toBeTruthy()
 
     // Search must return the selected ClusterServiceVersion, which is covered by olm-integration.
-    const csvFilters = [
-      { property: 'kind', values: ['ClusterServiceVersion'] },
-      { property: 'name', values: [csvName] },
-      { property: 'namespace', values: [csvNamespace] },
-    ]
+    const csvFilters = itemFilters({
+      kind: 'ClusterServiceVersion',
+      name: csvName,
+      namespace: csvNamespace,
+      cluster: localCluster,
+    })
 
     const item = await waitForCondition(
       async () => {
