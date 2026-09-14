@@ -288,9 +288,7 @@
         "_clusterNamespace": "<<CLUSTER_NAME>>-ns",
         "_hubClusterResource": true,
         "apiversion": "v1",
-        "container": [
-          "installer"
-        ],
+        "container": ["installer"],
         "created": "2022-07-06T11:15:56Z",
         "hostIP": "10.0.132.239",
         "image": [
@@ -400,14 +398,10 @@
         "_clusterNamespace": "<<CLUSTER_NAME>>-ns",
         "_hubClusterResource": true,
         "apiversion": "v1",
-        "container": [
-          "registry-server"
-        ],
+        "container": ["registry-server"],
         "created": "2022-07-13T15:42:14Z",
         "hostIP": "10.0.132.239",
-        "image": [
-          "registry.redhat.io/redhat/redhat-marketplace-index:v4.10"
-        ],
+        "image": ["registry.redhat.io/redhat/redhat-marketplace-index:v4.10"],
         "kind": "Pod",
         "label": {
           "catalogsource.operators.coreos.com/update": "",
@@ -449,9 +443,7 @@
         "_hubClusterResource": true,
         "_ownerUID": "<<CLUSTER_NAME>>/fcbf56b7-aa15-427a-857f-80fceae845e0",
         "apiversion": "v1",
-        "container": [
-          "multiclusterhub-operator"
-        ],
+        "container": ["multiclusterhub-operator"],
         "created": "2022-07-06T15:43:35Z",
         "hostIP": "10.0.132.239",
         "image": [
@@ -543,9 +535,7 @@
         },
         "name": "metrics",
         "namespace": "openshift-dns-operator",
-        "port": [
-          "9393/TCP"
-        ],
+        "port": ["9393/TCP"],
         "type": "ClusterIP"
       },
       "Metadata": {
@@ -830,9 +820,7 @@
         },
         "name": "metrics",
         "namespace": "openshift-kube-controller-manager-operator",
-        "port": [
-          "443/TCP"
-        ],
+        "port": ["443/TCP"],
         "type": "ClusterIP"
       },
       "Metadata": {
@@ -889,10 +877,7 @@
         "_hubClusterResource": true,
         "_ownerUID": "<<CLUSTER_NAME>>/2e0dc238-bc43-45ae-8cff-8e1d1cf5c98b",
         "apiversion": "v1",
-        "container": [
-          "status-sync",
-          "template-sync"
-        ],
+        "container": ["status-sync", "template-sync"],
         "created": "2022-07-06T16:08:55Z",
         "hostIP": "10.0.132.239",
         "image": [
@@ -930,9 +915,7 @@
         "kind": "Service",
         "name": "multicluster-operators-application-svc",
         "namespace": "open-cluster-management",
-        "port": [
-          "443/TCP"
-        ],
+        "port": ["443/TCP"],
         "type": "ClusterIP"
       },
       "Metadata": {
@@ -946,9 +929,7 @@
         "_clusterNamespace": "<<CLUSTER_NAME>>-ns",
         "_hubClusterResource": true,
         "apiversion": "v1",
-        "container": [
-          "pruner"
-        ],
+        "container": ["pruner"],
         "created": "2022-07-06T11:12:07Z",
         "hostIP": "10.0.132.239",
         "image": [
@@ -984,11 +965,7 @@
         },
         "name": "alertmanager-operated",
         "namespace": "openshift-monitoring",
-        "port": [
-          "9093/TCP",
-          "9094/TCP",
-          "9094/UDP"
-        ],
+        "port": ["9093/TCP", "9094/TCP", "9094/UDP"],
         "type": "ClusterIP"
       },
       "Metadata": {
@@ -1003,10 +980,7 @@
         "_hubClusterResource": true,
         "_ownerUID": "<<CLUSTER_NAME>>/69e12404-8be6-4b6f-a271-e3acfd8a6387",
         "apiversion": "v1",
-        "container": [
-          "kube-rbac-proxy",
-          "cluster-autoscaler-operator"
-        ],
+        "container": ["kube-rbac-proxy", "cluster-autoscaler-operator"],
         "created": "2022-07-06T11:09:02Z",
         "hostIP": "10.0.132.239",
         "image": [
@@ -1037,9 +1011,7 @@
         "_hubClusterResource": true,
         "_ownerUID": "<<CLUSTER_NAME>>/c7d57ece-e69d-4816-b542-9e01dd945e3d",
         "apiversion": "v1",
-        "container": [
-          "multiclusterhub-repo"
-        ],
+        "container": ["multiclusterhub-repo"],
         "created": "2022-07-06T16:03:22Z",
         "hostIP": "10.0.132.239",
         "image": [
@@ -1070,10 +1042,7 @@
         "_hubClusterResource": true,
         "_ownerUID": "<<CLUSTER_NAME>>/ed4d9603-f4ff-4523-9bc8-14c7b80114ad",
         "apiversion": "v1",
-        "container": [
-          "kube-rbac-proxy",
-          "governance-policy-propagator"
-        ],
+        "container": ["kube-rbac-proxy", "governance-policy-propagator"],
         "created": "2022-07-06T16:06:53Z",
         "hostIP": "10.0.132.239",
         "image": [
@@ -1137,10 +1106,7 @@
         },
         "name": "ip-10-0-132-239.us-east-2.compute.internal",
         "osImage": "Red Hat Enterprise Linux CoreOS 410.84.202206010432-0 (Ootpa)",
-        "role": [
-          "master",
-          "worker"
-        ]
+        "role": ["master", "worker"]
       },
       "Metadata": {
         "OwnerUID": ""
