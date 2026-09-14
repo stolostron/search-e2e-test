@@ -20,28 +20,9 @@ const wsLatency = new Trend('ws_inter_message_latency', true)
 const wsConnectTime = new Trend('ws_connect_time', true)
 
 // --- Shared helpers ---
-const KEYWORDS = [
-  'apiserver',
-  'nginx',
-  'redis',
-  'etcd',
-  'openshift',
-  'kube-system',
-]
-const NAMESPACES = [
-  'default',
-  'kube-system',
-  'openshift-monitoring',
-  'open-cluster-management',
-]
-const KINDS = [
-  'Pod',
-  'Deployment',
-  'Service',
-  'ConfigMap',
-  'Secret',
-  'ReplicaSet',
-]
+const KEYWORDS = ['apiserver', 'nginx', 'redis', 'etcd', 'openshift', 'kube-system']
+const NAMESPACES = ['default', 'kube-system', 'openshift-monitoring', 'open-cluster-management']
+const KINDS = ['Pod', 'Deployment', 'Service', 'ConfigMap', 'Secret', 'ReplicaSet']
 
 function pick(arr) {
   return arr[Math.floor(Math.random() * arr.length)]
@@ -107,10 +88,7 @@ export function indexerSync() {
   const baseUrl = `https://${INDEXER_HOST}/aggregator/clusters/${name}/sync`
 
   if (__ITER === 0) {
-    const payload = JSON.stringify(fullStateTemplate).replaceAll(
-      '<<CLUSTER_NAME>>',
-      name,
-    )
+    const payload = JSON.stringify(fullStateTemplate).replaceAll('<<CLUSTER_NAME>>', name)
     const res = http.post(baseUrl, payload, {
       headers: {
         'Content-Type': 'application/json',
@@ -126,9 +104,7 @@ export function indexerSync() {
   const roll = Math.random()
   if (roll < 10 / 11) {
     const uid = uuidv4()
-    const payload = JSON.stringify(updateTemplate)
-      .replaceAll('<<CLUSTER_NAME>>', name)
-      .replaceAll('<<UID>>', uid)
+    const payload = JSON.stringify(updateTemplate).replaceAll('<<CLUSTER_NAME>>', name).replaceAll('<<UID>>', uid)
     const res = http.post(baseUrl, payload, {
       headers: {
         'Content-Type': 'application/json',
@@ -138,10 +114,7 @@ export function indexerSync() {
     })
     check(res, { 'sync:delta status 200': (r) => r.status === 200 })
   } else {
-    const payload = JSON.stringify(fullStateTemplate).replaceAll(
-      '<<CLUSTER_NAME>>',
-      name,
-    )
+    const payload = JSON.stringify(fullStateTemplate).replaceAll('<<CLUSTER_NAME>>', name)
     const res = http.post(baseUrl, payload, {
       headers: {
         'Content-Type': 'application/json',
@@ -159,14 +132,10 @@ export function indexerSync() {
 // Scenario: API Queries
 // ============================================================
 function graphql(body, queryType) {
-  const res = http.post(
-    `https://${API_HOST}/searchapi/graphql`,
-    JSON.stringify(body),
-    {
-      headers: apiHeaders(),
-      tags: { query_type: queryType, name: `query:${queryType}` },
-    },
-  )
+  const res = http.post(`https://${API_HOST}/searchapi/graphql`, JSON.stringify(body), {
+    headers: apiHeaders(),
+    tags: { query_type: queryType, name: `query:${queryType}` },
+  })
   check(res, {
     [`query:${queryType} status 200`]: (r) => r.status === 200,
   })
@@ -180,8 +149,8 @@ const QUERY_TASKS = [
         query: GQL_SEARCH,
         variables: { input: [{ keywords: [pick(KEYWORDS)], limit: 1000 }] },
       },
-      'keyword',
-    ),
+      'keyword'
+    )
   ),
   ...Array(5).fill(() =>
     graphql(
@@ -199,8 +168,8 @@ const QUERY_TASKS = [
           ],
         },
       },
-      'filter',
-    ),
+      'filter'
+    )
   ),
   ...Array(3).fill(() =>
     graphql(
@@ -213,8 +182,8 @@ const QUERY_TASKS = [
           ],
         },
       },
-      'count',
-    ),
+      'count'
+    )
   ),
   ...Array(3).fill(() =>
     graphql(
@@ -222,8 +191,8 @@ const QUERY_TASKS = [
         query: GQL_COMPLETE,
         variables: { property: 'name', limit: 1000 },
       },
-      'autocomplete',
-    ),
+      'autocomplete'
+    )
   ),
   ...Array(2).fill(() =>
     graphql(
@@ -238,8 +207,8 @@ const QUERY_TASKS = [
           ],
         },
       },
-      'related',
-    ),
+      'related'
+    )
   ),
 ]
 
@@ -268,7 +237,7 @@ export function subscription() {
           JSON.stringify({
             type: 'connection_init',
             payload: { Authorization: `Bearer ${API_TOKEN}` },
-          }),
+          })
         )
       })
 
@@ -290,7 +259,7 @@ export function subscription() {
                   },
                 },
               },
-            }),
+            })
           )
           lastMessageTime = Date.now()
           return
@@ -320,7 +289,7 @@ export function subscription() {
         socket.send(JSON.stringify({ id: subId, type: 'complete' }))
         socket.close()
       }, SUB_DURATION * 1000)
-    },
+    }
   )
 
   check(res, { 'ws status 101': (r) => r && r.status === 101 })

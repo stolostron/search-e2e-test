@@ -31,28 +31,9 @@ const QUERIES = {
   }`,
 }
 
-const KEYWORDS = [
-  'apiserver',
-  'nginx',
-  'redis',
-  'etcd',
-  'openshift',
-  'kube-system',
-]
-const NAMESPACES = [
-  'default',
-  'kube-system',
-  'openshift-monitoring',
-  'open-cluster-management',
-]
-const KINDS = [
-  'Pod',
-  'Deployment',
-  'Service',
-  'ConfigMap',
-  'Secret',
-  'ReplicaSet',
-]
+const KEYWORDS = ['apiserver', 'nginx', 'redis', 'etcd', 'openshift', 'kube-system']
+const NAMESPACES = ['default', 'kube-system', 'openshift-monitoring', 'open-cluster-management']
+const KINDS = ['Pod', 'Deployment', 'Service', 'ConfigMap', 'Secret', 'ReplicaSet']
 
 function headers() {
   return {
@@ -90,7 +71,7 @@ function keywordSearch() {
       query: QUERIES.search,
       variables: { input: [{ keywords: [pick(KEYWORDS)], limit: 1000 }] },
     },
-    'keyword',
+    'keyword'
   )
 }
 
@@ -110,7 +91,7 @@ function filterSearch() {
         ],
       },
     },
-    'filter',
+    'filter'
   )
 }
 
@@ -125,7 +106,7 @@ function countSearch() {
         ],
       },
     },
-    'count',
+    'count'
   )
 }
 
@@ -135,7 +116,7 @@ function autocomplete() {
       query: QUERIES.searchComplete,
       variables: { property: 'name', limit: 1000 },
     },
-    'autocomplete',
+    'autocomplete'
   )
 }
 
@@ -152,7 +133,7 @@ function relatedCount() {
         ],
       },
     },
-    'related_count',
+    'related_count'
   )
 }
 
@@ -161,12 +142,10 @@ function relatedItems() {
     {
       query: QUERIES.searchRelatedItems,
       variables: {
-        input: [
-          { filters: [{ property: 'kind', values: ['Pod'] }], limit: 100 },
-        ],
+        input: [{ filters: [{ property: 'kind', values: ['Pod'] }], limit: 100 }],
       },
     },
-    'related_items',
+    'related_items'
   )
 }
 

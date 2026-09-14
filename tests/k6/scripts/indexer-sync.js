@@ -61,10 +61,7 @@ export function setup() {
   // Initial full-state sync for all VUs before the test loop starts.
   // k6 setup runs once, so we sync VU 1's cluster as a smoke test.
   const name = 'k6-cluster-1'
-  const raw = JSON.stringify(fullStateTemplate).replaceAll(
-    '<<CLUSTER_NAME>>',
-    name,
-  )
+  const raw = JSON.stringify(fullStateTemplate).replaceAll('<<CLUSTER_NAME>>', name)
   const url = `${BASE_URL}/aggregator/clusters/${name}/sync`
   const res = http.post(url, raw, {
     headers: {

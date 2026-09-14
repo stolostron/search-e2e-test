@@ -30,81 +30,77 @@ export default function () {
   let ackReceived = false
   const connectStart = Date.now()
 
-  const res = ws.connect(
-    WS_URL,
-    { headers: { 'Sec-WebSocket-Protocol': 'graphql-transport-ws' } },
-    function (socket) {
-      socket.on('open', function () {
-        const elapsed = Date.now() - connectStart
-        wsConnectTime.add(elapsed)
+  const res = ws.connect(WS_URL, { headers: { 'Sec-WebSocket-Protocol': 'graphql-transport-ws' } }, function (socket) {
+    socket.on('open', function () {
+      const elapsed = Date.now() - connectStart
+      wsConnectTime.add(elapsed)
 
+      socket.send(
+        JSON.stringify({
+          type: 'connection_init',
+          payload: { Authorization: `Bearer ${API_TOKEN}` },
+        })
+      )
+    })
+
+    socket.on('message', function (msg) {
+      const data = JSON.parse(msg)
+
+      if (data.type === 'connection_ack') {
+        ackReceived = true
         socket.send(
           JSON.stringify({
-            type: 'connection_init',
-            payload: { Authorization: `Bearer ${API_TOKEN}` },
-          }),
-        )
-      })
-
-      socket.on('message', function (msg) {
-        const data = JSON.parse(msg)
-
-        if (data.type === 'connection_ack') {
-          ackReceived = true
-          socket.send(
-            JSON.stringify({
-              id: subId,
-              type: 'subscribe',
-              payload: {
-                query: `subscription ($input: SearchInput) {
+            id: subId,
+            type: 'subscribe',
+            payload: {
+              query: `subscription ($input: SearchInput) {
               watch(input: $input) { uid operation newData timestamp }
             }`,
-                variables: {
-                  input: {
-                    filters: [{ property: 'kind', values: [filterKind] }],
-                  },
+              variables: {
+                input: {
+                  filters: [{ property: 'kind', values: [filterKind] }],
                 },
               },
-            }),
-          )
-          lastMessageTime = Date.now()
-          return
+            },
+          })
+        )
+        lastMessageTime = Date.now()
+        return
+      }
+
+      if (data.type === 'next') {
+        wsMessages.add(1)
+        const now = Date.now()
+        if (lastMessageTime) {
+          wsLatency.add(now - lastMessageTime)
         }
+        lastMessageTime = now
+        return
+      }
 
-        if (data.type === 'next') {
-          wsMessages.add(1)
-          const now = Date.now()
-          if (lastMessageTime) {
-            wsLatency.add(now - lastMessageTime)
-          }
-          lastMessageTime = now
-          return
-        }
-
-        if (data.type === 'error') {
-          console.error(`Subscription error: ${JSON.stringify(data.payload)}`)
-          socket.close()
-          return
-        }
-
-        if (data.type === 'complete') {
-          socket.close()
-          return
-        }
-
-        // ka (keep-alive) and pong messages are expected, ignore them.
-      })
-
-      socket.on('error', function (e) {
-        console.error(`WebSocket error: ${e.error()}`)
-      })
-
-      socket.setTimeout(function () {
-        socket.send(JSON.stringify({ id: subId, type: 'complete' }))
+      if (data.type === 'error') {
+        console.error(`Subscription error: ${JSON.stringify(data.payload)}`)
         socket.close()
-      }, SUB_DURATION * 1000)
-    },
-  )
+        return
+      }
+
+      if (data.type === 'complete') {
+        socket.close()
+        return
+      }
+
+      // ka (keep-alive) and pong messages are expected, ignore them.
+    })
+
+    socket.on('error', function (e) {
+      console.error(`WebSocket error: ${e.error()}`)
+    })
+
+    socket.setTimeout(function () {
+      socket.send(JSON.stringify({ id: subId, type: 'complete' }))
+      socket.close()
+    }, SUB_DURATION * 1000)
+  })
 
   check(res, {
     'ws status is 101': (r) => r && r.status === 101,
