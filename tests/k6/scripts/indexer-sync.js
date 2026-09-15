@@ -4,8 +4,14 @@ import { uuidv4 } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js'
 
 const INDEXER_HOST = __ENV.INDEXER_HOST || 'localhost:3010'
 const BASE_URL = `https://${INDEXER_HOST}`
+const CLUSTER_PAYLOAD_SIZE = __ENV.CLUSTER_PAYLOAD_SIZE || '5k'
+const payloadPath = `../payloads/cluster-${CLUSTER_PAYLOAD_SIZE}.json`
 
-const fullStateTemplate = JSON.parse(open('../payloads/cluster-5k.json'))
+if (!['5k', '100k', '150k'].includes(CLUSTER_PAYLOAD_SIZE)) {
+  throw new Error(`Unsupported CLUSTER_PAYLOAD_SIZE: ${CLUSTER_PAYLOAD_SIZE}`)
+}
+
+const fullStateTemplate = JSON.parse(open(payloadPath))
 const updateTemplate = JSON.parse(open('../payloads/update-pod.json'))
 
 export const options = {

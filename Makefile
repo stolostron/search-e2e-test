@@ -87,6 +87,7 @@ push:: docker/tag docker/login
 # Use TEST_ prefix for our variables to avoid collisions.
 TEST_VUS ?= 2
 TEST_DURATION ?= 60s
+CLUSTER_PAYLOAD_SIZE ?= 5k
 INDEXER_HOST ?= $(shell oc get route search-indexer -n open-cluster-management -o jsonpath='{.spec.host}' 2>/dev/null || echo "localhost:3010")
 API_HOST ?= $(shell oc get route search-api -n open-cluster-management -o jsonpath='{.spec.host}' 2>/dev/null || echo "localhost:4010")
 API_TOKEN ?= $(shell oc whoami -t 2>/dev/null)
@@ -107,7 +108,7 @@ test-k6-setup: ## Start Grafana + InfluxDB monitoring stack for k6.
 	@echo "Grafana available at http://localhost:3000 (admin/admin)"
 
 test-k6-indexer: check-k6 ## Run k6 indexer sync load test.
-	TEST_VUS=$(TEST_VUS) TEST_DURATION=$(TEST_DURATION) INDEXER_HOST=$(INDEXER_HOST) \
+	TEST_VUS=$(TEST_VUS) TEST_DURATION=$(TEST_DURATION) CLUSTER_PAYLOAD_SIZE=$(CLUSTER_PAYLOAD_SIZE) INDEXER_HOST=$(INDEXER_HOST) \
 		k6 run --out influxdb=$(K6_INFLUX) tests/k6/scripts/indexer-sync.js
 
 test-k6-api: check-k6 ## Run k6 API query load test.
@@ -119,7 +120,7 @@ test-k6-subscriptions: check-k6 ## Run k6 WebSocket subscription load test.
 		k6 run --out influxdb=$(K6_INFLUX) tests/k6/scripts/subscriptions.js
 
 test-k6-combined: check-k6 ## Run all k6 load tests simultaneously.
-	INDEXER_HOST=$(INDEXER_HOST) API_HOST=$(API_HOST) API_TOKEN=$(API_TOKEN) \
+	INDEXER_HOST=$(INDEXER_HOST) API_HOST=$(API_HOST) API_TOKEN=$(API_TOKEN) CLUSTER_PAYLOAD_SIZE=$(CLUSTER_PAYLOAD_SIZE) \
 	TEST_DURATION=$(TEST_DURATION) \
 		k6 run --out influxdb=$(K6_INFLUX) tests/k6/scripts/combined.js
 

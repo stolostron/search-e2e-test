@@ -9,9 +9,15 @@ const INDEXER_HOST = __ENV.INDEXER_HOST || 'localhost:3010'
 const API_HOST = __ENV.API_HOST || 'localhost:4010'
 const API_TOKEN = __ENV.API_TOKEN || ''
 const SUB_DURATION = __ENV.SUB_DURATION ? parseInt(__ENV.SUB_DURATION) : 30
+const CLUSTER_PAYLOAD_SIZE = __ENV.CLUSTER_PAYLOAD_SIZE || '5k'
+const payloadPath = `../payloads/cluster-${CLUSTER_PAYLOAD_SIZE}.json`
+
+if (!['5k', '100k', '150k'].includes(CLUSTER_PAYLOAD_SIZE)) {
+  throw new Error(`Unsupported CLUSTER_PAYLOAD_SIZE: ${CLUSTER_PAYLOAD_SIZE}`)
+}
 
 // --- Payloads (loaded at init time) ---
-const fullStateTemplate = JSON.parse(open('../payloads/cluster-5k.json'))
+const fullStateTemplate = JSON.parse(open(payloadPath))
 const updateTemplate = JSON.parse(open('../payloads/update-pod.json'))
 
 // --- Custom metrics ---
