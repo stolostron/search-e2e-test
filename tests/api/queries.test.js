@@ -43,9 +43,9 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
 
     // Wait for the service account and search index to get updated.
     // Must wait 2 minutes because of the current RBAC cache.
-    // another 30 seconds grace period added to ensure resources indexed
-    console.log('Waiting 2.5 minutes for index update and cache expiration')
-    await sleep(120000 + 30000)
+    // another 3 minutes grace period added to ensure resources indexed
+    console.log('Waiting 5 minutes for index update and cache expiration')
+    await sleep(120000 + 180000)
   }, 1500000)
 
   // Keep separate from beforeAll because it slows execution and increases the chances of recovering during retry.
