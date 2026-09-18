@@ -1,7 +1,5 @@
 // Copyright Contributors to the Open Cluster Management project
 
-jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
-
 const { execSync } = require('child_process')
 
 const squad = require('../../config').get('squadName')
@@ -11,7 +9,45 @@ const {
   getKubeadminToken,
   getLocalClusterName,
 } = require('../common-lib/clusterAccess')
-const { searchQueryBuilder, sendRequest } = require('../common-lib/searchClient')
+const {
+  searchQueryBuilder,
+  sendRequest,
+} = require('../common-lib/searchClient')
+const { sleep } = require('../common-lib/sleep')
+
+const retryWait = 5000
+
+async function runWithRetryDelay(fn) {
+  for (let attempt = 0; attempt <= global.retry; attempt++) {
+    try {
+      await fn()
+      return
+    } catch (error) {
+      if (attempt === global.retry) {
+        throw error
+      }
+
+      console.error(error)
+      await sleep(retryWait)
+    }
+  }
+}
+
+function retryTest(name, fn, timeout) {
+  const attempts = global.retry + 1
+  const totalTimeout =
+    timeout === undefined
+      ? undefined
+      : timeout * attempts + retryWait * (attempts - 1)
+
+  test(
+    name,
+    async () => {
+      await runWithRetryDelay(fn)
+    },
+    totalTimeout,
+  )
+}
 
 describe('RHACM4K-913: Search API - Verify search results with different queries', () => {
   // Get kubeconfig for imported clusters
@@ -21,7 +57,11 @@ describe('RHACM4K-913: Search API - Verify search results with different queries
   var import_kubeconfig = kubeconfigs.find((k) => k.includes('import'))
 
   // Get ACM namespace
-  const acmNamespace = execSync("oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'").toString().trim()
+  const acmNamespace = execSync(
+    "oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'",
+  )
+    .toString()
+    .trim()
   if (!acmNamespace) {
     throw new Error('Unable to resolve the ACM namespace')
   }
@@ -35,99 +75,128 @@ describe('RHACM4K-913: Search API - Verify search results with different queries
 
     if (import_kubeconfig) {
       managedCluster = execSync(
-        `oc --kubeconfig ${import_kubeconfig} get klusterlets.operator.open-cluster-management.io -o custom-columns=NAME:.spec.clusterName --no-headers`
+        `oc --kubeconfig ${import_kubeconfig} get klusterlets.operator.open-cluster-management.io -o custom-columns=NAME:.spec.clusterName --no-headers`,
       )
         .toString()
         .trim()
     } else {
-      console.log('Cannot get managedCluster because import_kubeconfig is undefined.')
+      console.log(
+        'Cannot get managedCluster because import_kubeconfig is undefined.',
+      )
     }
   })
 
-  test(`[P3][Sev3][${squad}] should have expected count of pods in ocm on hub cluster.`, async () => {
-    var query = searchQueryBuilder({
-      filters: [
-        { property: 'kind', values: ['Pod'] },
-        { property: 'namespace', values: [acmNamespace] },
-        { property: 'status', values: ['Running'] },
-        { property: 'cluster', values: [getLocalClusterName()] },
-      ],
-    })
-    const [searchRes, cliRes] = await Promise.all([
-      sendRequest(query, token),
-      execSync(`oc get pods -n ${acmNamespace} --field-selector=status.phase==Running --no-headers | wc -l`),
-    ])
-    const pods = searchRes.body.data.searchResult[0].items
-    expect(pods.length.toString()).toEqual(cliRes.toString().trim())
-  }, 10000)
-
-  test(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent on hub cluster.`, async () => {
-    var query = searchQueryBuilder({
-      filters: [
-        { property: 'kind', values: ['Pod'] },
-        { property: 'namespace', values: ['open-cluster-management-agent'] },
-        { property: 'status', values: ['Running'] },
-        { property: 'cluster', values: [getLocalClusterName()] },
-      ],
-    })
-    const [searchRes, cliRes] = await Promise.all([
-      sendRequest(query, token),
-      execSync(
-        'oc get pods -n open-cluster-management-agent --field-selector=status.phase==Running --no-headers | wc -l'
-      ),
-    ])
-    const pods = searchRes.body.data.searchResult[0].items
-    expect(pods.length.toString()).toEqual(cliRes.toString().trim())
-  }, 10000)
-
-  test(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent on imported cluster.`, async () => {
-    if (import_kubeconfig) {
+  retryTest(
+    `[P3][Sev3][${squad}] should have expected count of pods in ocm on hub cluster.`,
+    async () => {
       var query = searchQueryBuilder({
         filters: [
           { property: 'kind', values: ['Pod'] },
-          { property: 'namespace', values: ['open-cluster-management-agent'] },
+          { property: 'namespace', values: [acmNamespace] },
           { property: 'status', values: ['Running'] },
-          { property: 'cluster', values: [managedCluster] },
+          { property: 'cluster', values: [getLocalClusterName()] },
         ],
       })
       const [searchRes, cliRes] = await Promise.all([
         sendRequest(query, token),
         execSync(
-          `oc --kubeconfig ${import_kubeconfig} get pods -n open-cluster-management-agent --field-selector=status.phase==Running --no-headers | wc -l`
+          `oc get pods -n ${acmNamespace} --field-selector=status.phase==Running --no-headers | wc -l`,
         ),
       ])
       const pods = searchRes.body.data.searchResult[0].items
       expect(pods.length.toString()).toEqual(cliRes.toString().trim())
-    } else {
-      console.log('Test skipped because import_kubeconfig is undefined.')
-    }
-  }, 10000)
+    },
+    10000,
+  )
 
-  test(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent-addon on hub cluster.`, async () => {
-    var query = searchQueryBuilder({
-      filters: [
-        { property: 'kind', values: ['Pod'] },
-        { property: 'namespace', values: ['open-cluster-management-agent-addon'] },
-        { property: 'status', values: ['Running'] },
-        { property: 'cluster', values: [getLocalClusterName()] },
-      ],
-    })
-    const [searchRes, cliRes] = await Promise.all([
-      sendRequest(query, token),
-      execSync(
-        'oc get pods -n open-cluster-management-agent-addon --field-selector=status.phase==Running --no-headers | wc -l'
-      ),
-    ])
-    const pods = searchRes.body.data.searchResult[0].items
-    expect(pods.length.toString()).toEqual(cliRes.toString().trim())
-  }, 10000)
+  retryTest(
+    `[P3][Sev3][${squad}] should have expected count of pods in ocm-agent on hub cluster.`,
+    async () => {
+      var query = searchQueryBuilder({
+        filters: [
+          { property: 'kind', values: ['Pod'] },
+          { property: 'namespace', values: ['open-cluster-management-agent'] },
+          { property: 'status', values: ['Running'] },
+          { property: 'cluster', values: [getLocalClusterName()] },
+        ],
+      })
+      const [searchRes, cliRes] = await Promise.all([
+        sendRequest(query, token),
+        execSync(
+          'oc get pods -n open-cluster-management-agent --field-selector=status.phase==Running --no-headers | wc -l',
+        ),
+      ])
+      const pods = searchRes.body.data.searchResult[0].items
+      expect(pods.length.toString()).toEqual(cliRes.toString().trim())
+    },
+    10000,
+  )
+
+  retryTest(
+    `[P3][Sev3][${squad}] should have expected count of pods in ocm-agent on imported cluster.`,
+    async () => {
+      if (import_kubeconfig) {
+        var query = searchQueryBuilder({
+          filters: [
+            { property: 'kind', values: ['Pod'] },
+            {
+              property: 'namespace',
+              values: ['open-cluster-management-agent'],
+            },
+            { property: 'status', values: ['Running'] },
+            { property: 'cluster', values: [managedCluster] },
+          ],
+        })
+        const [searchRes, cliRes] = await Promise.all([
+          sendRequest(query, token),
+          execSync(
+            `oc --kubeconfig ${import_kubeconfig} get pods -n open-cluster-management-agent --field-selector=status.phase==Running --no-headers | wc -l`,
+          ),
+        ])
+        const pods = searchRes.body.data.searchResult[0].items
+        expect(pods.length.toString()).toEqual(cliRes.toString().trim())
+      } else {
+        console.log('Test skipped because import_kubeconfig is undefined.')
+      }
+    },
+    10000,
+  )
+
+  retryTest(
+    `[P3][Sev3][${squad}] should have expected count of pods in ocm-agent-addon on hub cluster.`,
+    async () => {
+      var query = searchQueryBuilder({
+        filters: [
+          { property: 'kind', values: ['Pod'] },
+          {
+            property: 'namespace',
+            values: ['open-cluster-management-agent-addon'],
+          },
+          { property: 'status', values: ['Running'] },
+          { property: 'cluster', values: [getLocalClusterName()] },
+        ],
+      })
+      const [searchRes, cliRes] = await Promise.all([
+        sendRequest(query, token),
+        execSync(
+          'oc get pods -n open-cluster-management-agent-addon --field-selector=status.phase==Running --no-headers | wc -l',
+        ),
+      ])
+      const pods = searchRes.body.data.searchResult[0].items
+      expect(pods.length.toString()).toEqual(cliRes.toString().trim())
+    },
+    10000,
+  )
 
   test.skip(`[P3][Sev3][${squad}] should have expected count of pods in ocm-agent-addon on imported cluster.`, async () => {
     if (import_kubeconfig) {
       var query = searchQueryBuilder({
         filters: [
           { property: 'kind', values: ['Pod'] },
-          { property: 'namespace', values: ['open-cluster-management-agent-addon'] },
+          {
+            property: 'namespace',
+            values: ['open-cluster-management-agent-addon'],
+          },
           { property: 'status', values: ['Running'] },
           { property: 'cluster', values: [managedCluster] },
         ],
@@ -135,7 +204,7 @@ describe('RHACM4K-913: Search API - Verify search results with different queries
       const [searchRes, cliRes] = await Promise.all([
         sendRequest(query, token),
         execSync(
-          `oc --kubeconfig ${import_kubeconfig} get pods -n open-cluster-management-agent-addon --field-selector=status.phase==Running --no-headers | wc -l`
+          `oc --kubeconfig ${import_kubeconfig} get pods -n open-cluster-management-agent-addon --field-selector=status.phase==Running --no-headers | wc -l`,
         ),
       ])
       const pods = searchRes.body.data.searchResult[0].items
@@ -145,26 +214,30 @@ describe('RHACM4K-913: Search API - Verify search results with different queries
     }
   }, 10000)
 
-  test(`[P3][Sev3][${squad}] should have expected count of pods in kube-system on imported cluster.`, async () => {
-    if (import_kubeconfig) {
-      var query = searchQueryBuilder({
-        filters: [
-          { property: 'kind', values: ['Pod'] },
-          { property: 'namespace', values: ['kube-system'] },
-          { property: 'status', values: ['Running'] },
-          { property: 'cluster', values: [managedCluster] },
-        ],
-      })
-      const [searchRes, cliRes] = await Promise.all([
-        sendRequest(query, token),
-        execSync(
-          `oc --kubeconfig ${import_kubeconfig} get pods -n kube-system --field-selector=status.phase==Running --no-headers | wc -l`
-        ),
-      ])
-      const pods = searchRes.body.data.searchResult[0].items
-      expect(pods.length.toString()).toEqual(cliRes.toString().trim())
-    } else {
-      console.log('Test skipped because import_kubeconfig is undefined.')
-    }
-  }, 10000)
+  retryTest(
+    `[P3][Sev3][${squad}] should have expected count of pods in kube-system on imported cluster.`,
+    async () => {
+      if (import_kubeconfig) {
+        var query = searchQueryBuilder({
+          filters: [
+            { property: 'kind', values: ['Pod'] },
+            { property: 'namespace', values: ['kube-system'] },
+            { property: 'status', values: ['Running'] },
+            { property: 'cluster', values: [managedCluster] },
+          ],
+        })
+        const [searchRes, cliRes] = await Promise.all([
+          sendRequest(query, token),
+          execSync(
+            `oc --kubeconfig ${import_kubeconfig} get pods -n kube-system --field-selector=status.phase==Running --no-headers | wc -l`,
+          ),
+        ])
+        const pods = searchRes.body.data.searchResult[0].items
+        expect(pods.length.toString()).toEqual(cliRes.toString().trim())
+      } else {
+        console.log('Test skipped because import_kubeconfig is undefined.')
+      }
+    },
+    10000,
+  )
 })
