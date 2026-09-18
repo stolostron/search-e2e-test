@@ -34,12 +34,18 @@ async function runWithRetryDelay(fn) {
 }
 
 function retryTest(name, fn, timeout) {
+  const attempts = global.retry + 1
+  const totalTimeout =
+    timeout === undefined
+      ? undefined
+      : timeout * attempts + retryWait * (attempts - 1)
+
   test(
     name,
     async () => {
       await runWithRetryDelay(fn)
     },
-    timeout,
+    totalTimeout,
   )
 }
 
