@@ -102,7 +102,9 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
     test('should receive ConfigMap', () => ValidateSearchData({ user, kind: 'configmap' }), validationTimeout)
 
     test(`should not match any ConfigMap from other namespaces`, async () => {
-      const items = await resolveSearchItems(user.token, { filters: [{ property: 'kind', values: ['configmap'] }] })
+      const items = await resolveSearchItems(user.token, {
+        filters: [{ property: 'kind', values: ['ConfigMap'] }],
+      })
       expect(items.find(({ namespace }) => namespace && namespace.toLowerCase() !== ns)).toEqual(undefined)
       expect(items.find(({ kind }) => kind && kind.toLowerCase() !== 'configmap')).toEqual(undefined)
     })
@@ -156,7 +158,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
      * open-cluster-management. This is coming from Kubernetes, not search.
     test(`should not match resources from other namespaces`, async () => {
       expect(() => execSync(`oc auth can-i list configmap -n open-cluster-management --as=${user.fullName}`)).toThrow()
-      const q = searchQueryBuilder({ filters: [{ property: 'kind', values: ['configmap'] }] })
+      const q = searchQueryBuilder({ filters: [{ property: 'kind', values: ['ConfigMap'] }] })
       const res = await sendRequest(q, user.token)
       const items = res.body.data.searchResult[0].items
 
