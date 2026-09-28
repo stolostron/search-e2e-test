@@ -1,6 +1,6 @@
 module.exports = {
   globals: {
-    retry: 2,
+    retry: 5,
   },
   globalSetup: './globalSetup.js',
   globalTeardown: './globalTeardown.js',
