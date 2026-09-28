@@ -9,10 +9,12 @@ const { sleep } = require('./sleep')
  * @param {string} sql - The SQL query to execute.
  * @returns {string} The trimmed query output.
  */
-function execPostgresQuery(acmNamespace, sql) {
+function execPostgresQuery(acmNamespace, sql, timeoutMs) {
+  const opts = timeoutMs ? { timeout: timeoutMs } : {}
   return execSync(
     `oc exec -n ${acmNamespace} deploy/search-postgres -c search-postgres -- ` +
-      `bash -c "psql -U \\$POSTGRESQL_USER -d \\$POSTGRESQL_DATABASE -tAc \\"${sql}\\""`
+      `bash -c "psql -U \\$POSTGRESQL_USER -d \\$POSTGRESQL_DATABASE -tAc \\"${sql}\\""`,
+    opts
   )
     .toString()
     .trim()
@@ -35,7 +37,8 @@ async function waitForIndexedResources(acmNamespace, targetNamespace, options = 
 
   while (Date.now() < deadline) {
     try {
-      const result = execPostgresQuery(acmNamespace, sql)
+      const remaining = deadline - Date.now()
+      const result = execPostgresQuery(acmNamespace, sql, remaining)
       const count = parseInt(result, 10)
       if (count >= minCount) {
         console.log(`[waitForIndexedResources] Found ${count} resources in namespace '${targetNamespace}'.`)
