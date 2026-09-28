@@ -3,7 +3,7 @@
 jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const squad = require('../../config').get('squadName')
-const { getUserContext, getSearchApiRoute } = require('../common-lib/clusterAccess')
+const { getUserContext, getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
 const { execCliCmdString } = require('../common-lib/cliClient')
 const {
   resolveSearchCount,
@@ -24,6 +24,19 @@ const requiredFixtures = ['cm0', 'cm1', 'cm2-apple', 'cm3-avocado', 'cm4-broccol
 
 describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`, () => {
   beforeAll(async () => {
+    const adminToken = getKubeadminToken()
+
+    // Get the search API route first — we need the websocket URL before setup runs.
+    searchApiRoute = await getSearchApiRoute()
+    const websocketUrl = searchApiRoute.replace('https://', 'wss://')
+
+    // Open the subscription BEFORE creating fixtures so no INSERT/UPDATE events
+    // are missed due to indexing completing while setup commands are still running.
+    // The readiness promise resolves once every required fixture name is seen.
+    const readinessPromise = waitForIndexedResourcesViaSubscription(websocketUrl, adminToken, ns, requiredFixtures)
+
+    // Create all test fixtures. Any events that arrive during setup are already
+    // captured by the active subscription above.
     let setupCommands = `# export ns=search-query; export usr=search-query-user
     oc create namespace ${ns}
     oc create serviceaccount ${usr} -n ${ns}
@@ -42,23 +55,14 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     oc create deployment ${usr} -n ${ns} --image=busybox --replicas=0 -- 'date; sleep 60;'
     oc create service clusterip test-service -n ${ns} --tcp=80:8080`
 
-    // Run the setup steps and get the search API route in parallel.
-    const [route] = await Promise.all([getSearchApiRoute(), execCliCmdString(setupCommands)])
-    searchApiRoute = route
-
-    // Build the WebSocket URL from the HTTPS route.
-    const websocketUrl = searchApiRoute.replace('https://', 'wss://')
-    const adminToken = require('../common-lib/clusterAccess').getKubeadminToken()
+    await execCliCmdString(setupCommands)
 
     // Wait for RBAC cache expiration (2 min) and all required resources to be indexed.
-    // The subscription notifies us as soon as each fixture INSERT arrives in the search
-    // index, so we don't burn the fixed 3-minute grace period from the original sleep.
+    // The subscription notifies us as soon as each fixture INSERT/UPDATE arrives in the
+    // search index, so we don't burn the fixed grace period from the original sleep.
     // Both waits run concurrently — total wait is whichever takes longer.
     console.log('Waiting for RBAC cache expiration and resources to be indexed via subscription...')
-    await Promise.all([
-      sleep(120000),
-      waitForIndexedResourcesViaSubscription(websocketUrl, adminToken, ns, requiredFixtures),
-    ])
+    await Promise.all([sleep(120000), readinessPromise])
   }, 1500000)
 
   // Keep separate from beforeAll because it slows execution and increases the chances of recovering during retry.

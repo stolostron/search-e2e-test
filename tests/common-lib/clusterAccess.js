@@ -171,32 +171,42 @@ function resolveAcmNamespace() {
 }
 
 /**
- * Retrieve the OpenShift ingress CA certificate so callers can establish TLS
- * connections without disabling certificate verification.
+ * Retrieve the OpenShift service CA certificate so callers can verify TLS
+ * connections to services that use `service.beta.openshift.io/serving-cert-secret-name`.
  *
- * The router CA is stored in the secret `router-ca` in the
- * `openshift-ingress-operator` namespace.  Callers should pass the returned
- * buffer as the `ca` option to Node's `https.Agent` or `WebSocket`.
+ * The Search API route is a TLS passthrough backed by a service certificate
+ * signed by the OpenShift service CA (secret `search-api-certs`, generated via
+ * the `serving-cert-secret-name` annotation on the service). The service CA
+ * bundle is injected by the service-ca controller into every namespace as
+ * `configmap/openshift-service-ca.crt`, key `service-ca.crt`.
  *
- * Falls back to `undefined` (system CAs) when the secret cannot be read so
+ * Falls back to `undefined` (system CAs) when the configmap cannot be read so
  * that the helper does not break non-OpenShift environments.
  *
  * @returns {Buffer|undefined} PEM-encoded CA certificate, or undefined.
  */
-function getIngressCA() {
+function getServiceCA() {
   try {
-    return execSync(
-      "oc get secret router-ca -n openshift-ingress-operator -o jsonpath='{.data.tls\\.crt}' | base64 -d",
+    const b64 = execSync(
+      "oc get configmap openshift-service-ca.crt -n default -o jsonpath='{.data.service-ca\\.crt}'",
       { stdio: ['pipe', 'pipe', 'ignore'] }
     )
+      .toString()
+      .trim()
+    if (!b64) {
+      console.warn('[clusterAccess] Service CA configmap returned empty data; TLS verification may be incomplete.')
+      return undefined
+    }
+    // The value is already PEM (not base64-encoded again), return as Buffer.
+    return Buffer.from(b64)
   } catch (_) {
-    console.warn('[clusterAccess] Could not retrieve ingress CA; TLS verification may be incomplete.')
+    console.warn('[clusterAccess] Could not retrieve service CA; TLS verification may be incomplete.')
     return undefined
   }
 }
 
 exports.deleteResource = deleteResource
-exports.getIngressCA = getIngressCA
+exports.getServiceCA = getServiceCA
 exports.getKubeConfig = getKubeConfig
 exports.getUserContext = getUserContext
 exports.getResource = getResource

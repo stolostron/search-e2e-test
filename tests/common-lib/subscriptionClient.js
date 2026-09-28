@@ -4,19 +4,20 @@
  * Subscription-based resource readiness utilities.
  *
  * Alternative to DB polling (PR #497): uses the Search API WebSocket
- * subscription (watch) to receive real-time INSERT events and resolve
+ * subscription (watch) to receive real-time INSERT/UPDATE events and resolve
  * only when the required resources are confirmed indexed.
  */
 
 const WebSocket = require('ws')
-const { getIngressCA } = require('./clusterAccess')
+const { getServiceCA } = require('./clusterAccess')
 
 /**
  * Open a WebSocket connection authenticated with the given token and
  * negotiate the graphql-transport-ws sub-protocol.
  *
- * TLS verification is performed using the cluster's ingress CA certificate
- * retrieved from the `openshift-ingress-operator/router-ca` secret.
+ * TLS verification is performed using the OpenShift service CA certificate.
+ * The Search API route uses TLS passthrough, so the WebSocket sees the service
+ * certificate (signed by the OpenShift service CA), not a router certificate.
  *
  * @param {string} websocketUrl  - Base URL of the Search API (wss://...).
  * @param {string} token         - Bearer token for authentication.
@@ -25,7 +26,7 @@ const { getIngressCA } = require('./clusterAccess')
 function openAuthenticatedWebSocket(websocketUrl, token) {
   return new Promise((resolve, reject) => {
     const ws = new WebSocket(`${websocketUrl}/searchapi/graphql`, 'graphql-transport-ws', {
-      ca: getIngressCA(),
+      ca: getServiceCA(),
     })
 
     const timeout = setTimeout(() => {
@@ -57,13 +58,23 @@ function openAuthenticatedWebSocket(websocketUrl, token) {
 }
 
 /**
- * Wait until all resources with the given names appear as INSERT events in
- * the search index for the specified namespace, using the Search watch
- * subscription.
+ * Wait until all resources with the given names are confirmed indexed in the
+ * search index for the specified namespace, using the Search watch subscription.
  *
- * The function opens a WebSocket subscription filtered to the target
- * namespace, listens for INSERT events, and resolves once every name in
- * `requiredNames` has been observed.  A timeout throws an Error.
+ * The subscription must be registered before the test fixtures are created so
+ * that no INSERT events are missed. The function accepts both INSERT and UPDATE
+ * events: the search-collector may batch a `create` + `label` into a single
+ * INSERT (with labels already present), but if a sync boundary falls between the
+ * two `oc` commands, the initial INSERT will be unlabeled and a subsequent UPDATE
+ * will carry the labels. Accepting either event for a name removes it from the
+ * pending set.
+ *
+ * Once the subscription is active, callers should check whether the fixtures
+ * are already indexed (e.g. from a prior setup run) and remove those from the
+ * pending set before waiting.
+ *
+ * Rejects immediately — rather than hanging until timeout — when the server
+ * sends an `error` or premature `complete` frame for the subscription.
  *
  * @param {string}   websocketUrl    - Base URL of the Search API (wss://...).
  * @param {string}   token           - Admin bearer token (must have access to the namespace).
@@ -72,7 +83,10 @@ function openAuthenticatedWebSocket(websocketUrl, token) {
  * @param {Object}   [options]
  * @param {number}   [options.timeoutMs=300000] - Max wait time in ms.
  * @param {string}   [options.subscriptionId='resource-readiness'] - GraphQL subscription id.
- * @returns {Promise<void>} Resolves when all required resources are indexed.
+ * @returns {Promise<{ws: WebSocket, done: Promise<void>}>}
+ *   `ws`   – the open authenticated WebSocket (so callers can send the subscribe
+ *             frame *after* setting up fixtures, avoiding the TOCTOU window).
+ *   `done` – resolves when all `requiredNames` have been observed.
  */
 async function waitForIndexedResourcesViaSubscription(
   websocketUrl,
@@ -114,13 +128,38 @@ async function waitForIndexedResourcesViaSubscription(
         return
       }
 
+      // Fail fast on server-side subscription errors or unexpected stream completion.
+      if (msg.id === subscriptionId) {
+        if (msg.type === 'error') {
+          clearTimeout(timer)
+          ws.close()
+          const detail = JSON.stringify(msg.payload ?? msg)
+          reject(new Error(`[subscriptionClient] Subscription rejected by server: ${detail}`))
+          return
+        }
+        if (msg.type === 'complete') {
+          clearTimeout(timer)
+          ws.close()
+          reject(
+            new Error(
+              `[subscriptionClient] Subscription completed prematurely. Still waiting for: ${[...pending].join(', ')}`
+            )
+          )
+          return
+        }
+      }
+
       // graphql-transport-ws: data arrives as type='next', payload.data.watch
       if (msg.type !== 'next') return
       const watch = msg?.payload?.data?.watch
       if (!watch) return
 
-      // Only care about INSERT events (new resources entering the index)
-      if (watch.operation !== 'INSERT') return
+      // Accept both INSERT and UPDATE events.
+      // The collector may send a combined INSERT that already includes labels
+      // (create + label within the same sync window), or it may send a bare
+      // INSERT followed by a labeled UPDATE when a sync boundary falls between
+      // the two `oc` commands. Either event confirms the resource is indexed.
+      if (watch.operation !== 'INSERT' && watch.operation !== 'UPDATE') return
 
       const name = watch.newData?.name
       if (!name) return
@@ -145,7 +184,7 @@ async function waitForIndexedResourcesViaSubscription(
       reject(new Error(`[subscriptionClient] WebSocket error during watch: ${event.message}`))
     }
 
-    ws.onclose = (event) => {
+    ws.onclose = () => {
       if (pending.size > 0) {
         clearTimeout(timer)
         reject(
