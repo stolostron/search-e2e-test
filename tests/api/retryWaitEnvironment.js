@@ -8,7 +8,9 @@ class RetryWaitEnvironment extends TestEnvironment {
   async handleTestEvent(event) {
     if (event.name === 'test_retry') {
       const testName = event.test.name
-      console.log(`[RetryWait] Test '${testName}' failed, waiting ${RETRY_WAIT_MS / 1000}s before retry...`)
+      console.log(
+        `[RetryWait ${new Date().toISOString()}] Test '${testName}' failed, waiting ${RETRY_WAIT_MS / 1000}s before retry...`
+      )
       await new Promise((resolve) => setTimeout(resolve, RETRY_WAIT_MS))
     }
   }
