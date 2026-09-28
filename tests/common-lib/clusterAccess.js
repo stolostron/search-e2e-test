@@ -170,7 +170,33 @@ function resolveAcmNamespace() {
   }
 }
 
+/**
+ * Retrieve the OpenShift ingress CA certificate so callers can establish TLS
+ * connections without disabling certificate verification.
+ *
+ * The router CA is stored in the secret `router-ca` in the
+ * `openshift-ingress-operator` namespace.  Callers should pass the returned
+ * buffer as the `ca` option to Node's `https.Agent` or `WebSocket`.
+ *
+ * Falls back to `undefined` (system CAs) when the secret cannot be read so
+ * that the helper does not break non-OpenShift environments.
+ *
+ * @returns {Buffer|undefined} PEM-encoded CA certificate, or undefined.
+ */
+function getIngressCA() {
+  try {
+    return execSync(
+      "oc get secret router-ca -n openshift-ingress-operator -o jsonpath='{.data.tls\\.crt}' | base64 -d",
+      { stdio: ['pipe', 'pipe', 'ignore'] }
+    )
+  } catch (_) {
+    console.warn('[clusterAccess] Could not retrieve ingress CA; TLS verification may be incomplete.')
+    return undefined
+  }
+}
+
 exports.deleteResource = deleteResource
+exports.getIngressCA = getIngressCA
 exports.getKubeConfig = getKubeConfig
 exports.getUserContext = getUserContext
 exports.getResource = getResource

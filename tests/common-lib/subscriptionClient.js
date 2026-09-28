@@ -9,10 +9,14 @@
  */
 
 const WebSocket = require('ws')
+const { getIngressCA } = require('./clusterAccess')
 
 /**
  * Open a WebSocket connection authenticated with the given token and
  * negotiate the graphql-transport-ws sub-protocol.
+ *
+ * TLS verification is performed using the cluster's ingress CA certificate
+ * retrieved from the `openshift-ingress-operator/router-ca` secret.
  *
  * @param {string} websocketUrl  - Base URL of the Search API (wss://...).
  * @param {string} token         - Bearer token for authentication.
@@ -21,7 +25,7 @@ const WebSocket = require('ws')
 function openAuthenticatedWebSocket(websocketUrl, token) {
   return new Promise((resolve, reject) => {
     const ws = new WebSocket(`${websocketUrl}/searchapi/graphql`, 'graphql-transport-ws', {
-      rejectUnauthorized: false,
+      ca: getIngressCA(),
     })
 
     const timeout = setTimeout(() => {
