@@ -176,33 +176,36 @@ function resolveAcmNamespace() {
  *
  * The Search API route is a TLS passthrough backed by a service certificate
  * signed by the OpenShift service CA (secret `search-api-certs`, generated via
- * the `serving-cert-secret-name` annotation on the service). The service CA
- * bundle is injected by the service-ca controller into every namespace as
+ * the `serving-cert-secret-name` annotation on the service). The service-ca
+ * controller injects the CA bundle into every namespace as
  * `configmap/openshift-service-ca.crt`, key `service-ca.crt`.
  *
- * Falls back to `undefined` (system CAs) when the configmap cannot be read so
- * that the helper does not break non-OpenShift environments.
+ * Tries the ACM namespace first (the most reliable source since the Search API
+ * runs there), then falls back to `default`. Returns `undefined` when neither
+ * is readable so the caller can fall back gracefully.
  *
  * @returns {Buffer|undefined} PEM-encoded CA certificate, or undefined.
  */
 function getServiceCA() {
-  try {
-    const b64 = execSync(
-      "oc get configmap openshift-service-ca.crt -n default -o jsonpath='{.data.service-ca\\.crt}'",
-      { stdio: ['pipe', 'pipe', 'ignore'] }
-    )
-      .toString()
-      .trim()
-    if (!b64) {
-      console.warn('[clusterAccess] Service CA configmap returned empty data; TLS verification may be incomplete.')
-      return undefined
+  const acmNamespace = resolveAcmNamespace()
+  for (const ns of [acmNamespace, 'default']) {
+    try {
+      const pem = execSync(
+        `oc get configmap openshift-service-ca.crt -n ${ns} -o jsonpath='{.data.service-ca\\.crt}'`,
+        { stdio: ['pipe', 'pipe', 'ignore'] }
+      )
+        .toString()
+        .trim()
+      if (pem) {
+        // The value is already PEM — return as Buffer.
+        return Buffer.from(pem)
+      }
+    } catch (_) {
+      // Try next namespace.
     }
-    // The value is already PEM (not base64-encoded again), return as Buffer.
-    return Buffer.from(b64)
-  } catch (_) {
-    console.warn('[clusterAccess] Could not retrieve service CA; TLS verification may be incomplete.')
-    return undefined
   }
+  console.warn('[clusterAccess] Could not retrieve service CA; TLS verification may be incomplete.')
+  return undefined
 }
 
 exports.deleteResource = deleteResource

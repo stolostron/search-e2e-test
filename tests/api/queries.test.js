@@ -18,9 +18,18 @@ const { waitForIndexedResourcesViaSubscription } = require('../common-lib/subscr
 const usr = 'search-query-user'
 const ns = 'search-query'
 
-// Resources created during setup that must be confirmed indexed before running tests.
-// These are the leaf fixtures that the query tests assert against specifically by name.
-const requiredFixtures = ['cm0', 'cm1', 'cm2-apple', 'cm3-avocado', 'cm4-broccoli', usr, 'test-service']
+// Fixtures the tests assert against by name, with per-fixture readiness predicates.
+// Labeled configmaps require the expected label to be present in watch.newData before
+// they are counted as ready — an unlabeled INSERT leaves them pending for a labeled UPDATE.
+const requiredFixtures = [
+  { name: 'cm0' },
+  { name: 'cm1' },
+  { name: 'cm2-apple', ready: (d) => d?.label?.includes('type=fruit') },
+  { name: 'cm3-avocado', ready: (d) => d?.label?.includes('type=vegetable') },
+  { name: 'cm4-broccoli', ready: (d) => d?.label?.includes('type=vegetable') },
+  { name: usr },
+  { name: 'test-service' },
+]
 
 describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`, () => {
   beforeAll(async () => {
@@ -30,13 +39,19 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     searchApiRoute = await getSearchApiRoute()
     const websocketUrl = searchApiRoute.replace('https://', 'wss://')
 
-    // Open the subscription BEFORE creating fixtures so no INSERT/UPDATE events
-    // are missed due to indexing completing while setup commands are still running.
-    // The readiness promise resolves once every required fixture name is seen.
-    const readinessPromise = waitForIndexedResourcesViaSubscription(websocketUrl, adminToken, ns, requiredFixtures)
+    // Phase 1: Register the watch subscription BEFORE creating any fixtures.
+    // subscriptionReady resolves once the subscribe frame has been sent to the
+    // server (after connection_ack). Awaiting it guarantees no INSERT/UPDATE
+    // event can be emitted before the server-side filter is active.
+    const { subscriptionReady, done: readinessPromise } = waitForIndexedResourcesViaSubscription(
+      websocketUrl,
+      adminToken,
+      ns,
+      requiredFixtures
+    )
+    await subscriptionReady
 
-    // Create all test fixtures. Any events that arrive during setup are already
-    // captured by the active subscription above.
+    // Phase 2: Create test fixtures. All events from this point are captured.
     let setupCommands = `# export ns=search-query; export usr=search-query-user
     oc create namespace ${ns}
     oc create serviceaccount ${usr} -n ${ns}
@@ -57,9 +72,8 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
 
     await execCliCmdString(setupCommands)
 
-    // Wait for RBAC cache expiration (2 min) and all required resources to be indexed.
-    // The subscription notifies us as soon as each fixture INSERT/UPDATE arrives in the
-    // search index, so we don't burn the fixed grace period from the original sleep.
+    // Phase 3: Wait for RBAC cache expiration (2 min) and all fixtures to be indexed.
+    // The subscription notifies us as soon as each event arrives in the search index.
     // Both waits run concurrently — total wait is whichever takes longer.
     console.log('Waiting for RBAC cache expiration and resources to be indexed via subscription...')
     await Promise.all([sleep(120000), readinessPromise])
