@@ -2,7 +2,7 @@
 
 const { TestEnvironment } = require('jest-environment-node')
 
-const RETRY_WAIT_MS = 5000
+const RETRY_WAIT_MS = 60000
 
 class RetryWaitEnvironment extends TestEnvironment {
   async handleTestEvent(event) {
