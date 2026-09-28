@@ -5,10 +5,7 @@ jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 const { execSync } = require('child_process')
 
 const squad = require('../../config').get('squadName')
-const {
-  getUserContext,
-  getSearchApiRoute,
-} = require('../common-lib/clusterAccess')
+const { getUserContext, getSearchApiRoute } = require('../common-lib/clusterAccess')
 const { execCliCmdString } = require('../common-lib/cliClient')
 const {
   resolveSearchCount,
@@ -22,11 +19,7 @@ const { waitForIndexedResources } = require('../common-lib/dbClient')
 
 const usr = 'search-query-user'
 const ns = 'search-query'
-const acmNamespace = execSync(
-  "oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'",
-)
-  .toString()
-  .trim()
+const acmNamespace = execSync("oc get mch -A -o jsonpath='{.items[0].metadata.namespace}'").toString().trim()
 
 describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`, () => {
   beforeAll(async () => {
@@ -49,21 +42,13 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     oc create service clusterip test-service -n ${ns} --tcp=80:8080`
 
     // Run the setup steps in parallel.
-    const [route] = await Promise.all([
-      getSearchApiRoute(),
-      execCliCmdString(setupCommands),
-    ])
+    const [route] = await Promise.all([getSearchApiRoute(), execCliCmdString(setupCommands)])
     searchApiRoute = route
 
     // Wait for RBAC cache expiration (2 min) and resources to be indexed (polled).
     // Both run concurrently — total wait is whichever takes longer.
-    console.log(
-      'Waiting for RBAC cache expiration and resources to be indexed...',
-    )
-    await Promise.all([
-      sleep(120000),
-      waitForIndexedResources(acmNamespace, ns),
-    ])
+    console.log('Waiting for RBAC cache expiration and resources to be indexed...')
+    await Promise.all([sleep(120000), waitForIndexedResources(acmNamespace, ns)])
   }, 1500000)
 
   // Keep separate from beforeAll because it slows execution and increases the chances of recovering during retry.
@@ -110,9 +95,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
       })
       const names = items.map((i) => i.name)
       expect(items).toHaveLength(2)
-      expect(names).toEqual(
-        expect.arrayContaining(['cm3-avocado', 'cm4-broccoli']),
-      )
+      expect(names).toEqual(expect.arrayContaining(['cm3-avocado', 'cm4-broccoli']))
     })
 
     test('should handle empty keywords when filters are present', async () => {
@@ -154,16 +137,12 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
 
     test('should match resources containing labelA OR labelB.', async () => {
       const items = await resolveSearchItems(user.token, {
-        filters: [
-          { property: 'label', values: ['type=fruit', 'type=vegetable'] },
-        ],
+        filters: [{ property: 'label', values: ['type=fruit', 'type=vegetable'] }],
       })
       const names = items.map((i) => i.name)
 
       expect(items).toHaveLength(3)
-      expect(names).toEqual(
-        expect.arrayContaining(['cm2-apple', 'cm3-avocado', 'cm4-broccoli']),
-      )
+      expect(names).toEqual(expect.arrayContaining(['cm2-apple', 'cm3-avocado', 'cm4-broccoli']))
     })
 
     test('should handle non-existent labels gracefully', async () => {
@@ -202,9 +181,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
       const names = items.map((i) => i.name)
 
       expect(items).toHaveLength(3)
-      expect(names).toEqual(
-        expect.arrayContaining(['cm2-apple', 'cm3-avocado', 'cm4-broccoli']),
-      )
+      expect(names).toEqual(expect.arrayContaining(['cm2-apple', 'cm3-avocado', 'cm4-broccoli']))
     })
 
     test('should match resources partially matching labelA.', async () => {
@@ -214,9 +191,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
       const names = items.map((i) => i.name)
 
       expect(items).toHaveLength(3)
-      expect(names).toEqual(
-        expect.arrayContaining(['cm2-apple', 'cm3-avocado', 'cm4-broccoli']),
-      )
+      expect(names).toEqual(expect.arrayContaining(['cm2-apple', 'cm3-avocado', 'cm4-broccoli']))
     })
 
     test('should match resources partially matching on kind.', async () => {
@@ -229,15 +204,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
       const names = items.map((i) => i.name)
 
       expect(items).toHaveLength(5)
-      expect(names).toEqual(
-        expect.arrayContaining([
-          'cm0',
-          'cm1',
-          'cm2-apple',
-          'cm3-avocado',
-          'cm4-broccoli',
-        ]),
-      )
+      expect(names).toEqual(expect.arrayContaining(['cm0', 'cm1', 'cm2-apple', 'cm3-avocado', 'cm4-broccoli']))
     })
 
     test('should handle complex wildcard patterns', async () => {
@@ -245,14 +212,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
         filters: [{ property: 'name', values: ['*-*'] }],
       })
       const names = items.map((i) => i.name)
-      expect(names).toEqual(
-        expect.arrayContaining([
-          'cm2-apple',
-          'cm3-avocado',
-          'cm4-broccoli',
-          'search-query-user',
-        ]),
-      )
+      expect(names).toEqual(expect.arrayContaining(['cm2-apple', 'cm3-avocado', 'cm4-broccoli', 'search-query-user']))
     })
   })
 
@@ -307,9 +267,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
       })
       expect(items).toHaveLength(2)
       const kinds = items.map((i) => i.kind)
-      expect(kinds).toEqual(
-        expect.arrayContaining(['Deployment', 'ReplicaSet']),
-      )
+      expect(kinds).toEqual(expect.arrayContaining(['Deployment', 'ReplicaSet']))
     })
 
     test('should match deployments where available < 3', async () => {
@@ -365,9 +323,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
       })
       const names = items.map((i) => i.name)
       expect(items).toHaveLength(2)
-      expect(names).toEqual(
-        expect.arrayContaining(['cm2-apple', 'cm3-avocado']),
-      )
+      expect(names).toEqual(expect.arrayContaining(['cm2-apple', 'cm3-avocado']))
     })
 
     test('should match resources in namespace a AND contains keyword xyz.', async () => {
@@ -388,11 +344,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
         ],
       })
       const kinds = [...new Set(items.map((i) => i.kind))]
-      expect(
-        kinds.every((kind) =>
-          ['ConfigMap', 'Deployment', 'Service'].includes(kind),
-        ),
-      ).toBe(true)
+      expect(kinds.every((kind) => ['ConfigMap', 'Deployment', 'Service'].includes(kind))).toBe(true)
       expect(items).toHaveLength(9) // 2 default configmaps + 5 configmaps + 1 deployment + 1 service
     })
 
@@ -407,18 +359,14 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
       })
       const names = items.map((i) => i.name)
       expect(items).toHaveLength(2)
-      expect(names).toEqual(
-        expect.arrayContaining(['cm3-avocado', 'cm4-broccoli']),
-      )
+      expect(names).toEqual(expect.arrayContaining(['cm3-avocado', 'cm4-broccoli']))
     })
   })
 
   describe('search by count', () => {
     test('should return expected count.', async () => {
       const count = await resolveSearchCount(user.token, {
-        filters: [
-          { property: 'label', values: ['type=fruit', 'type=vegetable'] },
-        ],
+        filters: [{ property: 'label', values: ['type=fruit', 'type=vegetable'] }],
       })
       expect(count).toEqual(3)
     })
@@ -477,9 +425,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
       const query = searchCompleteQuery({ property: 'namespace', limit: 2000 })
       const response = await sendRequest(query, user.token)
       const values = response.body.data.searchComplete || []
-      const namespaces = values
-        .map((v) => (v == null ? '' : String(v)))
-        .filter(Boolean)
+      const namespaces = values.map((v) => (v == null ? '' : String(v))).filter(Boolean)
 
       expect(namespaces.length).toBeGreaterThan(0)
       expect(namespaces).toContain(ns)
@@ -493,9 +439,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
 
       const response = await sendRequest(query, user.token)
       const items = response.body.data.searchResult[0].items || []
-      const kinds = [
-        ...new Set(items.map((item) => item.kind).filter((kind) => kind)),
-      ]
+      const kinds = [...new Set(items.map((item) => item.kind).filter((kind) => kind))]
 
       expect(kinds.length).toBeGreaterThan(0)
       expect(kinds).toEqual(expect.arrayContaining(['ConfigMap', 'Deployment']))
@@ -511,9 +455,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
       ]
 
       const startTime = Date.now()
-      const results = await Promise.all(
-        queries.map((query) => resolveSearchItems(user.token, query)),
-      )
+      const results = await Promise.all(queries.map((query) => resolveSearchItems(user.token, query)))
       const elapsed = Date.now() - startTime
 
       expect(results).toHaveLength(3)
@@ -532,9 +474,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
         { filters: [{ property: 'namespace', values: [ns] }] },
       ]
 
-      const results = await Promise.allSettled(
-        queries.map((query) => resolveSearchItems(user.token, query)),
-      )
+      const results = await Promise.allSettled(queries.map((query) => resolveSearchItems(user.token, query)))
 
       expect(results).toHaveLength(3)
       expect(results[0].status).toBe('fulfilled')
@@ -611,7 +551,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
         .map(() =>
           resolveSearchItems(user.token, {
             filters: [{ property: 'namespace', values: [ns] }],
-          }),
+          })
         )
 
       const startTime = Date.now()

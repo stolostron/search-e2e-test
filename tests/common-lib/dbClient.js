@@ -12,7 +12,7 @@ const { sleep } = require('./sleep')
 function execPostgresQuery(acmNamespace, sql) {
   return execSync(
     `oc exec -n ${acmNamespace} deploy/search-postgres -c search-postgres -- ` +
-      `bash -c "psql -U \\$POSTGRESQL_USER -d \\$POSTGRESQL_DATABASE -tAc \\"${sql}\\""`,
+      `bash -c "psql -U \\$POSTGRESQL_USER -d \\$POSTGRESQL_DATABASE -tAc \\"${sql}\\""`
   )
     .toString()
     .trim()
@@ -28,11 +28,7 @@ function execPostgresQuery(acmNamespace, sql) {
  * @param {number} [options.timeoutMs=300000] - Maximum time to wait in milliseconds.
  * @returns {Promise<number>} The resource count once the threshold is met.
  */
-async function waitForIndexedResources(
-  acmNamespace,
-  targetNamespace,
-  options = {},
-) {
+async function waitForIndexedResources(acmNamespace, targetNamespace, options = {}) {
   const { minCount = 1, intervalMs = 10000, timeoutMs = 300000 } = options
   const deadline = Date.now() + timeoutMs
   const sql = `SELECT count(*) FROM search.resources WHERE data->>'namespace' = '${targetNamespace}'`
@@ -42,24 +38,20 @@ async function waitForIndexedResources(
       const result = execPostgresQuery(acmNamespace, sql)
       const count = parseInt(result, 10)
       if (count >= minCount) {
-        console.log(
-          `[waitForIndexedResources] Found ${count} resources in namespace '${targetNamespace}'.`,
-        )
+        console.log(`[waitForIndexedResources] Found ${count} resources in namespace '${targetNamespace}'.`)
         return count
       }
       console.log(
-        `[waitForIndexedResources] ${count}/${minCount} resources indexed in '${targetNamespace}', retrying...`,
+        `[waitForIndexedResources] ${count}/${minCount} resources indexed in '${targetNamespace}', retrying...`
       )
     } catch (err) {
-      console.log(
-        `[waitForIndexedResources] Query failed: ${err.message}, retrying...`,
-      )
+      console.log(`[waitForIndexedResources] Query failed: ${err.message}, retrying...`)
     }
     await sleep(intervalMs)
   }
 
   throw new Error(
-    `Timed out after ${timeoutMs / 1000}s waiting for ${minCount} resources in namespace '${targetNamespace}'.`,
+    `Timed out after ${timeoutMs / 1000}s waiting for ${minCount} resources in namespace '${targetNamespace}'.`
   )
 }
 
