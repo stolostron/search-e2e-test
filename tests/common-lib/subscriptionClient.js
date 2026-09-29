@@ -123,11 +123,19 @@ function waitForIndexedResourcesViaSubscription(websocketUrl, token, targetNames
   )
 
   let resolveSubscriptionReady
-  const subscriptionReady = new Promise((res) => {
+  let rejectSubscriptionReady
+  const subscriptionReady = new Promise((res, rej) => {
     resolveSubscriptionReady = res
+    rejectSubscriptionReady = rej
   })
 
-  const done = openAuthenticatedWebSocket(websocketUrl, token).then(
+  // If the WebSocket connection fails, reject subscriptionReady immediately so
+  // callers don't hang until the Jest timeout waiting for a signal that never
+  // arrives. Also suppress the unhandled-rejection warning on done.
+  const connected = openAuthenticatedWebSocket(websocketUrl, token)
+  connected.catch((err) => rejectSubscriptionReady(err))
+
+  const done = connected.then(
     (ws) =>
       new Promise((resolve, reject) => {
         let startTime = Date.now()
@@ -173,6 +181,16 @@ function waitForIndexedResourcesViaSubscription(websocketUrl, token, targetNames
 
           // graphql-transport-ws: data arrives as type='next', payload.data.watch
           if (msg.type !== 'next') return
+
+          // A next frame can carry execution errors alongside null data.
+          // Reject immediately rather than waiting until the readiness timeout.
+          if (msg.id === subscriptionId && Array.isArray(msg?.payload?.errors) && msg.payload.errors.length > 0) {
+            clearTimeout(timer)
+            ws.close()
+            reject(new Error(`[subscriptionClient] GraphQL execution error: ${JSON.stringify(msg.payload.errors)}`))
+            return
+          }
+
           const watch = msg?.payload?.data?.watch
           if (!watch) {
             console.log('[subscriptionClient] No watch data received in msg: ', msg)
