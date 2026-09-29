@@ -27,7 +27,7 @@ const requiredFixtures = [
   { name: 'cm2-apple', ready: (d) => d?.label?.type === 'fruit' },
   { name: 'cm3-avocado', ready: (d) => d?.label?.type === 'vegetable' },
   { name: 'cm4-broccoli', ready: (d) => d?.label?.type === 'vegetable' },
-  { name: usr },
+  { name: usr, ready: (d) => d?.kind === 'Deployment' },
   { name: 'test-service' },
 ]
 
