@@ -8,19 +8,17 @@
  * only when the required resources are confirmed indexed.
  */
 
-const tls = require('tls')
 const WebSocket = require('ws')
-const { getServiceCA } = require('./clusterAccess')
+const { getRouterCA } = require('./clusterAccess')
 
 /**
  * Open a WebSocket connection authenticated with the given token and
  * negotiate the graphql-transport-ws sub-protocol.
  *
- * TLS is verified against the OpenShift service CA certificate. Hostname
- * verification is relaxed via `checkServerIdentity` because the Search API
- * route is a TLS passthrough: the service certificate's SANs cover the
- * internal service DNS name (e.g. `search-search-api.<ns>.svc`), not the
- * public route hostname. The CA chain is still fully verified.
+ * TLS is verified against the OpenShift router CA certificate
+ * (`openshift-ingress-operator/router-ca`), which is the issuing CA for all
+ * `*.apps.<cluster>` route hostnames. Full hostname verification is performed —
+ * no `checkServerIdentity` override is applied.
  *
  * @param {string} websocketUrl  - Base URL of the Search API (wss://...).
  * @param {string} token         - Bearer token for authentication.
@@ -28,21 +26,9 @@ const { getServiceCA } = require('./clusterAccess')
  */
 function openAuthenticatedWebSocket(websocketUrl, token) {
   return new Promise((resolve, reject) => {
-    const ca = getServiceCA()
+    const ca = getRouterCA()
     const ws = new WebSocket(`${websocketUrl}/searchapi/graphql`, 'graphql-transport-ws', {
       ca,
-      // The service certificate's SANs cover the internal cluster DNS name, not
-      // the route hostname. Skip hostname matching while keeping CA verification.
-      checkServerIdentity: (hostname, cert) => {
-        // tls.checkServerIdentity throws if the hostname doesn't match. We catch
-        // that specific error and ignore it — the CA chain check above still runs.
-        try {
-          tls.checkServerIdentity(hostname, cert)
-        } catch (e) {
-          if (e.code === 'ERR_TLS_CERT_ALTNAME_INVALID') return undefined
-          throw e
-        }
-      },
     })
 
     const timeout = setTimeout(() => {
