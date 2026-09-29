@@ -24,9 +24,9 @@ const ns = 'search-query'
 const requiredFixtures = [
   { name: 'cm0' },
   { name: 'cm1' },
-  { name: 'cm2-apple', ready: (d) => d?.label?.includes('type=fruit') },
-  { name: 'cm3-avocado', ready: (d) => d?.label?.includes('type=vegetable') },
-  { name: 'cm4-broccoli', ready: (d) => d?.label?.includes('type=vegetable') },
+  { name: 'cm2-apple', ready: (d) => d?.label?.type === 'fruit' },
+  { name: 'cm3-avocado', ready: (d) => d?.label?.type === 'vegetable' },
+  { name: 'cm4-broccoli', ready: (d) => d?.label?.type === 'vegetable' },
   { name: usr },
   { name: 'test-service' },
 ]
@@ -77,13 +77,9 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     // Both waits run concurrently — total wait is whichever takes longer.
     console.log('Waiting for RBAC cache expiration and resources to be indexed via subscription...')
     await Promise.all([sleep(120000), readinessPromise])
-  }, 1500000)
-
-  // Keep separate from beforeAll because it slows execution and increases the chances of recovering during retry.
-  beforeEach(async () => {
-    await sleep(5000)
+    console.log('Setup complete. Starting tests...')
     user = await getUserContext({ usr, ns })
-  }, 10000) // 10 seconds
+  }, 350000) // 5.5 minutes
 
   afterAll(async () => {
     let teardownCmds = `# export ns=search-query; export usr=search-query-user

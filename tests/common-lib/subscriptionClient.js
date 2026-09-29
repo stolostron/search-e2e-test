@@ -130,6 +130,7 @@ function waitForIndexedResourcesViaSubscription(websocketUrl, token, targetNames
   const done = openAuthenticatedWebSocket(websocketUrl, token).then(
     (ws) =>
       new Promise((resolve, reject) => {
+        let startTime = Date.now()
         const timer = setTimeout(() => {
           ws.close()
           reject(
@@ -144,7 +145,8 @@ function waitForIndexedResourcesViaSubscription(websocketUrl, token, targetNames
           let msg
           try {
             msg = JSON.parse(event.data)
-          } catch (_) {
+          } catch (err) {
+            console.log('[subscriptionClient] Error parsing message', err, event.data)
             return
           }
 
@@ -172,7 +174,10 @@ function waitForIndexedResourcesViaSubscription(websocketUrl, token, targetNames
           // graphql-transport-ws: data arrives as type='next', payload.data.watch
           if (msg.type !== 'next') return
           const watch = msg?.payload?.data?.watch
-          if (!watch) return
+          if (!watch) {
+            console.log('[subscriptionClient] No watch data received in msg: ', msg)
+            return
+          }
 
           // Accept both INSERT and UPDATE events.
           // The collector may batch create+label into one INSERT (labels present),
@@ -186,12 +191,12 @@ function waitForIndexedResourcesViaSubscription(websocketUrl, token, targetNames
           // Only mark ready when the per-fixture predicate passes.
           if (readyFn.get(name)(watch.newData)) {
             pending.delete(name)
-            console.log(
-              `[subscriptionClient] Indexed: '${name}' (${fixtures.length - pending.size}/${fixtures.length})`
-            )
           }
 
           if (pending.size === 0) {
+            console.log(
+              `[subscriptionClient] All ${fixtures.length} resources indexed. Time to index: ${Date.now() - startTime}ms`
+            )
             clearTimeout(timer)
             ws.close()
             resolve()
@@ -201,7 +206,11 @@ function waitForIndexedResourcesViaSubscription(websocketUrl, token, targetNames
         ws.onerror = (event) => {
           clearTimeout(timer)
           ws.close()
-          reject(new Error(`[subscriptionClient] WebSocket error during watch: ${event.message}`))
+          reject(
+            new Error(
+              `[subscriptionClient] WebSocket error during watch. Still waiting for: ${[...pending].join(', ')}. Error: ${event.message}`
+            )
+          )
         }
 
         ws.onclose = () => {
