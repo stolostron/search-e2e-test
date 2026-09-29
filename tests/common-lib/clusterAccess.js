@@ -205,54 +205,7 @@ function getServiceCA() {
   return undefined
 }
 
-/**
- * Retrieve the OpenShift router CA certificate so callers can verify TLS
- * connections that use the public route hostname (e.g. *.apps.<cluster>).
- *
- * The Search API route (`search-api-automation`) is a TLS passthrough route,
- * meaning the router does not terminate TLS — the backend service certificate
- * is presented directly to the client. However, that service certificate is
- * signed by the OpenShift service CA, and the route hostname (*.apps.*) is
- * covered by the router's wildcard certificate which is signed by the ingress
- * operator CA stored in `openshift-ingress-operator/router-ca`.
- *
- * NOTE: for a TLS *passthrough* route the certificate presented is the backend
- * service cert, not the router cert. Use this CA only when the WebSocket
- * connects to the *route hostname* and the route is passthrough — in that case
- * you need the CA that signed the *service* cert (i.e. the service CA), or you
- * must suppress hostname verification. If the route is re-encrypted or edge,
- * use this router CA instead.
- *
- * The router CA PEM is stored in the `router-ca` secret in the
- * `openshift-ingress-operator` namespace, key `tls.crt`.
- *
- * @returns {Buffer|undefined} PEM-encoded router CA certificate, or undefined.
- */
-function getRouterCA() {
-  try {
-    const pem = execSync(`oc get secret router-ca -n openshift-ingress-operator -o jsonpath='{.data.tls\\.crt}'`, {
-      stdio: ['pipe', 'pipe', 'ignore'],
-    })
-      .toString()
-      .trim()
-    if (!pem) {
-      console.warn('[clusterAccess] router-ca secret was empty; TLS verification may be incomplete.')
-      return undefined
-    }
-    const decoded = Buffer.from(pem, 'base64').toString('utf8')
-    if (!decoded.includes('-----BEGIN CERTIFICATE-----')) {
-      console.warn('[clusterAccess] router-ca did not contain a valid PEM certificate.')
-      return undefined
-    }
-    return Buffer.from(decoded)
-  } catch (err) {
-    console.warn(`[clusterAccess] Could not retrieve router CA: ${err.message}`)
-    return undefined
-  }
-}
-
 exports.deleteResource = deleteResource
-exports.getRouterCA = getRouterCA
 exports.getServiceCA = getServiceCA
 exports.getKubeConfig = getKubeConfig
 exports.getUserContext = getUserContext

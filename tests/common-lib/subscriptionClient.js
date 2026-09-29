@@ -9,16 +9,18 @@
  */
 
 const WebSocket = require('ws')
-const { getRouterCA } = require('./clusterAccess')
 
 /**
  * Open a WebSocket connection authenticated with the given token and
  * negotiate the graphql-transport-ws sub-protocol.
  *
- * TLS is verified against the OpenShift router CA certificate
- * (`openshift-ingress-operator/router-ca`), which is the issuing CA for all
- * `*.apps.<cluster>` route hostnames. Full hostname verification is performed —
- * no `checkServerIdentity` override is applied.
+ * The Search API route is a TLS passthrough: the server presents a service
+ * certificate whose SANs cover only internal cluster DNS names
+ * (e.g. `search-search-api.<ns>.svc`), not the public route hostname.
+ * There is no CA that satisfies both chain and hostname verification for this
+ * combination, which is consistent with the approach used across all other
+ * WebSocket tests in this repository (see websocketHelper.js).
+ * `rejectUnauthorized: false` is therefore intentional and scoped to e2e tests.
  *
  * @param {string} websocketUrl  - Base URL of the Search API (wss://...).
  * @param {string} token         - Bearer token for authentication.
@@ -26,9 +28,8 @@ const { getRouterCA } = require('./clusterAccess')
  */
 function openAuthenticatedWebSocket(websocketUrl, token) {
   return new Promise((resolve, reject) => {
-    const ca = getRouterCA()
     const ws = new WebSocket(`${websocketUrl}/searchapi/graphql`, 'graphql-transport-ws', {
-      ca,
+      rejectUnauthorized: false,
     })
 
     const timeout = setTimeout(() => {
