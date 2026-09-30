@@ -9,7 +9,18 @@ const WebSocket = require('ws')
 const { execCliCmdString } = require('../common-lib/cliClient')
 const { getKubeadminToken, getSearchApiRoute } = require('../common-lib/clusterAccess')
 const { createWebSocket } = require('../common-lib/websocketHelper')
-const { sleep } = require('../common-lib/sleep')
+async function ensureConfigMapCreated(name, namespace = 'default') {
+  try {
+    await execCliCmdString(`oc create configmap ${name} -n ${namespace}`)
+  } catch (e) {
+    if (e.message.includes('already exists')) {
+      await execCliCmdString(`oc delete configmap ${name} -n ${namespace}`)
+      await execCliCmdString(`oc create configmap ${name} -n ${namespace}`)
+    } else {
+      throw e
+    }
+  }
+}
 
 let websocketUrl = ''
 describe(`[P2][Sev2][${squad}] RHACM4K-61828:Subscription API`, () => {
@@ -96,11 +107,6 @@ describe(`[P2][Sev2][${squad}] RHACM4K-61828:Subscription API`, () => {
   }, 11000) // Should receive ping within 10 seconds. Additional 1 second to stabilize test.
 
   it('should receive resource events', async () => {
-    // ensure test resources don't exist before execution
-    await execCliCmdString('oc delete configmap test-cm -n default --ignore-not-found')
-    await execCliCmdString('oc delete configmap test-cm-2 -n default --ignore-not-found')
-    await sleep(1000)
-
     let gotConfigMap = false
     const ws = await createWebSocket(`${websocketUrl}/searchapi/graphql`, token)
 
@@ -117,9 +123,8 @@ describe(`[P2][Sev2][${squad}] RHACM4K-61828:Subscription API`, () => {
     // Wait for the WebSocket connection to be established.
     await new Promise((resolve) => setTimeout(resolve, 50))
 
-    // Create a ConfigMap resource.
-    await execCliCmdString('oc create configmap test-cm -n default')
-    await execCliCmdString('oc create configmap test-cm-2 -n default')
+    await ensureConfigMapCreated('test-cm')
+    await ensureConfigMapCreated('test-cm-2')
 
     // Wait for the event to be received.
     while (!gotConfigMap) {
@@ -131,10 +136,6 @@ describe(`[P2][Sev2][${squad}] RHACM4K-61828:Subscription API`, () => {
   }, 11000) // Should receive message within 5 seconds, but worst case it takes 2 sync cycles.
 
   it('should receive events with large payloads', async () => {
-    // ensure test resource doesn't exist before execution
-    await execCliCmdString('oc delete configmap test-cm-large -n default --ignore-not-found')
-    await sleep(1000)
-
     let receivedInsert = false
     let receivedUpdate = false
     const ws = await createWebSocket(`${websocketUrl}/searchapi/graphql`, token)
@@ -160,7 +161,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-61828:Subscription API`, () => {
       labels.push(`this-is-a-looooooong-label-${i}=${'a'.repeat(60)}`)
     }
 
-    await execCliCmdString('oc create configmap test-cm-large -n default')
+    await ensureConfigMapCreated('test-cm-large')
 
     // Wait for the event to be received.
     while (!receivedInsert) {
