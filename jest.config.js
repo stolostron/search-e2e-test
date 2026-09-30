@@ -4,7 +4,6 @@ module.exports = {
   },
   globalSetup: './globalSetup.js',
   globalTeardown: './globalTeardown.js',
-  testEnvironment: './retryWaitEnvironment.js',
   verbose: true,
   rootDir: './tests/api',
   reporters: [
