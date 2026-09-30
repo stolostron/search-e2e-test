@@ -9,8 +9,10 @@
     "rbac:clean": "./build/rbac-clean.sh",
     "rbac:setup": "./build/rbac-setup.sh",
     "test": "npm run test:clean-reports && ./start-tests.sh",
-    "test:api": "jest --colors --verbose",
-    "test:api:prow": "jest --verbose",
+    "test:api": "npm run test:api:fvt && npm run test:api:isolation",
+    "test:api:fvt": "jest --colors --verbose --config jest.config.js",
+    "test:api:isolation": "jest --colors --verbose --config jest.config.isolated.js",
+    "test:api:prow": "jest --verbose && jest --verbose --config jest.config.isolated.js",
     "test:clean-reports": "rm -rf ./results",
     "test:debug": "cross-env NODE_ENV=debug ./start-tests.sh"
   },
