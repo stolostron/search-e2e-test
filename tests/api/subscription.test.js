@@ -5,17 +5,19 @@ jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
 
 const squad = require('../../config').get('squadName')
 
+const { execSync } = require('child_process')
 const WebSocket = require('ws')
 const { execCliCmdString } = require('../common-lib/cliClient')
 const { getKubeadminToken, getSearchApiRoute } = require('../common-lib/clusterAccess')
 const { createWebSocket } = require('../common-lib/websocketHelper')
-async function ensureConfigMapCreated(name, namespace = 'default') {
+
+function ensureConfigMapCreated(name, namespace = 'default') {
   try {
-    await execCliCmdString(`oc create configmap ${name} -n ${namespace}`)
+    execSync(`oc create configmap ${name} -n ${namespace}`, { stdio: ['pipe', 'pipe', 'pipe'] })
   } catch (e) {
-    if (e.message.includes('already exists')) {
-      await execCliCmdString(`oc delete configmap ${name} -n ${namespace}`)
-      await execCliCmdString(`oc create configmap ${name} -n ${namespace}`)
+    if (e.stderr && e.stderr.toString().includes('already exists')) {
+      execSync(`oc delete configmap ${name} -n ${namespace}`)
+      execSync(`oc create configmap ${name} -n ${namespace}`)
     } else {
       throw e
     }
@@ -123,8 +125,8 @@ describe(`[P2][Sev2][${squad}] RHACM4K-61828:Subscription API`, () => {
     // Wait for the WebSocket connection to be established.
     await new Promise((resolve) => setTimeout(resolve, 50))
 
-    await ensureConfigMapCreated('test-cm')
-    await ensureConfigMapCreated('test-cm-2')
+    ensureConfigMapCreated('test-cm')
+    ensureConfigMapCreated('test-cm-2')
 
     // Wait for the event to be received.
     while (!gotConfigMap) {
@@ -161,7 +163,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-61828:Subscription API`, () => {
       labels.push(`this-is-a-looooooong-label-${i}=${'a'.repeat(60)}`)
     }
 
-    await ensureConfigMapCreated('test-cm-large')
+    ensureConfigMapCreated('test-cm-large')
 
     // Wait for the event to be received.
     while (!receivedInsert) {
