@@ -1,6 +1,6 @@
 // Copyright Contributors to the Open Cluster Management project
 
-jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
+jest.retryTimes(global.retry, { logErrorsBeforeRetry: true, waitBeforeRetry: 60000 })
 
 const squad = require('../../config').get('squadName')
 const {
