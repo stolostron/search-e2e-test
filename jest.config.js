@@ -19,4 +19,5 @@ module.exports = {
   ],
   testResultsProcessor: 'jest-junit',
   testRunner: 'jest-circus/runner',
+  testPathIgnorePatterns: ['tests/api/configurable-collection.test.js'],
 }

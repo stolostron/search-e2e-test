@@ -20,6 +20,7 @@ COPY package.json .
 COPY package-lock.json .
 COPY cypress.config.js .
 COPY jest.config.js .
+COPY jest.config.isolated.js .
 COPY start-tests.sh .
 COPY config ./config
 COPY tests ./tests
