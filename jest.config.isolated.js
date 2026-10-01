@@ -20,6 +20,9 @@ module.exports = {
     testResultsProcessor: 'jest-junit',
     testRunner: 'jest-circus/runner',
     maxConcurrency: 1,
-    testMatch: ['<rootDir>/configurable-collection.test.js'],
+    testMatch: [
+      '<rootDir>/configurable-collection.test.js',
+      '<rootDir>/subscription-limits.test.js',
+    ],
   }
   
