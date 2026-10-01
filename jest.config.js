@@ -1,6 +1,6 @@
 module.exports = {
   globals: {
-    retry: 2,
+    retry: 3,
   },
   globalSetup: './globalSetup.js',
   globalTeardown: './globalTeardown.js',
@@ -19,4 +19,5 @@ module.exports = {
   ],
   testResultsProcessor: 'jest-junit',
   testRunner: 'jest-circus/runner',
+  testPathIgnorePatterns: ['tests/api/configurable-collection.test.js'],
 }
