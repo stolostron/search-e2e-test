@@ -650,8 +650,8 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
   }, 360000)
 
   // ACM-33145 - RHACM4K-65379
-  test(`[P2][Sev2][${squad}] ACM-33145: should not include removed datatypes in the CRD enum`, () => {
-    const removedDataTypes = ['number', 'slice', 'mapString']
+  test(`[P2][Sev2][${squad}] ACM-33145: should not include unsupported datatypes in the CRD enum`, () => {
+    const unsupportedDataTypes = ['number', 'slice', 'mapString']
     const enumPath =
       '{.spec.versions[0].schema.openAPIV3Schema.properties.spec.properties.collectionRules' +
       '.items.properties.fields.items.properties.type.enum}'
@@ -660,7 +660,7 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
         .toString()
         .trim()
     )
-    removedDataTypes.forEach((removed) => expect(values).not.toContain(removed))
+    unsupportedDataTypes.forEach((removed) => expect(values).not.toContain(removed))
   }, 60000)
 
   // ACM-33145 - RHACM4K-65379
