@@ -14,6 +14,7 @@ WORKDIR /search-e2e
 COPY package.json .
 COPY package-lock.json .
 COPY jest.config.js .
+COPY jest.config.isolated.js .
 COPY start-tests.sh .
 COPY config ./config
 COPY tests ./tests
