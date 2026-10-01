@@ -12,7 +12,7 @@ const https = require('https')
 
 let websocketUrl, token, thanosQuerierApi
 
-describe(`[P2][Sev2][${squad}] RHACM-61294: Openshift Metrics of active Search Subscriptions`, () => {
+describe(`[P3][Sev3][${squad}] RHACM-61294: Openshift Metrics of active Search Subscriptions`, () => {
   beforeAll(async () => {
     // Log in and get access token
     token = getKubeadminToken()
@@ -31,6 +31,7 @@ describe(`[P2][Sev2][${squad}] RHACM-61294: Openshift Metrics of active Search S
       let metricsName = 'search_api_subscriptions_active'
       let resp = await queryMetrics(metricsName)
       let subscriptionCount = resp.body.data.result[0].value[1]
+      subscriptionCount++ // Expect to have an additional subscription.
 
       const ws = await createWebSocket(`${websocketUrl}/searchapi/graphql`, token)
 
@@ -62,11 +63,10 @@ describe(`[P2][Sev2][${squad}] RHACM-61294: Openshift Metrics of active Search S
       )
 
       try {
-        subscriptionCount++
         await new Promise((resolve) => setTimeout(resolve, 100))
 
         let retries = 0
-        const maxRetries = 10
+        const maxRetries = 15 // exporter takes 30-60 seconds to scrape the metric.
         // Retry until metric updates or max retries reached
         resp = await queryMetrics(metricsName)
         while (parseInt(resp.body.data.result[0].value[1]) < subscriptionCount && retries < maxRetries) {
@@ -85,11 +85,6 @@ describe(`[P2][Sev2][${squad}] RHACM-61294: Openshift Metrics of active Search S
         ws.close()
       }
     },
-    60 * 1000
+    90 * 1000
   )
-
-  afterEach(async () => {
-    // Wait for Openshift default scrape intervals (30-60s)
-    await new Promise((resolve) => setTimeout(resolve, 3 * 15 * 1000))
-  }, 60 * 1000)
 })

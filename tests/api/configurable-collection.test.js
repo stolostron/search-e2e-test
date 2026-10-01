@@ -429,7 +429,7 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
 
   // ACM-37052 - RHACM4K-65807
   test(`[P2][Sev2][${squad}] ACM-37052: should seed the built-in integration CollectorConfigs with expected metadata and rules`, async () => {
-    // The 7 built-in integration CollectorConfigs and the apiGroups each one collects.
+    // The seven built-in integration CollectorConfigs and the apiGroups each one collects.
     const expectedConfigs = {
       'app-lifecycle-integration': ['apps.open-cluster-management.io', 'app.k8s.io'],
       'argo-integration': ['argoproj.io'],
