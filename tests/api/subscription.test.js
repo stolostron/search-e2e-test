@@ -1,28 +1,14 @@
 // Copyright Contributors to the Open Cluster Management project
 
 // Test the subscription API.
-jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
+jest.retryTimes(global.retry, { logErrorsBeforeRetry: true, waitBeforeRetry: 60000 })
 
 const squad = require('../../config').get('squadName')
 
-const { execSync } = require('child_process')
 const WebSocket = require('ws')
-const { execCliCmdString } = require('../common-lib/cliClient')
+const { execCliCmdString, createOrRecreateIfExists } = require('../common-lib/cliClient')
 const { getKubeadminToken, getSearchApiRoute } = require('../common-lib/clusterAccess')
 const { createWebSocket } = require('../common-lib/websocketHelper')
-
-function ensureConfigMapCreated(name, namespace = 'default') {
-  try {
-    execSync(`oc create configmap ${name} -n ${namespace}`, { stdio: ['pipe', 'pipe', 'pipe'] })
-  } catch (e) {
-    if (e.stderr && e.stderr.toString().includes('already exists')) {
-      execSync(`oc delete configmap ${name} -n ${namespace}`)
-      execSync(`oc create configmap ${name} -n ${namespace}`)
-    } else {
-      throw e
-    }
-  }
-}
 
 let websocketUrl = ''
 describe(`[P2][Sev2][${squad}] RHACM4K-61828:Subscription API`, () => {
@@ -125,8 +111,8 @@ describe(`[P2][Sev2][${squad}] RHACM4K-61828:Subscription API`, () => {
     // Wait for the WebSocket connection to be established.
     await new Promise((resolve) => setTimeout(resolve, 50))
 
-    ensureConfigMapCreated('test-cm')
-    ensureConfigMapCreated('test-cm-2')
+    createOrRecreateIfExists('oc create configmap test-cm -n default')
+    createOrRecreateIfExists('oc create configmap test-cm-2 -n default')
 
     // Wait for the event to be received.
     while (!gotConfigMap) {
@@ -163,7 +149,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-61828:Subscription API`, () => {
       labels.push(`this-is-a-looooooong-label-${i}=${'a'.repeat(60)}`)
     }
 
-    ensureConfigMapCreated('test-cm-large')
+    createOrRecreateIfExists('oc create configmap test-cm-large -n default')
 
     // Wait for the event to be received.
     while (!receivedInsert) {

@@ -2,9 +2,11 @@
 
 // Test multiple concurrent websocket connections to the subscription API.
 
+jest.retryTimes(global.retry, { logErrorsBeforeRetry: true, waitBeforeRetry: 60000 })
+
 const squad = require('../../config').get('squadName')
 
-const { execCliCmdString } = require('../common-lib/cliClient')
+const { createOrRecreateIfExists, execCliCmdString } = require('../common-lib/cliClient')
 const { getKubeadminToken, getSearchApiRoute } = require('../common-lib/clusterAccess')
 const { sleep } = require('../common-lib/sleep')
 const { createWebSocket } = require('../common-lib/websocketHelper')
@@ -55,7 +57,7 @@ describe(`[P2][Sev2][${squad}] Subscription API: Scale tests`, () => {
 
     // Create ConfigMap resources.
     for (let i = 0; i < totalConfigMaps; i++) {
-      await execCliCmdString(`oc create configmap test-cm-scale-${i} -n default`)
+      createOrRecreateIfExists(`oc create configmap test-cm-scale-${i} -n default`)
     }
 
     // Wait for the events to be received on each websocket.
