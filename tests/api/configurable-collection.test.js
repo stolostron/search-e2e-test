@@ -648,4 +648,97 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
       deleteCollectorConfig(acmNamespace, integrationName, { asServiceAccount: operatorSA })
     }
   }, 360000)
+
+  // ACM-33145 - RHACM4K-65379
+  test(`[P2][Sev2][${squad}] ACM-33145: should not include unsupported datatypes in the CRD enum`, () => {
+    const unsupportedDataTypes = ['number', 'slice', 'mapString']
+    const enumPath =
+      '{.spec.versions[0].schema.openAPIV3Schema.properties.spec.properties.collectionRules' +
+      '.items.properties.fields.items.properties.type.enum}'
+    const values = JSON.parse(
+      execSync(`oc get crd collectorconfigs.search.open-cluster-management.io -o jsonpath='${enumPath}'`)
+        .toString()
+        .trim()
+    )
+    unsupportedDataTypes.forEach((removed) => expect(values).not.toContain(removed))
+  }, 60000)
+
+  // ACM-33145 - RHACM4K-65379
+  test(`[P2][Sev2][${squad}] ACM-33145: should convert collected fields per OpenAPI v3 datatype`, async () => {
+    const userName = 'user-collector-config'
+    const ns = `datatype-test-${Date.now().toString(36)}`
+    const fieldSuffix = 'datatype-test'
+    const field = (name) => `${name}.${fieldSuffix}`
+    const deployName = 'configurable-collection-datatype-test'
+
+    try {
+      applyCollectorConfig(acmNamespace, userName, [
+        {
+          action: 'include',
+          fieldSuffix,
+          resourceSelector: { apiGroups: ['apps'], kinds: ['Deployment'] },
+          fields: [
+            { name: 'image', jsonPath: '{.spec.template.spec.containers[0].image}', type: 'string' },
+            { name: 'defaultImage', jsonPath: '{.spec.template.spec.containers[0].image}' },
+            {
+              name: 'memoryLimit',
+              jsonPath: '{.spec.template.spec.containers[0].resources.limits.memory}',
+              type: 'bytes',
+            },
+            { name: 'replicas', jsonPath: '{.spec.replicas}', type: 'integer' },
+            { name: 'deadline', jsonPath: '{.spec.progressDeadlineSeconds}', type: 'float' },
+            { name: 'paused', jsonPath: '{.spec.paused}', type: 'boolean' },
+          ],
+        },
+      ])
+
+      // The apiserver defaults the omitted type to string when persisting the CollectorConfig.
+      const persisted = getCollectorConfig(acmNamespace, userName).spec.collectionRules[0].fields
+      expect(persisted.find((f) => f.name === 'defaultImage')).toMatchObject({ type: 'string' })
+
+      await waitForMergedRule(acmNamespace, (r) =>
+        (r.fields || []).some((f) => f.name === 'replicas' && f.type === 'integer')
+      )
+      applyResource({ apiVersion: 'v1', kind: 'Namespace', metadata: { name: ns } })
+
+      // Created after the rule is merged so the collector sees the new fields on first transform.
+      const deployment = makeDeployment(ns, deployName)
+      deployment.spec.replicas = 3
+      // Must be true: spec.paused is `omitempty`, so false is dropped on serialization and the
+      // JSONPath finds nothing. It also keeps the Deployment from rolling out pods.
+      deployment.spec.paused = true
+      deployment.spec.progressDeadlineSeconds = 600
+      deployment.spec.template.spec.containers[0].resources = {
+        limits: { memory: '128Mi' },
+      }
+      applyResource(deployment)
+
+      const items = await waitForIndexed(
+        token,
+        itemFilters({ namespace: ns, name: deployName }),
+        {
+          match: (i) =>
+            ['image', 'defaultImage', 'memoryLimit', 'replicas', 'deadline', 'paused'].every(
+              (name) => i[field(name)] !== undefined
+            ),
+        },
+        { timeout: 120000 }
+      )
+      expect(items).toHaveLength(1)
+      const [item] = items
+
+      // Search API returns collected values as strings, so verify the converted values.
+      expect(item[field('image')]).toBe(pauseImage)
+      expect(item[field('defaultImage')]).toBe(pauseImage)
+      // bytes parses the quantity suffix into a byte count: 128Mi -> 128 * 1024 * 1024.
+      expect(item[field('memoryLimit')]).toBe('134217728')
+      expect(item[field('replicas')]).toBe('3')
+      expect(item[field('deadline')]).toBe('600')
+      expect(item[field('paused')]).toBe('true')
+    } finally {
+      deleteResource('deployment', deployName, ns)
+      deleteResource('namespace', ns)
+      deleteCollectorConfig(acmNamespace, userName)
+    }
+  }, 300000)
 })
