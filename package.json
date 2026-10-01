@@ -1,6 +1,6 @@
 {
   "name": "search-e2e-test",
-  "version": "2.17.0",
+  "version": "5.0.0",
   "description": "End to end test for Search component",
   "scripts": {
     "lint": "prettier --check --config .prettierrc.json config/*.js ./tests/**/*.js ./tests/**/**/*.js",
@@ -8,9 +8,11 @@
     "prepare": "husky install",
     "rbac:clean": "./build/rbac-clean.sh",
     "rbac:setup": "./build/rbac-setup.sh",
-    "test": "npm run test:clean-reports && npm run test:headless && npm run test:merge-reports",
-    "test:api": "jest --colors --verbose",
-    "test:api:prow": "jest --verbose",
+    "test": "npm run test:clean-reports && ./start-tests.sh",
+    "test:api": "npm run test:api:fvt && npm run test:api:isolation",
+    "test:api:fvt": "jest --colors --verbose --config ./jest.config.js",
+    "test:api:isolation": "jest --colors --verbose --config ./jest.config.isolated.js",
+    "test:api:prow": "jest --verbose && jest --verbose --config ./jest.config.isolated.js",
     "test:clean-reports": "rm -rf ./results",
     "test:debug": "cross-env NODE_ENV=debug ./start-tests.sh",
     "test:headed": "cross-env NODE_ENV=development LIVE_MODE=true ./start-tests.sh",
