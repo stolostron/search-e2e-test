@@ -4,15 +4,10 @@
 const squad = require('../../config').get('squadName')
 
 const { execCliCmdString } = require('../common-lib/cliClient')
-const {
-  getKubeadminToken,
-  getSearchApiRoute,
-  getThanosQuerierRoute,
-  getAcmNamespace,
-} = require('../common-lib/clusterAccess')
+const { getKubeadminToken, getSearchApiRoute, resolveAcmNamespace } = require('../common-lib/clusterAccess')
 const { createWebSocket } = require('../common-lib/websocketHelper')
 const { waitFor } = require('../common-lib')
-const { execFileSync, execSync } = require('child_process')
+const { execFileSync } = require('child_process')
 
 let websocketUrl, token, acmNamespace, initDeployQueryApi
 const sub_max_active = 1
@@ -23,7 +18,7 @@ describe(`[P2][Sev2][${squad}] RHACM-63733: Rate limits on subscriptions`, () =>
   beforeAll(async () => {
     // Log in and get access token
     token = getKubeadminToken()
-    acmNamespace = getAcmNamespace()
+    acmNamespace = resolveAcmNamespace()
 
     // Create a route to access the Search API.
     const searchApiRoute = await getSearchApiRoute()
