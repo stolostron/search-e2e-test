@@ -7,7 +7,7 @@ jest.retryTimes(global.retry, { logErrorsBeforeRetry: true, waitBeforeRetry: 600
 
 const squad = require('../../config').get('squadName')
 
-const { ensureResourceCreated, execCliCmdString } = require('../common-lib/cliClient')
+const { createOrRecreateIfExists, execCliCmdString } = require('../common-lib/cliClient')
 const { getKubeadminToken, getSearchApiRoute } = require('../common-lib/clusterAccess')
 const { createWebSocket } = require('../common-lib/websocketHelper')
 const { waitFor } = require('../common-lib')
@@ -75,8 +75,8 @@ describe(`[P2][Sev2][${squad}] ACM-27856: Subscription API - Wildcard Filter Sup
 
         await new Promise((resolve) => setTimeout(resolve, 100))
 
-        ensureResourceCreated(`oc create configmap test-wc-alpha -n ${testNamespace}`)
-        ensureResourceCreated(`oc create configmap test-wc-beta -n ${testNamespace}`)
+        createOrRecreateIfExists(`oc create configmap test-wc-alpha -n ${testNamespace}`)
+        createOrRecreateIfExists(`oc create configmap test-wc-beta -n ${testNamespace}`)
 
         const received = await waitFor(() => matchCount >= 2)
         expect(received).toBe(true)
@@ -112,7 +112,7 @@ describe(`[P2][Sev2][${squad}] ACM-27856: Subscription API - Wildcard Filter Sup
         )
 
         await new Promise((resolve) => setTimeout(resolve, 100))
-        ensureResourceCreated(`oc create configmap test-wc-other -n ${testNamespace}`)
+        createOrRecreateIfExists(`oc create configmap test-wc-other -n ${testNamespace}`)
 
         // Wait long enough to confirm no matching event is delivered.
         await new Promise((resolve) => setTimeout(resolve, 3000))
@@ -147,7 +147,7 @@ describe(`[P2][Sev2][${squad}] ACM-27856: Subscription API - Wildcard Filter Sup
         )
 
         await new Promise((resolve) => setTimeout(resolve, 100))
-        ensureResourceCreated(`oc create configmap wc-suffix-test -n ${testNamespace}`)
+        createOrRecreateIfExists(`oc create configmap wc-suffix-test -n ${testNamespace}`)
 
         const received = await waitFor(() => gotMatch)
         expect(received).toBe(true)
@@ -185,7 +185,7 @@ describe(`[P2][Sev2][${squad}] ACM-27856: Subscription API - Wildcard Filter Sup
         )
 
         await new Promise((resolve) => setTimeout(resolve, 100))
-        ensureResourceCreated(`oc create configmap wc-contains-wildcard-cm -n ${testNamespace}`)
+        createOrRecreateIfExists(`oc create configmap wc-contains-wildcard-cm -n ${testNamespace}`)
 
         const received = await waitFor(() => gotMatch)
         expect(received).toBe(true)
@@ -219,7 +219,7 @@ describe(`[P2][Sev2][${squad}] ACM-27856: Subscription API - Wildcard Filter Sup
         )
 
         await new Promise((resolve) => setTimeout(resolve, 100))
-        ensureResourceCreated(`oc create configmap wc-kind-test -n ${testNamespace}`)
+        createOrRecreateIfExists(`oc create configmap wc-kind-test -n ${testNamespace}`)
 
         const received = await waitFor(() => gotMatch)
         expect(received).toBe(true)
@@ -254,7 +254,7 @@ describe(`[P2][Sev2][${squad}] ACM-27856: Subscription API - Wildcard Filter Sup
         )
 
         await new Promise((resolve) => setTimeout(resolve, 100))
-        ensureResourceCreated(`oc create configmap wc-case-test -n ${testNamespace}`)
+        createOrRecreateIfExists(`oc create configmap wc-case-test -n ${testNamespace}`)
 
         // Wait to confirm no event arrives for the case-mismatched filter.
         await new Promise((resolve) => setTimeout(resolve, 3000))

@@ -6,7 +6,7 @@ jest.retryTimes(global.retry, { logErrorsBeforeRetry: true, waitBeforeRetry: 600
 const squad = require('../../config').get('squadName')
 
 const WebSocket = require('ws')
-const { execCliCmdString, ensureResourceCreated } = require('../common-lib/cliClient')
+const { execCliCmdString, createOrRecreateIfExists } = require('../common-lib/cliClient')
 const { getKubeadminToken, getSearchApiRoute } = require('../common-lib/clusterAccess')
 const { createWebSocket } = require('../common-lib/websocketHelper')
 
@@ -111,8 +111,8 @@ describe(`[P2][Sev2][${squad}] RHACM4K-61828:Subscription API`, () => {
     // Wait for the WebSocket connection to be established.
     await new Promise((resolve) => setTimeout(resolve, 50))
 
-    ensureResourceCreated('oc create configmap test-cm -n default')
-    ensureResourceCreated('oc create configmap test-cm-2 -n default')
+    createOrRecreateIfExists('oc create configmap test-cm -n default')
+    createOrRecreateIfExists('oc create configmap test-cm-2 -n default')
 
     // Wait for the event to be received.
     while (!gotConfigMap) {
@@ -149,7 +149,7 @@ describe(`[P2][Sev2][${squad}] RHACM4K-61828:Subscription API`, () => {
       labels.push(`this-is-a-looooooong-label-${i}=${'a'.repeat(60)}`)
     }
 
-    ensureResourceCreated('oc create configmap test-cm-large -n default')
+    createOrRecreateIfExists('oc create configmap test-cm-large -n default')
 
     // Wait for the event to be received.
     while (!receivedInsert) {

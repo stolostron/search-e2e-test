@@ -114,7 +114,7 @@ function expectCli(cmd) {
   return expect(() => execSync(cmd, { stdio: [] }))
 }
 
-function ensureResourceCreated(createCmd) {
+function createOrRecreateIfExists(createCmd) {
   const parts = createCmd.match(/oc create (\S+) (\S+)/)
   if (!parts) throw new Error(`Cannot parse resource kind/name from: ${createCmd}`)
   let [, kind, name] = parts
@@ -138,5 +138,5 @@ function ensureResourceCreated(createCmd) {
 
 exports.execCliCmdString = execCliCmdString
 exports.expectCli = expectCli
-exports.ensureResourceCreated = ensureResourceCreated
+exports.createOrRecreateIfExists = createOrRecreateIfExists
 exports.getResourcesFromOC = getResourcesFromOC
