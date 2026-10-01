@@ -117,7 +117,11 @@ function expectCli(cmd) {
 function ensureResourceCreated(createCmd) {
   const parts = createCmd.match(/oc create (\S+) (\S+)/)
   if (!parts) throw new Error(`Cannot parse resource kind/name from: ${createCmd}`)
-  const [, kind, name] = parts
+  let [, kind, name] = parts
+  if (kind === 'secret') {
+    const secretParts = createCmd.match(/oc create secret \S+ (\S+)/)
+    if (secretParts) name = secretParts[1]
+  }
   const nsMatch = createCmd.match(/-n\s+(\S+)/)
   const nsFlag = nsMatch ? ` -n ${nsMatch[1]}` : ''
   try {
