@@ -3,59 +3,97 @@
 jest.retryTimes(global.retry, { logErrorsBeforeRetry: true, waitBeforeRetry: 60000 })
 
 const squad = require('../../config').get('squadName')
-const { getUserContext, getSearchApiRoute } = require('../common-lib/clusterAccess')
+const { getUserContext, getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
 const { ValidateSearchData, validationTimeout } = require('../common-lib/validateSearchData')
 const { resolveSearchItems } = require('../common-lib/searchClient')
 const { execSync } = require('child_process')
 const { execCliCmdString, expectCli } = require('../common-lib/cliClient')
 const { sleep } = require('../common-lib/sleep')
+const { waitForIndexedResourcesViaSubscription } = require('../common-lib/subscriptionClient')
 
 const ns = 'search-rbac'
 const [usr0, usr1, usr2, usr3, usr4] = ['search-user0', 'search-user1', 'search-user2', 'search-user3', 'search-user4']
+const usr1Role = 'search-user1-role'
+const usr1Rb = 'search-user1-rb'
+const usr2Cr = 'search-user2-cr'
+const usr2Crb = 'search-user2-crb'
+const usr3Rb = 'search-user3-rb'
+const usr4Role = 'search-user4-role'
+const usr4Rb = 'search-user4-rb'
+const usr4Deploy = 'search-user4-deploy'
+
+const requiredFixtures = [
+  { name: usr0 },
+  { name: usr1 },
+  { name: usr2 },
+  { name: usr3 },
+  { name: usr4 },
+  { name: usr1Role },
+  { name: usr1Rb },
+  { name: usr3Rb },
+  { name: usr4Role },
+  { name: usr4Rb },
+  { name: usr4Deploy },
+  { name: 'cm0' },
+  { name: 'cm1' },
+]
 
 describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
   beforeAll(async () => {
+    token = getKubeadminToken()
+
+    // Get the search API route first — we need the websocket URL before setup runs.
+    searchApiRoute = await getSearchApiRoute()
+    const websocketUrl = searchApiRoute.replace('https://', 'wss://')
+
+    // Phase 1: Register the watch subscription BEFORE creating any fixtures.
+    // subscriptionReady resolves once the subscribe frame has been sent to the
+    // server (after connection_ack). Awaiting it guarantees no INSERT/UPDATE
+    // event can be emitted before the server-side filter is active.
+    const { subscriptionReady, done: readinessPromise } = waitForIndexedResourcesViaSubscription(
+      websocketUrl,
+      token,
+      ns,
+      requiredFixtures
+    )
+    await subscriptionReady
     // Using ServiceAccounts for rbac tests because configuration is simpler.
 
     const setupCmds = `
-    # export ns=search-rbac; export usr0=u0; export usr1=u1; export usr2=u2; export usr3=u3; export usr4=u4
     oc create namespace ${ns}
     oc create serviceaccount ${usr0} -n ${ns}
     oc create serviceaccount ${usr1} -n ${ns}
     oc create serviceaccount ${usr2} -n ${ns}
     oc create serviceaccount ${usr3} -n ${ns}
     oc create serviceaccount ${usr4} -n ${ns}
-    oc create role ${usr1} --verb=list --resource=configmaps -n ${ns}
-    oc create rolebinding ${usr1} --role=${usr1} --serviceaccount=${ns}:${usr1} -n ${ns}
-    oc create clusterrole ${usr2} --verb=list --resource=nodes,configmaps
-    oc create clusterrolebinding ${usr2} --clusterrole=${usr2} --serviceaccount=${ns}:${usr2}
-    oc create rolebinding ${usr3} --clusterrole=admin --serviceaccount=${ns}:${usr3} -n ${ns}
-
-    oc create role ${usr4} --verb=list --resource=deployment -n ${ns}
-    oc create rolebinding ${usr4} --role=${usr4} --serviceaccount=${ns}:${usr4} -n ${ns}
-
-    oc create deployment ${usr4} -n ${ns} --image=busybox --replicas=1 -- 'date; sleep 60;'
-    oc patch deployment ${usr4} -n ${ns} -p '{"spec":{"template":{"spec":{"containers":[{"name":"busybox","imagePullPolicy":"IfNotPresent"}]}}}}'
-    oc scale deployment ${usr4} -n ${ns} --replicas=5
-
+    oc create role ${usr1Role} --verb=list --resource=configmaps -n ${ns}
+    oc create rolebinding ${usr1Rb} --role=${usr1Role} --serviceaccount=${ns}:${usr1} -n ${ns}
+    oc create clusterrole ${usr2Cr} --verb=list --resource=nodes,configmaps
+    oc create clusterrolebinding ${usr2Crb} --clusterrole=${usr2Cr} --serviceaccount=${ns}:${usr2}
+    oc create rolebinding ${usr3Rb} --clusterrole=admin --serviceaccount=${ns}:${usr3} -n ${ns}
+    oc create role ${usr4Role} --verb=list --resource=deployment -n ${ns}
+    oc create rolebinding ${usr4Rb} --role=${usr4Role} --serviceaccount=${ns}:${usr4} -n ${ns}
+    oc create deployment ${usr4Deploy} -n ${ns} --image=busybox --replicas=1 -- 'date; sleep 60;'
+    oc patch deployment ${usr4Deploy} -n ${ns} -p '{"spec":{"template":{"spec":{"containers":[{"name":"busybox","imagePullPolicy":"IfNotPresent"}]}}}}'
+    oc scale deployment ${usr4Deploy} -n ${ns} --replicas=5
     oc create configmap cm0 -n ${ns} --from-literal=key=cm0
     oc create configmap cm1 -n ${ns} --from-literal=key=cm1`
 
-    // Run setup steps in parallel.
-    // - Create a route to access the Search API.
-    // - Create users and objects for this test.
-    const [route] = await Promise.all([getSearchApiRoute(), execCliCmdString(setupCmds)])
-    searchApiRoute = route
+    await execCliCmdString(setupCmds)
 
-    await sleep(10000) // Wait for service account and the search index to get updated.
-  }, 60000)
+    // Phase 3: Wait for RBAC cache expiration (2 min) and all fixtures to be indexed.
+    // The subscription notifies us as soon as each event arrives in the search index.
+    // Both waits run concurrently — total wait is whichever takes longer.
+    console.log('Waiting for RBAC cache expiration and resources to be indexed via subscription...')
+    await Promise.all([sleep(120000), readinessPromise])
+    console.log('Setup complete. Starting tests...')
+  }, 350000) // 5.5 minutes
 
   afterAll(async () => {
     const teardownCmds = `
-    # export ns=search-rbac; export usr2=u2
     oc delete ns ${ns}
-    oc delete clusterrolebinding ${usr2}
-    oc delete clusterrole ${usr2}`
+    oc delete clusterrolebinding ${usr2Crb}
+    oc delete clusterrole ${usr2Cr}`
 
     await execCliCmdString(teardownCmds)
   }, 10000)
