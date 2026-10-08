@@ -22,7 +22,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC with Global Search Cluste
     oc create serviceaccount ${usr0} -n ${ns}
     oc create clusterrole ${usr0} --verb=get --resource=searches.search.open-cluster-management.io,searches/allManagedData
     oc create clusterrolebinding ${usr0} --clusterrole=${usr0} --serviceaccount=${ns}:${usr0}
-    oc create clusterrole ${usr0}-userpermissions --verb=list --resource=userpermissions.clusterview.open-cluster-management.io
+    oc create clusterrole ${usr0}-userpermissions --verb=get,list --resource=userpermissions.clusterview.open-cluster-management.io
     oc create clusterrolebinding ${usr0}-userpermissions --clusterrole=${usr0}-userpermissions --serviceaccount=${ns}:${usr0}
   
 
