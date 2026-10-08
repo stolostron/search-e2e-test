@@ -3,9 +3,11 @@
 // Test subscription API comparison operators.
 // Tests the comparison operators feature added in PR #705
 
+jest.retryTimes(global.retry, { logErrorsBeforeRetry: true, waitBeforeRetry: 60000 })
+
 const squad = require('../../config').get('squadName')
 
-const { execCliCmdString } = require('../common-lib/cliClient')
+const { createOrRecreateIfExists, execCliCmdString } = require('../common-lib/cliClient')
 const { getKubeadminToken, getSearchApiRoute } = require('../common-lib/clusterAccess')
 const { createWebSocket } = require('../common-lib/websocketHelper')
 const { waitFor } = require('../common-lib')
@@ -69,7 +71,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
 
       try {
         await new Promise((resolve) => setTimeout(resolve, 100))
-        await execCliCmdString(`oc create configmap test-cm-equality -n ${testNamespace}`)
+        createOrRecreateIfExists(`oc create configmap test-cm-equality -n ${testNamespace}`)
         const received = await waitFor(() => receivedInsert)
         expect(received).toBe(true)
         expect(receivedInsert).toBe(true)
@@ -114,7 +116,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
 
       try {
         await new Promise((resolve) => setTimeout(resolve, 100))
-        await execCliCmdString(`oc create configmap test-cm-explicit-eq -n ${testNamespace}`)
+        createOrRecreateIfExists(`oc create configmap test-cm-explicit-eq -n ${testNamespace}`)
         const received = await waitFor(() => receivedInsert, 15000)
         expect(received).toBe(true)
         expect(receivedInsert).toBe(true)
@@ -159,7 +161,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
 
       try {
         await new Promise((resolve) => setTimeout(resolve, 100))
-        await execCliCmdString(`oc create configmap test-cm-case -n ${testNamespace}`)
+        createOrRecreateIfExists(`oc create configmap test-cm-case -n ${testNamespace}`)
         const received = await waitFor(() => receivedInsert, 15000)
         expect(received).toBe(true)
         expect(receivedInsert).toBe(true)
@@ -208,7 +210,7 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
 
       try {
         await new Promise((resolve) => setTimeout(resolve, 100))
-        await execCliCmdString(`oc create configmap test-cm-explicit-case -n ${testNamespace}`)
+        createOrRecreateIfExists(`oc create configmap test-cm-explicit-case -n ${testNamespace}`)
         const received = await waitFor(() => receivedInsert, 15000)
         expect(received).toBe(true)
         expect(receivedInsert).toBe(true)
@@ -260,8 +262,8 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
 
       try {
         await new Promise((resolve) => setTimeout(resolve, 100))
-        await execCliCmdString(`oc create configmap test-cm-not-equal-1 -n ${testNamespace}`)
-        await execCliCmdString(`oc create configmap test-cm-not-equal-2 -n ${testNamespace}`)
+        createOrRecreateIfExists(`oc create configmap test-cm-not-equal-1 -n ${testNamespace}`)
+        createOrRecreateIfExists(`oc create configmap test-cm-not-equal-2 -n ${testNamespace}`)
 
         const received = await waitFor(() => receivedCorrectCM, 8000)
         expect(received).toBe(true)
@@ -314,8 +316,8 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
 
       try {
         await new Promise((resolve) => setTimeout(resolve, 100))
-        await execCliCmdString(`oc create configmap test-cm-bang-1 -n ${testNamespace}`)
-        await execCliCmdString(`oc create configmap test-cm-bang-2 -n ${testNamespace}`)
+        createOrRecreateIfExists(`oc create configmap test-cm-bang-1 -n ${testNamespace}`)
+        createOrRecreateIfExists(`oc create configmap test-cm-bang-2 -n ${testNamespace}`)
 
         const received = await waitFor(() => receivedCorrectCM, 8000)
         expect(received).toBe(true)
@@ -369,8 +371,8 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
 
       try {
         await new Promise((resolve) => setTimeout(resolve, 100))
-        await execCliCmdString(`oc create configmap test-cm-ne-kind-proof -n ${testNamespace} --from-literal=k=v`)
-        await execCliCmdString(`oc create secret generic test-secret-ne -n ${testNamespace} --from-literal=key=value`)
+        createOrRecreateIfExists(`oc create configmap test-cm-ne-kind-proof -n ${testNamespace}`)
+        createOrRecreateIfExists(`oc create secret generic test-secret-ne -n ${testNamespace} --from-literal=key=value`)
         const received = await waitFor(() => receivedSecret, 15000)
         expect(received).toBe(true)
         await settleMs()
@@ -423,8 +425,8 @@ describe(`[P2][Sev2][${squad}] ACM-27847: Subscription API Comparison Operators`
 
       try {
         await new Promise((resolve) => setTimeout(resolve, 100))
-        await execCliCmdString(`oc create configmap test-cm-ne-case-proof -n ${testNamespace} --from-literal=k=v`)
-        await execCliCmdString(
+        createOrRecreateIfExists(`oc create configmap test-cm-ne-case-proof -n ${testNamespace} --from-literal=k=v`)
+        createOrRecreateIfExists(
           `oc create secret generic test-secret-ne-case -n ${testNamespace} --from-literal=key=value`
         )
         const received = await waitFor(() => receivedSecret, 15000)

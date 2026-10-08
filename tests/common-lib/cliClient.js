@@ -114,6 +114,29 @@ function expectCli(cmd) {
   return expect(() => execSync(cmd, { stdio: [] }))
 }
 
+function createOrRecreateIfExists(createCmd) {
+  const parts = createCmd.match(/oc create (\S+) (\S+)/)
+  if (!parts) throw new Error(`Cannot parse resource kind/name from: ${createCmd}`)
+  let [, kind, name] = parts
+  if (kind === 'secret') {
+    const secretParts = createCmd.match(/oc create secret \S+ (\S+)/)
+    if (secretParts) name = secretParts[1]
+  }
+  const nsMatch = createCmd.match(/-n\s+(\S+)/)
+  const nsFlag = nsMatch ? ` -n ${nsMatch[1]}` : ''
+  try {
+    execSync(createCmd, { stdio: ['pipe', 'pipe', 'pipe'] })
+  } catch (e) {
+    if (e.stderr && e.stderr.toString().includes('already exists')) {
+      execSync(`oc delete ${kind} ${name}${nsFlag}`)
+      execSync(createCmd)
+    } else {
+      throw e
+    }
+  }
+}
+
 exports.execCliCmdString = execCliCmdString
 exports.expectCli = expectCli
+exports.createOrRecreateIfExists = createOrRecreateIfExists
 exports.getResourcesFromOC = getResourcesFromOC

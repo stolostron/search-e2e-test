@@ -170,7 +170,43 @@ function resolveAcmNamespace() {
   }
 }
 
+/**
+ * Retrieve the OpenShift service CA certificate so callers can verify TLS
+ * connections to services that use `service.beta.openshift.io/serving-cert-secret-name`.
+ *
+ * The service-ca controller injects the CA bundle into every namespace as
+ * `configmap/openshift-service-ca.crt`, key `service-ca.crt`.
+ *
+ * Tries the ACM namespace first (the most reliable source since the Search API
+ * runs there), then falls back to `default`. Returns `undefined` when neither
+ * is readable so the caller can fall back gracefully.
+ *
+ * @returns {Buffer|undefined} PEM-encoded CA certificate, or undefined.
+ */
+function getServiceCA() {
+  const acmNamespace = resolveAcmNamespace()
+  for (const ns of [acmNamespace, 'default']) {
+    try {
+      const pem = execSync(
+        `oc get configmap openshift-service-ca.crt -n ${ns} -o jsonpath='{.data.service-ca\\.crt}'`,
+        { stdio: ['pipe', 'pipe', 'ignore'] }
+      )
+        .toString()
+        .trim()
+      if (pem) {
+        // The value is already PEM — return as Buffer.
+        return Buffer.from(pem)
+      }
+    } catch (_) {
+      // Try next namespace.
+    }
+  }
+  console.warn('[clusterAccess] Could not retrieve service CA; TLS verification may be incomplete.')
+  return undefined
+}
+
 exports.deleteResource = deleteResource
+exports.getServiceCA = getServiceCA
 exports.getKubeConfig = getKubeConfig
 exports.getUserContext = getUserContext
 exports.getResource = getResource

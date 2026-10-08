@@ -3,7 +3,7 @@
 jest.retryTimes(global.retry, { logErrorsBeforeRetry: true, waitBeforeRetry: 60000 })
 
 const squad = require('../../config').get('squadName')
-const { getUserContext, getSearchApiRoute } = require('../common-lib/clusterAccess')
+const { getUserContext, getSearchApiRoute, getKubeadminToken } = require('../common-lib/clusterAccess')
 const { execCliCmdString } = require('../common-lib/cliClient')
 const {
   resolveSearchCount,
@@ -13,12 +13,45 @@ const {
   searchQueryBuilder,
 } = require('../common-lib/searchClient')
 const { sleep } = require('../common-lib/sleep')
+const { waitForIndexedResourcesViaSubscription } = require('../common-lib/subscriptionClient')
 
 const usr = 'search-query-user'
 const ns = 'search-query'
 
+// Fixtures the tests assert against by name, with per-fixture readiness predicates.
+// Labeled configmaps require the expected label to be present in watch.newData before
+// they are counted as ready — an unlabeled INSERT leaves them pending for a labeled UPDATE.
+const requiredFixtures = [
+  { name: 'cm0' },
+  { name: 'cm1' },
+  { name: 'cm2-apple', ready: (d) => d?.label?.type === 'fruit' },
+  { name: 'cm3-avocado', ready: (d) => d?.label?.type === 'vegetable' },
+  { name: 'cm4-broccoli', ready: (d) => d?.label?.type === 'vegetable' },
+  { name: usr, ready: (d) => d?.kind === 'Deployment' },
+  { name: 'test-service' },
+]
+
 describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`, () => {
   beforeAll(async () => {
+    const adminToken = getKubeadminToken()
+
+    // Get the search API route first — we need the websocket URL before setup runs.
+    searchApiRoute = await getSearchApiRoute()
+    const websocketUrl = searchApiRoute.replace('https://', 'wss://')
+
+    // Phase 1: Register the watch subscription BEFORE creating any fixtures.
+    // subscriptionReady resolves once the subscribe frame has been sent to the
+    // server (after connection_ack). Awaiting it guarantees no INSERT/UPDATE
+    // event can be emitted before the server-side filter is active.
+    const { subscriptionReady, done: readinessPromise } = waitForIndexedResourcesViaSubscription(
+      websocketUrl,
+      adminToken,
+      ns,
+      requiredFixtures
+    )
+    await subscriptionReady
+
+    // Phase 2: Create test fixtures. All events from this point are captured.
     let setupCommands = `# export ns=search-query; export usr=search-query-user
     oc create namespace ${ns}
     oc create serviceaccount ${usr} -n ${ns}
@@ -37,22 +70,16 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     oc create deployment ${usr} -n ${ns} --image=busybox --replicas=0 -- 'date; sleep 60;'
     oc create service clusterip test-service -n ${ns} --tcp=80:8080`
 
-    // Run the setup steps in parallel.
-    const [route] = await Promise.all([getSearchApiRoute(), execCliCmdString(setupCommands)])
-    searchApiRoute = route
+    await execCliCmdString(setupCommands)
 
-    // Wait for the service account and search index to get updated.
-    // Must wait 2 minutes because of the current RBAC cache.
-    // another 3 minutes grace period added to ensure resources indexed
-    console.log('Waiting 5 minutes for index update and cache expiration')
-    await sleep(120000 + 180000)
-  }, 1500000)
-
-  // Keep separate from beforeAll because it slows execution and increases the chances of recovering during retry.
-  beforeEach(async () => {
-    await sleep(5000)
+    // Phase 3: Wait for RBAC cache expiration (2 min) and all fixtures to be indexed.
+    // The subscription notifies us as soon as each event arrives in the search index.
+    // Both waits run concurrently — total wait is whichever takes longer.
+    console.log('Waiting for RBAC cache expiration and resources to be indexed via subscription...')
+    await Promise.all([sleep(120000), readinessPromise])
+    console.log('Setup complete. Starting tests...')
     user = await getUserContext({ usr, ns })
-  }, 10000) // 10 seconds
+  }, 350000) // 5.5 minutes
 
   afterAll(async () => {
     let teardownCmds = `# export ns=search-query; export usr=search-query-user
@@ -63,25 +90,33 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
 
   describe(`using keywords`, () => {
     test(`should match any resources containing the keyword 'apple'`, async () => {
-      const items = await resolveSearchItems(user.token, { keywords: ['apple'] })
+      const items = await resolveSearchItems(user.token, {
+        keywords: ['apple'],
+      })
       expect(items).toHaveLength(1)
       expect(items[0]).toHaveProperty('name', 'cm2-apple')
     })
 
     test(`should match resources with text containing 'apple' AND 'cm2'`, async () => {
-      const items = await resolveSearchItems(user.token, { keywords: ['apple', 'cm2'] })
+      const items = await resolveSearchItems(user.token, {
+        keywords: ['apple', 'cm2'],
+      })
       expect(items).toHaveLength(1)
       expect(items[0]).toHaveProperty('name', 'cm2-apple')
     })
 
     test('should be case insensitive.', async () => {
-      const items = await resolveSearchItems(user.token, { keywords: ['ApPLe'] })
+      const items = await resolveSearchItems(user.token, {
+        keywords: ['ApPLe'],
+      })
       expect(items).toHaveLength(1)
       expect(items[0]).toHaveProperty('name', 'cm2-apple')
     })
 
     test(`should match resources where label text contains 'vegetable'`, async () => {
-      const items = await resolveSearchItems(user.token, { keywords: ['vegetable'] })
+      const items = await resolveSearchItems(user.token, {
+        keywords: ['vegetable'],
+      })
       const names = items.map((i) => i.name)
       expect(items).toHaveLength(2)
       expect(names).toEqual(expect.arrayContaining(['cm3-avocado', 'cm4-broccoli']))
@@ -100,20 +135,26 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     })
 
     test('should handle special characters in keywords', async () => {
-      const items = await resolveSearchItems(user.token, { keywords: ['cm2-apple'] })
+      const items = await resolveSearchItems(user.token, {
+        keywords: ['cm2-apple'],
+      })
       expect(items).toHaveLength(1)
       expect(items[0]).toHaveProperty('name', 'cm2-apple')
     })
 
     test('should return empty array for non-existent keywords', async () => {
-      const items = await resolveSearchItems(user.token, { keywords: ['nonexistent-resource-xyz'] })
+      const items = await resolveSearchItems(user.token, {
+        keywords: ['nonexistent-resource-xyz'],
+      })
       expect(items).toHaveLength(0)
     })
   })
 
   describe('using labels', () => {
     test(`should match resources containing the label 'fruit'`, async () => {
-      const items = await resolveSearchItems(user.token, { filters: [{ property: 'label', values: ['type=fruit'] }] })
+      const items = await resolveSearchItems(user.token, {
+        filters: [{ property: 'label', values: ['type=fruit'] }],
+      })
       expect(items).toHaveLength(1)
       expect(items[0]).toHaveProperty('name', 'cm2-apple')
     })
@@ -150,7 +191,9 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
 
   describe('using partial match', () => {
     test(`should match resources containing the partial string 'typ*=*fru*' in label`, async () => {
-      const items = await resolveSearchItems(user.token, { filters: [{ property: 'label', values: ['typ*=*fru*'] }] })
+      const items = await resolveSearchItems(user.token, {
+        filters: [{ property: 'label', values: ['typ*=*fru*'] }],
+      })
       expect(items).toHaveLength(1)
       expect(items[0]).toHaveProperty('name', 'cm2-apple')
     })
@@ -200,8 +243,12 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
   describe(`using the filter 'kind'`, () => {
     test('should be case sensitive (lowercase).', async () => {
       const [items, items2] = await Promise.all([
-        resolveSearchItems(user.token, { filters: [{ property: 'kind', values: ['deployment'] }] }),
-        resolveSearchItems(user.token, { filters: [{ property: 'kind', values: ['Deployment'] }] }),
+        resolveSearchItems(user.token, {
+          filters: [{ property: 'kind', values: ['deployment'] }],
+        }),
+        resolveSearchItems(user.token, {
+          filters: [{ property: 'kind', values: ['Deployment'] }],
+        }),
       ])
 
       expect(items).toHaveLength(1)
@@ -239,7 +286,9 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     })
 
     test('should match resources where desired = 0', async () => {
-      const items = await resolveSearchItems(user.token, { filters: [{ property: 'desired', values: ['=0'] }] })
+      const items = await resolveSearchItems(user.token, {
+        filters: [{ property: 'desired', values: ['=0'] }],
+      })
       expect(items).toHaveLength(2)
       const kinds = items.map((i) => i.kind)
       expect(kinds).toEqual(expect.arrayContaining(['Deployment', 'ReplicaSet']))
@@ -253,12 +302,16 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     })
 
     test('should match deployments where desired <= 5', async () => {
-      const items = await resolveSearchItems(user.token, { filters: [{ property: 'desired', values: ['<=5'] }] })
+      const items = await resolveSearchItems(user.token, {
+        filters: [{ property: 'desired', values: ['<=5'] }],
+      })
       expect(items).toHaveLength(2)
     })
 
     test('should handle invalid comparison operators gracefully', async () => {
-      const items = await resolveSearchItems(user.token, { filters: [{ property: 'desired', values: ['invalid_op'] }] })
+      const items = await resolveSearchItems(user.token, {
+        filters: [{ property: 'desired', values: ['invalid_op'] }],
+      })
       expect(items).toHaveLength(0)
     })
 
@@ -457,7 +510,9 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
   describe('error handling and edge cases', () => {
     test('should handle invalid token gracefully', async () => {
       try {
-        await resolveSearchItems('invalid-token', { filters: [{ property: 'kind', values: ['ConfigMap'] }] })
+        await resolveSearchItems('invalid-token', {
+          filters: [{ property: 'kind', values: ['ConfigMap'] }],
+        })
         fail('Should have thrown an error for invalid token')
       } catch (error) {
         expect(error).toBeDefined()
