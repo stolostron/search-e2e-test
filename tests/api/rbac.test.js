@@ -60,6 +60,9 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
     // Using ServiceAccounts for rbac tests because configuration is simpler.
 
     const setupCmds = `
+    # export ns=search-rbac; export usr0=search-user0; export usr1=search-user1; export usr2=search-user2; export usr3=search-user3; 
+    # export usr4=search-user4; export usr1Role=search-user1-role; export usr1Rb=search-user1-rb; export usr2Cr=search-user2-cr; 
+    # export usr2Crb=search-user2-crb; export usr3Rb=search-user3-rb; export usr4Role=search-user4-role; export usr4Rb=search-user4-rb; export usr4Deploy=search-user4-deploy
     oc create namespace ${ns}
     oc create serviceaccount ${usr0} -n ${ns}
     oc create serviceaccount ${usr1} -n ${ns}
@@ -91,6 +94,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
 
   afterAll(async () => {
     const teardownCmds = `
+    # export ns=search-rbac; export usr2Crb=search-user2-crb; export usr2Cr=search-user2-cr
     oc delete ns ${ns}
     oc delete clusterrolebinding ${usr2Crb}
     oc delete clusterrole ${usr2Cr}`
