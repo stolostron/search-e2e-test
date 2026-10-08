@@ -39,7 +39,13 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
     oc scale deployment ${usr4} -n ${ns} --replicas=5
 
     oc create configmap cm0 -n ${ns} --from-literal=key=cm0
-    oc create configmap cm1 -n ${ns} --from-literal=key=cm1`
+    oc create configmap cm1 -n ${ns} --from-literal=key=cm1
+    oc create clusterrole ${ns}-userpermissions --verb=list --resource=userpermissions.clusterview.open-cluster-management.io
+    oc create clusterrolebinding ${usr0}-userpermissions --clusterrole=${ns}-userpermissions --serviceaccount=${ns}:${usr0}
+    oc create clusterrolebinding ${usr1}-userpermissions --clusterrole=${ns}-userpermissions --serviceaccount=${ns}:${usr1}
+    oc create clusterrolebinding ${usr2}-userpermissions --clusterrole=${ns}-userpermissions --serviceaccount=${ns}:${usr2}
+    oc create clusterrolebinding ${usr3}-userpermissions --clusterrole=${ns}-userpermissions --serviceaccount=${ns}:${usr3}
+    oc create clusterrolebinding ${usr4}-userpermissions --clusterrole=${ns}-userpermissions --serviceaccount=${ns}:${usr4}`
 
     // Run setup steps in parallel.
     // - Create a route to access the Search API.
@@ -55,7 +61,13 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
     # export ns=search-rbac; export usr2=u2
     oc delete ns ${ns}
     oc delete clusterrolebinding ${usr2}
-    oc delete clusterrole ${usr2}`
+    oc delete clusterrole ${usr2}
+    oc delete clusterrolebinding ${usr0}-userpermissions
+    oc delete clusterrolebinding ${usr1}-userpermissions
+    oc delete clusterrolebinding ${usr2}-userpermissions
+    oc delete clusterrolebinding ${usr3}-userpermissions
+    oc delete clusterrolebinding ${usr4}-userpermissions
+    oc delete clusterrole ${ns}-userpermissions`
 
     await execCliCmdString(teardownCmds)
   }, 10000)
