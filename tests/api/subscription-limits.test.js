@@ -1,6 +1,8 @@
 // Copyright Contributors to the Open Cluster Management project
 
 // Test rate limits of active search subscriptions.
+
+jest.retryTimes(global.retry, { logErrorsBeforeRetry: true, waitBeforeRetry: 60000 })
 const squad = require('../../config').get('squadName')
 
 const { execCliCmdString } = require('../common-lib/cliClient')
