@@ -40,7 +40,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC`, () => {
 
     oc create configmap cm0 -n ${ns} --from-literal=key=cm0
     oc create configmap cm1 -n ${ns} --from-literal=key=cm1
-    oc create clusterrole ${ns}-userpermissions --verb=list --resource=userpermissions.clusterview.open-cluster-management.io
+    oc create clusterrole ${ns}-userpermissions --verb=get,list --resource=userpermissions.clusterview.open-cluster-management.io
     oc create clusterrolebinding ${usr0}-userpermissions --clusterrole=${ns}-userpermissions --serviceaccount=${ns}:${usr0}
     oc create clusterrolebinding ${usr1}-userpermissions --clusterrole=${ns}-userpermissions --serviceaccount=${ns}:${usr1}
     oc create clusterrolebinding ${usr2}-userpermissions --clusterrole=${ns}-userpermissions --serviceaccount=${ns}:${usr2}

@@ -57,7 +57,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     oc create serviceaccount ${usr} -n ${ns}
     oc create role ${usr} --verb=list --resource=configmap,deployment,replicaset,pod,service -n ${ns}
     oc create rolebinding ${usr} --role=${usr} --serviceaccount=${ns}:${usr} -n ${ns}
-    oc create clusterrole ${usr}-userpermissions --verb=list --resource=userpermissions.clusterview.open-cluster-management.io
+    oc create clusterrole ${usr}-userpermissions --verb=get,list --resource=userpermissions.clusterview.open-cluster-management.io
     oc create clusterrolebinding ${usr}-userpermissions --clusterrole=${usr}-userpermissions --serviceaccount=${ns}:${usr}
 
     oc create configmap cm0 -n ${ns} --from-literal=key=cm0
