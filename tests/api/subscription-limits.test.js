@@ -15,6 +15,7 @@ let websocketUrl, token, acmNamespace, initDeployQueryApi
 const sub_max_active = 1
 const sub_max_lifetime = 60000
 const sub_max_idle = 5000
+const cleanup_interval = 30000
 
 describe(`[P2][Sev2][${squad}] RHACM-63733: Rate limits on subscriptions`, () => {
   beforeAll(async () => {
@@ -136,14 +137,14 @@ describe(`[P2][Sev2][${squad}] RHACM-63733: Rate limits on subscriptions`, () =>
       }
 
       try {
-        //Assert subscription terminated
-        await new Promise((resolve) => setTimeout(resolve, sub_max_lifetime + 10000))
+        // Assert subscription terminated after max lifetime plus cleanup ticker interval.
+        await waitFor(() => termSig, sub_max_lifetime + cleanup_interval + 10000)
         expect(termSig).toBe(true)
       } finally {
         ws.close()
       }
     },
-    90 * 1000
+    120 * 1000
   )
 
   it(
