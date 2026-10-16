@@ -32,6 +32,13 @@ spec:
 EOF`)
   console.log('Created NetworkPolicy search-api-e2e-route-access.')
 
+  // Create a shared ClusterRole granting get/list on userpermissions, used by the
+  // RBAC test suites via their own ClusterRoleBindings.
+  execSync(
+    `oc create clusterrole search-e2e-userpermissions --verb=get,list --resource=userpermissions.clusterview.open-cluster-management.io`
+  )
+  console.log('Created ClusterRole search-e2e-userpermissions.')
+
   await getSearchApiRoute()
   console.log('Done globalSetup.')
 }
