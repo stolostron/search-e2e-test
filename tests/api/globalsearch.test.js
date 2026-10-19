@@ -22,6 +22,7 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC with Global Search Cluste
     oc create serviceaccount ${usr0} -n ${ns}
     oc create clusterrole ${usr0} --verb=get --resource=searches.search.open-cluster-management.io,searches/allManagedData
     oc create clusterrolebinding ${usr0} --clusterrole=${usr0} --serviceaccount=${ns}:${usr0}
+    oc create clusterrolebinding ${usr0}-userpermissions --clusterrole=search-e2e-userpermissions --serviceaccount=${ns}:${usr0}
   
 
     oc create configmap cm0 -n ${ns} --from-literal=key=cm0
@@ -41,7 +42,8 @@ describe(`[P2][Sev2][${squad}] Search API: Verify RBAC with Global Search Cluste
     # export ns=search-global-rbac; export usr0=u0
     oc delete ns ${ns}
     oc delete clusterrolebinding ${usr0}
-    oc delete clusterrole ${usr0}`
+    oc delete clusterrole ${usr0}
+    oc delete clusterrolebinding ${usr0}-userpermissions`
 
     await execCliCmdString(teardownCmds)
   }, 10000)
