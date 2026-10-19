@@ -8,4 +8,6 @@ module.exports = () => {
   console.log('globalTeardown.js - Deleted NetworkPolicy search-api-e2e-route-access.')
   execSync(`oc delete route search-api-automation -n ${namespace} --ignore-not-found`)
   console.log('globalTeardown.js - Deleted route search-api-automation.')
+  execSync(`oc delete clusterrole search-e2e-userpermissions --ignore-not-found`)
+  console.log('globalTeardown.js - Deleted ClusterRole search-e2e-userpermissions.')
 }
