@@ -24,6 +24,7 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
     oc create serviceaccount ${usr} -n ${ns}
     oc create role ${usr} --verb=list --resource=configmap,deployment,replicaset,pod,service -n ${ns}
     oc create rolebinding ${usr} --role=${usr} --serviceaccount=${ns}:${usr} -n ${ns}
+    oc create clusterrolebinding ${usr}-userpermissions --clusterrole=search-e2e-userpermissions --serviceaccount=${ns}:${usr}
 
     oc create configmap cm0 -n ${ns} --from-literal=key=cm0
     oc create configmap cm1 -n ${ns} --from-literal=key=cm1
@@ -56,7 +57,8 @@ describe(`[P3][Sev3][${squad}] Search API - Verify results of different queries`
 
   afterAll(async () => {
     let teardownCmds = `# export ns=search-query; export usr=search-query-user
-    oc delete ns ${ns}`
+    oc delete ns ${ns}
+    oc delete clusterrolebinding ${usr}-userpermissions`
 
     await execCliCmdString(teardownCmds)
   }, 30000) // 30 seconds
