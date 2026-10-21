@@ -3,7 +3,7 @@
 // Test pagination functionality of the Search API.
 // Pagination is implemented using OFFSET, LIMIT, and ORDER BY.
 
-jest.retryTimes(global.retry, { logErrorsBeforeRetry: true })
+jest.retryTimes(global.retry, { logErrorsBeforeRetry: true, waitBeforeRetry: 60000 })
 
 const squad = require('../../config').get('squadName')
 const { getSearchApiRoute, getKubeadminToken, getLocalClusterName } = require('../common-lib/clusterAccess')
