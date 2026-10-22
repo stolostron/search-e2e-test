@@ -6,3 +6,4 @@ options.yaml
 chromedriver.log
 /results
 junit.xml
+tests/k6/grafana-datasource.yml
