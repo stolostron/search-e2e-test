@@ -688,6 +688,11 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
             { name: 'replicas', jsonPath: '{.spec.replicas}', type: 'integer' },
             { name: 'deadline', jsonPath: '{.spec.progressDeadlineSeconds}', type: 'float' },
             { name: 'paused', jsonPath: '{.spec.paused}', type: 'boolean' },
+            {
+              name: 'containerNames',
+              jsonPath: '{.spec.template.spec.containers[*].name}',
+              type: 'array',
+            },
           ],
         },
       ])
@@ -711,6 +716,10 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
       deployment.spec.template.spec.containers[0].resources = {
         limits: { memory: '128Mi' },
       }
+      deployment.spec.template.spec.containers.push({
+        name: 'sidecar',
+        image: pauseImage,
+      })
       applyResource(deployment)
 
       const items = await waitForIndexed(
@@ -718,7 +727,7 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
         itemFilters({ namespace: ns, name: deployName }),
         {
           match: (i) =>
-            ['image', 'defaultImage', 'memoryLimit', 'replicas', 'deadline', 'paused'].every(
+            ['image', 'defaultImage', 'memoryLimit', 'replicas', 'deadline', 'paused', 'containerNames'].every(
               (name) => i[field(name)] !== undefined
             ),
         },
@@ -735,6 +744,7 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
       expect(item[field('replicas')]).toBe('3')
       expect(item[field('deadline')]).toBe('600')
       expect(item[field('paused')]).toBe('true')
+      expect(item[field('containerNames')]).toBe('pause; sidecar')
     } finally {
       deleteResource('deployment', deployName, ns)
       deleteResource('namespace', ns)
