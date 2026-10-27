@@ -15,14 +15,47 @@ const {
   searchQueryBuilder,
 } = require('../common-lib/searchClient')
 const { sleep } = require('../common-lib/sleep')
+const { waitForIndexedResourcesViaSubscription } = require('../common-lib/subscriptionClient')
 
 const ns = 'search-auto-pagination'
 const TOTAL_CONFIGMAPS = 12 // cm0 through cm11
+
+const requiredFixtures = [
+  { name: 'cm0' },
+  { name: 'cm1' },
+  { name: 'cm2' },
+  { name: 'cm3' },
+  { name: 'cm4' },
+  { name: 'cm5' },
+  { name: 'cm6' },
+  { name: 'cm7' },
+  { name: 'cm8' },
+  { name: 'cm9' },
+  { name: 'cm10' },
+  { name: 'cm11' },
+]
 
 describe(`[P3][Sev3][${squad}] Search API - Verify pagination functionality`, () => {
   beforeAll(async () => {
     token = getKubeadminToken()
 
+    // Get the search API route first — we need the websocket URL before setup runs.
+    searchApiRoute = await getSearchApiRoute()
+    const websocketUrl = searchApiRoute.replace('https://', 'wss://')
+
+    // Phase 1: Register the watch subscription BEFORE creating any fixtures.
+    // subscriptionReady resolves once the subscribe frame has been sent to the
+    // server (after connection_ack). Awaiting it guarantees no INSERT/UPDATE
+    // event can be emitted before the server-side filter is active.
+    const { subscriptionReady, done: readinessPromise } = waitForIndexedResourcesViaSubscription(
+      websocketUrl,
+      token,
+      ns,
+      requiredFixtures
+    )
+    await subscriptionReady
+
+    // Phase 2: Create test fixtures. All events from this point are captured.
     const setupCmds = `
     oc create namespace ${ns}
     oc create configmap cm0 -n ${ns} --from-literal=key=cm0
@@ -39,11 +72,15 @@ describe(`[P3][Sev3][${squad}] Search API - Verify pagination functionality`, ()
     oc create configmap cm11 -n ${ns} --from-literal=key=cm11
     `
 
-    const [route] = await Promise.all([getSearchApiRoute(), execCliCmdString(setupCmds)])
-    searchApiRoute = route
+    await execCliCmdString(setupCmds)
 
-    await sleep(10000) // Wait for search index to get updated.
-  }, 60000)
+    // Phase 3: Wait for RBAC cache expiration (2 min) and all fixtures to be indexed.
+    // The subscription notifies us as soon as each event arrives in the search index.
+    // Both waits run concurrently — total wait is whichever takes longer.
+    console.log('Waiting for RBAC cache expiration and resources to be indexed via subscription...')
+    await Promise.all([sleep(120000), readinessPromise])
+    console.log('Setup complete. Starting tests...')
+  }, 350000) // 5.5 minutes
 
   afterAll(async () => {
     const teardownCmds = `
