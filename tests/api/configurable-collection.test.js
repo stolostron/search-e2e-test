@@ -120,6 +120,10 @@ function makeStatefulSet(namespace, name) {
   }
 }
 
+function makeGroup(name, users) {
+  return { apiVersion: 'user.openshift.io/v1', kind: 'Group', metadata: { name }, users }
+}
+
 function applyIntegrationCollectorConfig(namespace, name, rules, options = {}) {
   const configOptions = {
     labels: { 'search.open-cluster-management.io/config-type': 'integration' },
@@ -751,4 +755,97 @@ describe(`[P2][Sev2][${squad}] Configurable Collection`, () => {
       deleteCollectorConfig(acmNamespace, userName)
     }
   }, 300000)
+
+  // ACM-42679 - RHACM4K-67295
+  test(`[P2][Sev2][${squad}] ACM-42679: should index Group users as an array field and keep it in sync on update and delete`, async () => {
+    const userName = 'user-collector-config'
+    const suffix = Date.now().toString(36)
+    const multipleUsersGroup = `acm-42679-group-multiple-users-${suffix}`
+    const singleUserGroup = `acm-42679-group-single-user-${suffix}`
+    const emptyGroup = `acm-42679-group-empty-${suffix}`
+    const allGroups = [multipleUsersGroup, singleUserGroup, emptyGroup]
+    const alice = `acm-42679-alice-${suffix}`
+    const bob = `acm-42679-bob-${suffix}`
+    const charlie = `acm-42679-charlie-${suffix}`
+
+    const groupFilters = (extra) => [
+      ...itemFilters({ kind: 'Group', apigroup: 'user.openshift.io', cluster: localCluster }),
+      extra,
+    ]
+    const byUser = (user) => groupFilters({ property: 'users', values: [user] })
+    const byName = (names) => groupFilters({ property: 'name', values: names })
+    const indexByName = (items) => Object.fromEntries(items.map((i) => [i.name, i]))
+
+    try {
+      applyCollectorConfig(acmNamespace, userName, [
+        {
+          action: 'include',
+          resourceSelector: { apiGroups: ['user.openshift.io'], kinds: ['Group'] },
+          fields: [{ name: 'users', jsonPath: '{.users[*]}', type: 'array' }],
+        },
+      ])
+
+      await waitForMergedRule(
+        acmNamespace,
+        (r) =>
+          matchesRule(r, { action: 'include', apiGroup: 'user.openshift.io', kind: 'Group' }) &&
+          (r.fields || []).some((f) => f.name === 'users')
+      )
+
+      applyResource(makeGroup(multipleUsersGroup, [alice, bob]))
+      applyResource(makeGroup(singleUserGroup, [alice]))
+      applyResource(makeGroup(emptyGroup, []))
+
+      const indexed = await waitForCondition(
+        async () => {
+          const items = indexByName(await searchItems(token, byName(allGroups)))
+          return allGroups.every((g) => items[g] !== undefined) && items
+        },
+        { timeout: 120000 }
+      )
+      expect(Number(indexed[emptyGroup].userCount)).toBe(0)
+
+      // Filtering on the array field returns every Group containing the user.
+      const aliceGroups = await waitForCondition(
+        async () => {
+          const items = indexByName(await searchItems(token, byUser(alice)))
+          return items[multipleUsersGroup] && items[singleUserGroup] ? items : false
+        },
+        { timeout: 180000 }
+      )
+      expect(Object.keys(aliceGroups).sort()).toEqual([multipleUsersGroup, singleUserGroup].sort())
+      expect(Number(aliceGroups[multipleUsersGroup].userCount)).toBe(2)
+      expect(Number(aliceGroups[singleUserGroup].userCount)).toBe(1)
+
+      // Replacing the membership re-indexes both the array field and userCount.
+      applyResource(makeGroup(multipleUsersGroup, [charlie]))
+
+      const charlieGroups = await waitForCondition(
+        async () => {
+          const items = await searchItems(token, byUser(charlie))
+          return items.length === 1 && items[0].name === multipleUsersGroup && items
+        },
+        { timeout: 120000 }
+      )
+      expect(Number(charlieGroups[0].userCount)).toBe(1)
+
+      const aliceGroupsAfterUpdate = await waitForCondition(
+        async () => {
+          const items = await searchItems(token, byUser(alice))
+          return items.length === 1 && items[0].name === singleUserGroup && items
+        },
+        { timeout: 120000 }
+      )
+      expect(Number(aliceGroupsAfterUpdate[0].userCount)).toBe(1)
+
+      // Deleting the Group removes it from the array field index.
+      deleteResource('group.user.openshift.io', multipleUsersGroup)
+      await waitForCondition(async () => (await searchItems(token, byUser(charlie))).length === 0, { timeout: 120000 })
+    } finally {
+      for (const group of allGroups) {
+        deleteResource('group.user.openshift.io', group)
+      }
+      deleteCollectorConfig(acmNamespace, userName)
+    }
+  }, 420000)
 })
